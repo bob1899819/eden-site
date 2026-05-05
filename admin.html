@@ -289,6 +289,37 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 
 @media(max-width:1200px){.kpi-grid,.g4{grid-template-columns:repeat(2,1fr);}.g3{grid-template-columns:1fr 1fr;}}
 @media(max-width:880px){.g2,.g3{grid-template-columns:1fr;}.sidebar{transform:translateX(-100%);}.main{margin-left:0;}}
+
+<style>
+/* Onglets Achats */
+#ach-tabs{
+  display:flex;gap:0;margin-bottom:28px;
+  background:var(--dark2);border:1px solid rgba(196,160,78,.1);
+  overflow-x:auto;scrollbar-width:none;
+}
+#ach-tabs::-webkit-scrollbar{display:none;}
+.ach-tab{
+  background:none;border:none;border-bottom:2px solid transparent;
+  color:rgba(122,122,104,.6);font-family:var(--sans);font-size:8px;
+  letter-spacing:3px;text-transform:uppercase;
+  padding:14px 24px;cursor:pointer;
+  transition:all .25s;white-space:nowrap;
+  position:relative;
+}
+.ach-tab:hover{color:var(--light);background:rgba(196,160,78,.03);}
+.ach-tab.active{
+  color:var(--gold);
+  border-bottom:2px solid var(--gold);
+  background:rgba(196,160,78,.05);
+}
+.ach-tab::after{
+  content:'';position:absolute;right:0;top:20%;bottom:20%;
+  width:1px;background:rgba(196,160,78,.08);
+}
+.ach-tab:last-child::after{display:none;}
+.ach-kpi-card{transition:all .3s;cursor:pointer;}
+.ach-kpi-card:hover{transform:translateY(-2px);filter:brightness(1.1);}
+</style>
 </style>
 </head>
 <body>
@@ -346,6 +377,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
       <div class="sbi" onclick="nav('clients')"><span class="sbi-icon">◎</span>Fiches Clients</div>
 
       <p class="sb-sec">Bar & Stock</p>
+      <div class="sbi" onclick="nav('achats')"><span class="sbi-icon">📦</span>Achats & Coûts</div>
       <div class="sbi" onclick="nav('stocks')"><span class="sbi-icon">▣</span>Stock Boissons <span id="b-stock" class="sbi-badge gold" style="display:none"></span></div>
       <div class="sbi" onclick="nav('commandes')"><span class="sbi-icon">♔</span>Extras Commandés</div>
 
@@ -600,6 +632,496 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
         <table><thead><tr><th>Client</th><th>Date séance</th><th>Extras commandés</th><th>Statut séance</th></tr></thead>
         <tbody id="cmd-tb"></tbody></table>
       </div>
+    </section>
+
+
+    <!-- ════ ACHATS & COÛTS ════ -->
+    <section class="page" id="page-achats">
+      <div class="sh">
+        <div class="sh-left"><p class="ey">Inventaire & Budget</p><h2>Achats & <em>Coûts</em></h2></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-s" onclick="openAddProduct()">+ Produit</button>
+          <button class="btn-s" onclick="exportAchatsCSV()">↓ CSV</button>
+          <button class="btn-s fill" onclick="saveAchats()">💾 Sauvegarder</button>
+        </div>
+      </div>
+
+
+      <!-- NAV TABS -->
+      <div id="ach-tabs" style="display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid rgba(196,160,78,.1);overflow-x:auto">
+        <button class="ach-tab active" onclick="achTab('general',this)">◈ Vue générale</button>
+        <button class="ach-tab" onclick="achTab('thes',this)">🍵 Thés</button>
+        <button class="ach-tab" onclick="achTab('sirops',this)">🍬 Sirops</button>
+        <button class="ach-tab" onclick="achTab('eaux',this)">💧 Eaux</button>
+        <button class="ach-tab" onclick="achTab('canettes',this)">🥤 Canettes</button>
+        <button class="ach-tab" onclick="achTab('cafes',this)">☕ Cafés</button>
+        <button class="ach-tab" onclick="achTab('boissons-spec',this)">🥥 Boissons spéciales</button>
+        <button class="ach-tab" onclick="achTab('accessoires',this)">🛠 Accessoires</button>
+      </div>
+
+      <!-- GRAPHIQUES PAR SECTION (masqués par défaut sauf général) -->
+      <div id="ach-chart-general" class="ach-chart-section" style="margin-bottom:24px">
+        <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:14px">Vue d'ensemble — Répartition des coûts & revenus</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div class="card" style="padding:16px">
+            <div class="card-h" style="margin-bottom:10px"><span class="card-t">Coûts par catégorie</span></div>
+            <div style="height:180px;padding-top:8px"><canvas id="chart-cout-global" style="width:100%;height:180px"></canvas></div>
+          </div>
+          <div class="card" style="padding:16px">
+            <div class="card-h" style="margin-bottom:10px"><span class="card-t">CA potentiel par catégorie</span></div>
+            <div style="height:160px"><canvas id="chart-ca-global" style="width:100%;height:160px"></canvas></div>
+          </div>
+        </div>
+        <!-- KPIs GLOBAUX ENRICHIS -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+          <div id="kpi-thes" class="ach-kpi-card" style="background:rgba(91,155,213,.05);border:1px solid rgba(91,155,213,.15);padding:20px;cursor:pointer" onclick="achTab('thes',document.querySelector('[onclick*=thes]'))">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+              <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--info)">🍵 Thés & Infusions</div>
+              <span id="kpi-thes-alert" style="display:none;font-size:8px;padding:2px 8px;background:rgba(240,160,48,.15);color:var(--warn);border:1px solid rgba(240,160,48,.2)">⚠ Alerte</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Coût achat</div><div style="font-family:var(--serif);font-size:20px;color:var(--info)" id="kpi-thes-cout">–</div></div>
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">CA potentiel</div><div style="font-family:var(--serif);font-size:20px;color:var(--gold)" id="kpi-thes-ca">–</div></div>
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Bénéfice</div><div style="font-family:var(--serif);font-size:20px;color:var(--ok)" id="kpi-thes-benef">–</div></div>
+            </div>
+            <div style="margin-top:10px;height:3px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden"><div id="kpi-thes-bar" style="height:100%;background:var(--info);width:0%;transition:width .8s"></div></div>
+            <div style="font-size:8px;color:var(--muted);margin-top:5px" id="kpi-thes-sub">– boîtes</div>
+          </div>
+          <div id="kpi-sirops" class="ach-kpi-card" style="background:rgba(76,175,80,.05);border:1px solid rgba(76,175,80,.12);padding:20px;cursor:pointer" onclick="achTab('sirops',document.querySelector('[onclick*=sirops]'))">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+              <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--ok)">🍬 Sirops Monin</div>
+              <span id="kpi-sirops-alert" style="display:none;font-size:8px;padding:2px 8px;background:rgba(240,160,48,.15);color:var(--warn);border:1px solid rgba(240,160,48,.2)">⚠ Alerte</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Coût achat</div><div style="font-family:var(--serif);font-size:20px;color:var(--ok)" id="kpi-sirops-cout">–</div></div>
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">CA potentiel</div><div style="font-family:var(--serif);font-size:20px;color:var(--gold)" id="kpi-sirops-ca">–</div></div>
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Bénéfice</div><div style="font-family:var(--serif);font-size:20px;color:var(--ok)" id="kpi-sirops-benef">–</div></div>
+            </div>
+            <div style="margin-top:10px;height:3px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden"><div id="kpi-sirops-bar" style="height:100%;background:var(--ok);width:0%;transition:width .8s"></div></div>
+            <div style="font-size:8px;color:var(--muted);margin-top:5px" id="kpi-sirops-sub">– bouteilles</div>
+          </div>
+          <div id="kpi-eaux" class="ach-kpi-card" style="background:rgba(156,127,213,.05);border:1px solid rgba(156,127,213,.12);padding:20px;cursor:pointer" onclick="achTab('eaux',document.querySelector('[onclick*=eaux]'))">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+              <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--purple,#9c7fd5)">💧 Eaux & Canettes</div>
+              <span id="kpi-eaux-alert" style="display:none;font-size:8px;padding:2px 8px;background:rgba(240,160,48,.15);color:var(--warn);border:1px solid rgba(240,160,48,.2)">⚠ Alerte</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Coût achat</div><div style="font-family:var(--serif);font-size:20px;color:var(--purple,#9c7fd5)" id="kpi-eaux-cout">–</div></div>
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">CA potentiel</div><div style="font-family:var(--serif);font-size:20px;color:var(--gold)" id="kpi-eaux-ca">–</div></div>
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Bénéfice</div><div style="font-family:var(--serif);font-size:20px;color:var(--ok)" id="kpi-eaux-benef">–</div></div>
+            </div>
+            <div style="margin-top:10px;height:3px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden"><div id="kpi-eaux-bar" style="height:100%;background:var(--purple,#9c7fd5);width:0%;transition:width .8s"></div></div>
+            <div style="font-size:8px;color:var(--muted);margin-top:5px" id="kpi-eaux-sub">– unités</div>
+          </div>
+          <div id="kpi-can" class="ach-kpi-card" style="background:rgba(224,80,80,.04);border:1px solid rgba(224,80,80,.1);padding:20px;cursor:pointer" onclick="achTab('canettes',document.querySelector('[onclick*=canettes]'))">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+              <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--err)">🥤 Canettes San Pellegrino</div>
+              <span id="kpi-can-alert" style="display:none;font-size:8px;padding:2px 8px;background:rgba(240,160,48,.15);color:var(--warn);border:1px solid rgba(240,160,48,.2)">⚠ Alerte</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Coût achat</div><div style="font-family:var(--serif);font-size:20px;color:var(--err)" id="kpi-can-cout">–</div></div>
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">CA potentiel</div><div style="font-family:var(--serif);font-size:20px;color:var(--gold)" id="kpi-can-ca">–</div></div>
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Bénéfice</div><div style="font-family:var(--serif);font-size:20px;color:var(--ok)" id="kpi-can-benef">–</div></div>
+            </div>
+            <div style="margin-top:10px;height:3px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden"><div id="kpi-can-bar" style="height:100%;background:var(--err);width:0%;transition:width .8s"></div></div>
+            <div style="font-size:8px;color:var(--muted);margin-top:5px" id="kpi-can-sub">– canettes</div>
+          </div>
+          <div id="kpi-cafe" class="ach-kpi-card" style="background:rgba(196,160,78,.05);border:1px solid rgba(196,160,78,.18);padding:20px;cursor:pointer" onclick="achTab('cafes',document.querySelector('[onclick*=cafes]'))">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+              <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold)">☕ Cafés</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Coût / kg</div><div style="font-family:var(--serif);font-size:20px;color:var(--gold)" id="kpi-cafe-cout">–</div></div>
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">CA moy / kg</div><div style="font-family:var(--serif);font-size:20px;color:var(--gold)" id="kpi-cafe-ca">–</div></div>
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Marge moy.</div><div style="font-family:var(--serif);font-size:20px;color:var(--ok)" id="kpi-cafe-marge">–</div></div>
+            </div>
+            <div style="font-size:8px;color:var(--muted);margin-top:10px" id="kpi-cafe-sub">–</div>
+          </div>
+          <div id="kpi-bspec" class="ach-kpi-card" style="background:rgba(72,180,160,.05);border:1px solid rgba(72,180,160,.15);padding:20px;cursor:pointer" onclick="achTab('boissons-spec',document.querySelector('[onclick*=boissons-spec]'))">
+            <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#48b4a0;margin-bottom:14px">🥥 Boissons Spéciales</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Coût</div><div style="font-family:var(--serif);font-size:20px;color:#48b4a0" id="kpi-bspec-cout">–</div></div>
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">CA pot.</div><div style="font-family:var(--serif);font-size:20px;color:var(--gold)" id="kpi-bspec-ca">–</div></div>
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Bénéfice</div><div style="font-family:var(--serif);font-size:20px;color:var(--ok)" id="kpi-bspec-benef">–</div></div>
+            </div>
+          </div>
+          <div id="kpi-acc" class="ach-kpi-card" style="background:rgba(240,160,48,.05);border:1px solid rgba(240,160,48,.15);padding:20px;cursor:pointer" onclick="achTab('accessoires',document.querySelector('[onclick*=accessoires]'))">
+            <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--warn);margin-bottom:14px">🛠 Accessoires & Snacks</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Coût</div><div style="font-family:var(--serif);font-size:20px;color:var(--warn)" id="kpi-acc-cout">–</div></div>
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">CA pot.</div><div style="font-family:var(--serif);font-size:20px;color:var(--gold)" id="kpi-acc-ca">–</div></div>
+              <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Bénéfice</div><div style="font-family:var(--serif);font-size:20px;color:var(--ok)" id="kpi-acc-benef">–</div></div>
+            </div>
+          </div>
+          <div style="background:rgba(196,160,78,.06);border:1px solid rgba(196,160,78,.2);padding:20px;text-align:center;display:flex;flex-direction:column;justify-content:center;gap:6px">
+            <div style="font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:4px">Total général</div>
+            <div style="font-family:var(--serif);font-size:14px;color:var(--muted)">Coût total <b id="ach-total-cout" style="color:var(--cream)">–</b></div>
+            <div style="font-family:var(--serif);font-size:14px;color:var(--muted)">CA potentiel <b id="ach-total-ca" style="color:var(--gold)">–</b></div>
+            <div style="font-family:var(--serif);font-size:28px;color:var(--ok)" id="ach-total-benef">–</div>
+            <div style="font-size:8px;color:var(--muted)">bénéfice potentiel total</div>
+            <div style="height:1px;background:rgba(196,160,78,.1);margin:4px 0"></div>
+            <div style="font-size:9px;color:var(--warn)" id="ach-total-alerts">0 alerte stock</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHART THÉS -->
+      <div id="ach-chart-thes" class="ach-chart-section" style="display:none;margin-bottom:24px">
+        <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--info);margin-bottom:14px">🍵 Thés — Coût vs CA potentiel par référence</div>
+        <div style="height:200px"><canvas id="chart-thes" style="width:100%;height:200px"></canvas></div>
+      </div>
+      <div id="ach-chart-sirops" class="ach-chart-section" style="display:none;margin-bottom:24px">
+        <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--ok);margin-bottom:14px">🍬 Sirops — CA potentiel par parfum</div>
+        <div style="height:200px"><canvas id="chart-sirops" style="width:100%;height:200px"></canvas></div>
+      </div>
+      <div id="ach-chart-eaux" class="ach-chart-section" style="display:none;margin-bottom:24px">
+        <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--purple,#9c7fd5);margin-bottom:14px">💧 Eaux — Coût vs CA potentiel</div>
+        <div style="height:200px"><canvas id="chart-eaux" style="width:100%;height:200px"></canvas></div>
+      </div>
+      <div id="ach-chart-canettes" class="ach-chart-section" style="display:none;margin-bottom:24px">
+        <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--err);margin-bottom:14px">🥤 Canettes — Marge par référence</div>
+        <div style="height:200px"><canvas id="chart-canettes" style="width:100%;height:200px"></canvas></div>
+      </div>
+      <div id="ach-chart-boissons-spec" class="ach-chart-section" style="display:none;margin-bottom:24px">
+        <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#48b4a0;margin-bottom:14px">🥥 Boissons spéciales — CA potentiel</div>
+        <div style="height:200px"><canvas id="chart-boissons-spec" style="width:100%;height:200px"></canvas></div>
+      </div>
+      <div id="ach-chart-accessoires" class="ach-chart-section" style="display:none;margin-bottom:24px">
+        <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#f0a030;margin-bottom:14px">🛠 Accessoires & Snacks — Coûts</div>
+        <div style="height:200px"><canvas id="chart-accessoires" style="width:100%;height:200px"></canvas></div>
+      </div>
+
+      <div id="ach-chart-cafes" class="ach-chart-section" style="display:none;margin-bottom:24px">
+        <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:14px">☕ Cafés — Marge % par boisson</div>
+        <div style="height:200px"><canvas id="chart-cafes" style="width:100%;height:200px"></canvas></div>
+      </div>
+
+
+      <!-- ═══ SECTION THÉ ═══ -->
+      <div class="tw" style="margin-bottom:24px">
+        <div class="tw-head">
+          <span class="tw-title">🍵 Thés & Infusions — Palais des Thés</span>
+          <div style="font-size:9px;color:var(--muted)">20 sachets mousseline / boîte</div>
+        </div>
+
+        <!-- Sous-section Premium -->
+        <div style="padding:12px 20px 4px;border-bottom:1px solid rgba(196,160,78,.05)">
+          <span style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold)">✦ Sélection Premium</span>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Référence Palais des Thés</th>
+            <th>Prix / boîte</th>
+            <th>Qté boîtes</th>
+            <th>Sachets restants</th>
+            <th>Total</th>
+            <th>Statut</th>
+            <th>Ajustement</th>
+          </tr></thead>
+          <tbody id="the-premium-tb"></tbody>
+          <tfoot>
+            <tr style="border-top:1px solid rgba(196,160,78,.15)">
+              <td colspan="3" style="padding:10px 16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold)">Sous-total premium</td>
+              <td colspan="3" style="padding:10px 16px;font-family:var(--serif);font-size:18px;color:var(--gold)" id="the-premium-total">–</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Sous-section Standards -->
+        <div style="padding:12px 20px 4px;border-bottom:1px solid rgba(196,160,78,.05);border-top:1px solid rgba(196,160,78,.05)">
+          <span style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)">◈ Thés Standards / Classiques</span>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Référence Palais des Thés</th>
+            <th>Prix / boîte</th>
+            <th>Qté boîtes</th>
+            <th>Sachets restants</th>
+            <th>Total</th>
+            <th>Statut</th>
+            <th>Ajustement</th>
+          </tr></thead>
+          <tbody id="the-standard-tb"></tbody>
+          <tfoot>
+            <tr style="border-top:1px solid rgba(196,160,78,.15)">
+              <td colspan="3" style="padding:10px 16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Sous-total standards</td>
+              <td colspan="3" style="padding:10px 16px;font-family:var(--serif);font-size:18px;color:var(--cream)" id="the-standard-total">–</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Total thés -->
+        <div style="display:flex;justify-content:flex-end;padding:14px 20px;background:rgba(196,160,78,.04);border-top:1px solid rgba(196,160,78,.1)">
+          <div style="text-align:right">
+            <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:4px">Total Thés Palais des Thés</div>
+            <div style="font-family:var(--serif);font-size:28px;color:var(--gold)" id="the-total-global">–</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION SIROPS ═══ -->
+      <div class="tw" style="margin-bottom:24px">
+        <div class="tw-head">
+          <span class="tw-title">🍬 Sirops Monin</span>
+          <div style="font-size:9px;color:var(--muted)">Bouteilles 70 cl</div>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Sirop Monin</th>
+            <th>Prix / bouteille</th>
+            <th>Quantité</th>
+            <th>Seuil alerte</th>
+            <th>Total</th>
+            <th>Statut</th>
+            <th>Ajustement</th>
+          </tr></thead>
+          <tbody id="sirop-tb"></tbody>
+          <tfoot>
+            <tr style="border-top:1px solid rgba(196,160,78,.15)">
+              <td colspan="2" style="padding:10px 16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ok)">Total Sirops Monin</td>
+              <td id="sirop-total-qt" style="padding:10px 16px;font-size:12px;color:var(--muted)">– bouteilles</td>
+              <td colspan="2" style="padding:10px 16px;font-family:var(--serif);font-size:18px;color:var(--ok)" id="sirop-total">–</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Récapitulatif final -->
+      <div class="card">
+        <div class="card-h"><span class="card-t">Récapitulatif commande totale</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px" id="recap-achats"></div>
+      </div>
+
+
+      <!-- ═══ EAUX PLATES — BOUTEILLES ═══ -->
+      <div class="tw" style="margin-bottom:24px">
+        <div class="tw-head">
+          <span class="tw-title">💧 Eaux Plates — Bouteilles (Cristaline)</span>
+          <div style="font-size:9px;color:var(--muted)">Prix d'achat Carrefour</div>
+        </div>
+        <table>
+          <thead><tr><th>Référence</th><th>Format</th><th>Prix achat / pack</th><th>Qté packs</th><th>Unités</th><th>Prix vente / unité</th><th>Total achat</th><th>CA potentiel</th><th>Bénéfice</th><th>Statut</th><th>Ajust.</th></tr></thead>
+          <tbody id="eau-plate-tb"></tbody>
+          <tfoot><tr>
+            <td colspan="6" style="padding:10px 16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--info)">Total Eaux Plates</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--info)" id="eau-plate-total-cout">–</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--gold)" id="eau-plate-total-ca">–</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--ok)" id="eau-plate-total-benef">–</td>
+            <td colspan="2"></td>
+          </tr></tfoot>
+        </table>
+      </div>
+
+      <!-- ═══ EAUX GAZEUSES — BOUTEILLES ═══ -->
+      <div class="tw" style="margin-bottom:24px">
+        <div class="tw-head">
+          <span class="tw-title">🫧 Eaux Gazeuses — Bouteilles</span>
+          <div style="font-size:9px;color:var(--muted)">Perrier · San Pellegrino · Badoit</div>
+        </div>
+        <table>
+          <thead><tr><th>Référence</th><th>Format</th><th>Prix achat / pack</th><th>Qté packs</th><th>Unités</th><th>Prix vente / unité</th><th>Total achat</th><th>CA potentiel</th><th>Bénéfice</th><th>Statut</th><th>Ajust.</th></tr></thead>
+          <tbody id="eau-gaz-tb"></tbody>
+          <tfoot><tr>
+            <td colspan="6" style="padding:10px 16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--info)">Total Eaux Gazeuses</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--info)" id="eau-gaz-total-cout">–</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--gold)" id="eau-gaz-total-ca">–</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--ok)" id="eau-gaz-total-benef">–</td>
+            <td colspan="2"></td>
+          </tr></tfoot>
+        </table>
+      </div>
+
+      <!-- ═══ CANETTES GAZEUSES ═══ -->
+      <div class="tw" style="margin-bottom:24px">
+        <div class="tw-head">
+          <span class="tw-title">🥤 Canettes Gazeuses — San Pellegrino</span>
+          <div style="font-size:9px;color:var(--muted)">Packs 6x33cl</div>
+        </div>
+        <table>
+          <thead><tr><th>Référence</th><th>Format</th><th>Prix achat / pack</th><th>Qté packs</th><th>Canettes</th><th>Prix vente / can.</th><th>Total achat</th><th>CA potentiel</th><th>Bénéfice</th><th>Statut</th><th>Ajust.</th></tr></thead>
+          <tbody id="canette-tb"></tbody>
+          <tfoot><tr>
+            <td colspan="6" style="padding:10px 16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--purple,#9c7fd5)">Total Canettes</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--info)" id="can-total-cout">–</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--gold)" id="can-total-ca">–</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--ok)" id="can-total-benef">–</td>
+            <td colspan="2"></td>
+          </tr></tfoot>
+        </table>
+      </div>
+
+      <!-- ═══ CAFÉS ═══ -->
+      <div class="tw" style="margin-bottom:24px">
+        <div class="tw-head">
+          <span class="tw-title">☕ Cafés — Analyse revenus</span>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:9px;color:var(--muted)">Prix achat café</span>
+            <div style="display:flex;align-items:center;gap:5px;background:rgba(196,160,78,.06);border:1px solid rgba(196,160,78,.15);padding:3px 8px">
+              <button onclick="adjPrixCafe(-1)" style="background:none;border:none;color:var(--gold);font-size:14px;cursor:pointer">−</button>
+              <span style="font-family:var(--serif);font-size:16px;color:var(--gold);min-width:55px;text-align:center" id="cafe-prix-kg">35.00 €/kg</span>
+              <button onclick="adjPrixCafe(1)" style="background:none;border:none;color:var(--gold);font-size:14px;cursor:pointer">+</button>
+            </div>
+          </div>
+        </div>
+        <!-- Info dosage -->
+        <div style="padding:12px 20px;background:rgba(196,160,78,.03);border-bottom:1px solid rgba(196,160,78,.06);display:flex;gap:24px;flex-wrap:wrap">
+          <div style="font-size:10px;color:var(--muted)">Dosage espresso : <b style="color:var(--cream)">7g</b></div>
+          <div style="font-size:10px;color:var(--muted)">Dosage lungo/americano : <b style="color:var(--cream)">10g</b></div>
+          <div style="font-size:10px;color:var(--muted)">Dosage cappuccino/latte : <b style="color:var(--cream)">7g</b> + lait</div>
+          <div style="font-size:10px;color:var(--muted)">Coût lait / portion : <b style="color:var(--cream)">~0.10€</b></div>
+          <div style="font-size:10px;color:var(--gold)">Tasses / kg : <b id="cafe-tasses-kg">–</b></div>
+          <div style="font-size:10px;color:var(--ok)">CA potentiel / kg : <b id="cafe-ca-kg">–</b></div>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Boisson</th><th>Prix carte</th><th>Dosage</th>
+            <th>Coût matière</th><th>Marge unitaire</th><th>Marge %</th>
+            <th>Stock (kg)</th><th>Tasses potentielles</th><th>CA potentiel</th>
+          </tr></thead>
+          <tbody id="cafe-tb"></tbody>
+        </table>
+        <div style="padding:14px 20px;background:rgba(196,160,78,.04);border-top:1px solid rgba(196,160,78,.1)">
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Stock café en kg</span>
+            <button onclick="adjCafeStock(-0.5)" style="background:none;border:1px solid rgba(196,160,78,.2);color:var(--gold);padding:2px 8px;cursor:pointer;font-size:12px">−</button>
+            <span style="font-family:var(--serif);font-size:18px;color:var(--gold);min-width:40px;text-align:center" id="cafe-stock-display">1.0 kg</span>
+            <button onclick="adjCafeStock(0.5)" style="background:none;border:1px solid rgba(196,160,78,.2);color:var(--gold);padding:2px 8px;cursor:pointer;font-size:12px">+</button>
+            <span style="font-size:9px;color:var(--muted);margin-left:8px">Ajustez votre stock pour voir le CA total potentiel</span>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ═══ BOISSONS SPÉCIALES ═══ -->
+      <div class="tw" style="margin-bottom:24px">
+        <div class="tw-head">
+          <span class="tw-title">🥥 Boissons Spéciales (lait végétal, eau de coco…)</span>
+          <button class="btn-s" onclick="openAddBoissonSpec()">+ Ajouter</button>
+        </div>
+        <table>
+          <thead><tr><th>Produit</th><th>Format</th><th>Prix achat / unité</th><th>Quantité</th><th>Prix vente</th><th>Total achat</th><th>CA potentiel</th><th>Bénéfice</th><th>Statut</th><th>✕</th></tr></thead>
+          <tbody id="bspec-tb"></tbody>
+          <tfoot><tr>
+            <td colspan="5" style="padding:10px 16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#48b4a0">Total Boissons Spéciales</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:#48b4a0" id="bspec-cout">–</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--gold)" id="bspec-ca">–</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--ok)" id="bspec-benef">–</td>
+            <td colspan="2"></td>
+          </tr></tfoot>
+        </table>
+      </div>
+
+      <!-- ═══ ACCESSOIRES & SNACKS ═══ -->
+      <div class="tw" style="margin-bottom:24px">
+        <div class="tw-head">
+          <span class="tw-title">🛠 Accessoires, Snacks & Consommables</span>
+          <button class="btn-s" onclick="openAddAccessoire()">+ Ajouter</button>
+        </div>
+        <div style="padding:10px 20px 4px;border-bottom:1px solid rgba(196,160,78,.05)">
+          <div style="display:flex;gap:20px;flex-wrap:wrap">
+            <button class="fb on" onclick="setAccFilter('all',this)">Tout</button>
+            <button class="fb" onclick="setAccFilter('snack',this)">🍫 Snacks</button>
+            <button class="fb" onclick="setAccFilter('accessoire',this)">🛠 Accessoires</button>
+            <button class="fb" onclick="setAccFilter('consommable',this)">📦 Consommables</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Produit</th><th>Catégorie</th><th>Prix achat</th><th>Qté</th><th>Unités/lot</th><th>Prix vente unit.</th><th>Total achat</th><th>CA potentiel</th><th>Bénéfice</th><th>Statut</th><th>Ajust.</th></tr></thead>
+          <tbody id="acc-tb"></tbody>
+          <tfoot><tr>
+            <td colspan="6" style="padding:10px 16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--warn)">Total Accessoires & Snacks</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--warn)" id="acc-cout">–</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--gold)" id="acc-ca">–</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--ok)" id="acc-benef">–</td>
+            <td colspan="2"></td>
+          </tr></tfoot>
+        </table>
+      </div>
+
+      <!-- ═══ ANALYSE REVENUS ═══ -->
+      <div class="card" style="margin-top:24px">
+        <div class="card-h">
+          <span class="card-t">📈 Potentiel de revenus — Thés & Infusions</span>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:9px;color:var(--muted);letter-spacing:1px">Prix de vente / sachet</span>
+            <div style="display:flex;align-items:center;gap:6px;background:rgba(196,160,78,.06);border:1px solid rgba(196,160,78,.18);padding:4px 10px">
+              <button onclick="adjPrixVente(-0.5)" style="background:none;border:none;color:var(--gold);font-size:16px;cursor:pointer;padding:0 4px">−</button>
+              <span style="font-family:var(--serif);font-size:20px;color:var(--gold);min-width:42px;text-align:center" id="prix-vente-display">4.50 €</span>
+              <button onclick="adjPrixVente(0.5)" style="background:none;border:none;color:var(--gold);font-size:16px;cursor:pointer;padding:0 4px">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chiffres clés -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px">
+          <div style="padding:18px;background:rgba(91,155,213,.05);border:1px solid rgba(91,155,213,.1);text-align:center">
+            <div style="font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--info);margin-bottom:6px">Sachets en stock</div>
+            <div style="font-family:var(--serif);font-size:28px;color:var(--info)" id="rev-sachets-total">–</div>
+            <div style="font-size:8px;color:var(--muted);margin-top:4px">sachets disponibles</div>
+          </div>
+          <div style="padding:18px;background:rgba(196,160,78,.05);border:1px solid rgba(196,160,78,.15);text-align:center">
+            <div style="font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">CA potentiel stock actuel</div>
+            <div style="font-family:var(--serif);font-size:28px;color:var(--gold)" id="rev-ca-stock">–</div>
+            <div style="font-size:8px;color:var(--muted);margin-top:4px">si tout vendu</div>
+          </div>
+          <div style="padding:18px;background:rgba(76,175,80,.05);border:1px solid rgba(76,175,80,.12);text-align:center">
+            <div style="font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--ok);margin-bottom:6px">Bénéfice net estimé</div>
+            <div style="font-family:var(--serif);font-size:28px;color:var(--ok)" id="rev-benef">–</div>
+            <div style="font-size:8px;color:var(--muted);margin-top:4px">CA − coût achat</div>
+          </div>
+          <div style="padding:18px;background:rgba(156,127,213,.05);border:1px solid rgba(156,127,213,.12);text-align:center">
+            <div style="font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--purple,#9c7fd5);margin-bottom:6px">Marge brute</div>
+            <div style="font-family:var(--serif);font-size:28px;color:var(--purple,#9c7fd5)" id="rev-marge">–</div>
+            <div style="font-size:8px;color:var(--muted);margin-top:4px">en % du CA</div>
+          </div>
+        </div>
+
+        <!-- Simulateur +1 boîte -->
+        <div style="background:rgba(196,160,78,.03);border:1px solid rgba(196,160,78,.08);padding:20px;margin-bottom:20px">
+          <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:16px">Simulateur — Impact d'une boîte supplémentaire (+20 sachets)</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+            <div style="text-align:center;padding:14px;background:rgba(255,255,255,.02);border:1px solid rgba(196,160,78,.06)">
+              <div style="font-size:8px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">Coût 1 boîte moy.</div>
+              <div style="font-family:var(--serif);font-size:22px;color:var(--cream)" id="sim-cout">–</div>
+            </div>
+            <div style="text-align:center;padding:14px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.1)">
+              <div style="font-size:8px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">CA +20 sachets</div>
+              <div style="font-family:var(--serif);font-size:22px;color:var(--gold)" id="sim-ca">–</div>
+            </div>
+            <div style="text-align:center;padding:14px;background:rgba(76,175,80,.04);border:1px solid rgba(76,175,80,.1)">
+              <div style="font-size:8px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">Bénéfice +1 boîte</div>
+              <div style="font-family:var(--serif);font-size:22px;color:var(--ok)" id="sim-benef">–</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tableau détaillé par référence -->
+        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Détail par référence</div>
+        <table>
+          <thead><tr>
+            <th>Référence</th><th>Sachets stock</th><th>Coût achat</th>
+            <th>CA potentiel</th><th>Bénéfice</th><th>Marge %</th>
+          </tr></thead>
+          <tbody id="rev-detail-tb"></tbody>
+        </table>
+      </div>
+
+      <!-- ═══ NOUVELLES FAMILLES ═══ -->
+      <div style="margin-top:28px">
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:16px">Ajouter une nouvelle famille de produits</div>
+        <div id="extra-families"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+          <button class="btn-s" onclick="addFamily('Boissons Chaudes')">+ Boissons Chaudes</button>
+          <button class="btn-s" onclick="addFamily('Jus & Smoothies')">+ Jus & Smoothies</button>
+          <button class="btn-s" onclick="addFamily('Snacks & Encas')">+ Snacks & Encas</button>
+          <button class="btn-s" onclick="addFamily('Accessoires Bar')">+ Accessoires Bar</button>
+          <button class="btn-s fill" onclick="openAddFamily()">+ Famille personnalisée</button>
+        </div>
+      </div>
+
     </section>
 
     <!-- ════ PARRAINAGE ════ -->
@@ -1301,6 +1823,7 @@ function renderPage(p){
   commandes:renderCmd,
   parrainage:renderParrainage,
   fidelite:renderFidelite,
+  achats:renderAchats,
   finances:renderFinances,
   parametres:renderParams
 };
@@ -1874,7 +2397,8 @@ function drawBarChart(canvasId, labels, values, color=GOLD, options={}){
     // Valeur au dessus
     if(v>0){
       ctx.fillStyle=color;ctx.font='8px Jost,sans-serif';ctx.textAlign='center';
-      ctx.fillText(v>=1000?(v/1000).toFixed(1)+'k':v, x+bw/2, y-5);
+      var lbl = v>=1000?(v/1000).toFixed(1)+'k':Math.round(v*10)/10;
+      ctx.fillText(lbl, x+bw/2, y-5);
     }
     // Label dessous
     ctx.fillStyle='rgba(122,122,104,.6)';ctx.font='8px Jost,sans-serif';ctx.textAlign='center';
@@ -2358,6 +2882,1211 @@ window.addEventListener('resize',()=>{
   if(activePage==='page-finances') setTimeout(renderFinances,100);
   if(activePage==='page-stocks') setTimeout(renderStockChart,100);
 });
+
+
+
+// ══ ONGLETS ACHATS ══
+function achTab(name, btn){
+  document.querySelectorAll(".ach-tab").forEach(function(b){b.classList.remove("active");});
+  if(btn) btn.classList.add("active");
+  document.querySelectorAll(".ach-chart-section").forEach(function(s){s.style.display="none";});
+  var el = document.getElementById("ach-chart-"+name);
+  if(el) el.style.display="block";
+  // Draw chart for this tab
+  setTimeout(function(){
+    if(name==="general")  drawGlobalCharts();
+    if(name==="thes")     drawThesChart();
+    if(name==="sirops")   drawSiropsChart();
+    if(name==="eaux")     drawEauxChart();
+    if(name==="canettes") drawCanettesChart();
+    if(name==="cafes")    drawCafesChart();
+    if(name==="boissons-spec") drawBSpecChart();
+    if(name==="accessoires") drawAccChart();
+  }, 50);
+}
+
+// ══ UPDATE ALL KPIs ══
+function updateAllKPIs(){
+  // Thés
+  var allThes = THES_PREMIUM.concat(THES_STANDARD);
+  var thesCout = allThes.reduce(function(s,t){return s+(t.prix*t.qte);},0);
+  var thesCA   = allThes.reduce(function(s,t){return s+(t.sachets||0)*PRIX_VENTE;},0);
+  var thesBenef = thesCA - thesCout;
+  var thesBoites = allThes.reduce(function(s,t){return s+t.qte;},0);
+  var thesAlerts = allThes.filter(function(t){return t.qte<=t.seuil;}).length;
+  setKPI("kpi-thes-cout", thesCout.toFixed(0)+" €");
+  setKPI("kpi-thes-ca",   thesCA.toFixed(0)+" €");
+  setKPI("kpi-thes-benef",thesBenef.toFixed(0)+" €");
+  setKPI("kpi-thes-sub",  thesBoites+" boîtes · "+allThes.reduce(function(s,t){return s+(t.sachets||0);},0)+" sachets");
+  var thesBar = document.getElementById("kpi-thes-bar");
+  if(thesBar) thesBar.style.width = (thesCA>0?(thesBenef/thesCA*100):0)+"%";
+  var thesAl = document.getElementById("kpi-thes-alert");
+  if(thesAl) thesAl.style.display = thesAlerts>0?"inline":"none";
+
+  // Sirops
+  var siropsCout  = SIROPS.reduce(function(s,t){return s+(t.prix*t.qte);},0);
+  var siropsCA    = SIROPS.reduce(function(s,t){return s+(t.qte*t.prix*2.5);},0); // ~2.5x margin
+  var siropsBenef = siropsCA - siropsCout;
+  var siropsAlerts = SIROPS.filter(function(s){return s.qte<=s.seuil;}).length;
+  setKPI("kpi-sirops-cout", siropsCout.toFixed(0)+" €");
+  setKPI("kpi-sirops-ca",   siropsCA.toFixed(0)+" €");
+  setKPI("kpi-sirops-benef",siropsBenef.toFixed(0)+" €");
+  setKPI("kpi-sirops-sub",  SIROPS.reduce(function(s,t){return s+t.qte;},0)+" bouteilles · 14 parfums");
+  var sirBar = document.getElementById("kpi-sirops-bar");
+  if(sirBar) sirBar.style.width = (siropsCA>0?(siropsBenef/siropsCA*100):0)+"%";
+  var sirAl = document.getElementById("kpi-sirops-alert");
+  if(sirAl) sirAl.style.display = siropsAlerts>0?"inline":"none";
+
+  // Eaux plates + gazeuses
+  var eauxCout  = EAUX_PLATES.reduce(function(s,p){return s+(p.prixPack*p.qte);},0)
+                + EAUX_GAZ.reduce(function(s,p){return s+(p.prixPack*p.qte);},0);
+  var eauxCA    = EAUX_PLATES.reduce(function(s,p){return s+(p.qte*p.unites*p.prixVente);},0)
+                + EAUX_GAZ.reduce(function(s,p){return s+(p.qte*p.unites*p.prixVente);},0);
+  var eauxBenef = eauxCA - eauxCout;
+  var eauxUnites = EAUX_PLATES.reduce(function(s,p){return s+(p.qte*p.unites);},0)
+                 + EAUX_GAZ.reduce(function(s,p){return s+(p.qte*p.unites);},0);
+  var eauxAlerts = EAUX_PLATES.filter(function(p){return p.qte<=p.seuil;}).length
+                 + EAUX_GAZ.filter(function(p){return p.qte<=p.seuil;}).length;
+  setKPI("kpi-eaux-cout", eauxCout.toFixed(0)+" €");
+  setKPI("kpi-eaux-ca",   eauxCA.toFixed(0)+" €");
+  setKPI("kpi-eaux-benef",eauxBenef.toFixed(0)+" €");
+  setKPI("kpi-eaux-sub",  eauxUnites+" unités (plates + gazeuses)");
+  var eauxBar = document.getElementById("kpi-eaux-bar");
+  if(eauxBar) eauxBar.style.width = (eauxCA>0?(eauxBenef/eauxCA*100):0)+"%";
+  var eauxAl = document.getElementById("kpi-eaux-alert");
+  if(eauxAl) eauxAl.style.display = eauxAlerts>0?"inline":"none";
+
+  // Canettes
+  var canCout  = CANETTES.reduce(function(s,p){return s+(p.prixPack*p.qte);},0);
+  var canCA    = CANETTES.reduce(function(s,p){return s+(p.qte*p.unites*p.prixVente);},0);
+  var canBenef = canCA - canCout;
+  var canUnites = CANETTES.reduce(function(s,p){return s+(p.qte*p.unites);},0);
+  var canAlerts = CANETTES.filter(function(p){return p.qte<=p.seuil;}).length;
+  setKPI("kpi-can-cout", canCout.toFixed(0)+" €");
+  setKPI("kpi-can-ca",   canCA.toFixed(0)+" €");
+  setKPI("kpi-can-benef",canBenef.toFixed(0)+" €");
+  setKPI("kpi-can-sub",  canUnites+" canettes · 4 parfums");
+  var canBar = document.getElementById("kpi-can-bar");
+  if(canBar) canBar.style.width = (canCA>0?(canBenef/canCA*100):0)+"%";
+  var canAl = document.getElementById("kpi-can-alert");
+  if(canAl) canAl.style.display = canAlerts>0?"inline":"none";
+
+  // Cafés
+  var cafeCA = CAFES_DATA.reduce(function(s,cafe){
+    return s + (CAFE_STOCK_KG*1000/cafe.dosage)*cafe.prixCarte;
+  },0) / CAFES_DATA.length;
+  var margeMoy = CAFES_DATA.reduce(function(s,c){
+    var cout1g=PRIX_CAFE_KG/1000;
+    var cm=(c.dosage*cout1g)+(c.avecLait?COUT_LAIT:0);
+    return s+((c.prixCarte-cm)/c.prixCarte*100);
+  },0)/CAFES_DATA.length;
+  setKPI("kpi-cafe-cout", PRIX_CAFE_KG.toFixed(0)+" €/kg");
+  setKPI("kpi-cafe-ca",   cafeCA.toFixed(0)+" €");
+  setKPI("kpi-cafe-marge",margeMoy.toFixed(0)+"%");
+  setKPI("kpi-cafe-sub", Math.round(1000/7)+" tasses/kg · stock: "+CAFE_STOCK_KG+"kg");
+
+  // Totaux globaux
+  var totalCout  = thesCout + siropsCout + eauxCout + canCout + PRIX_CAFE_KG*CAFE_STOCK_KG;
+  var totalCA    = thesCA + siropsCA + eauxCA + canCA + cafeCA;
+  var totalBenef = totalCA - totalCout;
+  var totalAlerts= thesAlerts + siropsAlerts + eauxAlerts + canAlerts;
+  setKPI("ach-total-cout",  totalCout.toFixed(0)+" €");
+  setKPI("ach-total-ca",    totalCA.toFixed(0)+" €");
+  setKPI("ach-total-benef", totalBenef.toFixed(0)+" €");
+  setKPI("ach-total-alerts", totalAlerts>0 ? "⚠ "+totalAlerts+" produit(s) en alerte" : "✓ Aucune alerte stock");
+  var el = document.getElementById("ach-total-alerts");
+  if(el) el.style.color = totalAlerts>0?"var(--warn)":"var(--ok)";
+}
+
+function setKPI(id, val){
+  var el = document.getElementById(id);
+  if(el) el.textContent = val;
+}
+
+// ══ GRAPHIQUES ══
+
+function drawColoredBarChart(canvasId, labels, values, colors){
+  var canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  var parent = canvas.parentElement;
+  canvas.width = parent ? Math.max(300, parent.offsetWidth - 20) : 500;
+  var ctx = getCtx(canvasId); if(!ctx) return;
+  var W=canvas.width, H=canvas.height;
+  var pad={t:36,r:20,b:44,l:52};
+  var cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+
+  var max = Math.max.apply(null, values.concat([1]));
+
+  // Background subtle grid
+  for(var i=0;i<=5;i++){
+    var y=pad.t+cH-(cH/5)*i;
+    ctx.strokeStyle = i===0 ? "rgba(196,160,78,.15)" : "rgba(196,160,78,.05)";
+    ctx.lineWidth=1;
+    ctx.setLineDash(i===0?[]:i===5?[]:[2,4]);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Y axis labels
+  ctx.fillStyle="rgba(122,122,104,.6)";ctx.font="9px Jost,sans-serif";ctx.textAlign="right";
+  for(var i=0;i<=5;i++){
+    var y=pad.t+cH-(cH/5)*i;
+    var v=max/5*i;
+    var lbl=v>=10000?(v/1000).toFixed(0)+"k":v>=1000?(v/1000).toFixed(1)+"k":v>=100?Math.round(v):Math.round(v*10)/10;
+    ctx.fillText(lbl+"€",pad.l-6,y+3);
+  }
+
+  // Bars
+  var bw = Math.min(52, Math.max(16, (cW/labels.length)*0.62));
+  var gap = (cW - bw*labels.length)/(labels.length+1);
+
+  labels.forEach(function(l,i){
+    var x = pad.l + gap*(i+1) + bw*i;
+    var v = values[i]||0;
+    var bh = Math.max(2,(v/max)*cH);
+    var y = pad.t+cH-bh;
+    var col = colors[i%colors.length];
+    var rgb = hexToRgb(col);
+
+    // Shadow
+    ctx.shadowColor = "rgba("+rgb+",0.3)";
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetY = 2;
+
+    // Bar gradient
+    var grad = ctx.createLinearGradient(0,y,0,pad.t+cH);
+    grad.addColorStop(0,col);
+    grad.addColorStop(0.6,col+"bb");
+    grad.addColorStop(1,"rgba("+rgb+",0.08)");
+    ctx.fillStyle=grad;
+    ctx.beginPath();
+    var r=3;
+    ctx.moveTo(x+r,y);ctx.lineTo(x+bw-r,y);
+    ctx.quadraticCurveTo(x+bw,y,x+bw,y+r);
+    ctx.lineTo(x+bw,pad.t+cH);ctx.lineTo(x,pad.t+cH);
+    ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+    ctx.closePath();ctx.fill();
+
+    ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+
+    // Top highlight
+    var hl=ctx.createLinearGradient(x,0,x+bw,0);
+    hl.addColorStop(0,"rgba(255,255,255,0)");
+    hl.addColorStop(0.5,"rgba(255,255,255,0.12)");
+    hl.addColorStop(1,"rgba(255,255,255,0)");
+    ctx.fillStyle=hl;
+    ctx.fillRect(x,y,bw,Math.min(bh,20));
+
+    // Value above bar
+    if(v>0){
+      ctx.shadowColor="rgba(0,0,0,0.6)";ctx.shadowBlur=4;
+      ctx.fillStyle=col;ctx.font="bold 9px Jost,sans-serif";ctx.textAlign="center";
+      var lbl2=v>=1000?(v/1000).toFixed(1)+"k":Math.round(v*10)/10;
+      ctx.fillText(lbl2+"€",x+bw/2,y-8);
+      ctx.shadowBlur=0;
+    }
+
+    // Label below (rotated if needed)
+    ctx.fillStyle="rgba(184,180,164,.7)";ctx.font="8px Jost,sans-serif";ctx.textAlign="center";
+    if(labels.length > 5){
+      ctx.save();
+      ctx.translate(x+bw/2,pad.t+cH+10);
+      ctx.rotate(-Math.PI/6);
+      ctx.fillText(l.substring(0,16),0,0);
+      ctx.restore();
+    } else {
+      ctx.fillText(l.substring(0,16),x+bw/2,pad.t+cH+20);
+    }
+  });
+
+  // Legend if needed
+  if(new Set(colors).size > 1 && colors.length === labels.length){
+    // Already colored individually, no legend needed
+  }
+}
+
+function hexToRgb(hex){
+  var r=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return r ? parseInt(r[1],16)+','+parseInt(r[2],16)+','+parseInt(r[3],16) : '196,160,78';
+}
+
+function drawGlobalCharts(){
+  var allThes = THES_PREMIUM.concat(THES_STANDARD);
+  var cats    = ["Thés","Sirops","Eaux plates","Eaux gazeuses","Canettes","Cafés","Boissons sp.","Access."];
+  var couts   = [
+    allThes.reduce(function(s,t){return s+(t.prix*t.qte);},0),
+    SIROPS.reduce(function(s,t){return s+(t.prix*t.qte);},0),
+    EAUX_PLATES.reduce(function(s,p){return s+(p.prixPack*p.qte);},0),
+    EAUX_GAZ.reduce(function(s,p){return s+(p.prixPack*p.qte);},0),
+    CANETTES.reduce(function(s,p){return s+(p.prixPack*p.qte);},0),
+    PRIX_CAFE_KG*CAFE_STOCK_KG,
+    BSPEC.reduce(function(s,p){return s+(p.prix*p.qte);},0),
+    ACCESSOIRES.reduce(function(s,p){return s+(p.prix*p.qte);},0)
+  ];
+  var cas = [
+    allThes.reduce(function(s,t){return s+(t.sachets||0)*PRIX_VENTE;},0),
+    SIROPS.reduce(function(s,t){return s+(t.qte*t.prix*2.5);},0),
+    EAUX_PLATES.reduce(function(s,p){return s+(p.qte*p.unites*p.prixVente);},0),
+    EAUX_GAZ.reduce(function(s,p){return s+(p.qte*p.unites*p.prixVente);},0),
+    CANETTES.reduce(function(s,p){return s+(p.qte*p.unites*p.prixVente);},0),
+    CAFES_DATA.reduce(function(s,c){return s+(CAFE_STOCK_KG*1000/c.dosage)*c.prixCarte;},0)/CAFES_DATA.length,
+    BSPEC.reduce(function(s,p){return s+(p.qte*p.prixVente);},0),
+    ACCESSOIRES.reduce(function(s,p){return s+(p.unites>1?p.qte*p.unites*p.prixVente:0);},0)
+  ];
+  // Draw cost chart with category colors
+  drawColoredBarChart("chart-cout-global", cats, couts, ["#5b9bd5","#4caf50","#9c7fd5","#48b4a0","#e05050","#c4a04e"]);
+  drawColoredBarChart("chart-ca-global",   cats, cas,   ["#5b9bd5","#4caf50","#9c7fd5","#48b4a0","#e05050","#c4a04e"]);
+}
+
+function drawThesChart(){
+  var allThes = THES_PREMIUM.concat(THES_STANDARD);
+  var labels  = allThes.map(function(t){return t.nom.substring(0,16);});
+  var couts   = allThes.map(function(t){return t.prix*t.qte;});
+  var cas     = allThes.map(function(t){return (t.sachets||0)*PRIX_VENTE;});
+  var max = Math.max.apply(null,cas.concat(couts),1);
+  var canvas = document.getElementById("chart-thes");
+  if(!canvas)return;
+  canvas.width=canvas.parentElement.offsetWidth||600;
+  var ctx=getCtx("chart-thes"); if(!ctx)return;
+  var W=canvas.width,H=canvas.height,pad={t:20,r:10,b:50,l:44};
+  var cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  drawGrid(ctx,W,H,4);
+  var groupW=cW/labels.length, bw=groupW*0.3;
+  labels.forEach(function(l,i){
+    var cx=pad.l+groupW*i+groupW/2;
+    var bh1=Math.max(2,(couts[i]/max)*cH);
+    var y1=pad.t+cH-bh1;
+    var g1=ctx.createLinearGradient(0,y1,0,y1+bh1);
+    g1.addColorStop(0,"#5b9bd5");g1.addColorStop(1,"rgba(91,155,213,.1)");
+    ctx.fillStyle=g1;ctx.fillRect(cx-bw-2,y1,bw,bh1);
+    var bh2=Math.max(2,(cas[i]/max)*cH);
+    var y2=pad.t+cH-bh2;
+    var g2=ctx.createLinearGradient(0,y2,0,y2+bh2);
+    g2.addColorStop(0,"#4caf50");g2.addColorStop(1,"rgba(76,175,80,.1)");
+    ctx.fillStyle=g2;ctx.fillRect(cx+2,y2,bw,bh2);
+    ctx.fillStyle="rgba(122,122,104,.6)";ctx.font="7px Jost,sans-serif";ctx.textAlign="center";
+    ctx.save();ctx.translate(cx,pad.t+cH+8);ctx.rotate(-Math.PI/5);
+    ctx.fillText(l,0,0);ctx.restore();
+  });
+  ctx.fillStyle="#5b9bd5";ctx.fillRect(pad.l,4,8,6);
+  ctx.fillStyle="rgba(184,180,164,.6)";ctx.font="8px Jost,sans-serif";ctx.textAlign="left";
+  ctx.fillText("Coût",pad.l+12,10);
+  ctx.fillStyle="#4caf50";ctx.fillRect(pad.l+60,4,8,6);
+  ctx.fillText("CA potentiel",pad.l+72,10);
+}
+
+function drawSiropsChart(){
+  var labels = SIROPS.map(function(s){return s.nom.substring(0,12);});
+  var vals   = SIROPS.map(function(s){return s.qte*s.prix*2.5;});
+  drawBarChart("chart-sirops",labels,vals,"#4caf50",{});
+}
+
+function drawEauxChart(){
+  var all    = EAUX_PLATES.concat(EAUX_GAZ);
+  var labels = all.map(function(p){return p.nom.substring(0,14)+" "+p.format;});
+  var couts  = all.map(function(p){return p.prixPack*p.qte;});
+  var cas    = all.map(function(p){return p.qte*p.unites*p.prixVente;});
+  var canvas = document.getElementById("chart-eaux");
+  if(!canvas)return;
+  canvas.width=canvas.parentElement.offsetWidth||600;
+  var ctx=getCtx("chart-eaux"); if(!ctx)return;
+  var W=canvas.width,H=canvas.height,pad={t:20,r:10,b:50,l:44};
+  var cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  var max=Math.max.apply(null,cas.concat(couts).concat([1]));
+  ctx.clearRect(0,0,W,H);
+  drawGrid(ctx,W,H,4);
+  var groupW=cW/labels.length,bw=groupW*0.3;
+  labels.forEach(function(l,i){
+    var cx=pad.l+groupW*i+groupW/2;
+    var bh1=Math.max(2,(couts[i]/max)*cH);
+    ctx.fillStyle="#9c7fd5";ctx.fillRect(cx-bw-2,pad.t+cH-bh1,bw,bh1);
+    var bh2=Math.max(2,(cas[i]/max)*cH);
+    ctx.fillStyle="#48b4a0";ctx.fillRect(cx+2,pad.t+cH-bh2,bw,bh2);
+    ctx.fillStyle="rgba(122,122,104,.6)";ctx.font="7px Jost,sans-serif";ctx.textAlign="center";
+    ctx.save();ctx.translate(cx,pad.t+cH+8);ctx.rotate(-Math.PI/5);
+    ctx.fillText(l.substring(0,18),0,0);ctx.restore();
+  });
+}
+
+function drawCanettesChart(){
+  var labels = CANETTES.map(function(c){return c.nom.substring(0,18);});
+  var marges = CANETTES.map(function(p){
+    var ca=p.qte*p.unites*p.prixVente;
+    var cout=p.prixPack*p.qte;
+    return ca>0?((ca-cout)/ca*100):0;
+  });
+  drawBarChart("chart-canettes",labels,marges,"#e05050",{});
+}
+
+function drawCafesChart(){
+  var labels  = CAFES_DATA.map(function(c){return c.nom;});
+  var marges  = CAFES_DATA.map(function(cafe){
+    var cm=(cafe.dosage*(PRIX_CAFE_KG/1000))+(cafe.avecLait?COUT_LAIT:0);
+    return cafe.prixCarte>0?((cafe.prixCarte-cm)/cafe.prixCarte*100):0;
+  });
+  drawBarChart("chart-cafes",labels,marges,"#c4a04e",{});
+}
+
+// ══ EAUX & BOISSONS ══
+var EAUX_PLATES = [
+  {id:"ep1", nom:"Cristaline Eau Source", format:"12x0.33L", prixPack:2.92, qte:4, unites:12, prixVente:2.00, seuil:2},
+  {id:"ep2", nom:"Cristaline Eau Source Plate", format:"6x1.5L", prixPack:1.14, qte:4, unites:6, prixVente:2.00, seuil:2},
+  {id:"ep3", nom:"Cristaline Eau Source Plate", format:"6x1L", prixPack:1.08, qte:4, unites:6, prixVente:2.00, seuil:2}
+];
+var EAUX_GAZ = [
+  {id:"eg1", nom:"Perrier Gazeuse", format:"6x50cl", prixPack:3.60, qte:4, unites:6, prixVente:3.00, seuil:2},
+  {id:"eg2", nom:"San Pellegrino Gazeuse", format:"6x33cl", prixPack:3.60, qte:4, unites:6, prixVente:3.00, seuil:2},
+  {id:"eg3", nom:"Badoit 50cl", format:"50cl unit.", prixPack:3.00, qte:6, unites:1, prixVente:3.00, seuil:3}
+];
+var CANETTES = [
+  {id:"ca1", nom:"San Pellegrino Aranciata Rossa", format:"6x33cl", prixPack:4.50, qte:3, unites:6, prixVente:3.00, seuil:1},
+  {id:"ca2", nom:"San Pellegrino Melograno Arancia", format:"6x33cl", prixPack:4.56, qte:3, unites:6, prixVente:3.00, seuil:1},
+  {id:"ca3", nom:"San Pellegrino Limonata", format:"6x33cl", prixPack:4.40, qte:3, unites:6, prixVente:3.00, seuil:1},
+  {id:"ca4", nom:"San Pellegrino Grenade Cassis Momenti", format:"6x33cl", prixPack:4.55, qte:3, unites:6, prixVente:3.00, seuil:1}
+];
+var CAFES_DATA = [
+  {nom:"Espresso",           prixCarte:2.50, dosage:7,  avecLait:false},
+  {nom:"Double Espresso",    prixCarte:3.50, dosage:14, avecLait:false},
+  {nom:"Americano / Lungo",  prixCarte:3.00, dosage:10, avecLait:false},
+  {nom:"Noisette",           prixCarte:3.00, dosage:7,  avecLait:true},
+  {nom:"Cappuccino",         prixCarte:4.00, dosage:7,  avecLait:true},
+  {nom:"Latte Macchiato",    prixCarte:4.50, dosage:7,  avecLait:true},
+  {nom:"Café Viennois",      prixCarte:4.50, dosage:7,  avecLait:false}
+];
+var PRIX_CAFE_KG = 35.00;
+var CAFE_STOCK_KG = 1.0;
+var COUT_LAIT = 0.10;
+
+function renderBoissons(){
+  renderEauPlate();
+  renderEauGaz();
+  renderCanettes();
+  renderCafes();
+}
+
+function makeBoissonsTable(data, tbodyId, totCoutId, totCaId, totBenefId){
+  var tb = document.getElementById(tbodyId);
+  if(!tb) return;
+  var totCout=0, totCA=0;
+  var rows = "";
+  data.forEach(function(p, i){
+    var unitesTotal = p.qte * p.unites;
+    var cout = p.prixPack * p.qte;
+    var ca   = unitesTotal * p.prixVente;
+    var benef = ca - cout;
+    var marge = ca > 0 ? (benef/ca*100) : 0;
+    totCout += cout; totCA += ca;
+    var st = p.qte<=0 ? "<span class='badge cancelled'><span class='badge-dot'></span>Rupture</span>"
+           : p.qte<=p.seuil ? "<span class='badge pending'><span class='badge-dot'></span>Bas</span>"
+           : "<span class='badge confirmed'><span class='badge-dot'></span>OK</span>";
+    var bc = benef >= 0 ? "var(--ok)" : "var(--err)";
+    rows += "<tr>";
+    rows += "<td class='name'>"+p.nom+"</td>";
+    rows += "<td style='color:var(--muted);font-size:10px'>"+p.format+"</td>";
+    rows += "<td style='color:var(--muted)'>"+p.prixPack.toFixed(2)+" €</td>";
+    rows += "<td style='text-align:center'><div style='display:flex;align-items:center;gap:5px;justify-content:center'>";
+    rows += "<button class='sib' data-arr='"+tbodyId+"' data-idx='"+i+"' data-d='-1' onclick='adjBoissonBtn(this)'>−</button>";
+    rows += "<span style='font-family:var(--serif);font-size:16px;min-width:20px;text-align:center'>"+p.qte+"</span>";
+    rows += "<button class='sib' data-arr='"+tbodyId+"' data-idx='"+i+"' data-d='1' onclick='adjBoissonBtn(this)'>+</button>";
+    rows += "</div></td>";
+    rows += "<td style='text-align:center;color:var(--info)'>"+unitesTotal+"</td>";
+    rows += "<td style='text-align:center'><div style='display:flex;align-items:center;gap:4px;justify-content:center'>";
+    rows += "<button class='sib' data-arr='"+tbodyId+"' data-idx='"+i+"' data-d='-0.5' data-type='vente' onclick='adjPrixVenteBoisson(this)'>−</button>";
+    rows += "<span style='font-size:11px;color:var(--gold);min-width:38px;text-align:center'>"+p.prixVente.toFixed(2)+"€</span>";
+    rows += "<button class='sib' data-arr='"+tbodyId+"' data-idx='"+i+"' data-d='0.5' data-type='vente' onclick='adjPrixVenteBoisson(this)'>+</button>";
+    rows += "</div></td>";
+    rows += "<td style='color:var(--muted)'>"+cout.toFixed(2)+" €</td>";
+    rows += "<td style='color:var(--gold);font-family:var(--serif);font-size:14px'>"+ca.toFixed(2)+" €</td>";
+    rows += "<td style='color:"+bc+";font-family:var(--serif);font-size:14px'>"+benef.toFixed(2)+" € <small style='font-size:9px'>("+marge.toFixed(0)+"%)</small></td>";
+    rows += "<td>"+st+"</td>";
+    rows += "<td><button class='atb err' data-arr='"+tbodyId+"' data-idx='"+i+"' onclick='delBoissonBtn(this)'>✕</button></td>";
+    rows += "</tr>";
+  });
+  tb.innerHTML = rows;
+  var totBenef = totCA - totCout;
+  if(document.getElementById(totCoutId)) document.getElementById(totCoutId).textContent = totCout.toFixed(2)+" €";
+  if(document.getElementById(totCaId))   document.getElementById(totCaId).textContent   = totCA.toFixed(2)+" €";
+  if(document.getElementById(totBenefId)) document.getElementById(totBenefId).textContent = totBenef.toFixed(2)+" €";
+}
+
+function renderEauPlate(){ makeBoissonsTable(EAUX_PLATES,"eau-plate-tb","eau-plate-total-cout","eau-plate-total-ca","eau-plate-total-benef"); }
+function renderEauGaz()  { makeBoissonsTable(EAUX_GAZ,"eau-gaz-tb","eau-gaz-total-cout","eau-gaz-total-ca","eau-gaz-total-benef"); }
+function renderCanettes(){ makeBoissonsTable(CANETTES,"canette-tb","can-total-cout","can-total-ca","can-total-benef"); }
+
+function adjBoissonBtn(btn){
+  var arr = getBoissonArr(btn.dataset.arr);
+  var idx = parseInt(btn.dataset.idx);
+  var d   = parseFloat(btn.dataset.d);
+  if(!arr) return;
+  arr[idx].qte = Math.max(0, arr[idx].qte + d);
+  refreshBoisson(btn.dataset.arr);
+}
+function adjPrixVenteBoisson(btn){
+  var arr = getBoissonArr(btn.dataset.arr);
+  var idx = parseInt(btn.dataset.idx);
+  var d   = parseFloat(btn.dataset.d);
+  if(!arr) return;
+  arr[idx].prixVente = Math.max(0.5, Math.round((arr[idx].prixVente + d)*10)/10);
+  refreshBoisson(btn.dataset.arr);
+}
+function delBoissonBtn(btn){
+  var arr = getBoissonArr(btn.dataset.arr);
+  if(!arr) return;
+  if(!confirm("Supprimer ce produit ?")) return;
+  arr.splice(parseInt(btn.dataset.idx),1);
+  refreshBoisson(btn.dataset.arr);
+  toast("OK","Produit supprimé");
+}
+function getBoissonArr(id){
+  if(id==="eau-plate-tb") return EAUX_PLATES;
+  if(id==="eau-gaz-tb")   return EAUX_GAZ;
+  if(id==="canette-tb")   return CANETTES;
+  return null;
+}
+function refreshBoisson(id){
+  if(id==="eau-plate-tb") renderEauPlate();
+  if(id==="eau-gaz-tb")   renderEauGaz();
+  if(id==="canette-tb")   renderCanettes();
+  renderRecap();
+}
+
+// ══ CAFÉS ══
+function adjPrixCafe(d){
+  PRIX_CAFE_KG = Math.max(10, PRIX_CAFE_KG + d);
+  var el = document.getElementById("cafe-prix-kg");
+  if(el) el.textContent = PRIX_CAFE_KG.toFixed(2)+" €/kg";
+  renderCafes();
+}
+function adjCafeStock(d){
+  CAFE_STOCK_KG = Math.max(0, Math.round((CAFE_STOCK_KG + d)*10)/10);
+  var el = document.getElementById("cafe-stock-display");
+  if(el) el.textContent = CAFE_STOCK_KG.toFixed(1)+" kg";
+  renderCafes();
+}
+
+function renderCafes(){
+  var tb = document.getElementById("cafe-tb");
+  if(!tb) return;
+  var cout1g = PRIX_CAFE_KG / 1000;
+  var tassesParKg = Math.floor(1000/7);
+  var caParKg = 0;
+  var rows = "";
+  CAFES_DATA.forEach(function(cafe){
+    var coutMatiere = (cafe.dosage * cout1g) + (cafe.avecLait ? COUT_LAIT : 0);
+    var marge = cafe.prixCarte - coutMatiere;
+    var margePct = cafe.prixCarte > 0 ? (marge/cafe.prixCarte*100) : 0;
+    var tasses = Math.floor(CAFE_STOCK_KG * 1000 / cafe.dosage);
+    var caTotal = tasses * cafe.prixCarte;
+    caParKg += (1000/cafe.dosage) * cafe.prixCarte / CAFES_DATA.length;
+    var mc = marge >= 0 ? "var(--ok)" : "var(--err)";
+    rows += "<tr>";
+    rows += "<td class='name'>"+cafe.nom+"</td>";
+    rows += "<td style='color:var(--gold);font-family:var(--serif);font-size:15px'>"+cafe.prixCarte.toFixed(2)+" €</td>";
+    rows += "<td style='color:var(--muted);font-size:10px'>"+cafe.dosage+"g"+(cafe.avecLait?" + lait":"")+"</td>";
+    rows += "<td style='color:var(--muted)'>"+coutMatiere.toFixed(3)+" €</td>";
+    rows += "<td style='color:"+mc+";font-family:var(--serif);font-size:15px'>"+marge.toFixed(2)+" €</td>";
+    rows += "<td style='color:"+mc+"'><b>"+margePct.toFixed(1)+"%</b></td>";
+    rows += "<td style='text-align:center;color:var(--cream)'>"+CAFE_STOCK_KG.toFixed(1)+"</td>";
+    rows += "<td style='text-align:center;font-family:var(--serif);font-size:16px;color:var(--info)'>"+tasses+"</td>";
+    rows += "<td style='color:var(--gold);font-family:var(--serif);font-size:15px'>"+caTotal.toFixed(2)+" €</td>";
+    rows += "</tr>";
+  });
+  tb.innerHTML = rows;
+  var elTk = document.getElementById("cafe-tasses-kg");
+  var elCa = document.getElementById("cafe-ca-kg");
+  if(elTk) elTk.textContent = tassesParKg+" tasses/kg (espresso 7g)";
+  if(elCa) elCa.textContent = caParKg.toFixed(2)+" € / kg en moyenne";
+}
+
+
+// ══ BOISSONS SPÉCIALES ══
+var BSPEC = [
+  {id:"bs1",nom:"Eau de Coco Bio Carrefour",format:"1L",prix:3.49,qte:6,prixVente:4.50,seuil:2,cat:"boisson"},
+  {id:"bs2",nom:"Lait d'Amande Bjorg Bio",format:"1L",prix:1.79,qte:6,prixVente:3.00,seuil:2,cat:"boisson"}
+];
+
+// ══ ACCESSOIRES & SNACKS ══
+var ACCESSOIRES = [
+  {id:"ac1",nom:"Chocolat Lindt Excellence Noir 70%",format:"200 pcs",prix:34.99,qte:1,unites:200,prixVente:0.80,seuil:1,cat:"snack"},
+  {id:"ac2",nom:"Biscoff Lotus Spéculoos",format:"1200 biscuits",prix:85.47,qte:1,unites:1200,prixVente:0.20,seuil:1,cat:"snack"},
+  {id:"ac3",nom:"Pompe Monin 10ml",format:"1L sirop",prix:2.99,qte:14,unites:1,prixVente:0,seuil:2,cat:"accessoire"},
+  {id:"ac4",nom:"Chocolat Monbana Pépite Spéculoos",format:"200 pcs",prix:24.99,qte:1,unites:200,prixVente:0.60,seuil:1,cat:"snack"}
+];
+var accFilter = "all";
+
+function renderBSpec(){
+  var tb=document.getElementById("bspec-tb"); if(!tb) return;
+  var totCout=0,totCA=0;
+  var rows="";
+  BSPEC.forEach(function(p,i){
+    var cout=p.prix*p.qte, ca=p.qte*p.prixVente, benef=ca-cout;
+    totCout+=cout; totCA+=ca;
+    var st=p.qte<=0?"<span class='badge cancelled'><span class='badge-dot'></span>Rupture</span>"
+           :p.qte<=p.seuil?"<span class='badge pending'><span class='badge-dot'></span>Bas</span>"
+           :"<span class='badge confirmed'><span class='badge-dot'></span>OK</span>";
+    var bc=benef>=0?"var(--ok)":"var(--err)";
+    rows+="<tr>";
+    rows+="<td class='name'>"+p.nom+"</td>";
+    rows+="<td style='color:var(--muted);font-size:10px'>"+p.format+"</td>";
+    rows+="<td style='color:var(--muted)'>"+p.prix.toFixed(2)+" €</td>";
+    rows+="<td style='text-align:center'><div style='display:flex;align-items:center;gap:5px;justify-content:center'>";
+    rows+="<button class='sib' data-idx='"+i+"' data-d='-1' onclick='adjBSpecBtn(this)'>−</button>";
+    rows+="<span style='font-family:var(--serif);font-size:16px;min-width:20px;text-align:center'>"+p.qte+"</span>";
+    rows+="<button class='sib' data-idx='"+i+"' data-d='1' onclick='adjBSpecBtn(this)'>+</button>";
+    rows+="</div></td>";
+    rows+="<td style='text-align:center'><div style='display:flex;align-items:center;gap:4px;justify-content:center'>";
+    rows+="<button class='sib' data-idx='"+i+"' data-d='-0.5' onclick='adjBSpecVenteBtn(this)'>−</button>";
+    rows+="<span style='font-size:11px;color:var(--gold);min-width:38px;text-align:center'>"+p.prixVente.toFixed(2)+"€</span>";
+    rows+="<button class='sib' data-idx='"+i+"' data-d='0.5' onclick='adjBSpecVenteBtn(this)'>+</button>";
+    rows+="</div></td>";
+    rows+="<td style='color:var(--muted)'>"+cout.toFixed(2)+" €</td>";
+    rows+="<td style='color:var(--gold);font-family:var(--serif);font-size:14px'>"+ca.toFixed(2)+" €</td>";
+    rows+="<td style='color:"+bc+";font-family:var(--serif);font-size:14px'>"+benef.toFixed(2)+" €</td>";
+    rows+="<td>"+st+"</td>";
+    rows+="<td><button class='atb err' data-idx='"+i+"' onclick='delBSpecBtn(this)'>✕</button></td>";
+    rows+="</tr>";
+  });
+  tb.innerHTML=rows;
+  var totBenef=totCA-totCout;
+  setKPI("bspec-cout",totCout.toFixed(2)+" €");
+  setKPI("bspec-ca",totCA.toFixed(2)+" €");
+  setKPI("bspec-benef",totBenef.toFixed(2)+" €");
+  setKPI("kpi-bspec-cout",totCout.toFixed(0)+" €");
+  setKPI("kpi-bspec-ca",totCA.toFixed(0)+" €");
+  setKPI("kpi-bspec-benef",totBenef.toFixed(0)+" €");
+}
+function adjBSpecBtn(btn){ BSPEC[parseInt(btn.dataset.idx)].qte=Math.max(0,BSPEC[parseInt(btn.dataset.idx)].qte+parseInt(btn.dataset.d)); renderBSpec(); }
+function adjBSpecVenteBtn(btn){ BSPEC[parseInt(btn.dataset.idx)].prixVente=Math.max(0,Math.round((BSPEC[parseInt(btn.dataset.idx)].prixVente+parseFloat(btn.dataset.d))*100)/100); renderBSpec(); }
+function delBSpecBtn(btn){ if(confirm("Supprimer ?")){BSPEC.splice(parseInt(btn.dataset.idx),1);renderBSpec();toast("OK","Supprimé");} }
+
+function openAddBoissonSpec(){
+  document.getElementById("drw-t").textContent="Ajouter une boisson spéciale";
+  document.getElementById("drw-s").textContent="Eau de coco, lait végétal, kombucha...";
+  document.getElementById("drw-b").innerHTML=
+    "<div class='df'><label>Nom *</label><input id='abs-nom' placeholder='Ex: Eau de coco Bio' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>"+
+    "<div class='df'><label>Format</label><input id='abs-fmt' placeholder='1L, 33cl...' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>"+
+    "<div class='df-row'>"+
+    "<div class='df'><label>Prix achat (€)</label><input id='abs-prix' type='number' step='0.01' placeholder='3.49' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>"+
+    "<div class='df'><label>Quantité</label><input id='abs-qte' type='number' value='6' min='0' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>"+
+    "</div>"+
+    "<div class='df'><label>Prix de vente (€)</label><input id='abs-vente' type='number' step='0.50' value='3.00' min='0' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>";
+  document.getElementById("drw-f").innerHTML=
+    "<button class='btn-s fill' onclick='doAddBSpec()'>Ajouter</button>"+
+    "<button class='btn-s' onclick='closeDrw()'>Annuler</button>";
+  openDrw();
+}
+function doAddBSpec(){
+  var nom=document.getElementById("abs-nom").value.trim();
+  var fmt=document.getElementById("abs-fmt").value.trim();
+  var prix=parseFloat(document.getElementById("abs-prix").value)||0;
+  var qte=parseInt(document.getElementById("abs-qte").value)||0;
+  var vente=parseFloat(document.getElementById("abs-vente").value)||0;
+  if(!nom){toast("⚠","Nom obligatoire","warn");return;}
+  BSPEC.push({id:"bs"+Date.now(),nom:nom,format:fmt||"–",prix:prix,qte:qte,prixVente:vente,seuil:2,cat:"boisson"});
+  closeDrw();renderBSpec();toast("OK","Boisson ajoutée");
+}
+
+function renderAccessoires(){
+  var tb=document.getElementById("acc-tb"); if(!tb) return;
+  var filtered=accFilter==="all"?ACCESSOIRES:ACCESSOIRES.filter(function(a){return a.cat===accFilter;});
+  var totCout=0,totCA=0;
+  var rows="";
+  filtered.forEach(function(p,i){
+    var cout=p.prix*p.qte;
+    var ca=p.unites>1?(p.qte*p.unites*p.prixVente):0;
+    var benef=ca-cout;
+    totCout+=cout; totCA+=ca;
+    var catLabel=p.cat==="snack"?"🍫 Snack":p.cat==="accessoire"?"🛠 Accessoire":"📦 Consommable";
+    var catColor=p.cat==="snack"?"var(--gold)":p.cat==="accessoire"?"var(--info)":"var(--muted)";
+    var st=p.qte<=0?"<span class='badge cancelled'><span class='badge-dot'></span>Rupture</span>"
+           :p.qte<=p.seuil?"<span class='badge pending'><span class='badge-dot'></span>Bas</span>"
+           :"<span class='badge confirmed'><span class='badge-dot'></span>OK</span>";
+    var bc=benef>=0?"var(--ok)":"var(--err)";
+    var realIdx=ACCESSOIRES.indexOf(p);
+    rows+="<tr>";
+    rows+="<td class='name'>"+p.nom+"</td>";
+    rows+="<td><span style='font-size:8px;padding:2px 8px;border:1px solid "+catColor+";color:"+catColor+"'>"+catLabel+"</span></td>";
+    rows+="<td style='color:var(--muted)'>"+p.prix.toFixed(2)+" €</td>";
+    rows+="<td style='text-align:center'><div style='display:flex;align-items:center;gap:5px;justify-content:center'>";
+    rows+="<button class='sib' data-idx='"+realIdx+"' data-d='-1' onclick='adjAccBtn(this)'>−</button>";
+    rows+="<span style='font-family:var(--serif);font-size:16px;min-width:20px;text-align:center'>"+p.qte+"</span>";
+    rows+="<button class='sib' data-idx='"+realIdx+"' data-d='1' onclick='adjAccBtn(this)'>+</button>";
+    rows+="</div></td>";
+    rows+="<td style='text-align:center;color:var(--info)'>"+(p.unites||1)+"</td>";
+    rows+="<td style='text-align:center'>";
+    if(p.unites>1){
+      rows+="<div style='display:flex;align-items:center;gap:4px;justify-content:center'>";
+      rows+="<button class='sib' data-idx='"+realIdx+"' data-d='-0.05' onclick='adjAccVenteBtn(this)'>−</button>";
+      rows+="<span style='font-size:11px;color:var(--gold);min-width:38px;text-align:center'>"+p.prixVente.toFixed(2)+"€</span>";
+      rows+="<button class='sib' data-idx='"+realIdx+"' data-d='0.05' onclick='adjAccVenteBtn(this)'>+</button>";
+      rows+="</div>";
+    } else { rows+="<span style='color:var(--muted);font-size:10px'>N/A</span>"; }
+    rows+="</td>";
+    rows+="<td style='color:var(--warn)'>"+cout.toFixed(2)+" €</td>";
+    rows+="<td style='color:var(--gold);font-family:var(--serif);font-size:14px'>"+(ca>0?ca.toFixed(2)+" €":"–")+"</td>";
+    rows+="<td style='color:"+bc+";font-family:var(--serif);font-size:14px'>"+(ca>0?benef.toFixed(2)+" €":"–")+"</td>";
+    rows+="<td>"+st+"</td>";
+    rows+="<td><div style='display:flex;gap:3px'>";
+    rows+="<button class='atb err' data-idx='"+realIdx+"' onclick='delAccBtn(this)'>✕</button>";
+    rows+="</div></td>";
+    rows+="</tr>";
+  });
+  tb.innerHTML=rows||"<tr><td colspan='11'><div class='empty'><p class='empty-txt'>Aucun produit dans cette catégorie</p></div></td></tr>";
+  var totBenef=totCA-totCout;
+  setKPI("acc-cout",totCout.toFixed(2)+" €");
+  setKPI("acc-ca",totCA.toFixed(2)+" €");
+  setKPI("acc-benef",totBenef.toFixed(2)+" €");
+  setKPI("kpi-acc-cout",totCout.toFixed(0)+" €");
+  setKPI("kpi-acc-ca",totCA.toFixed(0)+" €");
+  setKPI("kpi-acc-benef",totBenef.toFixed(0)+" €");
+}
+function setAccFilter(f,btn){accFilter=f;document.querySelectorAll("#acc-tb").forEach(function(){});document.querySelectorAll(".tw .fb").forEach(function(b){b.classList.remove("on");});btn.classList.add("on");renderAccessoires();}
+function adjAccBtn(btn){var idx=parseInt(btn.dataset.idx);ACCESSOIRES[idx].qte=Math.max(0,ACCESSOIRES[idx].qte+parseInt(btn.dataset.d));renderAccessoires();}
+function adjAccVenteBtn(btn){var idx=parseInt(btn.dataset.idx);ACCESSOIRES[idx].prixVente=Math.max(0,Math.round((ACCESSOIRES[idx].prixVente+parseFloat(btn.dataset.d))*100)/100);renderAccessoires();}
+function delAccBtn(btn){if(confirm("Supprimer ?")){ACCESSOIRES.splice(parseInt(btn.dataset.idx),1);renderAccessoires();toast("OK","Supprimé");}}
+
+function openAddAccessoire(){
+  document.getElementById("drw-t").textContent="Ajouter un accessoire / snack";
+  document.getElementById("drw-s").textContent="Snack, accessoire ou consommable";
+  document.getElementById("drw-b").innerHTML=
+    "<div class='df'><label>Nom *</label><input id='aac-nom' placeholder='Ex: Chocolat Lindt...' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>"+
+    "<div class='df'><label>Catégorie</label><select id='aac-cat' style='background:var(--dark2);border:1px solid rgba(196,160,78,.14);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'><option value='snack'>🍫 Snack</option><option value='accessoire'>🛠 Accessoire</option><option value='consommable'>📦 Consommable</option></select></div>"+
+    "<div class='df-row'>"+
+    "<div class='df'><label>Prix achat (€)</label><input id='aac-prix' type='number' step='0.01' placeholder='34.99' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>"+
+    "<div class='df'><label>Quantité (lots)</label><input id='aac-qte' type='number' value='1' min='0' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>"+
+    "</div>"+
+    "<div class='df-row'>"+
+    "<div class='df'><label>Unités / lot</label><input id='aac-units' type='number' value='1' min='1' placeholder='200' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>"+
+    "<div class='df'><label>Prix vente / unité (€)</label><input id='aac-vente' type='number' step='0.05' value='0.50' min='0' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>"+
+    "</div>"+
+    "<div class='df'><label>Seuil alerte (lots)</label><input id='aac-seuil' type='number' value='1' min='0' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>";
+  document.getElementById("drw-f").innerHTML=
+    "<button class='btn-s fill' onclick='doAddAcc()'>Ajouter</button>"+
+    "<button class='btn-s' onclick='closeDrw()'>Annuler</button>";
+  openDrw();
+}
+function doAddAcc(){
+  var nom=document.getElementById("aac-nom").value.trim();
+  var cat=document.getElementById("aac-cat").value;
+  var prix=parseFloat(document.getElementById("aac-prix").value)||0;
+  var qte=parseInt(document.getElementById("aac-qte").value)||1;
+  var units=parseInt(document.getElementById("aac-units").value)||1;
+  var vente=parseFloat(document.getElementById("aac-vente").value)||0;
+  var seuil=parseInt(document.getElementById("aac-seuil").value)||1;
+  if(!nom){toast("⚠","Nom obligatoire","warn");return;}
+  ACCESSOIRES.push({id:"ac"+Date.now(),nom:nom,format:units+"pcs",prix:prix,qte:qte,unites:units,prixVente:vente,seuil:seuil,cat:cat});
+  closeDrw();renderAccessoires();toast("OK","Produit ajouté");
+}
+
+function drawBSpecChart(){
+  var labels=BSPEC.map(function(p){return p.nom.substring(0,18);});
+  var cas=BSPEC.map(function(p){return p.qte*p.prixVente;});
+  drawColoredBarChart("chart-boissons-spec",labels,cas,["#48b4a0","#9c7fd5","#5b9bd5","#4caf50"]);
+}
+function drawAccChart(){
+  var labels=ACCESSOIRES.map(function(p){return p.nom.substring(0,18);});
+  var couts=ACCESSOIRES.map(function(p){return p.prix*p.qte;});
+  var colors=ACCESSOIRES.map(function(p){return p.cat==="snack"?"#c4a04e":p.cat==="accessoire"?"#5b9bd5":"#7a7a68";});
+  drawColoredBarChart("chart-accessoires",labels,couts,colors);
+}
+
+// ══ ACHATS & COÛTS ══
+var THES_PREMIUM = [
+  {id:"tp1", nom:"Thé du Hammam",       prix:14.40, qte:3, seuil:2, sachets:60},
+  {id:"tp2", nom:"Thé des Alizés",      prix:14.40, qte:3, seuil:2, sachets:60},
+  {id:"tp3", nom:"Thé des Sources",     prix:14.00, qte:3, seuil:2, sachets:60},
+  {id:"tp4", nom:"Thé des Moines",      prix:15.00, qte:3, seuil:2, sachets:60},
+  {id:"tp5", nom:"Blue of London",      prix:15.40, qte:3, seuil:2, sachets:60},
+  {id:"tp6", nom:"Thé des Lords",       prix:14.40, qte:3, seuil:2, sachets:60},
+  {id:"tp7", nom:"Rooibos du Hammam",   prix:14.40, qte:3, seuil:2, sachets:60},
+  {id:"tp8", nom:"Jardin Tropical",     prix:18.40, qte:3, seuil:2, sachets:60}
+];
+var THES_STANDARD = [
+  {id:"ts1", nom:"Thé Vert Menthe bio",              prix:8.50,  qte:3, seuil:2, sachets:60},
+  {id:"ts2", nom:"L'Herboriste Verveine bio",        prix:8.50,  qte:3, seuil:2, sachets:60},
+  {id:"ts3", nom:"L'Herboriste N°74 Sommeil bio",    prix:12.20, qte:3, seuil:2, sachets:60},
+  {id:"ts4", nom:"Goût Russe 7 Agrumes bio",         prix:15.40, qte:3, seuil:2, sachets:60},
+  {id:"ts5", nom:"Sencha Ariake bio",                prix:19.50, qte:3, seuil:2, sachets:60},
+  {id:"ts6", nom:"Jardin des Reines",                prix:17.90, qte:3, seuil:2, sachets:60}
+];
+var SIROPS = [
+  {id:"s1",  nom:"Menthe Verte",   prix:8.50, qte:2, seuil:1},
+  {id:"s2",  nom:"Grenadine",      prix:8.50, qte:2, seuil:1},
+  {id:"s3",  nom:"Fraise",         prix:9.80, qte:2, seuil:1},
+  {id:"s4",  nom:"Pêche",          prix:9.80, qte:2, seuil:1},
+  {id:"s5",  nom:"Citron",         prix:9.80, qte:2, seuil:1},
+  {id:"s6",  nom:"Framboise",      prix:9.80, qte:2, seuil:1},
+  {id:"s7",  nom:"Passion",        prix:9.80, qte:2, seuil:1},
+  {id:"s8",  nom:"Vanille",        prix:9.80, qte:2, seuil:1},
+  {id:"s9",  nom:"Cassis",         prix:9.80, qte:2, seuil:1},
+  {id:"s10", nom:"Cerise",         prix:9.80, qte:2, seuil:1},
+  {id:"s11", nom:"Caramel",        prix:9.80, qte:2, seuil:1},
+  {id:"s12", nom:"Noisette",       prix:9.80, qte:2, seuil:1},
+  {id:"s13", nom:"Noix de Coco",   prix:9.80, qte:2, seuil:1},
+  {id:"s14", nom:"Mojito Mint",    prix:9.80, qte:2, seuil:1}
+];
+
+function renderAchats(){
+  renderThes();
+  renderSirops();
+  renderBoissons();
+  renderCafes();
+  renderBSpec();
+  renderAccessoires();
+  renderRecap();
+  renderRevenue();
+  renderFamilies();
+  updateAllKPIs();
+  setTimeout(function(){drawGlobalCharts();},100);
+}
+
+function renderThes(){
+  function makeRows(data, tbodyId, totalId){
+    var tb = document.getElementById(tbodyId);
+    if(!tb) return 0;
+    var total = 0;
+    var rows = "";
+    data.forEach(function(t, i){
+      var lineTotal = t.prix * t.qte;
+      total += lineTotal;
+      var sachetsRestants = t.sachets;
+      var status = t.qte <= 0
+        ? "<span class='badge cancelled'><span class='badge-dot'></span>Rupture</span>"
+        : t.qte <= t.seuil
+          ? "<span class='badge pending'><span class='badge-dot'></span>Stock bas</span>"
+          : "<span class='badge confirmed'><span class='badge-dot'></span>OK</span>";
+      rows += "<tr>";
+      rows += "<td class='name'>" + t.nom + "</td>";
+      rows += "<td style='color:var(--muted)'>" + t.prix.toFixed(2) + " €</td>";
+      rows += "<td style='text-align:center'><div style='display:flex;align-items:center;gap:6px;justify-content:center'>";
+      rows += "<button class='sib' data-set='" + tbodyId + "' data-idx='" + i + "' data-d='-1' onclick='adjThe(this)'>−</button>";
+      rows += "<span style='font-family:var(--serif);font-size:18px;color:var(--cream);min-width:20px;text-align:center'>" + t.qte + "</span>";
+      rows += "<button class='sib' data-set='" + tbodyId + "' data-idx='" + i + "' data-d='1' onclick='adjThe(this)'>+</button>";
+      rows += "</div></td>";
+      rows += "<td style='text-align:center'>";
+      rows += "<div style='display:flex;align-items:center;gap:6px;justify-content:center'>";
+      rows += "<button class='sib' data-set='" + tbodyId + "' data-idx='" + i + "' data-d='-1' data-type='sachet' onclick='adjSachet(this)'>−</button>";
+      rows += "<span style='font-family:var(--serif);font-size:16px;color:var(--info);min-width:28px;text-align:center'>" + sachetsRestants + "</span>";
+      rows += "<button class='sib' data-set='" + tbodyId + "' data-idx='" + i + "' data-d='1' data-type='sachet' onclick='adjSachet(this)'>+</button>";
+      rows += "</div><div style='font-size:7px;color:var(--muted);margin-top:2px'>/ " + (t.qte*20) + " max</div></td>";
+      rows += "<td class='gold'>" + lineTotal.toFixed(2) + " €</td>";
+      rows += "<td>" + status + "</td>";
+      rows += "<td onclick='event.stopPropagation()'><button class='atb err' data-set='"+tbodyId+"' data-idx='"+i+"' onclick='delThe(this)' title='Supprimer'>✕</button></td>";
+      rows += "</tr>";
+    });
+    tb.innerHTML = rows;
+    var totEl = document.getElementById(totalId);
+    if(totEl) totEl.textContent = total.toFixed(2) + " €";
+    return total;
+  }
+
+  var tPremium  = makeRows(THES_PREMIUM,  "the-premium-tb",  "the-premium-total");
+  var tStandard = makeRows(THES_STANDARD, "the-standard-tb", "the-standard-total");
+  var tGlobal   = tPremium + tStandard;
+  var elG = document.getElementById("the-total-global");
+  if(elG) elG.textContent = tGlobal.toFixed(2) + " €";
+  var elKpi = document.getElementById("ach-thes");
+  if(elKpi) elKpi.textContent = tGlobal.toFixed(2);
+  var boites = THES_PREMIUM.reduce(function(s,t){return s+t.qte;},0) + THES_STANDARD.reduce(function(s,t){return s+t.qte;},0);
+  var elB = document.getElementById("ach-thes-boites");
+  if(elB) elB.textContent = boites + " boîtes";
+  return tGlobal;
+}
+
+function renderSirops(){
+  var tb = document.getElementById("sirop-tb");
+  if(!tb) return;
+  var total = 0;
+  var totalQt = 0;
+  var rows = "";
+  SIROPS.forEach(function(s, i){
+    var lineTotal = s.prix * s.qte;
+    total += lineTotal;
+    totalQt += s.qte;
+    var status = s.qte <= 0
+      ? "<span class='badge cancelled'><span class='badge-dot'></span>Rupture</span>"
+      : s.qte <= s.seuil
+        ? "<span class='badge pending'><span class='badge-dot'></span>Stock bas</span>"
+        : "<span class='badge confirmed'><span class='badge-dot'></span>OK</span>";
+    rows += "<tr>";
+    rows += "<td class='name'>" + s.nom + "</td>";
+    rows += "<td style='color:var(--muted)'>" + s.prix.toFixed(2) + " €</td>";
+    rows += "<td style='text-align:center'><div style='display:flex;align-items:center;gap:6px;justify-content:center'>";
+    rows += "<button class='sib' data-idx='" + i + "' data-d='-1' onclick='adjSirop(this)'>−</button>";
+    rows += "<span style='font-family:var(--serif);font-size:18px;color:var(--cream);min-width:20px;text-align:center'>" + s.qte + "</span>";
+    rows += "<button class='sib' data-idx='" + i + "' data-d='1' onclick='adjSirop(this)'>+</button>";
+    rows += "</div></td>";
+    rows += "<td style='text-align:center;color:var(--warn)'>" + s.seuil + "</td>";
+    rows += "<td class='gold'>" + lineTotal.toFixed(2) + " €</td>";
+    rows += "<td>" + status + "</td>";
+    rows += "<td onclick='event.stopPropagation()'><button class='atb err' data-idx='"+i+"' onclick='delSirop(this)' title='Supprimer'>✕</button></td>";
+    rows += "</tr>";
+  });
+  tb.innerHTML = rows;
+
+  var elT = document.getElementById("sirop-total");
+  if(elT) elT.textContent = total.toFixed(2) + " €";
+  var elQ = document.getElementById("sirop-total-qt");
+  if(elQ) elQ.textContent = totalQt + " bouteilles";
+  var elKpi = document.getElementById("ach-sirops");
+  if(elKpi) elKpi.textContent = total.toFixed(2);
+  var elBt = document.getElementById("ach-sirops-bt");
+  if(elBt) elBt.textContent = totalQt + " bouteilles";
+  return total;
+}
+
+function renderRecap(){
+  var tThes = THES_PREMIUM.reduce(function(s,t){return s+(t.prix*t.qte);},0) + THES_STANDARD.reduce(function(s,t){return s+(t.prix*t.qte);},0);
+  var tSirops = SIROPS.reduce(function(s,t){return s+(t.prix*t.qte);},0);
+  var tTotal = tThes + tSirops;
+
+  var alerts = THES_PREMIUM.filter(function(t){return t.qte<=t.seuil;}).length
+             + THES_STANDARD.filter(function(t){return t.qte<=t.seuil;}).length
+             + SIROPS.filter(function(s){return s.qte<=s.seuil;}).length;
+
+  var elA = document.getElementById("ach-total");
+  if(elA) elA.textContent = tTotal.toFixed(2);
+  var elAl = document.getElementById("ach-alerts");
+  if(elAl) elAl.textContent = alerts;
+
+  var recap = document.getElementById("recap-achats");
+  if(!recap) return;
+  recap.innerHTML =
+    "<div style='padding:20px;background:rgba(91,155,213,.05);border:1px solid rgba(91,155,213,.12);text-align:center'>" +
+      "<div style='font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--info);margin-bottom:8px'>Thés Palais des Thés</div>" +
+      "<div style='font-family:var(--serif);font-size:32px;color:var(--info)'>" + tThes.toFixed(2) + " €</div>" +
+      "<div style='font-size:9px;color:var(--muted);margin-top:6px'>" +
+        (THES_PREMIUM.reduce(function(s,t){return s+t.qte;},0)+THES_STANDARD.reduce(function(s,t){return s+t.qte;},0)) +
+        " boîtes · " +
+        (THES_PREMIUM.reduce(function(s,t){return s+t.sachets;},0)+THES_STANDARD.reduce(function(s,t){return s+t.sachets;},0)) +
+        " sachets</div>" +
+    "</div>" +
+    "<div style='padding:20px;background:rgba(76,175,80,.05);border:1px solid rgba(76,175,80,.12);text-align:center'>" +
+      "<div style='font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--ok);margin-bottom:8px'>Sirops Monin</div>" +
+      "<div style='font-family:var(--serif);font-size:32px;color:var(--ok)'>" + tSirops.toFixed(2) + " €</div>" +
+      "<div style='font-size:9px;color:var(--muted);margin-top:6px'>" +
+        SIROPS.reduce(function(s,t){return s+t.qte;},0) +
+        " bouteilles · 14 parfums</div>" +
+    "</div>" +
+    "<div style='padding:20px;background:rgba(196,160,78,.07);border:1px solid rgba(196,160,78,.25);text-align:center'>" +
+      "<div style='font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px'>Total commande</div>" +
+      "<div style='font-family:var(--serif);font-size:36px;color:var(--gold)'>" + tTotal.toFixed(2) + " €</div>" +
+      "<div style='font-size:9px;color:var(--muted);margin-top:6px'>TTC estimé</div>" +
+    "</div>";
+}
+
+function adjThe(btn){
+  var set = btn.dataset.set;
+  var idx = parseInt(btn.dataset.idx);
+  var d   = parseInt(btn.dataset.d);
+  var arr = set === "the-premium-tb" ? THES_PREMIUM : THES_STANDARD;
+  arr[idx].qte = Math.max(0, arr[idx].qte + d);
+  // Update sachets proportionally
+  arr[idx].sachets = arr[idx].qte * 20;
+  renderThes();
+  renderRecap();
+}
+
+function adjSachet(btn){
+  var set = btn.dataset.set;
+  var idx = parseInt(btn.dataset.idx);
+  var d   = parseInt(btn.dataset.d);
+  var arr = set === "the-premium-tb" ? THES_PREMIUM : THES_STANDARD;
+  arr[idx].sachets = Math.max(0, (arr[idx].sachets||0) + d);
+  renderThes();
+}
+
+function adjSirop(btn){
+  var idx = parseInt(btn.dataset.idx);
+  var d   = parseInt(btn.dataset.d);
+  SIROPS[idx].qte = Math.max(0, SIROPS[idx].qte + d);
+  renderSirops();
+  renderRecap();
+}
+
+
+function delThe(btn){
+  var set = btn.dataset.set;
+  var idx = parseInt(btn.dataset.idx);
+  if(!confirm("Supprimer ce produit ?")) return;
+  if(set === "the-premium-tb") THES_PREMIUM.splice(idx,1);
+  else THES_STANDARD.splice(idx,1);
+  renderAchats();
+  toast("✓","Produit supprimé");
+}
+
+function delSirop(btn){
+  var idx = parseInt(btn.dataset.idx);
+  if(!confirm("Supprimer ce sirop ?")) return;
+  SIROPS.splice(idx,1);
+  renderAchats();
+  toast("✓","Sirop supprimé");
+}
+
+function openAddProduct(){
+  document.getElementById("drw-t").textContent = "Ajouter un produit";
+  document.getElementById("drw-s").textContent = "Thé, infusion ou sirop";
+  document.getElementById("drw-b").innerHTML =
+    "<div class='df'><label>Catégorie</label>" +
+    "<select id='ap-cat' style='background:var(--dark2);border:1px solid rgba(196,160,78,.14);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'>" +
+    "<option value='premium'>Thé Premium (Palais des Thés)</option>" +
+    "<option value='standard'>Thé Standard (Palais des Thés)</option>" +
+    "<option value='sirop'>Sirop Monin</option>" +
+    "</select></div>" +
+    "<div class='df'><label>Nom du produit *</label><input id='ap-nom' placeholder='Ex: Thé du Dragon' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>" +
+    "<div class='df-row'>" +
+    "<div class='df'><label>Prix unitaire (€) *</label><input id='ap-prix' type='number' step='0.01' placeholder='9.80' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>" +
+    "<div class='df'><label>Quantité initiale</label><input id='ap-qte' type='number' value='2' min='0' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>" +
+    "</div>" +
+    "<div class='df'><label>Seuil d'alerte</label><input id='ap-seuil' type='number' value='1' min='0' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>";
+  document.getElementById("drw-f").innerHTML =
+    "<button class='btn-s fill' onclick='doAddProduct()'>Ajouter le produit</button>" +
+    "<button class='btn-s' onclick='closeDrw()'>Annuler</button>";
+  openDrw();
+}
+
+function doAddProduct(){
+  var cat   = document.getElementById("ap-cat").value;
+  var nom   = document.getElementById("ap-nom").value.trim();
+  var prix  = parseFloat(document.getElementById("ap-prix").value) || 0;
+  var qte   = parseInt(document.getElementById("ap-qte").value) || 0;
+  var seuil = parseInt(document.getElementById("ap-seuil").value) || 1;
+  if(!nom || !prix){ toast("⚠","Nom et prix obligatoires","warn"); return; }
+  var id = "custom_"+Date.now();
+  if(cat === "premium")  THES_PREMIUM.push({id:id, nom:nom, prix:prix, qte:qte, seuil:seuil, sachets:qte*20});
+  else if(cat === "standard") THES_STANDARD.push({id:id, nom:nom, prix:prix, qte:qte, seuil:seuil, sachets:qte*20});
+  else SIROPS.push({id:id, nom:nom, prix:prix, qte:qte, seuil:seuil});
+  closeDrw();
+  renderAchats();
+  toast("✓","Produit ajouté : "+nom);
+}
+
+
+// ══ REVENUS & SIMULATEUR ══
+var PRIX_VENTE = 4.50;
+var EXTRA_FAMILIES = {};
+
+function adjPrixVente(delta){
+  setTimeout(updateAllKPIs,50);
+  PRIX_VENTE = Math.max(0.5, Math.round((PRIX_VENTE + delta)*10)/10);
+  var el = document.getElementById("prix-vente-display");
+  if(el) el.textContent = PRIX_VENTE.toFixed(2) + " €";
+  renderRevenue();
+}
+
+function renderRevenue(){
+  var allThes = THES_PREMIUM.concat(THES_STANDARD);
+  var totalSachets = allThes.reduce(function(s,t){ return s + (t.sachets||0); }, 0);
+  var totalCout    = allThes.reduce(function(s,t){ return s + (t.prix * t.qte); }, 0);
+  var totalCA      = totalSachets * PRIX_VENTE;
+  var totalBenef   = totalCA - totalCout;
+  var marge        = totalCA > 0 ? (totalBenef / totalCA * 100) : 0;
+
+  var el = function(id){ return document.getElementById(id); };
+  if(el("rev-sachets-total")) el("rev-sachets-total").textContent = totalSachets;
+  if(el("rev-ca-stock"))      el("rev-ca-stock").textContent      = totalCA.toFixed(2) + " €";
+  if(el("rev-benef"))         el("rev-benef").textContent         = totalBenef.toFixed(2) + " €";
+  if(el("rev-marge"))         el("rev-marge").textContent         = marge.toFixed(1) + " %";
+
+  // Simulateur +1 boîte
+  var nbBoites = allThes.reduce(function(s,t){ return s + t.qte; }, 0);
+  var coutMoy  = nbBoites > 0 ? totalCout / nbBoites : 0;
+  var caBoite  = 20 * PRIX_VENTE;
+  var benefBoite = caBoite - coutMoy;
+  if(el("sim-cout"))  el("sim-cout").textContent  = coutMoy.toFixed(2) + " €";
+  if(el("sim-ca"))    el("sim-ca").textContent    = caBoite.toFixed(2) + " €";
+  if(el("sim-benef")) el("sim-benef").textContent = benefBoite.toFixed(2) + " €";
+
+  // Tableau détaillé
+  var tb = document.getElementById("rev-detail-tb");
+  if(!tb) return;
+  var rows = "";
+  allThes.forEach(function(t){
+    var sachets  = t.sachets || 0;
+    var coutRef  = t.prix * t.qte;
+    var caRef    = sachets * PRIX_VENTE;
+    var benefRef = caRef - coutRef;
+    var margeRef = caRef > 0 ? (benefRef / caRef * 100) : 0;
+    var ok = benefRef >= 0 ? "var(--ok)" : "var(--err)";
+    rows += "<tr>";
+    rows += "<td class='name'>" + t.nom + "</td>";
+    rows += "<td style='text-align:center;font-family:var(--serif);font-size:16px;color:var(--info)'>" + sachets + "</td>";
+    rows += "<td style='color:var(--muted)'>" + coutRef.toFixed(2) + " €</td>";
+    rows += "<td style='color:var(--gold);font-family:var(--serif);font-size:14px'>" + caRef.toFixed(2) + " €</td>";
+    rows += "<td style='color:"+ok+";font-family:var(--serif);font-size:14px'>" + benefRef.toFixed(2) + " €</td>";
+    rows += "<td style='color:"+ok+"'>" + margeRef.toFixed(1) + " %</td>";
+    rows += "</tr>";
+  });
+  tb.innerHTML = rows || "<tr><td colspan='6'><div class='empty'><p class='empty-txt'>Aucun thé en stock</p></div></td></tr>";
+}
+
+// ══ FAMILLES PERSONNALISÉES ══
+function addFamily(nom){
+  if(EXTRA_FAMILIES[nom]) { toast("⚠", "Famille déjà créée","warn"); return; }
+  EXTRA_FAMILIES[nom] = [];
+  renderFamilies();
+  toast("✓", "Famille ajoutée : " + nom);
+}
+
+function openAddFamily(){
+  document.getElementById("drw-t").textContent = "Nouvelle famille";
+  document.getElementById("drw-s").textContent = "Créer une famille de produits personnalisée";
+  document.getElementById("drw-b").innerHTML =
+    "<div class='df'><label>Nom de la famille *</label>" +
+    "<input id='fam-nom' placeholder='Ex: Cafés, Bières artisanales...' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'>" +
+    "</div>" +
+    "<div class='df'><label>Icône (emoji)</label>" +
+    "<input id='fam-icon' placeholder='☕' maxlength='2' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:20px;width:80px;outline:none'>" +
+    "</div>";
+  document.getElementById("drw-f").innerHTML =
+    "<button class='btn-s fill' onclick='doAddFamily()'>Créer la famille</button>" +
+    "<button class='btn-s' onclick='closeDrw()'>Annuler</button>";
+  openDrw();
+}
+
+function doAddFamily(){
+  var nom  = document.getElementById("fam-nom").value.trim();
+  var icon = document.getElementById("fam-icon").value.trim() || "📦";
+  if(!nom){ toast("⚠","Nom obligatoire","warn"); return; }
+  EXTRA_FAMILIES[icon+" "+nom] = [];
+  closeDrw();
+  renderFamilies();
+  toast("✓", "Famille créée : "+nom);
+}
+
+function renderFamilies(){
+  var el = document.getElementById("extra-families");
+  if(!el) return;
+  var html = "";
+  Object.keys(EXTRA_FAMILIES).forEach(function(famName){
+    var items = EXTRA_FAMILIES[famName];
+    var total = items.reduce(function(s,p){ return s + p.prix*p.qte; }, 0);
+    html += "<div class='tw' style='margin-bottom:20px'>";
+    html += "<div class='tw-head'><span class='tw-title'>"+famName+"</span>";
+    html += "<div style='display:flex;gap:6px'>";
+    html += "<button class='btn-s' data-fam='"+famName+"' onclick='openAddFamProduct(this.dataset.fam)'>+ Produit</button>";
+    html += "<button class='btn-s danger' data-fam='"+famName+"' onclick='deleteFamily(this.dataset.fam)'>Supprimer</button>";
+    html += "</div></div>";
+    if(items.length === 0){
+      html += "<div style='padding:20px;text-align:center;color:var(--muted);font-size:11px;font-style:italic'>Aucun produit — cliquez + Produit pour en ajouter</div>";
+    } else {
+      html += "<table><thead><tr><th>Référence</th><th>Prix / unité</th><th>Qté</th><th>Sachets restants</th><th>Total</th><th>Statut</th><th>Ajust.</th></tr></thead><tbody>";
+      items.forEach(function(p, i){
+        var st = p.qte<=0
+          ? "<span class='badge cancelled'><span class='badge-dot'></span>Rupture</span>"
+          : p.qte<=p.seuil
+            ? "<span class='badge pending'><span class='badge-dot'></span>Bas</span>"
+            : "<span class='badge confirmed'><span class='badge-dot'></span>OK</span>";
+        html += "<tr>";
+        html += "<td class='name'>"+p.nom+"</td>";
+        html += "<td style='color:var(--muted)'>"+p.prix.toFixed(2)+" €</td>";
+        html += "<td style='text-align:center'><div style='display:flex;align-items:center;gap:5px;justify-content:center'>";
+        html += "<button class='sib' data-fam='"+famName+"' data-idx='"+i+"' data-d='-1' onclick='adjFamProdBtn(this)'>−</button>";
+        html += "<span style='font-family:var(--serif);font-size:16px;min-width:20px;text-align:center'>"+p.qte+"</span>";
+        html += "<button class='sib' data-fam='"+famName+"' data-idx='"+i+"' data-d='1' onclick='adjFamProdBtn(this)'>+</button>";
+        html += "</div></td>";
+        html += "<td style='text-align:center;color:var(--info)'>"+(p.sachets||"–")+"</td>";
+        html += "<td class='gold'>"+(p.prix*p.qte).toFixed(2)+" €</td>";
+        html += "<td>"+st+"</td>";
+        html += "<td><button class='atb err' data-fam='"+famName+"' data-idx='"+i+"' onclick='delFamProdBtn(this)'>✕</button></td>";
+        html += "</tr>";
+      });
+      html += "</tbody><tfoot><tr><td colspan='4' style='padding:10px 16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)'>Total "+famName+"</td>";
+      html += "<td style='padding:10px 16px;font-family:var(--serif);font-size:18px;color:var(--gold)'>"+total.toFixed(2)+" €</td><td colspan='2'></td></tr></tfoot></table>";
+    }
+    html += "</div>";
+  });
+  el.innerHTML = html;
+}
+
+function openAddFamProduct(famName){
+  document.getElementById("drw-t").textContent = "Ajouter un produit";
+  document.getElementById("drw-s").textContent = famName;
+  document.getElementById("drw-b").innerHTML =
+    "<div class='df'><label>Nom du produit *</label><input id='fp-nom' placeholder='Nom du produit' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>" +
+    "<div class='df-row'>" +
+    "<div class='df'><label>Prix unitaire (€)</label><input id='fp-prix' type='number' step='0.01' placeholder='0.00' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>" +
+    "<div class='df'><label>Quantité</label><input id='fp-qte' type='number' value='1' min='0' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>" +
+    "</div>" +
+    "<div class='df-row'>" +
+    "<div class='df'><label>Unités / lot (sachets etc.)</label><input id='fp-sachets' type='number' placeholder='20' min='0' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>" +
+    "<div class='df'><label>Seuil alerte</label><input id='fp-seuil' type='number' value='1' min='0' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>" +
+    "</div>" +
+    "<input type='hidden' id='fp-fam' value='"+famName+"'>";
+  document.getElementById("drw-f").innerHTML =
+    "<button class='btn-s fill' onclick='doAddFamProduct()'>Ajouter</button>" +
+    "<button class='btn-s' onclick='closeDrw()'>Annuler</button>";
+  openDrw();
+}
+
+function doAddFamProduct(){
+  var fam    = document.getElementById("fp-fam").value;
+  var nom    = document.getElementById("fp-nom").value.trim();
+  var prix   = parseFloat(document.getElementById("fp-prix").value) || 0;
+  var qte    = parseInt(document.getElementById("fp-qte").value) || 0;
+  var sachets= parseInt(document.getElementById("fp-sachets").value) || null;
+  var seuil  = parseInt(document.getElementById("fp-seuil").value) || 1;
+  if(!nom){ toast("⚠","Nom obligatoire","warn"); return; }
+  if(!EXTRA_FAMILIES[fam]) EXTRA_FAMILIES[fam] = [];
+  EXTRA_FAMILIES[fam].push({nom:nom, prix:prix, qte:qte, sachets:sachets, seuil:seuil});
+  closeDrw();
+  renderFamilies();
+  toast("✓","Produit ajouté : "+nom);
+}
+
+
+function adjFamProdBtn(btn){
+  adjFamProd(btn.dataset.fam, parseInt(btn.dataset.idx), parseInt(btn.dataset.d));
+}
+function delFamProdBtn(btn){
+  delFamProd(btn.dataset.fam, parseInt(btn.dataset.idx));
+}
+
+function adjFamProd(fam, idx, d){
+  if(!EXTRA_FAMILIES[fam]) return;
+  EXTRA_FAMILIES[fam][idx].qte = Math.max(0, EXTRA_FAMILIES[fam][idx].qte + d);
+  renderFamilies();
+}
+
+function delFamProd(fam, idx){
+  if(!EXTRA_FAMILIES[fam]) return;
+  EXTRA_FAMILIES[fam].splice(idx, 1);
+  renderFamilies();
+  toast("✓","Produit supprimé");
+}
+
+function deleteFamily(fam){
+  if(!confirm("Supprimer la famille "+fam+" et tous ses produits ?")) return;
+  delete EXTRA_FAMILIES[fam];
+  renderFamilies();
+  toast("✓","Famille supprimée");
+}
+
+function saveAchats(){
+  toast("✓", "Stocks achats sauvegardés");
+}
+
+function exportAchatsCSV(){
+  var rows = [["Catégorie","Produit","Prix unitaire","Quantité","Total","Sachets restants"]];
+  THES_PREMIUM.forEach(function(t){
+    rows.push(["Thé Premium",t.nom,t.prix.toFixed(2),t.qte,(t.prix*t.qte).toFixed(2),t.sachets||0]);
+  });
+  THES_STANDARD.forEach(function(t){
+    rows.push(["Thé Standard",t.nom,t.prix.toFixed(2),t.qte,(t.prix*t.qte).toFixed(2),t.sachets||0]);
+  });
+  SIROPS.forEach(function(s){
+    rows.push(["Sirop Monin",s.nom,s.prix.toFixed(2),s.qte,(s.prix*s.qte).toFixed(2),"–"]);
+  });
+  var csv = rows.map(function(r){return r.map(function(x){return '"'+String(x).replace(/"/g,'""')+'"';}).join(",");}).join("\n");
+  var a = document.createElement("a");
+  a.href = "data:text/csv;charset=utf-8,\uFEFF" + encodeURIComponent(csv);
+  a.download = "eden-achats-"+new Date().toISOString().slice(0,10)+".csv";
+  a.click();
+  toast("↓", "Export CSV téléchargé");
+}
+
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDrw(); });
 </script>
 </body>
