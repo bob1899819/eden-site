@@ -744,7 +744,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
           <div class="card">
             <div class="card-h"><span class="card-t">Connexion Supabase</span></div>
             <div class="df" style="margin-bottom:11px"><label>URL du projet</label><input id="cfg-url" placeholder="https://xxxx.supabase.co"></div>
-            <div class="df" style="margin-bottom:11px"><label>Clé anonyme</label><input id="cfg-key" placeholder="eyJhbGci…"></div>
+            <div class="df" style="margin-bottom:11px"><label>Clé publishable</label><input id="cfg-key" placeholder="sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A"></div>
             <button class="btn-s fill" onclick="saveCfgPage()">Sauvegarder & Tester</button>
             <p id="cfg-st" style="font-size:9px;margin-top:9px;color:var(--muted)"></p>
           </div>
@@ -920,8 +920,8 @@ let demFilter = 'all';
 // ── INIT ──
 window.onload = function(){
   // Credentials pré-configurés
-  if(!localStorage.getItem('eden_sb_url')) localStorage.setItem('eden_sb_url', 'https://jdcxhejkuttaviqqonz.supabase.co');
-  if(!localStorage.getItem('eden_sb_key')) localStorage.setItem('eden_sb_key', 'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A');
+  localStorage.setItem('eden_sb_url', 'https://jdcxhejkuttaviqqonz.supabase.co');
+  localStorage.setItem('eden_sb_key', 'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A');
   // Nettoyer toutes les anciennes clés des versions précédentes
   ['eden_pwd_hash','eden_lock','eden_attempts','eden_admin_pwd',
    'eden_admin_auth','eden_ok_old'].forEach(function(k){ localStorage.removeItem(k); });
