@@ -338,16 +338,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 
     <div class="login-sep"></div>
 
-    <!-- Config Supabase -->
-    <div class="sb-cfg-box">
-      <p class="sb-cfg-title">⚙ Configuration Supabase</p>
-      <input class="cfg-input" id="in-url" placeholder="https://xxxx.supabase.co" oninput="checkSbConfig()">
-      <input class="cfg-input" id="in-key" placeholder="Clé anon (Settings → API → anon public)" oninput="checkSbConfig()">
-      <button class="btn-s fill" style="width:100%;margin-top:4px" onclick="saveCfg()">Sauvegarder la configuration</button>
-    </div>
-    <div id="sb-no-cfg" style="display:none;font-size:9px;color:var(--warn);padding:10px;background:rgba(240,160,48,.05);border:1px solid rgba(240,160,48,.15);margin-top:12px;line-height:1.8">⚠ Supabase non configuré — mode local actif (moins sécurisé)</div>
-  </div>
-</div>
+    <div id="sb-no-cfg" style="display:none"></div>
 
 <!-- ══════════════════ APP ══════════════════ -->
 <div id="app">
