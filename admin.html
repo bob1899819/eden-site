@@ -655,7 +655,8 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
         <button class="ach-tab" onclick="achTab('eaux',this)">💧 Eaux</button>
         <button class="ach-tab" onclick="achTab('canettes',this)">🥤 Canettes</button>
         <button class="ach-tab" onclick="achTab('cafes',this)">☕ Cafés</button>
-        <button class="ach-tab" onclick="achTab('boissons-spec',this)">🥥 Boissons spéciales</button>
+        <button class="ach-tab" onclick="achTab('boissons-spec',this)">🥥 Ingrédients Smoothies</button>
+        <button class="ach-tab" onclick="achTab('snacks',this)">🍫 Snacks</button>
         <button class="ach-tab" onclick="achTab('accessoires',this)">🛠 Accessoires</button>
       </div>
 
@@ -738,7 +739,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
             <div style="font-size:8px;color:var(--muted);margin-top:10px" id="kpi-cafe-sub">–</div>
           </div>
           <div id="kpi-bspec" class="ach-kpi-card" style="background:rgba(72,180,160,.05);border:1px solid rgba(72,180,160,.15);padding:20px;cursor:pointer" onclick="achTab('boissons-spec',document.querySelector('[onclick*=boissons-spec]'))">
-            <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#48b4a0;margin-bottom:14px">🥥 Boissons Spéciales</div>
+            <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#48b4a0;margin-bottom:14px">🥥 Ingrédients Smoothies</div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
               <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Coût</div><div style="font-family:var(--serif);font-size:20px;color:#48b4a0" id="kpi-bspec-cout">–</div></div>
               <div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">CA pot.</div><div style="font-family:var(--serif);font-size:20px;color:var(--gold)" id="kpi-bspec-ca">–</div></div>
@@ -783,10 +784,14 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
         <div style="height:200px"><canvas id="chart-canettes" style="width:100%;height:200px"></canvas></div>
       </div>
       <div id="ach-chart-boissons-spec" class="ach-chart-section" style="display:none;margin-bottom:24px">
-        <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#48b4a0;margin-bottom:14px">🥥 Boissons spéciales — CA potentiel</div>
+        <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#48b4a0;margin-bottom:14px">🥥 Ingrédients Smoothies — CA potentiel</div>
         <div style="height:200px"><canvas id="chart-boissons-spec" style="width:100%;height:200px"></canvas></div>
       </div>
-      <div id="ach-chart-accessoires" class="ach-chart-section" style="display:none;margin-bottom:24px">
+      <div id="ach-chart-snacks" class="ach-chart-section" style="display:none;margin-bottom:24px">
+        <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:14px">🍫 Snacks — Coût par pièce et investissement total</div>
+        <div style="height:200px"><canvas id="chart-snacks" style="width:100%;height:200px"></canvas></div>
+      </div>
+      <div id="ach-chart-accessoires"  class="ach-chart-section" style="display:none;margin-bottom:24px">
         <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#f0a030;margin-bottom:14px">🛠 Accessoires & Snacks — Coûts</div>
         <div style="height:200px"><canvas id="chart-accessoires" style="width:100%;height:200px"></canvas></div>
       </div>
@@ -998,11 +1003,11 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
       <!-- ═══ BOISSONS SPÉCIALES ═══ -->
       <div class="tw" style="margin-bottom:24px">
         <div class="tw-head">
-          <span class="tw-title">🥥 Boissons Spéciales (lait végétal, eau de coco…)</span>
-          <button class="btn-s" onclick="openAddBoissonSpec()">+ Ajouter</button>
+          <span class="tw-title">🥥 Ingrédients Smoothies — Conversion en recettes</span>
+          <button class="btn-s" onclick="openAddBoissonSpec()">+ Ingrédient</button>
         </div>
         <table>
-          <thead><tr><th>Produit</th><th>Format</th><th>Prix achat / unité</th><th>Quantité</th><th>Prix vente</th><th>Total achat</th><th>CA potentiel</th><th>Bénéfice</th><th>Statut</th><th>✕</th></tr></thead>
+          <thead><tr><th>Ingrédient</th><th>Format</th><th>Prix achat</th><th>Quantité</th><th>ml / smoothie</th><th>Smoothies possibles</th><th>Prix vente smoothie</th><th>Coût total</th><th>CA potentiel</th><th>Bénéfice</th><th>Statut</th><th>✕</th></tr></thead>
           <tbody id="bspec-tb"></tbody>
           <tfoot><tr>
             <td colspan="5" style="padding:10px 16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#48b4a0">Total Boissons Spéciales</td>
@@ -1014,10 +1019,40 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
         </table>
       </div>
 
+
+      <!-- ═══ SNACKS ACCOMPAGNEMENTS THÉ/CAFÉ ═══ -->
+      <div class="tw" style="margin-bottom:24px">
+        <div class="tw-head">
+          <span class="tw-title">🍫 Snacks & Accompagnements — Servis avec thés et cafés</span>
+          <button class="btn-s" onclick="openAddSnack()">+ Snack</button>
+        </div>
+        <div style="padding:10px 20px;background:rgba(196,160,78,.03);border-bottom:1px solid rgba(196,160,78,.06);font-size:10px;color:var(--muted)">
+          Ces produits sont offerts ou inclus dans le service — leur coût est intégré dans la marge thé/café. Prix de revient à l'unité calculé automatiquement.
+        </div>
+        <table>
+          <thead><tr>
+            <th>Produit</th><th>Conditionnement</th><th>Prix carton</th>
+            <th>Nb cartons</th><th>Pièces/carton</th><th>Coût / pièce</th>
+            <th>Total pièces</th><th>Total investi</th><th>Statut</th><th>Ajust.</th>
+          </tr></thead>
+          <tbody id="snack-tb"></tbody>
+          <tfoot><tr>
+            <td colspan="7" style="padding:10px 16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold)">Total Snacks</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--gold)" id="snack-total">–</td>
+            <td colspan="2"></td>
+          </tr></tfoot>
+        </table>
+        <!-- Coût par service -->
+        <div style="padding:14px 20px;background:rgba(196,160,78,.03);border-top:1px solid rgba(196,160,78,.06)">
+          <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Impact sur la marge — si 1 pièce offerte par service</div>
+          <div id="snack-impact" style="display:flex;gap:16px;flex-wrap:wrap"></div>
+        </div>
+      </div>
+
       <!-- ═══ ACCESSOIRES & SNACKS ═══ -->
       <div class="tw" style="margin-bottom:24px">
         <div class="tw-head">
-          <span class="tw-title">🛠 Accessoires, Snacks & Consommables</span>
+          <span class="tw-title">🛠 Accessoires & Consommables — Suivi stock uniquement</span>
           <button class="btn-s" onclick="openAddAccessoire()">+ Ajouter</button>
         </div>
         <div style="padding:10px 20px 4px;border-bottom:1px solid rgba(196,160,78,.05)">
@@ -1038,6 +1073,123 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
             <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--ok)" id="acc-benef">–</td>
             <td colspan="2"></td>
           </tr></tfoot>
+        </table>
+      </div>
+
+
+      <!-- ═══ SIMULATEUR TAUX DE REMPLISSAGE ═══ -->
+      <div class="card" style="margin-bottom:24px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold-l),var(--gold),transparent)"></div>
+
+        <div class="card-h">
+          <div>
+            <span class="card-t">📊 Simulateur de revenus — Taux de remplissage</span>
+            <div style="font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:1px">Estimez votre CA et bénéfice selon le nombre de clients par jour</div>
+          </div>
+        </div>
+
+        <!-- Paramètres de base -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px">
+          <div style="padding:16px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.1)">
+            <div style="font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Capacité journalière</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button onclick="adjSimBase(-10)" style="background:none;border:1px solid rgba(196,160,78,.2);color:var(--gold);width:26px;height:26px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">−</button>
+              <span style="font-family:var(--serif);font-size:28px;color:var(--gold);min-width:50px;text-align:center" id="sim-base">100</span>
+              <button onclick="adjSimBase(10)" style="background:none;border:1px solid rgba(196,160,78,.2);color:var(--gold);width:26px;height:26px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">+</button>
+            </div>
+            <div style="font-size:8px;color:var(--muted);margin-top:4px">clients / jour max</div>
+          </div>
+          <div style="padding:16px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.1)">
+            <div style="font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Panier moyen / client</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button onclick="adjSimPanier(-5)" style="background:none;border:1px solid rgba(196,160,78,.2);color:var(--gold);width:26px;height:26px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">−</button>
+              <span style="font-family:var(--serif);font-size:28px;color:var(--gold);min-width:50px;text-align:center" id="sim-panier">85</span>
+              <button onclick="adjSimPanier(5)" style="background:none;border:1px solid rgba(196,160,78,.2);color:var(--gold);width:26px;height:26px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">+</button>
+            </div>
+            <div style="font-size:8px;color:var(--muted);margin-top:4px">€ / client (formule + extras)</div>
+          </div>
+          <div style="padding:16px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.1)">
+            <div style="font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Charges fixes / jour</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button onclick="adjSimCharges(-50)" style="background:none;border:1px solid rgba(196,160,78,.2);color:var(--gold);width:26px;height:26px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">−</button>
+              <span style="font-family:var(--serif);font-size:28px;color:var(--gold);min-width:50px;text-align:center" id="sim-charges">800</span>
+              <button onclick="adjSimCharges(50)" style="background:none;border:1px solid rgba(196,160,78,.2);color:var(--gold);width:26px;height:26px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">+</button>
+            </div>
+            <div style="font-size:8px;color:var(--muted);margin-top:4px">€ / jour (loyer, salaires…)</div>
+          </div>
+          <div style="padding:16px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.1)">
+            <div style="font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Coût variable / client</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button onclick="adjSimVar(-2)" style="background:none;border:1px solid rgba(196,160,78,.2);color:var(--gold);width:26px;height:26px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">−</button>
+              <span style="font-family:var(--serif);font-size:28px;color:var(--gold);min-width:50px;text-align:center" id="sim-var">12</span>
+              <button onclick="adjSimVar(2)" style="background:none;border:1px solid rgba(196,160,78,.2);color:var(--gold);width:26px;height:26px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">+</button>
+            </div>
+            <div style="font-size:8px;color:var(--muted);margin-top:4px">€ / client (consommables, boissons…)</div>
+          </div>
+        </div>
+
+        <!-- Curseur taux + boutons rapides -->
+        <div style="margin-bottom:24px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold)">Taux de remplissage</div>
+            <div style="font-family:var(--serif);font-size:32px;color:var(--gold)" id="sim-pct-display">60%</div>
+          </div>
+          <!-- Slider custom -->
+          <div style="position:relative;height:6px;background:rgba(255,255,255,.05);border-radius:3px;margin-bottom:14px;cursor:pointer" id="sim-slider-track" onclick="simSliderClick(event)">
+            <div id="sim-slider-fill" style="height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold));border-radius:3px;width:60%;transition:width .2s"></div>
+            <div id="sim-slider-thumb" style="position:absolute;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:var(--gold);border:2px solid var(--dark2);box-shadow:0 0 12px rgba(196,160,78,.5);left:60%;transition:left .2s;cursor:grab"></div>
+          </div>
+          <!-- Boutons rapides -->
+          <div style="display:flex;gap:8px">
+            <button class="sim-pct-btn" onclick="setSimPct(20,this)" style="flex:1;padding:10px 0;background:rgba(196,160,78,.06);border:1px solid rgba(196,160,78,.15);color:var(--muted);font-family:var(--sans);font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .2s">20%</button>
+            <button class="sim-pct-btn" onclick="setSimPct(40,this)" style="flex:1;padding:10px 0;background:rgba(196,160,78,.06);border:1px solid rgba(196,160,78,.15);color:var(--muted);font-family:var(--sans);font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .2s">40%</button>
+            <button class="sim-pct-btn active-pct" onclick="setSimPct(60,this)" style="flex:1;padding:10px 0;background:rgba(196,160,78,.15);border:1px solid var(--gold);color:var(--gold);font-family:var(--sans);font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .2s">60%</button>
+            <button class="sim-pct-btn" onclick="setSimPct(80,this)" style="flex:1;padding:10px 0;background:rgba(196,160,78,.06);border:1px solid rgba(196,160,78,.15);color:var(--muted);font-family:var(--sans);font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .2s">80%</button>
+            <button class="sim-pct-btn" onclick="setSimPct(100,this)" style="flex:1;padding:10px 0;background:rgba(196,160,78,.06);border:1px solid rgba(196,160,78,.15);color:var(--muted);font-family:var(--sans);font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .2s">100%</button>
+            <div style="display:flex;align-items:center;gap:6px;padding:0 12px;border:1px solid rgba(196,160,78,.2);background:rgba(196,160,78,.04)">
+              <input type="number" id="sim-custom-pct" min="1" max="100" value="60" style="background:none;border:none;color:var(--gold);font-family:var(--serif);font-size:18px;width:42px;outline:none;text-align:center" oninput="setSimPct(parseInt(this.value)||0,null)">
+              <span style="font-size:12px;color:var(--muted)">%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Résultats du taux sélectionné -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px" id="sim-results">
+          <div style="padding:20px;background:rgba(91,155,213,.05);border:1px solid rgba(91,155,213,.12);text-align:center">
+            <div style="font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--info);margin-bottom:6px">Clients / jour</div>
+            <div style="font-family:var(--serif);font-size:36px;color:var(--info)" id="sim-r-clients">60</div>
+          </div>
+          <div style="padding:20px;background:rgba(196,160,78,.06);border:1px solid rgba(196,160,78,.18);text-align:center">
+            <div style="font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">CA journalier</div>
+            <div style="font-family:var(--serif);font-size:36px;color:var(--gold)" id="sim-r-ca">5 100 €</div>
+          </div>
+          <div style="padding:20px;background:rgba(76,175,80,.05);border:1px solid rgba(76,175,80,.12);text-align:center">
+            <div style="font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--ok);margin-bottom:6px">Bénéfice net / jour</div>
+            <div style="font-family:var(--serif);font-size:36px;color:var(--ok)" id="sim-r-benef">3 580 €</div>
+          </div>
+          <div style="padding:20px;background:rgba(156,127,213,.05);border:1px solid rgba(156,127,213,.12);text-align:center">
+            <div style="font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--purple,#9c7fd5);margin-bottom:6px">Bénéfice / mois (26j)</div>
+            <div style="font-family:var(--serif);font-size:36px;color:var(--purple,#9c7fd5)" id="sim-r-mois">93 080 €</div>
+          </div>
+        </div>
+
+        <!-- Seuil de rentabilité -->
+        <div style="padding:14px 18px;background:rgba(196,160,78,.03);border:1px solid rgba(196,160,78,.08);margin-bottom:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <span style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold)">Seuil de rentabilité</span>
+          <span style="font-size:12px;color:var(--muted)">Minimum <b id="sim-seuil-clients" style="color:var(--warn)">–</b> clients/jour pour couvrir les charges fixes</span>
+          <span style="font-size:12px;color:var(--muted)">Soit <b id="sim-seuil-pct" style="color:var(--warn)">–</b> de remplissage</span>
+        </div>
+
+        <!-- Tableau comparatif tous les taux -->
+        <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Tableau comparatif — tous les taux</div>
+        <div style="height:180px;margin-bottom:16px"><canvas id="sim-chart" style="width:100%;height:180px"></canvas></div>
+        <table>
+          <thead><tr>
+            <th>Taux</th><th>Clients/jour</th><th>CA/jour</th>
+            <th>Charges variables</th><th>Charges fixes</th>
+            <th>Bénéfice/jour</th><th>Bénéfice/mois</th><th>Bénéfice/an</th>
+          </tr></thead>
+          <tbody id="sim-table-body"></tbody>
         </table>
       </div>
 
@@ -2901,6 +3053,7 @@ function achTab(name, btn){
     if(name==="canettes") drawCanettesChart();
     if(name==="cafes")    drawCafesChart();
     if(name==="boissons-spec") drawBSpecChart();
+    if(name==="snacks") drawSnacksChart();
     if(name==="accessoires") drawAccChart();
   }, 50);
 }
@@ -3401,18 +3554,299 @@ function renderCafes(){
 }
 
 
+
+// ══ SIMULATEUR TAUX DE REMPLISSAGE ══
+var SIM = { base:100, panier:85, charges:800, varClient:12, pct:60 };
+
+function adjSimBase(d){ SIM.base=Math.max(10,SIM.base+d); document.getElementById("sim-base").textContent=SIM.base; updateSim(); }
+function adjSimPanier(d){ SIM.panier=Math.max(10,SIM.panier+d); document.getElementById("sim-panier").textContent=SIM.panier; updateSim(); }
+function adjSimCharges(d){ SIM.charges=Math.max(0,SIM.charges+d); document.getElementById("sim-charges").textContent=SIM.charges; updateSim(); }
+function adjSimVar(d){ SIM.varClient=Math.max(0,SIM.varClient+d); document.getElementById("sim-var").textContent=SIM.varClient; updateSim(); }
+
+function setSimPct(pct, btn){
+  pct = Math.max(1, Math.min(100, pct||1));
+  SIM.pct = pct;
+  // Update display
+  var disp = document.getElementById("sim-pct-display");
+  if(disp) disp.textContent = pct+"%";
+  // Update slider
+  var fill  = document.getElementById("sim-slider-fill");
+  var thumb = document.getElementById("sim-slider-thumb");
+  if(fill)  fill.style.width = pct+"%";
+  if(thumb) thumb.style.left = pct+"%";
+  // Update custom input
+  var inp = document.getElementById("sim-custom-pct");
+  if(inp) inp.value = pct;
+  // Update buttons
+  document.querySelectorAll(".sim-pct-btn").forEach(function(b){
+    var isPct = [20,40,60,80,100].indexOf(pct) > -1;
+    var isThisBtn = b.textContent.trim() === pct+"%";
+    b.style.background = isThisBtn ? "rgba(196,160,78,.15)" : "rgba(196,160,78,.06)";
+    b.style.borderColor = isThisBtn ? "var(--gold)" : "rgba(196,160,78,.15)";
+    b.style.color = isThisBtn ? "var(--gold)" : "var(--muted)";
+  });
+  updateSim();
+}
+
+function simSliderClick(e){
+  var track = document.getElementById("sim-slider-track");
+  var rect  = track.getBoundingClientRect();
+  var pct   = Math.round((e.clientX - rect.left) / rect.width * 100);
+  setSimPct(Math.max(1,Math.min(100,pct)), null);
+}
+
+function calcSim(pct){
+  var clients   = Math.round(SIM.base * pct/100);
+  var ca        = clients * SIM.panier;
+  var chargesVar = clients * SIM.varClient;
+  var total_charges = SIM.charges + chargesVar;
+  var benef     = ca - total_charges;
+  var benefMois = benef * 26;
+  var benefAn   = benef * 310;
+  return {clients:clients, ca:ca, chargesVar:chargesVar, benef:benef, benefMois:benefMois, benefAn:benefAn};
+}
+
+function updateSim(){
+  var res = calcSim(SIM.pct);
+
+  function fmt(n){ return n.toLocaleString("fr-FR",{maximumFractionDigits:0})+" €"; }
+  setKPI("sim-r-clients", res.clients);
+  setKPI("sim-r-ca",      fmt(res.ca));
+  var benefEl = document.getElementById("sim-r-benef");
+  if(benefEl){ benefEl.textContent=fmt(res.benef); benefEl.style.color=res.benef>=0?"var(--ok)":"var(--err)"; }
+  var moisEl = document.getElementById("sim-r-mois");
+  if(moisEl){ moisEl.textContent=fmt(res.benefMois); moisEl.style.color=res.benefMois>=0?"var(--purple,#9c7fd5)":"var(--err)"; }
+
+  // Seuil de rentabilité
+  var seuilClients = SIM.panier > SIM.varClient ? Math.ceil(SIM.charges/(SIM.panier-SIM.varClient)) : Infinity;
+  var seuilPct = seuilClients <= SIM.base ? Math.ceil(seuilClients/SIM.base*100) : ">100";
+  setKPI("sim-seuil-clients", seuilClients===Infinity?"impossible":seuilClients+" clients");
+  setKPI("sim-seuil-pct", seuilPct===">100%" ? ">100%" : seuilPct+"%");
+
+  // Tableau comparatif
+  var taux = [10,20,30,40,50,60,70,80,90,100];
+  var tb   = document.getElementById("sim-table-body");
+  if(tb){
+    var rows = "";
+    taux.forEach(function(t){
+      var r = calcSim(t);
+      var isActive = t === SIM.pct;
+      var bc  = r.benef>=0?"var(--ok)":"var(--err)";
+      var bg  = isActive?"background:rgba(196,160,78,.07);":"";
+      var bdr = isActive?"border-left:2px solid var(--gold);":"";
+      rows += "<tr style='"+bg+bdr+"'>";
+      rows += "<td><b style='color:"+(isActive?"var(--gold)":"var(--muted)")+"'>"+t+"%</b></td>";
+      rows += "<td style='text-align:center;font-family:var(--serif);font-size:16px;color:var(--info)'>"+r.clients+"</td>";
+      rows += "<td style='color:var(--gold);font-family:var(--serif);font-size:14px'>"+r.ca.toLocaleString("fr-FR")+" €</td>";
+      rows += "<td style='color:var(--err)'>"+r.chargesVar.toLocaleString("fr-FR")+" €</td>";
+      rows += "<td style='color:var(--muted)'>"+SIM.charges.toLocaleString("fr-FR")+" €</td>";
+      rows += "<td style='color:"+bc+";font-family:var(--serif);font-size:15px'><b>"+r.benef.toLocaleString("fr-FR")+" €</b></td>";
+      rows += "<td style='color:"+bc+"'>"+r.benefMois.toLocaleString("fr-FR")+" €</td>";
+      rows += "<td style='color:"+bc+"'>"+r.benefAn.toLocaleString("fr-FR")+" €</td>";
+      rows += "</tr>";
+    });
+    tb.innerHTML = rows;
+  }
+
+  // Graphique
+  drawSimChart(taux);
+}
+
+function drawSimChart(taux){
+  var canvas = document.getElementById("sim-chart");
+  if(!canvas) return;
+  canvas.width = canvas.parentElement ? canvas.parentElement.offsetWidth-20 : 600;
+  var ctx = getCtx("sim-chart"); if(!ctx) return;
+  var W=canvas.width, H=canvas.height;
+  var pad={t:28,r:16,b:32,l:64};
+  var cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+
+  var benefs = taux.map(function(t){ return calcSim(t).benef; });
+  var min = Math.min.apply(null,benefs);
+  var max = Math.max.apply(null,benefs);
+  var range = max - min || 1;
+  var zeroY = pad.t + cH - ((0-min)/range)*cH;
+
+  // Grid + zero line
+  ctx.strokeStyle="rgba(196,160,78,.05)";ctx.lineWidth=1;ctx.setLineDash([2,4]);
+  for(var i=0;i<=4;i++){
+    var y=pad.t+cH-(cH/4)*i;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  // Zero line
+  if(zeroY>=pad.t && zeroY<=pad.t+cH){
+    ctx.strokeStyle="rgba(224,80,80,.3)";ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(pad.l,zeroY);ctx.lineTo(pad.l+cW,zeroY);ctx.stroke();
+    ctx.fillStyle="rgba(224,80,80,.6)";ctx.font="8px Jost,sans-serif";ctx.textAlign="right";
+    ctx.fillText("0€",pad.l-4,zeroY+3);
+  }
+
+  // Y labels
+  ctx.fillStyle="rgba(122,122,104,.6)";ctx.font="8px Jost,sans-serif";ctx.textAlign="right";
+  for(var i=0;i<=4;i++){
+    var v = min + range/4*i;
+    var y = pad.t+cH-((v-min)/range)*cH;
+    var lbl = v>=1000?(v/1000).toFixed(1)+"k":Math.round(v);
+    ctx.fillText(lbl+"€",pad.l-5,y+3);
+  }
+
+  // Bars
+  var bw = Math.min(40,(cW/taux.length)*0.6);
+  var gap = (cW-bw*taux.length)/(taux.length+1);
+
+  taux.forEach(function(t,i){
+    var v = benefs[i];
+    var x = pad.l + gap*(i+1) + bw*i;
+    var isActive = t===SIM.pct;
+    var col = v>=0 ? (isActive?"#c4a04e":"rgba(76,175,80,.7)") : "rgba(224,80,80,.7)";
+    var vh  = Math.abs((v/range)*cH);
+    var y   = v>=0 ? zeroY-vh : zeroY;
+
+    // Shadow
+    ctx.shadowColor = isActive?"rgba(196,160,78,.4)":"rgba(0,0,0,0)";
+    ctx.shadowBlur  = isActive?12:0;
+
+    var grad = ctx.createLinearGradient(0,y,0,y+vh);
+    grad.addColorStop(0,col);
+    grad.addColorStop(1,col.replace("0.7","0.1").replace("#c4a04e","rgba(196,160,78,.1)"));
+    ctx.fillStyle=grad;
+    // Rounded top
+    var r=2;
+    ctx.beginPath();
+    if(v>=0){
+      ctx.moveTo(x+r,y);ctx.lineTo(x+bw-r,y);
+      ctx.quadraticCurveTo(x+bw,y,x+bw,y+r);
+      ctx.lineTo(x+bw,y+vh);ctx.lineTo(x,y+vh);
+      ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+    } else {
+      ctx.moveTo(x,y);ctx.lineTo(x+bw,y);
+      ctx.lineTo(x+bw,y+vh-r);ctx.quadraticCurveTo(x+bw,y+vh,x+bw-r,y+vh);
+      ctx.lineTo(x+r,y+vh);ctx.quadraticCurveTo(x,y+vh,x,y+vh-r);
+    }
+    ctx.closePath();ctx.fill();
+    ctx.shadowBlur=0;
+
+    // Active highlight
+    if(isActive){
+      ctx.strokeStyle="var(--gold)";ctx.lineWidth=1.5;ctx.stroke();
+    }
+
+    // Value
+    ctx.fillStyle=isActive?"#c4a04e":col;ctx.font=(isActive?"bold ":"")+"8px Jost,sans-serif";ctx.textAlign="center";
+    var lv=Math.round(v/1000*10)/10;
+    ctx.fillText((v>=0?"+":"")+lv+"k",x+bw/2,v>=0?y-6:y+vh+12);
+
+    // Label
+    ctx.fillStyle=isActive?"var(--gold)":"rgba(122,122,104,.6)";
+    ctx.font=(isActive?"bold ":"")+"8px Jost,sans-serif";
+    ctx.fillText(t+"%",x+bw/2,pad.t+cH+20);
+  });
+}
+
 // ══ BOISSONS SPÉCIALES ══
 var BSPEC = [
-  {id:"bs1",nom:"Eau de Coco Bio Carrefour",format:"1L",prix:3.49,qte:6,prixVente:4.50,seuil:2,cat:"boisson"},
-  {id:"bs2",nom:"Lait d'Amande Bjorg Bio",format:"1L",prix:1.79,qte:6,prixVente:3.00,seuil:2,cat:"boisson"}
+  {id:"bs1",nom:"Eau de Coco Bio Carrefour",format:"1L",prix:3.49,qte:6,mlParRecette:150,prixSmoothie:6.50,seuil:2},
+  {id:"bs2",nom:"Lait d'Amande Bjorg Bio",format:"1L",prix:1.79,qte:6,mlParRecette:200,prixSmoothie:6.50,seuil:2}
 ];
+
+
+// ══ SNACKS / ACCOMPAGNEMENTS ══
+function renderSnacks(){
+  var tb=document.getElementById("snack-tb"); if(!tb) return;
+  var totInvesti=0, totalPieces=0;
+  var rows="";
+  SNACKS.forEach(function(s,i){
+    var totalPcs = s.qte * s.piecesParCarton;
+    var investi  = s.prixCarton * s.qte;
+    totInvesti  += investi;
+    totalPieces += totalPcs;
+    var st = s.qte<=0?"<span class='badge cancelled'><span class='badge-dot'></span>Rupture</span>"
+           : s.qte<=s.seuil?"<span class='badge pending'><span class='badge-dot'></span>Bas</span>"
+           : "<span class='badge confirmed'><span class='badge-dot'></span>OK</span>";
+    rows+="<tr>";
+    rows+="<td class='name'>"+s.nom+"</td>";
+    rows+="<td style='color:var(--muted);font-size:10px'>"+s.format+"</td>";
+    rows+="<td style='color:var(--muted)'>"+s.prixCarton.toFixed(2)+" €</td>";
+    rows+="<td style='text-align:center'><div style='display:flex;align-items:center;gap:5px;justify-content:center'>";
+    rows+="<button class='sib' data-idx='"+i+"' data-d='-1' onclick='adjSnackBtn(this)'>−</button>";
+    rows+="<span style='font-family:var(--serif);font-size:16px;min-width:20px;text-align:center'>"+s.qte+"</span>";
+    rows+="<button class='sib' data-idx='"+i+"' data-d='1' onclick='adjSnackBtn(this)'>+</button>";
+    rows+="</div></td>";
+    rows+="<td style='text-align:center;color:var(--muted)'>"+s.piecesParCarton+"</td>";
+    rows+="<td style='text-align:center;color:var(--info);font-family:var(--serif);font-size:15px'>"+s.coutPiece.toFixed(3)+" €</td>";
+    rows+="<td style='text-align:center;font-family:var(--serif);font-size:18px;color:var(--cream)'>"+totalPcs+"</td>";
+    rows+="<td style='color:var(--warn);font-family:var(--serif);font-size:14px'>"+investi.toFixed(2)+" €</td>";
+    rows+="<td>"+st+"</td>";
+    rows+="<td><button class='atb err' data-idx='"+i+"' onclick='delSnackBtn(this)'>✕</button></td>";
+    rows+="</tr>";
+  });
+  tb.innerHTML=rows;
+  setKPI("snack-total",totInvesti.toFixed(2)+" €");
+
+  // Impact sur la marge
+  var impact=document.getElementById("snack-impact");
+  if(impact){
+    var html="";
+    SNACKS.forEach(function(s){
+      html+="<div style='padding:10px 16px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.08)'>";
+      html+="<div style='font-size:9px;color:var(--muted);margin-bottom:4px'>"+s.nom.substring(0,20)+"</div>";
+      html+="<div style='font-family:var(--serif);font-size:18px;color:var(--warn)'>−"+s.coutPiece.toFixed(3)+"€ <small style='font-size:10px;color:var(--muted)'>/service</small></div>";
+      var margeCafe=2.50-0.245; // espresso margin example
+      var pct=(s.coutPiece/margeCafe*100).toFixed(1);
+      html+="<div style='font-size:8px;color:var(--muted);margin-top:3px'>≈ "+pct+"% de la marge espresso</div>";
+      html+="</div>";
+    });
+    impact.innerHTML=html;
+  }
+}
+function adjSnackBtn(btn){var idx=parseInt(btn.dataset.idx);SNACKS[idx].qte=Math.max(0,SNACKS[idx].qte+parseInt(btn.dataset.d));renderSnacks();}
+function delSnackBtn(btn){if(confirm("Supprimer ?")){SNACKS.splice(parseInt(btn.dataset.idx),1);renderSnacks();toast("OK","Snack supprimé");}}
+
+function openAddSnack(){
+  document.getElementById("drw-t").textContent="Ajouter un snack";
+  document.getElementById("drw-s").textContent="Accompagnement servi avec thés et cafés";
+  document.getElementById("drw-b").innerHTML=
+    "<div class='df'><label>Nom *</label><input id='asn-nom' placeholder='Ex: Chocolat Lindt...' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>"+
+    "<div class='df'><label>Format / conditionnement</label><input id='asn-fmt' placeholder='200 pcs/carton' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>"+
+    "<div class='df-row'>"+
+    "<div class='df'><label>Prix carton (€)</label><input id='asn-prix' type='number' step='0.01' placeholder='34.99' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>"+
+    "<div class='df'><label>Nb cartons</label><input id='asn-qte' type='number' value='1' min='0' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>"+
+    "</div>"+
+    "<div class='df'><label>Pièces par carton</label><input id='asn-pcs' type='number' value='200' min='1' style='background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none'></div>";
+  document.getElementById("drw-f").innerHTML=
+    "<button class='btn-s fill' onclick='doAddSnack()'>Ajouter</button>"+
+    "<button class='btn-s' onclick='closeDrw()'>Annuler</button>";
+  openDrw();
+}
+function doAddSnack(){
+  var nom=document.getElementById("asn-nom").value.trim();
+  var fmt=document.getElementById("asn-fmt").value.trim();
+  var prix=parseFloat(document.getElementById("asn-prix").value)||0;
+  var qte=parseInt(document.getElementById("asn-qte").value)||1;
+  var pcs=parseInt(document.getElementById("asn-pcs").value)||200;
+  if(!nom||!prix){toast("⚠","Nom et prix obligatoires","warn");return;}
+  SNACKS.push({id:"sn"+Date.now(),nom:nom,format:fmt||pcs+"pcs",prixCarton:prix,qte:qte,piecesParCarton:pcs,coutPiece:Math.round(prix/pcs*1000)/1000,seuil:1,cat:"snack"});
+  closeDrw();renderSnacks();toast("OK","Snack ajouté");
+}
+
+function drawSnacksChart(){
+  var labels=SNACKS.map(function(s){return s.nom.substring(0,16);});
+  var vals=SNACKS.map(function(s){return s.prixCarton*s.qte;});
+  drawColoredBarChart("chart-snacks",labels,vals,["#c4a04e","#dbbf78","#8a7038"]);
+}
 
 // ══ ACCESSOIRES & SNACKS ══
 var ACCESSOIRES = [
-  {id:"ac1",nom:"Chocolat Lindt Excellence Noir 70%",format:"200 pcs",prix:34.99,qte:1,unites:200,prixVente:0.80,seuil:1,cat:"snack"},
-  {id:"ac2",nom:"Biscoff Lotus Spéculoos",format:"1200 biscuits",prix:85.47,qte:1,unites:1200,prixVente:0.20,seuil:1,cat:"snack"},
-  {id:"ac3",nom:"Pompe Monin 10ml",format:"1L sirop",prix:2.99,qte:14,unites:1,prixVente:0,seuil:2,cat:"accessoire"},
-  {id:"ac4",nom:"Chocolat Monbana Pépite Spéculoos",format:"200 pcs",prix:24.99,qte:1,unites:200,prixVente:0.60,seuil:1,cat:"snack"}
+  {id:"ac1",nom:"Pompe Monin 10ml",format:"pour bouteille 1L",prix:2.99,qte:14,unites:1,prixVente:0,seuil:2,cat:"accessoire"},
+];
+
+// ══ SNACKS / ACCOMPAGNEMENTS (servis avec thés et cafés) ══
+var SNACKS = [
+  {id:"sn1",nom:"Chocolat Lindt Excellence Noir 70%",format:"200 pcs/carton",prixCarton:34.99,qte:1,piecesParCarton:200,coutPiece:0.175,seuil:1,cat:"snack"},
+  {id:"sn2",nom:"Biscoff Lotus Spéculoos",format:"1200 biscuits/carton",prixCarton:85.47,qte:1,piecesParCarton:1200,coutPiece:0.071,seuil:1,cat:"snack"},
+  {id:"sn3",nom:"Chocolat Monbana Pépite Spéculoos",format:"200 pcs/carton",prixCarton:24.99,qte:1,piecesParCarton:200,coutPiece:0.125,seuil:1,cat:"snack"}
 ];
 var accFilter = "all";
 
@@ -3421,12 +3855,16 @@ function renderBSpec(){
   var totCout=0,totCA=0;
   var rows="";
   BSPEC.forEach(function(p,i){
-    var cout=p.prix*p.qte, ca=p.qte*p.prixVente, benef=ca-cout;
+    var mlTotal = p.qte * 1000; // 1 bouteille = 1000ml
+    var nbSmoothies = Math.floor(mlTotal / p.mlParRecette);
+    var cout = p.prix * p.qte;
+    var ca   = nbSmoothies * p.prixSmoothie;
+    var benef = ca - cout;
     totCout+=cout; totCA+=ca;
-    var st=p.qte<=0?"<span class='badge cancelled'><span class='badge-dot'></span>Rupture</span>"
-           :p.qte<=p.seuil?"<span class='badge pending'><span class='badge-dot'></span>Bas</span>"
-           :"<span class='badge confirmed'><span class='badge-dot'></span>OK</span>";
-    var bc=benef>=0?"var(--ok)":"var(--err)";
+    var st = p.qte<=0?"<span class='badge cancelled'><span class='badge-dot'></span>Rupture</span>"
+           : p.qte<=p.seuil?"<span class='badge pending'><span class='badge-dot'></span>Bas</span>"
+           : "<span class='badge confirmed'><span class='badge-dot'></span>OK</span>";
+    var bc = benef>=0?"var(--ok)":"var(--err)";
     rows+="<tr>";
     rows+="<td class='name'>"+p.nom+"</td>";
     rows+="<td style='color:var(--muted);font-size:10px'>"+p.format+"</td>";
@@ -3437,8 +3875,14 @@ function renderBSpec(){
     rows+="<button class='sib' data-idx='"+i+"' data-d='1' onclick='adjBSpecBtn(this)'>+</button>";
     rows+="</div></td>";
     rows+="<td style='text-align:center'><div style='display:flex;align-items:center;gap:4px;justify-content:center'>";
+    rows+="<button class='sib' data-idx='"+i+"' data-d='-10' onclick='adjMlBtn(this)'>−</button>";
+    rows+="<span style='font-size:11px;color:var(--info);min-width:40px;text-align:center'>"+p.mlParRecette+"ml</span>";
+    rows+="<button class='sib' data-idx='"+i+"' data-d='10' onclick='adjMlBtn(this)'>+</button>";
+    rows+="</div></td>";
+    rows+="<td style='text-align:center;font-family:var(--serif);font-size:18px;color:var(--info)'>"+nbSmoothies+"</td>";
+    rows+="<td style='text-align:center'><div style='display:flex;align-items:center;gap:4px;justify-content:center'>";
     rows+="<button class='sib' data-idx='"+i+"' data-d='-0.5' onclick='adjBSpecVenteBtn(this)'>−</button>";
-    rows+="<span style='font-size:11px;color:var(--gold);min-width:38px;text-align:center'>"+p.prixVente.toFixed(2)+"€</span>";
+    rows+="<span style='font-size:11px;color:var(--gold);min-width:42px;text-align:center'>"+p.prixSmoothie.toFixed(2)+"€</span>";
     rows+="<button class='sib' data-idx='"+i+"' data-d='0.5' onclick='adjBSpecVenteBtn(this)'>+</button>";
     rows+="</div></td>";
     rows+="<td style='color:var(--muted)'>"+cout.toFixed(2)+" €</td>";
@@ -3458,7 +3902,8 @@ function renderBSpec(){
   setKPI("kpi-bspec-benef",totBenef.toFixed(0)+" €");
 }
 function adjBSpecBtn(btn){ BSPEC[parseInt(btn.dataset.idx)].qte=Math.max(0,BSPEC[parseInt(btn.dataset.idx)].qte+parseInt(btn.dataset.d)); renderBSpec(); }
-function adjBSpecVenteBtn(btn){ BSPEC[parseInt(btn.dataset.idx)].prixVente=Math.max(0,Math.round((BSPEC[parseInt(btn.dataset.idx)].prixVente+parseFloat(btn.dataset.d))*100)/100); renderBSpec(); }
+function adjBSpecVenteBtn(btn){ var idx=parseInt(btn.dataset.idx); BSPEC[idx].prixSmoothie=Math.max(0.5,Math.round((BSPEC[idx].prixSmoothie+parseFloat(btn.dataset.d))*10)/10); renderBSpec(); }
+function adjMlBtn(btn){ var idx=parseInt(btn.dataset.idx); BSPEC[idx].mlParRecette=Math.max(10,BSPEC[idx].mlParRecette+parseInt(btn.dataset.d)); renderBSpec(); }
 function delBSpecBtn(btn){ if(confirm("Supprimer ?")){BSPEC.splice(parseInt(btn.dataset.idx),1);renderBSpec();toast("OK","Supprimé");} }
 
 function openAddBoissonSpec(){
@@ -3634,12 +4079,14 @@ function renderAchats(){
   renderBoissons();
   renderCafes();
   renderBSpec();
+  renderSnacks();
   renderAccessoires();
   renderRecap();
   renderRevenue();
   renderFamilies();
   updateAllKPIs();
-  setTimeout(function(){drawGlobalCharts();},100);
+  updateSim();
+  setTimeout(function(){drawGlobalCharts();drawSimChart([10,20,30,40,50,60,70,80,90,100]);},100);
 }
 
 function renderThes(){
