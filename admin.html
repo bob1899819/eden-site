@@ -43,14 +43,14 @@ body{background:var(--dark);color:var(--cream);font-family:var(--sans);font-weig
 .login-btn:hover{background:var(--gold-l);}
 .login-attempts{font-size:9px;color:var(--err);margin-top:10px;text-align:center;min-height:16px;}
 .login-locked{font-size:9px;color:var(--err);text-align:center;padding:10px;background:rgba(224,80,80,.07);border:1px solid rgba(224,80,80,.15);margin-top:10px;display:none;}
-.login-sep{display:none!important;}
-.sb-cfg-box{display:none!important;}
+.login-sep{height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.1),transparent);margin:24px 0;}
+.sb-cfg-box{padding:20px;background:rgba(255,255,255,.02);border:1px solid rgba(196,160,78,.08);}
 .sb-cfg-title{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
 .cfg-input{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.1);color:var(--cream);padding:9px 12px;font-family:monospace;font-size:10px;outline:none;transition:border-color .3s;margin-bottom:8px;}
 .cfg-input:focus{border-color:rgba(196,160,78,.35);}
 .cfg-input::placeholder{color:var(--muted);font-family:var(--sans);}
 .login-note{font-size:9px;color:var(--muted);text-align:center;line-height:2;margin-top:16px;}
-#sb-no-cfg{display:none!important;}
+#sb-no-cfg{font-size:9px;color:var(--warn);padding:10px;background:rgba(240,160,48,.05);border:1px solid rgba(240,160,48,.15);margin-top:12px;line-height:1.8;display:none;}
 
 /* ══ APP SHELL ══ */
 #app{display:none;min-height:100vh;}
@@ -298,46 +298,17 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
   <div class="login-wrap">
     <div class="login-deco">
       <span class="login-logo">EDEN</span>
-      <span class="login-sub">Espace Administrateur Sécurisé</span>
+      <span class="login-sub">Espace Administrateur Privé</span>
     </div>
-
-    <!-- Mode Supabase Auth -->
-    <div class="login-box" id="login-box-supabase">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px;padding:10px 14px;background:rgba(76,175,80,.05);border:1px solid rgba(76,175,80,.15)">
-        <span style="font-size:10px">🔐</span>
-        <span style="font-size:9px;color:#4caf50;letter-spacing:1px">Authentification Supabase sécurisée</span>
-      </div>
-      <div class="lf">
-        <label>Email administrateur</label>
-        <input type="email" id="auth-email" placeholder="admin@eden-wellness.fr" onkeydown="if(event.key==='Enter')document.getElementById('auth-pwd').focus()">
-      </div>
+    <div class="login-box">
       <div class="lf">
         <label>Mot de passe</label>
-        <input type="password" id="auth-pwd" placeholder="••••••••••" onkeydown="if(event.key==='Enter')loginSupabase()">
+        <input type="password" id="pwd" placeholder="••••••••••" onkeydown="if(event.key==='Enter')login()">
       </div>
-      <button class="login-btn" id="login-btn-sb" onclick="loginSupabase()">Accéder à l'espace admin</button>
+      <button class="login-btn" onclick="login()">Accéder à l'espace admin</button>
       <p class="login-attempts" id="login-err"></p>
-      </div>
     </div>
-
-    <!-- Mode local fallback (si Supabase non configuré) -->
-    <div class="login-box" id="login-box-local" style="display:none">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;padding:10px 14px;background:rgba(240,160,48,.05);border:1px solid rgba(240,160,48,.15)">
-        <span style="font-size:10px">⚠</span>
-        <span style="font-size:9px;color:var(--warn);letter-spacing:1px">Mode local — Configurez Supabase pour sécuriser l'accès</span>
-      </div>
-      <div class="lf">
-        <label>Mot de passe</label>
-        <input type="password" id="pwd-local" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginLocal()">
-      </div>
-      <button class="login-btn" onclick="loginLocal()">Accéder</button>
-      <p class="login-attempts" id="login-err-local"></p>
-    </div>
-
-    <div class="login-sep"></div>
-
-    <div id="sb-no-cfg" style="display:none"></div>
-
+    <p class="login-note">Mot de passe par défaut : <b style="color:var(--gold)">eden2024</b> — Modifiable dans Paramètres</p>
   </div>
 </div>
 
@@ -366,7 +337,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 
       <p class="sb-sec">Fidélité</p>
       <div class="sbi" onclick="nav('parrainage')"><span class="sbi-icon">✦</span>Parrainage</div>
-      <div class="sbi" onclick="nav('fidelite')"><span class="sbi-icon">♥</span>Cartes Fidélité <span id="b-fid" class="sbi-badge gold" style="display:none">0</span></div>
+      <div class="sbi" onclick="nav('fidelite')"><span class="sbi-icon">♥</span>Fidélité <span id="b-fid" class="sbi-badge gold" style="display:none">0</span></div>
 
       <p class="sb-sec">Finances</p>
       <div class="sbi" onclick="nav('finances')"><span class="sbi-icon">◆</span>Revenus & Stats</div>
@@ -618,32 +589,28 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
     </section>
 
 
-    <!-- ════ FIDÉLITÉ ════ -->
+    <!-- FIDÉLITÉ -->
     <section class="page" id="page-fidelite">
       <div class="sh">
         <div class="sh-left"><p class="ey">Programme</p><h2>Cartes de <em>Fidélité</em></h2></div>
         <div style="display:flex;gap:8px">
-          <button class="btn-s" onclick="exportFidCSV()">↓ Export CSV</button>
-          <button class="btn-s fill" onclick="refreshFidelite()">↻ Actualiser</button>
+          <button class="btn-s" onclick="exportFidCSV()">↓ CSV</button>
+          <button class="btn-s fill" onclick="loadFidelite()">↻ Actualiser</button>
         </div>
       </div>
 
-      <!-- KPIs -->
       <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
-        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Membres inscrits</p><div class="kpi-val"><b id="fid-total">–</b></div><span class="kpi-ico">♥</span></div>
-        <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Niveau Or</p><div class="kpi-val"><b id="fid-or">–</b></div><span class="kpi-ico">◈</span></div>
-        <div class="kpi" style="--accent:var(--light)"><p class="kpi-label">Niveau Argent</p><div class="kpi-val"><b id="fid-argent">–</b></div><span class="kpi-ico">◆</span></div>
-        <div class="kpi" style="--accent:var(--gold-d,#8a7038)"><p class="kpi-label">Niveau Bronze</p><div class="kpi-val"><b id="fid-bronze">–</b></div><span class="kpi-ico">✦</span></div>
+        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Membres inscrits</p><div class="kpi-val"><b id="fid-total">0</b></div><span class="kpi-ico">♥</span></div>
+        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Niveau Or</p><div class="kpi-val"><b id="fid-or">0</b></div><span class="kpi-ico">◈</span></div>
+        <div class="kpi" style="--accent:var(--light)"><p class="kpi-label">Niveau Argent</p><div class="kpi-val"><b id="fid-argent">0</b></div><span class="kpi-ico">◆</span></div>
+        <div class="kpi" style="--accent:#cd7f32"><p class="kpi-label">Niveau Bronze</p><div class="kpi-val"><b id="fid-bronze">0</b></div><span class="kpi-ico">✦</span></div>
       </div>
 
-      <div id="fid-alerts" style="margin-bottom:16px"></div>
-
-      <!-- Recherche + filtres -->
       <div class="tw">
         <div class="tw-head">
           <span class="tw-title">Tous les membres</span>
           <div class="tw-acts">
-            <input class="search" placeholder="Rechercher un membre…" oninput="filterFid(this.value)" id="fid-search">
+            <input class="search" placeholder="Rechercher..." oninput="filterFid(this.value)">
           </div>
         </div>
         <div class="filter-row">
@@ -651,21 +618,19 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
           <button class="fb" onclick="setFidF('Or',this)">Or</button>
           <button class="fb" onclick="setFidF('Argent',this)">Argent</button>
           <button class="fb" onclick="setFidF('Bronze',this)">Bronze</button>
-          <button class="fb" onclick="setFidF('actif',this)">Actifs</button>
         </div>
         <table>
           <thead><tr>
             <th>N° Membre</th><th>Nom</th><th>Email</th>
-            <th>Code parrainage</th><th>Nb visites</th>
+            <th>Code parrainage</th><th>Visites</th>
             <th>Niveau</th><th>Inscrit le</th><th>Actions</th>
           </tr></thead>
           <tbody id="fid-tb"></tbody>
         </table>
       </div>
 
-      <!-- Cartes visuelles -->
       <div style="margin-top:28px">
-        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:20px">Aperçu des cartes</div>
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:18px">Aperçu des cartes</div>
         <div id="fid-cards-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px"></div>
       </div>
     </section>
@@ -790,7 +755,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
           <div class="card">
             <div class="card-h"><span class="card-t">Connexion Supabase</span></div>
             <div class="df" style="margin-bottom:11px"><label>URL du projet</label><input id="cfg-url" placeholder="https://xxxx.supabase.co"></div>
-            <div class="df" style="margin-bottom:11px"><label>Clé publishable</label><input id="cfg-key" placeholder="sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A"></div>
+            <div class="df" style="margin-bottom:11px"><label>Clé anonyme</label><input id="cfg-key" placeholder="eyJhbGci…"></div>
             <button class="btn-s fill" onclick="saveCfgPage()">Sauvegarder & Tester</button>
             <p id="cfg-st" style="font-size:9px;margin-top:9px;color:var(--muted)"></p>
           </div>
@@ -894,20 +859,6 @@ CREATE TABLE IF NOT EXISTS stocks (
   updated_at    TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS fidelite (
-  id                UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  created_at        TIMESTAMPTZ DEFAULT NOW(),
-  prenom            TEXT NOT NULL,
-  nom               TEXT,
-  email             TEXT NOT NULL,
-  statut            TEXT DEFAULT 'nouveau',
-  code_parrainage   TEXT,
-  membre_num        TEXT UNIQUE NOT NULL,
-  niveau            TEXT DEFAULT 'Bronze',
-  nb_visites        INTEGER DEFAULT 0,
-  actif             BOOLEAN DEFAULT TRUE
-);
-
 CREATE TABLE IF NOT EXISTS parrainages (
   id                UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at        TIMESTAMPTZ DEFAULT NOW(),
@@ -952,277 +903,111 @@ CREATE POLICY "anon_all" ON parrainages    FOR ALL USING (true) WITH CHECK (true
 
 <script>
 
-/* ══════════════════════════════════════════════
-   SÉCURITÉ — Authentification Supabase + Fallback
-   Niveau de sécurité :
-   ✅ Supabase Auth = JWT signé côté serveur
-   ✅ Token expirant automatiquement (1h)
-   ✅ Session détruite à la fermeture
-   ✅ Rate limiting géré par Supabase
-   ✅ Brute force impossible côté serveur
-   ⚠  Fallback local = mot de passe simple
-══════════════════════════════════════════════ */
+var SB_URL = 'https://jdcxhejkuttaviiqqonz.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkY3hoZWprdXR0YXZpaXFxb256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzU5NjcsImV4cCI6MjA5MjcxMTk2N30.jKejetk46cKzo7gJGnyRQTCtvzjL0p-6CMkVgLfceZs';
+var SB_TOKEN = '';
+var sbReady = false;
+var planWeekOffset = 0;
+var resFilter = 'all', resSearch = '';
+var demFilter = 'all';
 
-const SB_URL_K = 'eden_sb_url';
-const SB_KEY_K = 'eden_sb_key';
-const TOKEN_K  = 'eden_sb_token';
-const RTOKEN_K = 'eden_sb_refresh';
-const SESSION_K = 'eden_session_exp';
 
-let SB_URL = localStorage.getItem('eden_sb_url') || 'https://jdcxhejkuttaviiqqonz.supabase.co';
-let SB_KEY = localStorage.getItem('eden_sb_key') || 'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A';
-let sbReady = false;
-let SB_TOKEN = ''; // JWT Supabase Auth token
-let planWeekOffset = 0;
-let resFilter = 'all', resSearch = '';
-let demFilter = 'all';
-
-const D = {
-  reservations: [],
-  demandes: [],
-  stocks: {
-    smoothies: [],
-    softs: [],
-    extras: []
+// ── DONNÉES DEMO ──
+var D = {
+  reservations:[
+    {id:'r1',created_at:'2026-05-01T10:30:00',nom:'Marie Dupont',email:'marie@email.fr',telephone:'06 12 34 56 78',formule:'Bain Nordique Duo',date_seance:'2026-05-03',heure:'10:00',nb_personnes:2,extras:['Smoothie Vert','Serviettes Premium'],montant_total:148,statut:'confirmed',notes:'Anniversaire de mariage'},
+    {id:'r2',created_at:'2026-05-01T14:20:00',nom:'Pierre Martin',email:'pierre@email.fr',telephone:'07 65 43 21 09',formule:'Sauna Hammam Solo',date_seance:'2026-05-04',heure:'14:30',nb_personnes:1,extras:['Infusion Detox'],montant_total:75,statut:'pending',notes:'Prefere cabine silencieuse'},
+    {id:'r3',created_at:'2026-04-30T09:00:00',nom:'Sophie Bernard',email:'sophie@email.fr',telephone:'06 98 76 54 32',formule:'Pressozone Premium',date_seance:'2026-05-02',heure:'11:00',nb_personnes:1,extras:[],montant_total:95,statut:'done',notes:''},
+    {id:'r4',created_at:'2026-05-01T16:00:00',nom:'Lucas Moreau',email:'lucas@email.fr',telephone:'06 11 22 33 44',formule:'Bain Nordique Solo',date_seance:'2026-05-05',heure:'16:00',nb_personnes:1,extras:['Smoothie Energie','Bougie Aroma'],montant_total:110,statut:'pending',notes:''},
+    {id:'r5',created_at:'2026-04-29T11:00:00',nom:'Emma Leroy',email:'emma@email.fr',telephone:'07 55 44 33 22',formule:'Massage Recuperation',date_seance:'2026-05-06',heure:'09:30',nb_personnes:1,extras:['Tisane'],montant_total:120,statut:'confirmed',notes:''},
+    {id:'r6',created_at:'2026-04-28T08:00:00',nom:'Thomas Girard',email:'thomas@email.fr',telephone:'06 44 55 66 77',formule:'Bain Nordique Duo',date_seance:'2026-05-07',heure:'11:00',nb_personnes:2,extras:['Smoothie Tropical','Peignoir EDEN'],montant_total:185,statut:'confirmed',notes:''},
+    {id:'r7',created_at:'2026-04-27T15:00:00',nom:'Camille Roux',email:'camille@email.fr',telephone:'07 33 22 11 00',formule:'Sauna Hammam Duo',date_seance:'2026-05-08',heure:'15:00',nb_personnes:2,extras:[],montant_total:130,statut:'confirmed',notes:''},
+  ],
+  demandes:[
+    {id:'d1',created_at:'2026-05-01T09:15:00',nom:'Claire Petit',email:'claire@email.fr',telephone:'06 33 44 55 66',formule_souhaitee:'Bain Nordique Duo',date_souhaitee:'2026-05-10',nb_personnes:2,message:'Pour notre anniversaire.',statut:'new'},
+    {id:'d2',created_at:'2026-05-01T15:40:00',nom:'Antoine Fabre',email:'antoine@email.fr',telephone:'07 77 88 99 00',formule_souhaitee:'Sauna Hammam',date_souhaitee:'2026-05-08',nb_personnes:1,message:'Seances le dimanche ?',statut:'new'},
+    {id:'d3',created_at:'2026-04-30T18:00:00',nom:'Julie Bonnet',email:'julie@email.fr',telephone:'06 22 33 44 55',formule_souhaitee:'Pressozone',date_souhaitee:'2026-05-07',nb_personnes:1,message:'',statut:'processed'},
+  ],
+  stocks:{
+    smoothies:[
+      {id:'ss1',nom:'Smoothie Vert Detox',unite:'portions',quantite:12,seuil:5},
+      {id:'ss2',nom:'Smoothie Energie Rouge',unite:'portions',quantite:8,seuil:5},
+      {id:'ss3',nom:'Smoothie Tropical',unite:'portions',quantite:3,seuil:5},
+      {id:'ss4',nom:'Smoothie Gingembre',unite:'portions',quantite:15,seuil:5},
+    ],
+    softs:[
+      {id:'sf1',nom:'Eau minerale 50cl',unite:'bouteilles',quantite:48,seuil:10},
+      {id:'sf2',nom:'Kombucha Nature',unite:'bouteilles',quantite:6,seuil:8},
+      {id:'sf3',nom:'Jus de fruits',unite:'verres',quantite:2,seuil:5},
+      {id:'sf4',nom:'Infusion Detox',unite:'sachets',quantite:30,seuil:10},
+      {id:'sf5',nom:'Tisane Recuperation',unite:'sachets',quantite:22,seuil:8},
+    ],
+    extras:[
+      {id:'ex1',nom:'Serviettes Premium',unite:'sets',quantite:18,seuil:5},
+      {id:'ex2',nom:'Bougie Aromatherapie',unite:'unites',quantite:4,seuil:3},
+      {id:'ex3',nom:'Peignoir EDEN',unite:'unites',quantite:7,seuil:3},
+      {id:'ex4',nom:'Kit savon beurre',unite:'kits',quantite:1,seuil:3},
+    ]
   },
-  parrainages: []
+  parrainages:[
+    {id:'p1',created_at:'2026-04-15',code:'EDEN-MARIE25',createur_nom:'Marie Dupont',filleuls:['Pierre Martin'],utilisations:1,reduction_offerte:20,actif:true},
+    {id:'p2',created_at:'2026-04-20',code:'EDEN-LUCAS10',createur_nom:'Lucas Moreau',filleuls:[],utilisations:0,reduction_offerte:0,actif:true},
+    {id:'p3',created_at:'2026-04-10',code:'EDEN-SOPHIE5',createur_nom:'Sophie Bernard',filleuls:['Emma Leroy'],utilisations:1,reduction_offerte:20,actif:false},
+  ]
 };
 
 // ── INIT ──
 window.onload = function(){
-  // Credentials pré-configurés
-  localStorage.setItem('eden_sb_url', 'https://jdcxhejkuttaviiqqonz.supabase.co');
-  localStorage.setItem('eden_sb_key', 'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A');
-  // Nettoyer toutes les anciennes clés des versions précédentes
-  ['eden_pwd_hash','eden_lock','eden_attempts','eden_admin_pwd',
-   'eden_admin_auth','eden_ok_old'].forEach(function(k){ localStorage.removeItem(k); });
-
-  SB_URL = localStorage.getItem(SB_URL_K) || '';
-  SB_KEY = localStorage.getItem(SB_KEY_K) || '';
-  SB_TOKEN = localStorage.getItem(TOKEN_K) || '';
-
-  var urlEl = document.getElementById('in-url');
-  var keyEl = document.getElementById('in-key');
-  if(urlEl) urlEl.value = urlEl.value || SB_URL;
-  if(keyEl) keyEl.value = keyEl.value || SB_KEY;
-
   var lbl = document.getElementById('today-lbl');
   if(lbl) lbl.textContent = new Date().toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'long'});
-
-  checkSbConfig();
-
-  // Vérifier session existante
-  var sessionExp = localStorage.getItem(SESSION_K);
-  if(sessionExp && Date.now() < parseInt(sessionExp) && SB_TOKEN) {
-    // Session valide — connexion auto
-    showApp();
-  } else if(sessionStorage.getItem('eden_ok') === '1') {
-    showApp();
-  } else {
-    // Nettoyer session expirée
-    localStorage.removeItem(TOKEN_K);
-    localStorage.removeItem(RTOKEN_K);
-    localStorage.removeItem(SESSION_K);
-    sessionStorage.removeItem('eden_ok');
-  }
+  if(sessionStorage.getItem('eden_ok') === '1') showApp();
 };
 
-// ── VÉRIFIER CONFIG SUPABASE ──
-function checkSbConfig(){
-  var url = document.getElementById('in-url') ? document.getElementById('in-url').value.trim() : SB_URL;
-  var key = document.getElementById('in-key') ? document.getElementById('in-key').value.trim() : SB_KEY;
-  var hasSB = url && key && url.includes('supabase.co');
-
-  var boxSB = document.getElementById('login-box-supabase');
-  var boxLocal = document.getElementById('login-box-local');
-  var noCfg = document.getElementById('sb-no-cfg');
-
-  if(hasSB) {
-    if(boxSB) boxSB.style.display = 'block';
-    if(boxLocal) boxLocal.style.display = 'none';
-    if(noCfg) noCfg.style.display = 'none';
-  } else {
-    if(boxSB) boxSB.style.display = 'none';
-    if(boxLocal) boxLocal.style.display = 'block';
-    if(noCfg) noCfg.style.display = 'block';
-  }
-}
-
-// ── LOGIN SUPABASE AUTH (sécurisé) ──
-async function loginSupabase(){
-  var email = document.getElementById('auth-email') ? document.getElementById('auth-email').value.trim() : '';
-  var pwd   = document.getElementById('auth-pwd')   ? document.getElementById('auth-pwd').value : '';
-  var errEl = document.getElementById('login-err');
-  var btn   = document.getElementById('login-btn-sb');
-
-  if(!email || !pwd) {
-    if(errEl) errEl.textContent = 'Email et mot de passe requis';
-    return;
-  }
-  if(btn) { btn.textContent = 'Connexion en cours…'; btn.disabled = true; }
-  if(errEl) errEl.textContent = '';
-
-  var url = (localStorage.getItem(SB_URL_K) || SB_URL).trim();
-  var key = (localStorage.getItem(SB_KEY_K) || SB_KEY).trim();
-
-  try {
-    var res = await fetch(url + '/auth/v1/token?grant_type=password', {
-      method: 'POST',
-      headers: {
-        'apikey': key,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email: email, password: pwd })
-    });
-
-    var data = await res.json();
-
-    if(!res.ok) {
-      throw new Error(data.error_description || data.msg || 'Identifiants incorrects');
-    }
-
-    // ✅ Authentification réussie
-    SB_TOKEN = data.access_token;
-    localStorage.setItem(TOKEN_K, data.access_token);
-    localStorage.setItem(RTOKEN_K, data.refresh_token || '');
-    // Session expire dans 1h
-    localStorage.setItem(SESSION_K, (Date.now() + 3600000).toString());
-    sessionStorage.setItem('eden_ok', '1');
-
-    // Démarrer le refresh automatique (toutes les 55 min)
-    startTokenRefresh();
-
-    document.getElementById('auth-pwd').value = '';
-    showApp();
-
-  } catch(err) {
-    if(errEl) errEl.textContent = err.message || 'Erreur de connexion';
-    document.getElementById('auth-pwd').value = '';
-  } finally {
-    if(btn) { btn.textContent = "Accéder à l'espace admin"; btn.disabled = false; }
-  }
-}
-
-// ── REFRESH TOKEN AUTOMATIQUE ──
-var refreshInterval = null;
-function startTokenRefresh(){
-  if(refreshInterval) clearInterval(refreshInterval);
-  refreshInterval = setInterval(async function(){
-    var rtoken = localStorage.getItem(RTOKEN_K);
-    if(!rtoken) return;
-    var url = (localStorage.getItem(SB_URL_K) || SB_URL).trim();
-    var key = (localStorage.getItem(SB_KEY_K) || SB_KEY).trim();
-    try {
-      var res = await fetch(url + '/auth/v1/token?grant_type=refresh_token', {
-        method: 'POST',
-        headers: { 'apikey': key, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refresh_token: rtoken })
-      });
-      var data = await res.json();
-      if(res.ok && data.access_token) {
-        SB_TOKEN = data.access_token;
-        localStorage.setItem(TOKEN_K, data.access_token);
-        localStorage.setItem(RTOKEN_K, data.refresh_token || rtoken);
-        localStorage.setItem(SESSION_K, (Date.now() + 3600000).toString());
-      }
-    } catch(e) { console.warn('Token refresh failed:', e); }
-  }, 55 * 60 * 1000); // 55 minutes
-}
-
-// ── LOGIN LOCAL (fallback sans Supabase) ──
-function loginLocal(){
-  var val = document.getElementById('pwd-local') ? document.getElementById('pwd-local').value : '';
+// ── LOGIN ──
+function login(){
+  var val = document.getElementById('pwd').value;
   var stored = localStorage.getItem('eden_pwd') || 'eden2024';
-  var errEl = document.getElementById('login-err-local');
-  if(val === stored) {
+  var errEl = document.getElementById('login-err');
+  if(val === stored){
     sessionStorage.setItem('eden_ok','1');
-    document.getElementById('pwd-local').value = '';
+    document.getElementById('pwd').value = '';
     if(errEl) errEl.textContent = '';
     showApp();
   } else {
     if(errEl) errEl.textContent = 'Mot de passe incorrect';
-    document.getElementById('pwd-local').value = '';
+    document.getElementById('pwd').value = '';
   }
 }
 
-// Garder login() comme alias pour compatibilité clavier
-function login(){ loginSupabase(); }
-
-// ── LOGOUT SÉCURISÉ ──
-async function logout(){
-  // Révoquer le token Supabase côté serveur
-  if(SB_TOKEN && SB_URL) {
-    try {
-      await fetch(SB_URL + '/auth/v1/logout', {
-        method: 'POST',
-        headers: {
-          'apikey': SB_KEY,
-          'Authorization': 'Bearer ' + SB_TOKEN
-        }
-      });
-    } catch(e) {}
-  }
-
-  // Nettoyer TOUT
-  SB_TOKEN = '';
-  sessionStorage.clear();
-  localStorage.removeItem(TOKEN_K);
-  localStorage.removeItem(RTOKEN_K);
-  localStorage.removeItem(SESSION_K);
-  if(refreshInterval) clearInterval(refreshInterval);
-
+function logout(){
+  sessionStorage.removeItem('eden_ok');
   document.getElementById('app').style.display = 'none';
   document.getElementById('app').classList.remove('visible');
-  var ls = document.getElementById('login-screen');
-  if(ls) ls.classList.remove('hidden');
-  checkSbConfig();
+  document.getElementById('login-screen').classList.remove('hidden');
 }
 
-// ── SHOW APP ──
 function showApp(){
-  var ls = document.getElementById('login-screen');
-  if(ls) ls.classList.add('hidden');
+  document.getElementById('login-screen').classList.add('hidden');
   var a = document.getElementById('app');
   a.style.display = 'flex';
   a.classList.add('visible');
   initSB();
   renderAll();
-  // Démarrer refresh si token présent
-  if(localStorage.getItem(TOKEN_K)) startTokenRefresh();
-  // Détecter inactivité (30 min)
-  startInactivityTimer();
-}
-
-// ── INACTIVITÉ (déconnexion auto après 30 min) ──
-var inactivityTimer = null;
-function startInactivityTimer(){
-  resetInactivity();
-  ['click','keypress','scroll','mousemove'].forEach(function(evt){
-    document.addEventListener(evt, resetInactivity);
-  });
-}
-function resetInactivity(){
-  if(inactivityTimer) clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(function(){
-    toast('⏻', 'Session expirée — déconnexion automatique');
-    setTimeout(logout, 2000);
-  }, 30 * 60 * 1000); // 30 minutes
 }
 
 // ── SAUVEGARDE CONFIG ──
 function saveCfg(){
-  SB_URL = document.getElementById('in-url').value.trim();
-  SB_KEY = document.getElementById('in-key').value.trim();
-  localStorage.setItem(SB_URL_K, SB_URL);
-  localStorage.setItem(SB_KEY_K, SB_KEY);
-  checkSbConfig();
-  toast('✓','Configuration Supabase sauvegardée');
+  SB_URL = document.getElementById('in-url') ? document.getElementById('in-url').value.trim() : SB_URL;
+  SB_KEY = document.getElementById('in-key') ? document.getElementById('in-key').value.trim() : SB_KEY;
+  localStorage.setItem('eden_sb_url', SB_URL);
+  localStorage.setItem('eden_sb_key', SB_KEY);
+  toast('✓','Configuration sauvegardée');
 }
 function saveCfgPage(){
   SB_URL = document.getElementById('cfg-url') ? document.getElementById('cfg-url').value.trim() : SB_URL;
   SB_KEY = document.getElementById('cfg-key') ? document.getElementById('cfg-key').value.trim() : SB_KEY;
-  localStorage.setItem(SB_URL_K, SB_URL);
-  localStorage.setItem(SB_KEY_K, SB_KEY);
+  localStorage.setItem('eden_sb_url', SB_URL);
+  localStorage.setItem('eden_sb_key', SB_KEY);
   initSB();
 }
 
@@ -1544,7 +1329,7 @@ function renderParams(){
     }
   }
   document.getElementById('cfg-url').value=localStorage.getItem(SB_URL_K)||'https://jdcxhejkuttaviiqqonz.supabase.co';
-  document.getElementById('cfg-key').value=localStorage.getItem(SB_KEY_K)||'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A';
+  document.getElementById('cfg-key').value=localStorage.getItem(SB_KEY_K)||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkY3hoZWprdXR0YXZpaXFxb256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzU5NjcsImV4cCI6MjA5MjcxMTk2N30.jKejetk46cKzo7gJGnyRQTCtvzjL0p-6CMkVgLfceZs';
 }
 function changePwd(){
   const p1=document.getElementById('np1').value,p2=document.getElementById('np2').value;
@@ -2266,172 +2051,149 @@ window.addEventListener('resize',()=>{
 });
 
 // ══ FIDÉLITÉ ══
-var fidFilter = 'all';
-var fidSearch = '';
-var FIDELITE_DATA = [
-  {id:'f1',created_at:'2026-05-01T10:00:00',prenom:'Marie',nom:'Dupont',email:'marie@email.fr',statut:'client',code_parrainage:'EDEN-MAR342',membre_num:'EDF7891234',niveau:'Or',nb_visites:6,actif:true},
-  {id:'f2',created_at:'2026-04-28T14:00:00',prenom:'Lucas',nom:'Moreau',email:'lucas@email.fr',statut:'client',code_parrainage:'EDEN-LUC156',membre_num:'EDF7845621',niveau:'Argent',nb_visites:3,actif:true},
-  {id:'f3',created_at:'2026-04-15T09:00:00',prenom:'Sophie',nom:'Bernard',email:'sophie@email.fr',statut:'client',code_parrainage:'EDEN-SOP789',membre_num:'EDF7612345',niveau:'Bronze',nb_visites:1,actif:true},
-  {id:'f4',created_at:'2026-05-02T11:00:00',prenom:'Emma',nom:'Leroy',email:'emma@email.fr',statut:'nouveau',code_parrainage:'EDEN-EMM445',membre_num:'EDF7923456',niveau:'Bronze',nb_visites:0,actif:true},
+var FID_DATA = [
+  {id:"f1",created_at:"2026-05-01",prenom:"Marie",nom:"Dupont",email:"marie@email.fr",code_parrainage:"EDEN-MAR342",membre_num:"EDF7891234",niveau:"Or",nb_visites:6,actif:true},
+  {id:"f2",created_at:"2026-04-28",prenom:"Lucas",nom:"Moreau",email:"lucas@email.fr",code_parrainage:"EDEN-LUC156",membre_num:"EDF7845621",niveau:"Argent",nb_visites:3,actif:true},
+  {id:"f3",created_at:"2026-04-15",prenom:"Sophie",nom:"Bernard",email:"sophie@email.fr",code_parrainage:"EDEN-SOP789",membre_num:"EDF7612345",niveau:"Bronze",nb_visites:1,actif:true},
+  {id:"f4",created_at:"2026-05-02",prenom:"Emma",nom:"Leroy",email:"emma@email.fr",code_parrainage:"EDEN-EMM445",membre_num:"EDF7923456",niveau:"Bronze",nb_visites:0,actif:true}
 ];
+var fidFilter = "all";
+var fidSearch = "";
 
-async function refreshFidelite(){
-  var sbUrl = 'https://jdcxhejkuttaviiqqonz.supabase.co';
-  var sbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkY3hoZWprdXR0YXZpaXFxb256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzU5NjcsImV4cCI6MjA5MjcxMTk2N30.jKejetk46cKzo7gJGnyRQTCtvzjL0p-6CMkVgLfceZs';
+async function loadFidelite(){
   try {
-    var res = await fetch(sbUrl + '/rest/v1/fidelite?select=*&order=created_at.desc', {
-      headers:{'apikey':sbKey,'Authorization':'Bearer '+sbKey}
+    var res = await fetch(SB_URL + "/rest/v1/fidelite?select=*&order=created_at.desc", {
+      headers:{apikey:SB_KEY, Authorization:"Bearer "+SB_KEY}
     });
     if(res.ok){
       var data = await res.json();
-      if(data && data.length) FIDELITE_DATA = data;
+      if(data && data.length > 0) FID_DATA = data;
     }
   } catch(e){}
   renderFidelite();
-  toast('↻','Données fidélité actualisées');
+  toast("↻","Données fidélité actualisées");
 }
 
 function renderFidelite(){
-  var data = FIDELITE_DATA;
+  var data = FID_DATA;
+  document.getElementById("fid-total").textContent = data.length;
+  document.getElementById("fid-or").textContent = data.filter(f=>f.niveau==="Or").length;
+  document.getElementById("fid-argent").textContent = data.filter(f=>f.niveau==="Argent").length;
+  document.getElementById("fid-bronze").textContent = data.filter(f=>f.niveau==="Bronze"||!f.niveau).length;
+  var bfid = document.getElementById("b-fid");
+  if(bfid){ bfid.textContent = data.length; bfid.style.display = data.length ? "" : "none"; }
 
-  // KPIs
-  document.getElementById('fid-total').textContent = data.length;
-  document.getElementById('fid-or').textContent = data.filter(f=>f.niveau==='Or').length;
-  document.getElementById('fid-argent').textContent = data.filter(f=>f.niveau==='Argent').length;
-  document.getElementById('fid-bronze').textContent = data.filter(f=>f.niveau==='Bronze'||!f.niveau).length;
-
-  // Badge sidebar
-  var bfid = document.getElementById('b-fid');
-  if(bfid){ bfid.textContent = data.length; bfid.style.display = data.length ? '' : 'none'; }
-
-  // Filter
   var filtered = data;
-  if(fidFilter === 'actif') filtered = data.filter(f=>f.actif);
-  else if(fidFilter !== 'all') filtered = data.filter(f=>f.niveau===fidFilter);
-  if(fidSearch) filtered = filtered.filter(f=>(f.prenom+f.nom+f.email+f.membre_num+'').toLowerCase().includes(fidSearch));
+  if(fidFilter !== "all") filtered = data.filter(f=>f.niveau===fidFilter);
+  if(fidSearch) filtered = filtered.filter(f=>(f.prenom+" "+f.nom+" "+f.email+" "+f.membre_num).toLowerCase().includes(fidSearch));
 
-  // Table
-  var tb = document.getElementById('fid-tb');
+  var tb = document.getElementById("fid-tb");
   if(!filtered.length){
-    tb.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-icon">♥</div><p class="empty-txt">Aucun membre</p></div></td></tr>';
+    tb.innerHTML = "<tr><td colspan='8'><div class='empty'><div class='empty-icon'>&#9825;</div><p class='empty-txt'>Aucun membre</p></div></td></tr>";
   } else {
-    tb.innerHTML = filtered.map(function(f){
-      var lvlColor = f.niveau==='Or'?'var(--gold)':f.niveau==='Argent'?'var(--light)':'#cd7f32';
-      var lvlBg = f.niveau==='Or'?'rgba(196,160,78,.1)':f.niveau==='Argent'?'rgba(184,180,164,.08)':'rgba(205,127,50,.08)';
-      return '<tr onclick="openFidDrawer(''+f.id+'')">' +
-        '<td style="font-family:monospace;font-size:10px;color:var(--gold)">'+(f.membre_num||'–')+'</td>' +
-        '<td class="name">'+(f.prenom||'')+' '+(f.nom||'')+'</td>' +
-        '<td class="small">'+(f.email||'–')+'</td>' +
-        '<td style="font-size:10px;color:var(--gold);letter-spacing:1px">'+(f.code_parrainage||'–')+'</td>' +
-        '<td style="text-align:center;font-family:var(--serif);font-size:16px;color:var(--cream)">'+(f.nb_visites||0)+'</td>' +
-        '<td><span style="font-size:8px;padding:3px 10px;border:1px solid '+lvlColor+';color:'+lvlColor+';background:'+lvlBg+'">'+( f.niveau||'Bronze')+'</span></td>' +
-        '<td class="small">'+fmtDate(f.created_at)+'</td>' +
-        '<td onclick="event.stopPropagation()"><div style="display:flex;gap:4px">' +
-          '<button class="atb" onclick="openFidDrawer(''+f.id+'')">Voir</button>' +
-          '<button class="atb ok" onclick="addVisit(''+f.id+'')">+1 visite</button>' +
-        '</div></td>' +
-      '</tr>';
-    }).join('');
+    var rows = "";
+    filtered.forEach(function(f){
+      var lc = f.niveau==="Or" ? "var(--gold)" : f.niveau==="Argent" ? "var(--light)" : "#cd7f32";
+      rows += "<tr>";
+      rows += "<td style='font-family:monospace;font-size:10px;color:var(--gold)'>" + (f.membre_num||"–") + "</td>";
+      rows += "<td class='name'>" + (f.prenom||"") + " " + (f.nom||"") + "</td>";
+      rows += "<td class='small'>" + (f.email||"–") + "</td>";
+      rows += "<td style='font-size:10px;color:var(--gold)'>" + (f.code_parrainage||"–") + "</td>";
+      rows += "<td style='text-align:center;font-family:var(--serif);font-size:16px'>" + (f.nb_visites||0) + "</td>";
+      rows += "<td><span style='font-size:8px;padding:3px 9px;border:1px solid " + lc + ";color:" + lc + "'>" + (f.niveau||"Bronze") + "</span></td>";
+      rows += "<td class='small'>" + fmtDate(f.created_at) + "</td>";
+      rows += "<td><div style='display:flex;gap:4px'>";
+      rows += "<button class='atb' onclick='openFidDrawer("" + f.id + "")'>Voir</button>";
+      rows += "<button class='atb ok' onclick='addFidVisit("" + f.id + "")'>+1 visite</button>";
+      rows += "</div></td></tr>";
+    });
+    tb.innerHTML = rows;
   }
 
-  // Cards grid
-  var grid = document.getElementById('fid-cards-grid');
+  // Mini cartes
+  var grid = document.getElementById("fid-cards-grid");
   if(grid){
-    grid.innerHTML = filtered.slice(0,6).map(function(f){
-      var lvlColor = f.niveau==='Or'?'#c4a04e':f.niveau==='Argent'?'#c0c0c0':'#cd7f32';
-      return '<div style="background:linear-gradient(145deg,#0a0f07,#111608);border:1px solid rgba(196,160,78,.2);padding:20px;position:relative;overflow:hidden;transition:border-color .3s" onmouseover="this.style.borderColor='rgba(196,160,78,.45)'" onmouseout="this.style.borderColor='rgba(196,160,78,.2)'">' +
-        '<div style="position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,'+lvlColor+',transparent)"></div>' +
-        '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">' +
-          '<div><span style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:8px;color:#c4a04e">EDEN</span>' +
-          '<div style="font-size:6px;letter-spacing:3px;text-transform:uppercase;color:rgba(196,160,78,.4)">Fidélité</div></div>' +
-          '<span style="font-size:7px;padding:3px 8px;border:1px solid '+lvlColor+';color:'+lvlColor+'">'+(f.niveau||'Bronze')+'</span>' +
-        '</div>' +
-        '<div style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:rgba(196,160,78,.3);margin-bottom:3px">Membre</div>' +
-        '<div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#f4efe5;margin-bottom:12px">'+(f.prenom||'')+' '+(f.nom||'')+'</div>' +
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:10px;border-top:1px solid rgba(196,160,78,.06)">' +
-          '<div><div style="font-size:6px;letter-spacing:2px;color:rgba(196,160,78,.3);text-transform:uppercase">Code</div>' +
-          '<div style="font-size:9px;color:#c4a04e">'+(f.code_parrainage||'–')+'</div></div>' +
-          '<div><div style="font-size:6px;letter-spacing:2px;color:rgba(196,160,78,.3);text-transform:uppercase">Visites</div>' +
-          '<div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#f4efe5">'+(f.nb_visites||0)+'</div></div>' +
-        '</div>' +
-        '<div style="margin-top:10px;height:3px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden">' +
-          '<div style="height:100%;background:linear-gradient(90deg,'+lvlColor+',rgba(196,160,78,.3));width:'+Math.min(100,(f.nb_visites||0)/5*100)+'%"></div>' +
-        '</div>' +
-      '</div>';
-    }).join('');
+    var cards = "";
+    filtered.slice(0,6).forEach(function(f){
+      var lc = f.niveau==="Or" ? "#c4a04e" : f.niveau==="Argent" ? "#c0c0c0" : "#cd7f32";
+      var pct = Math.min(100, (f.nb_visites||0)/5*100);
+      cards += "<div style='background:linear-gradient(145deg,#0a0f07,#111608);border:1px solid rgba(196,160,78,.18);padding:20px;position:relative;transition:border-color .3s' onmouseover='this.style.borderColor="rgba(196,160,78,.45)"' onmouseout='this.style.borderColor="rgba(196,160,78,.18)"'>";
+      cards += "<div style='position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent," + lc + ",transparent)'></div>";
+      cards += "<div style='display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px'>";
+      cards += "<span style='font-family:var(--serif);font-size:15px;letter-spacing:8px;color:#c4a04e'>EDEN</span>";
+      cards += "<span style='font-size:7px;padding:2px 8px;border:1px solid " + lc + ";color:" + lc + "'>" + (f.niveau||"Bronze") + "</span></div>";
+      cards += "<div style='font-size:7px;letter-spacing:2px;text-transform:uppercase;color:rgba(196,160,78,.3);margin-bottom:3px'>Membre</div>";
+      cards += "<div style='font-family:var(--serif);font-size:15px;color:#f4efe5;margin-bottom:10px'>" + (f.prenom||"") + " " + (f.nom||"") + "</div>";
+      cards += "<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:8px;border-top:1px solid rgba(196,160,78,.06)'>";
+      cards += "<div><div style='font-size:6px;letter-spacing:2px;color:rgba(196,160,78,.3);text-transform:uppercase'>Code</div><div style='font-size:9px;color:#c4a04e'>" + (f.code_parrainage||"–") + "</div></div>";
+      cards += "<div><div style='font-size:6px;letter-spacing:2px;color:rgba(196,160,78,.3);text-transform:uppercase'>Visites</div><div style='font-family:var(--serif);font-size:18px;color:#f4efe5'>" + (f.nb_visites||0) + "</div></div></div>";
+      cards += "<div style='margin-top:8px;height:3px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden'>";
+      cards += "<div style='height:100%;background:linear-gradient(90deg," + lc + ",rgba(196,160,78,.3));width:" + pct + "%'></div></div></div>";
+    });
+    grid.innerHTML = cards;
   }
 }
 
-function setFidF(f,btn){ fidFilter=f; document.querySelectorAll('#page-fidelite .fb').forEach(function(b){b.classList.remove('on');}); btn.classList.add('on'); renderFidelite(); }
+function setFidF(f,btn){ fidFilter=f; document.querySelectorAll("#page-fidelite .fb").forEach(function(b){b.classList.remove("on");}); btn.classList.add("on"); renderFidelite(); }
 function filterFid(v){ fidSearch=v.toLowerCase(); renderFidelite(); }
 
-function addVisit(id){
-  var f = FIDELITE_DATA.find(function(x){return x.id===id;});
+function addFidVisit(id){
+  var f = FID_DATA.find(function(x){return x.id===id;});
   if(!f) return;
   f.nb_visites = (f.nb_visites||0) + 1;
-  if(f.nb_visites >= 5) f.niveau = 'Or';
-  else if(f.nb_visites >= 3) f.niveau = 'Argent';
-  else f.niveau = 'Bronze';
+  if(f.nb_visites>=5) f.niveau="Or";
+  else if(f.nb_visites>=3) f.niveau="Argent";
+  else f.niveau="Bronze";
   renderFidelite();
-  toast('✓', f.prenom + ' — visite ajoutée (total: ' + f.nb_visites + ')');
+  toast("✓", f.prenom+" — visite ajoutée (total: "+f.nb_visites+")");
 }
 
 function openFidDrawer(id){
-  var f = FIDELITE_DATA.find(function(x){return x.id===id;});
+  var f = FID_DATA.find(function(x){return x.id===id;});
   if(!f) return;
-  var lvlColor = f.niveau==='Or'?'var(--gold)':f.niveau==='Argent'?'var(--light)':'#cd7f32';
-  document.getElementById('drw-t').textContent = (f.prenom||'') + ' ' + (f.nom||'');
-  document.getElementById('drw-s').textContent = 'Carte fidélité · N° ' + (f.membre_num||'–');
-  document.getElementById('drw-b').innerHTML =
-    '<div style="display:flex;gap:14px;align-items:center;margin-bottom:20px">' +
-      '<div style="width:52px;height:52px;border:1px solid rgba(196,160,78,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:22px;color:var(--gold)">'+(f.prenom||'?')[0]+'</div>' +
-      '<div><div style="font-family:var(--serif);font-size:20px;color:var(--cream)">'+(f.prenom||'')+' '+(f.nom||'')+'</div>' +
-      '<div style="font-size:9px;color:var(--muted);margin-top:3px">'+(f.email||'')+'</div></div>' +
-    '</div>' +
-    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">' +
-      '<div style="text-align:center;padding:12px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.08)">' +
-        '<div style="font-family:var(--serif);font-size:24px;color:'+lvlColor+'">'+(f.nb_visites||0)+'</div>' +
-        '<div style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Visites</div></div>' +
-      '<div style="text-align:center;padding:12px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.08)">' +
-        '<div style="font-size:14px;color:'+lvlColor+'">'+(f.niveau||'Bronze')+'</div>' +
-        '<div style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Niveau</div></div>' +
-      '<div style="text-align:center;padding:12px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.08)">' +
-        '<div style="font-family:var(--serif);font-size:14px;color:var(--gold)">'+(f.code_parrainage||'–')+'</div>' +
-        '<div style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Code</div></div>' +
-    '</div>' +
-    '<div class="df-sep"></div>' +
-    '<div class="df"><label>N° Membre (code barre)</label>' +
-      '<div style="background:#f4efe5;padding:12px;text-align:center">' +
-        '<div id="drw-barcode-wrap" style="font-size:10px;color:#5a5a4a;letter-spacing:3px;font-family:monospace;padding:8px">'+(f.membre_num||'–')+'</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="df"><label>Inscrit le</label><div class="df-v">'+fmtDate(f.created_at)+'</div></div>' +
-    '<div class="df"><label>Statut client</label><div class="df-v">'+(f.statut==='client'?'Déjà client EDEN':'Nouveau visiteur')+'</div></div>' +
-    '<div class="df-sep"></div>' +
-    '<div class="df"><label>Progression vers le niveau suivant</label>' +
-      '<div style="height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-top:4px">' +
-        '<div style="height:100%;background:linear-gradient(90deg,'+lvlColor+',rgba(196,160,78,.3));width:'+Math.min(100,(f.nb_visites||0)/5*100)+'%;transition:width .6s"></div>' +
-      '</div>' +
-      '<div style="font-size:9px;color:var(--muted);margin-top:6px">'+(f.nb_visites||0)+'/5 visites pour atteindre le statut Or</div>' +
-    '</div>';
-
-  document.getElementById('drw-f').innerHTML =
-    '<button class="btn-s fill" onclick="addVisit(''+f.id+'');closeDrw()">+ Ajouter une visite</button>' +
-    '<button class="btn-s" onclick="closeDrw()">Fermer</button>';
+  var lc = f.niveau==="Or"?"var(--gold)":f.niveau==="Argent"?"var(--light)":"#cd7f32";
+  document.getElementById("drw-t").textContent = (f.prenom||"")+" "+(f.nom||"");
+  document.getElementById("drw-s").textContent = "Carte fidélité · N° "+(f.membre_num||"–");
+  var body = "";
+  body += "<div style='display:flex;gap:14px;align-items:center;margin-bottom:20px'>";
+  body += "<div style='width:50px;height:50px;border:1px solid rgba(196,160,78,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:20px;color:var(--gold)'>" + (f.prenom||"?")[0] + "</div>";
+  body += "<div><div style='font-family:var(--serif);font-size:20px;color:var(--cream)'>"+(f.prenom||"")+" "+(f.nom||"")+"</div>";
+  body += "<div style='font-size:9px;color:var(--muted);margin-top:3px'>"+(f.email||"")+"</div></div></div>";
+  body += "<div style='display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px'>";
+  body += "<div style='text-align:center;padding:12px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.08)'>";
+  body += "<div style='font-family:var(--serif);font-size:24px;color:"+lc+"'>"+(f.nb_visites||0)+"</div>";
+  body += "<div style='font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)'>Visites</div></div>";
+  body += "<div style='text-align:center;padding:12px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.08)'>";
+  body += "<div style='font-size:14px;color:"+lc+"'>"+(f.niveau||"Bronze")+"</div>";
+  body += "<div style='font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)'>Niveau</div></div>";
+  body += "<div style='text-align:center;padding:12px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.08)'>";
+  body += "<div style='font-family:var(--serif);font-size:12px;color:var(--gold)'>"+(f.code_parrainage||"–")+"</div>";
+  body += "<div style='font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)'>Code</div></div></div>";
+  body += "<div class='df-sep'></div>";
+  body += "<div class='df'><label>N° Membre</label><div class='df-v'>"+(f.membre_num||"–")+"</div></div>";
+  body += "<div class='df'><label>Email</label><div class='df-v'>"+(f.email||"–")+"</div></div>";
+  body += "<div class='df'><label>Inscrit le</label><div class='df-v'>"+fmtDate(f.created_at)+"</div></div>";
+  body += "<div class='df-sep'></div>";
+  body += "<div class='df'><label>Progression</label>";
+  body += "<div style='height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-top:6px'>";
+  body += "<div style='height:100%;background:linear-gradient(90deg,"+lc+",rgba(196,160,78,.3));width:"+Math.min(100,(f.nb_visites||0)/5*100)+"%'></div></div>";
+  body += "<div style='font-size:9px;color:var(--muted);margin-top:6px'>"+(f.nb_visites||0)+"/5 visites pour le statut Or</div></div>";
+  document.getElementById("drw-b").innerHTML = body;
+  document.getElementById("drw-f").innerHTML = "<button class='btn-s fill' onclick='addFidVisit(""+f.id+"");closeDrw()'>+ Ajouter une visite</button><button class='btn-s' onclick='closeDrw()'>Fermer</button>";
   openDrw();
 }
 
 function exportFidCSV(){
-  var rows = [['N° Membre','Prénom','Nom','Email','Code parrainage','Nb visites','Niveau','Inscrit le']];
-  FIDELITE_DATA.forEach(function(f){
-    rows.push([f.membre_num||'',f.prenom||'',f.nom||'',f.email||'',f.code_parrainage||'',f.nb_visites||0,f.niveau||'Bronze',fmtDate(f.created_at)]);
+  var rows = [["N° Membre","Prénom","Nom","Email","Code parrainage","Nb visites","Niveau","Inscrit le"]];
+  FID_DATA.forEach(function(f){
+    rows.push([f.membre_num||"",f.prenom||"",f.nom||"",f.email||"",f.code_parrainage||"",f.nb_visites||0,f.niveau||"Bronze",fmtDate(f.created_at)]);
   });
-  var csv = rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
-  var a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv);
-  a.download = 'eden-fidelite-'+new Date().toISOString().slice(0,10)+'.csv';
+  var csv = rows.map(function(r){return r.map(function(cell){return '"'+String(cell).replace(/"/g,'""')+'"';}).join(",");}).join("\n");
+  var a = document.createElement("a");
+  a.href = "data:text/csv;charset=utf-8,\uFEFF" + encodeURIComponent(csv);
+  a.download = "eden-fidelite-"+new Date().toISOString().slice(0,10)+".csv";
   a.click();
-  toast('↓','Export fidélité téléchargé');
+  toast("↓","Export fidélité téléchargé");
 }
 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDrw(); });
