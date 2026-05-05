@@ -605,26 +605,50 @@ async function genCard(){
       '✦ Accès prioritaire planning<br>' +
       '✦ Cadeau anniversaire';
 
-    // Sauvegarder dans Supabase
-    var sbUrl = 'https://jdcxhejkuttaviiqqonz.supabase.co';
-    var sbKey = 'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A';
-    try {
-      await fetch(sbUrl + '/rest/v1/fidelite', {
-        method: 'POST',
-        headers:{
-          'apikey':sbKey,
-          'Authorization':'Bearer '+sbKey,
-          'Content-Type':'application/json',
-          'Prefer':'return=representation'
-        },
-        body: JSON.stringify({
-          prenom, nom, email, telephone:tel, statut,
-          code_parrainage: code,
-          membre_num: memberNum,
-          niveau: 'Bronze',
-          nb_visites: 0,
-          actif: true
-        })
+   // Sauvegarder dans Supabase
+var sbUrl = 'https://jdcxhejkuttaviiqqonz.supabase.co';
+var sbKey = 'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A';
+
+try {
+  var saveRes = await fetch(sbUrl + '/rest/v1/fidelite', {
+    method: 'POST',
+    headers:{
+      'apikey': sbKey,
+      'Authorization': 'Bearer ' + sbKey,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    },
+    body: JSON.stringify({
+      prenom: prenom,
+      nom: nom,
+      email: email,
+      telephone: tel,
+      statut: statut,
+      code_parrainage: code,
+      membre_num: memberNum,
+      niveau: 'Bronze',
+      nb_visites: 0,
+      actif: true
+    })
+  });
+
+  var saveData = await saveRes.json().catch(function(){ return null; });
+
+  if(!saveRes.ok){
+    console.error('Erreur Supabase fidélité:', saveData);
+    errEl.textContent = 'Erreur Supabase : la carte n’a pas été enregistrée.';
+    btnTxt.textContent = 'Générer ma carte →';
+    return;
+  }
+
+  console.log('Carte fidélité enregistrée:', saveData);
+
+} catch(e){
+  console.error('Erreur réseau Supabase:', e);
+  errEl.textContent = 'Erreur réseau : impossible d’enregistrer la carte.';
+  btnTxt.textContent = 'Générer ma carte →';
+  return;
+}
       });
     } catch(e){ console.warn('Supabase:', e); }
 
