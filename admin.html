@@ -366,6 +366,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 
       <p class="sb-sec">Fidélité</p>
       <div class="sbi" onclick="nav('parrainage')"><span class="sbi-icon">✦</span>Parrainage</div>
+      <div class="sbi" onclick="nav('fidelite')"><span class="sbi-icon">♥</span>Cartes Fidélité <span id="b-fid" class="sbi-badge gold" style="display:none">0</span></div>
 
       <p class="sb-sec">Finances</p>
       <div class="sbi" onclick="nav('finances')"><span class="sbi-icon">◆</span>Revenus & Stats</div>
@@ -616,6 +617,59 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
       </div>
     </section>
 
+
+    <!-- ════ FIDÉLITÉ ════ -->
+    <section class="page" id="page-fidelite">
+      <div class="sh">
+        <div class="sh-left"><p class="ey">Programme</p><h2>Cartes de <em>Fidélité</em></h2></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-s" onclick="exportFidCSV()">↓ Export CSV</button>
+          <button class="btn-s fill" onclick="refreshFidelite()">↻ Actualiser</button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Membres inscrits</p><div class="kpi-val"><b id="fid-total">–</b></div><span class="kpi-ico">♥</span></div>
+        <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Niveau Or</p><div class="kpi-val"><b id="fid-or">–</b></div><span class="kpi-ico">◈</span></div>
+        <div class="kpi" style="--accent:var(--light)"><p class="kpi-label">Niveau Argent</p><div class="kpi-val"><b id="fid-argent">–</b></div><span class="kpi-ico">◆</span></div>
+        <div class="kpi" style="--accent:var(--gold-d,#8a7038)"><p class="kpi-label">Niveau Bronze</p><div class="kpi-val"><b id="fid-bronze">–</b></div><span class="kpi-ico">✦</span></div>
+      </div>
+
+      <div id="fid-alerts" style="margin-bottom:16px"></div>
+
+      <!-- Recherche + filtres -->
+      <div class="tw">
+        <div class="tw-head">
+          <span class="tw-title">Tous les membres</span>
+          <div class="tw-acts">
+            <input class="search" placeholder="Rechercher un membre…" oninput="filterFid(this.value)" id="fid-search">
+          </div>
+        </div>
+        <div class="filter-row">
+          <button class="fb on" onclick="setFidF('all',this)">Tous</button>
+          <button class="fb" onclick="setFidF('Or',this)">Or</button>
+          <button class="fb" onclick="setFidF('Argent',this)">Argent</button>
+          <button class="fb" onclick="setFidF('Bronze',this)">Bronze</button>
+          <button class="fb" onclick="setFidF('actif',this)">Actifs</button>
+        </div>
+        <table>
+          <thead><tr>
+            <th>N° Membre</th><th>Nom</th><th>Email</th>
+            <th>Code parrainage</th><th>Nb visites</th>
+            <th>Niveau</th><th>Inscrit le</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="fid-tb"></tbody>
+        </table>
+      </div>
+
+      <!-- Cartes visuelles -->
+      <div style="margin-top:28px">
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:20px">Aperçu des cartes</div>
+        <div id="fid-cards-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px"></div>
+      </div>
+    </section>
+
     <!-- ════ PARRAINAGE ════ -->
     <section class="page" id="page-parrainage">
       <div class="sh"><div class="sh-left"><p class="ey">Fidélité</p><h2>Parrai<em>nage</em></h2></div>
@@ -838,6 +892,20 @@ CREATE TABLE IF NOT EXISTS stocks (
   unite         TEXT DEFAULT 'unité(s)',
   seuil_alerte  INTEGER DEFAULT 5,
   updated_at    TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS fidelite (
+  id                UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at        TIMESTAMPTZ DEFAULT NOW(),
+  prenom            TEXT NOT NULL,
+  nom               TEXT,
+  email             TEXT NOT NULL,
+  statut            TEXT DEFAULT 'nouveau',
+  code_parrainage   TEXT,
+  membre_num        TEXT UNIQUE NOT NULL,
+  niveau            TEXT DEFAULT 'Bronze',
+  nb_visites        INTEGER DEFAULT 0,
+  actif             BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS parrainages (
@@ -1236,7 +1304,7 @@ function nav(p){
 
 function renderAll(){ renderDashboard(); updateBadges(); }
 function renderPage(p){
-  const map={dashboard:renderDashboard,planning:renderPlanning,reservations:renderRes,demandes:renderDem,clients:renderClients,stocks:renderStocks,commandes:renderCmd,parrainage:renderParrainage,finances:renderFinances,parametres:renderParams};
+  const map={dashboard:renderDashboard,fidelite:renderFidelite,planning:renderPlanning,reservations:renderRes,demandes:renderDem,clients:renderClients,stocks:renderStocks,commandes:renderCmd,parrainage:renderParrainage,finances:renderFinances,parametres:renderParams};
   if(map[p]) map[p]();
 }
 
@@ -2196,6 +2264,176 @@ window.addEventListener('resize',()=>{
   if(activePage==='page-finances') setTimeout(renderFinances,100);
   if(activePage==='page-stocks') setTimeout(renderStockChart,100);
 });
+
+// ══ FIDÉLITÉ ══
+var fidFilter = 'all';
+var fidSearch = '';
+var FIDELITE_DATA = [
+  {id:'f1',created_at:'2026-05-01T10:00:00',prenom:'Marie',nom:'Dupont',email:'marie@email.fr',statut:'client',code_parrainage:'EDEN-MAR342',membre_num:'EDF7891234',niveau:'Or',nb_visites:6,actif:true},
+  {id:'f2',created_at:'2026-04-28T14:00:00',prenom:'Lucas',nom:'Moreau',email:'lucas@email.fr',statut:'client',code_parrainage:'EDEN-LUC156',membre_num:'EDF7845621',niveau:'Argent',nb_visites:3,actif:true},
+  {id:'f3',created_at:'2026-04-15T09:00:00',prenom:'Sophie',nom:'Bernard',email:'sophie@email.fr',statut:'client',code_parrainage:'EDEN-SOP789',membre_num:'EDF7612345',niveau:'Bronze',nb_visites:1,actif:true},
+  {id:'f4',created_at:'2026-05-02T11:00:00',prenom:'Emma',nom:'Leroy',email:'emma@email.fr',statut:'nouveau',code_parrainage:'EDEN-EMM445',membre_num:'EDF7923456',niveau:'Bronze',nb_visites:0,actif:true},
+];
+
+async function refreshFidelite(){
+  var sbUrl = 'https://jdcxhejkuttaviiqqonz.supabase.co';
+  var sbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkY3hoZWprdXR0YXZpaXFxb256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzU5NjcsImV4cCI6MjA5MjcxMTk2N30.jKejetk46cKzo7gJGnyRQTCtvzjL0p-6CMkVgLfceZs';
+  try {
+    var res = await fetch(sbUrl + '/rest/v1/fidelite?select=*&order=created_at.desc', {
+      headers:{'apikey':sbKey,'Authorization':'Bearer '+sbKey}
+    });
+    if(res.ok){
+      var data = await res.json();
+      if(data && data.length) FIDELITE_DATA = data;
+    }
+  } catch(e){}
+  renderFidelite();
+  toast('↻','Données fidélité actualisées');
+}
+
+function renderFidelite(){
+  var data = FIDELITE_DATA;
+
+  // KPIs
+  document.getElementById('fid-total').textContent = data.length;
+  document.getElementById('fid-or').textContent = data.filter(f=>f.niveau==='Or').length;
+  document.getElementById('fid-argent').textContent = data.filter(f=>f.niveau==='Argent').length;
+  document.getElementById('fid-bronze').textContent = data.filter(f=>f.niveau==='Bronze'||!f.niveau).length;
+
+  // Badge sidebar
+  var bfid = document.getElementById('b-fid');
+  if(bfid){ bfid.textContent = data.length; bfid.style.display = data.length ? '' : 'none'; }
+
+  // Filter
+  var filtered = data;
+  if(fidFilter === 'actif') filtered = data.filter(f=>f.actif);
+  else if(fidFilter !== 'all') filtered = data.filter(f=>f.niveau===fidFilter);
+  if(fidSearch) filtered = filtered.filter(f=>(f.prenom+f.nom+f.email+f.membre_num+'').toLowerCase().includes(fidSearch));
+
+  // Table
+  var tb = document.getElementById('fid-tb');
+  if(!filtered.length){
+    tb.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-icon">♥</div><p class="empty-txt">Aucun membre</p></div></td></tr>';
+  } else {
+    tb.innerHTML = filtered.map(function(f){
+      var lvlColor = f.niveau==='Or'?'var(--gold)':f.niveau==='Argent'?'var(--light)':'#cd7f32';
+      var lvlBg = f.niveau==='Or'?'rgba(196,160,78,.1)':f.niveau==='Argent'?'rgba(184,180,164,.08)':'rgba(205,127,50,.08)';
+      return '<tr onclick="openFidDrawer(''+f.id+'')">' +
+        '<td style="font-family:monospace;font-size:10px;color:var(--gold)">'+(f.membre_num||'–')+'</td>' +
+        '<td class="name">'+(f.prenom||'')+' '+(f.nom||'')+'</td>' +
+        '<td class="small">'+(f.email||'–')+'</td>' +
+        '<td style="font-size:10px;color:var(--gold);letter-spacing:1px">'+(f.code_parrainage||'–')+'</td>' +
+        '<td style="text-align:center;font-family:var(--serif);font-size:16px;color:var(--cream)">'+(f.nb_visites||0)+'</td>' +
+        '<td><span style="font-size:8px;padding:3px 10px;border:1px solid '+lvlColor+';color:'+lvlColor+';background:'+lvlBg+'">'+( f.niveau||'Bronze')+'</span></td>' +
+        '<td class="small">'+fmtDate(f.created_at)+'</td>' +
+        '<td onclick="event.stopPropagation()"><div style="display:flex;gap:4px">' +
+          '<button class="atb" onclick="openFidDrawer(''+f.id+'')">Voir</button>' +
+          '<button class="atb ok" onclick="addVisit(''+f.id+'')">+1 visite</button>' +
+        '</div></td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  // Cards grid
+  var grid = document.getElementById('fid-cards-grid');
+  if(grid){
+    grid.innerHTML = filtered.slice(0,6).map(function(f){
+      var lvlColor = f.niveau==='Or'?'#c4a04e':f.niveau==='Argent'?'#c0c0c0':'#cd7f32';
+      return '<div style="background:linear-gradient(145deg,#0a0f07,#111608);border:1px solid rgba(196,160,78,.2);padding:20px;position:relative;overflow:hidden;transition:border-color .3s" onmouseover="this.style.borderColor='rgba(196,160,78,.45)'" onmouseout="this.style.borderColor='rgba(196,160,78,.2)'">' +
+        '<div style="position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,'+lvlColor+',transparent)"></div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">' +
+          '<div><span style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:8px;color:#c4a04e">EDEN</span>' +
+          '<div style="font-size:6px;letter-spacing:3px;text-transform:uppercase;color:rgba(196,160,78,.4)">Fidélité</div></div>' +
+          '<span style="font-size:7px;padding:3px 8px;border:1px solid '+lvlColor+';color:'+lvlColor+'">'+(f.niveau||'Bronze')+'</span>' +
+        '</div>' +
+        '<div style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:rgba(196,160,78,.3);margin-bottom:3px">Membre</div>' +
+        '<div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#f4efe5;margin-bottom:12px">'+(f.prenom||'')+' '+(f.nom||'')+'</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:10px;border-top:1px solid rgba(196,160,78,.06)">' +
+          '<div><div style="font-size:6px;letter-spacing:2px;color:rgba(196,160,78,.3);text-transform:uppercase">Code</div>' +
+          '<div style="font-size:9px;color:#c4a04e">'+(f.code_parrainage||'–')+'</div></div>' +
+          '<div><div style="font-size:6px;letter-spacing:2px;color:rgba(196,160,78,.3);text-transform:uppercase">Visites</div>' +
+          '<div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#f4efe5">'+(f.nb_visites||0)+'</div></div>' +
+        '</div>' +
+        '<div style="margin-top:10px;height:3px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden">' +
+          '<div style="height:100%;background:linear-gradient(90deg,'+lvlColor+',rgba(196,160,78,.3));width:'+Math.min(100,(f.nb_visites||0)/5*100)+'%"></div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+}
+
+function setFidF(f,btn){ fidFilter=f; document.querySelectorAll('#page-fidelite .fb').forEach(function(b){b.classList.remove('on');}); btn.classList.add('on'); renderFidelite(); }
+function filterFid(v){ fidSearch=v.toLowerCase(); renderFidelite(); }
+
+function addVisit(id){
+  var f = FIDELITE_DATA.find(function(x){return x.id===id;});
+  if(!f) return;
+  f.nb_visites = (f.nb_visites||0) + 1;
+  if(f.nb_visites >= 5) f.niveau = 'Or';
+  else if(f.nb_visites >= 3) f.niveau = 'Argent';
+  else f.niveau = 'Bronze';
+  renderFidelite();
+  toast('✓', f.prenom + ' — visite ajoutée (total: ' + f.nb_visites + ')');
+}
+
+function openFidDrawer(id){
+  var f = FIDELITE_DATA.find(function(x){return x.id===id;});
+  if(!f) return;
+  var lvlColor = f.niveau==='Or'?'var(--gold)':f.niveau==='Argent'?'var(--light)':'#cd7f32';
+  document.getElementById('drw-t').textContent = (f.prenom||'') + ' ' + (f.nom||'');
+  document.getElementById('drw-s').textContent = 'Carte fidélité · N° ' + (f.membre_num||'–');
+  document.getElementById('drw-b').innerHTML =
+    '<div style="display:flex;gap:14px;align-items:center;margin-bottom:20px">' +
+      '<div style="width:52px;height:52px;border:1px solid rgba(196,160,78,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:22px;color:var(--gold)">'+(f.prenom||'?')[0]+'</div>' +
+      '<div><div style="font-family:var(--serif);font-size:20px;color:var(--cream)">'+(f.prenom||'')+' '+(f.nom||'')+'</div>' +
+      '<div style="font-size:9px;color:var(--muted);margin-top:3px">'+(f.email||'')+'</div></div>' +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">' +
+      '<div style="text-align:center;padding:12px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.08)">' +
+        '<div style="font-family:var(--serif);font-size:24px;color:'+lvlColor+'">'+(f.nb_visites||0)+'</div>' +
+        '<div style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Visites</div></div>' +
+      '<div style="text-align:center;padding:12px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.08)">' +
+        '<div style="font-size:14px;color:'+lvlColor+'">'+(f.niveau||'Bronze')+'</div>' +
+        '<div style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Niveau</div></div>' +
+      '<div style="text-align:center;padding:12px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.08)">' +
+        '<div style="font-family:var(--serif);font-size:14px;color:var(--gold)">'+(f.code_parrainage||'–')+'</div>' +
+        '<div style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Code</div></div>' +
+    '</div>' +
+    '<div class="df-sep"></div>' +
+    '<div class="df"><label>N° Membre (code barre)</label>' +
+      '<div style="background:#f4efe5;padding:12px;text-align:center">' +
+        '<div id="drw-barcode-wrap" style="font-size:10px;color:#5a5a4a;letter-spacing:3px;font-family:monospace;padding:8px">'+(f.membre_num||'–')+'</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="df"><label>Inscrit le</label><div class="df-v">'+fmtDate(f.created_at)+'</div></div>' +
+    '<div class="df"><label>Statut client</label><div class="df-v">'+(f.statut==='client'?'Déjà client EDEN':'Nouveau visiteur')+'</div></div>' +
+    '<div class="df-sep"></div>' +
+    '<div class="df"><label>Progression vers le niveau suivant</label>' +
+      '<div style="height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-top:4px">' +
+        '<div style="height:100%;background:linear-gradient(90deg,'+lvlColor+',rgba(196,160,78,.3));width:'+Math.min(100,(f.nb_visites||0)/5*100)+'%;transition:width .6s"></div>' +
+      '</div>' +
+      '<div style="font-size:9px;color:var(--muted);margin-top:6px">'+(f.nb_visites||0)+'/5 visites pour atteindre le statut Or</div>' +
+    '</div>';
+
+  document.getElementById('drw-f').innerHTML =
+    '<button class="btn-s fill" onclick="addVisit(''+f.id+'');closeDrw()">+ Ajouter une visite</button>' +
+    '<button class="btn-s" onclick="closeDrw()">Fermer</button>';
+  openDrw();
+}
+
+function exportFidCSV(){
+  var rows = [['N° Membre','Prénom','Nom','Email','Code parrainage','Nb visites','Niveau','Inscrit le']];
+  FIDELITE_DATA.forEach(function(f){
+    rows.push([f.membre_num||'',f.prenom||'',f.nom||'',f.email||'',f.code_parrainage||'',f.nb_visites||0,f.niveau||'Bronze',fmtDate(f.created_at)]);
+  });
+  var csv = rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv);
+  a.download = 'eden-fidelite-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  toast('↓','Export fidélité téléchargé');
+}
+
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDrw(); });
 </script>
 </body>
