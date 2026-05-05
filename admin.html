@@ -351,6 +351,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 
       <p class="sb-sec">Fidélité</p>
       <div class="sbi" onclick="nav('parrainage')"><span class="sbi-icon">✦</span>Parrainage</div>
+      <div class="sbi" onclick="nav('fidelite')"><span class="sbi-icon">♔</span>Cartes fidélité <span id="b-fid" class="sbi-badge gold" style="display:none"></span></div>
 
       <p class="sb-sec">Finances</p>
       <div class="sbi" onclick="nav('finances')"><span class="sbi-icon">◆</span>Revenus & Stats</div>
@@ -617,7 +618,66 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
         <tbody id="par-tb"></tbody></table>
       </div>
     </section>
+<!-- ════ CARTES FIDÉLITÉ ════ -->
+<section class="page" id="page-fidelite">
+  <div class="sh">
+    <div class="sh-left">
+      <p class="ey">Programme fidélité</p>
+      <h2>Cartes <em>fidélité</em></h2>
+    </div>
+    <button class="btn-s" onclick="loadSB()">↻ Actualiser</button>
+  </div>
 
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi" style="--accent:var(--gold)">
+      <p class="kpi-label">Cartes créées</p>
+      <div class="kpi-val"><b id="fid-total">–</b></div>
+      <span class="kpi-ico">♔</span>
+    </div>
+    <div class="kpi" style="--accent:#cd7f32">
+      <p class="kpi-label">Bronze</p>
+      <div class="kpi-val"><b id="fid-bronze">–</b></div>
+      <span class="kpi-ico">◈</span>
+    </div>
+    <div class="kpi" style="--accent:#c0c0c0">
+      <p class="kpi-label">Argent</p>
+      <div class="kpi-val"><b id="fid-argent">–</b></div>
+      <span class="kpi-ico">✦</span>
+    </div>
+    <div class="kpi" style="--accent:var(--gold)">
+      <p class="kpi-label">Or</p>
+      <div class="kpi-val"><b id="fid-or">–</b></div>
+      <span class="kpi-ico">◆</span>
+    </div>
+  </div>
+
+  <div class="tw">
+    <div class="tw-head">
+      <span class="tw-title">Toutes les cartes fidélité</span>
+      <div class="tw-acts">
+        <input class="search" placeholder="Rechercher…" oninput="filterFidelite(this.value)" id="fid-search">
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Créée le</th>
+          <th>Membre</th>
+          <th>Email</th>
+          <th>Téléphone</th>
+          <th>N° membre</th>
+          <th>Code</th>
+          <th>Niveau</th>
+          <th>Visites</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="fid-tb"></tbody>
+    </table>
+  </div>
+</section>
     <!-- ════ FINANCES ════ -->
     <section class="page" id="page-finances">
       <div class="sh">
@@ -902,7 +962,8 @@ const D = {
     softs: [],
     extras: []
   },
-  parrainages: []
+  parrainages: [],
+  fidelite: []
 };
 
 // ── INIT ──
@@ -1187,16 +1248,18 @@ async function sbQ(table,params={},method='GET',body=null){
 }
 async function loadSB(){
   try{
-    const[res,dem,sto,par]=await Promise.all([
-      sbQ('reservations',{select:'*',order:'created_at.desc'}),
-      sbQ('demandes',{select:'*',order:'created_at.desc'}),
-      sbQ('stocks',{select:'*'}),
-      sbQ('parrainages',{select:'*',order:'created_at.desc'}),
-    ]);
+    const[res,dem,sto,par,fid]=await Promise.all([
+  sbQ('reservations',{select:'*',order:'created_at.desc'}),
+  sbQ('demandes',{select:'*',order:'created_at.desc'}),
+  sbQ('stocks',{select:'*'}),
+  sbQ('parrainages',{select:'*',order:'created_at.desc'}),
+  sbQ('fidelite',{select:'*',order:'created_at.desc'}),
+]);
     if(res) D.reservations=res;
     if(dem) D.demandes=dem;
     if(sto&&sto.length){ const c={smoothies:[],softs:[],extras:[]}; sto.forEach(s=>{if(c[s.categorie])c[s.categorie].push({...s,seuil:s.seuil_alerte});}); ['smoothies','softs','extras'].forEach(k=>{if(c[k].length)D.stocks[k]=c[k];}); }
     if(par) D.parrainages=par;
+    if(fid) D.fidelite=fid;
     renderAll();
     toast('◎','Données Supabase chargées');
   } catch(e){ toast('⚠','Erreur Supabase','warn'); }
@@ -1214,6 +1277,7 @@ const PAGE_TITLES={
   reservations:'Réser<em>vations</em>', demandes:'Demandes de <em>réservation</em>',
   clients:'Fiches <em>Clients</em>', stocks:'Stock <em>Boissons</em>',
   commandes:'Extras <em>commandés</em>', parrainage:'Parrai<em>nage</em>',
+  fidelite:'Cartes <em>fidélité</em>',
   finances:'Revenus & <em>Statistiques</em>', parametres:'Paramè<em>tres</em>'
 };
 function nav(p){
@@ -1227,7 +1291,19 @@ function nav(p){
 
 function renderAll(){ renderDashboard(); updateBadges(); }
 function renderPage(p){
-  const map={dashboard:renderDashboard,planning:renderPlanning,reservations:renderRes,demandes:renderDem,clients:renderClients,stocks:renderStocks,commandes:renderCmd,parrainage:renderParrainage,finances:renderFinances,parametres:renderParams};
+ const map={
+  dashboard:renderDashboard,
+  planning:renderPlanning,
+  reservations:renderRes,
+  demandes:renderDem,
+  clients:renderClients,
+  stocks:renderStocks,
+  commandes:renderCmd,
+  parrainage:renderParrainage,
+  fidelite:renderFidelite,
+  finances:renderFinances,
+  parametres:renderParams
+};
   if(map[p]) map[p]();
 }
 
@@ -1430,7 +1506,102 @@ function genCode(){
   D.parrainages.unshift({id:'l'+Date.now(),created_at:new Date().toISOString().slice(0,10),code,createur_nom:nom,filleuls:[],utilisations:0,reduction_offerte:0,actif:true});
   renderParrainage();toast('◎',`Code ${code} créé`);
 }
+// ── CARTES FIDÉLITÉ ──
+let fidSearch = '';
 
+function renderFidelite(){
+  const rows = (D.fidelite || []).filter(f => {
+    const q = fidSearch.toLowerCase();
+    return !q ||
+      String(f.prenom || '').toLowerCase().includes(q) ||
+      String(f.nom || '').toLowerCase().includes(q) ||
+      String(f.email || '').toLowerCase().includes(q) ||
+      String(f.membre_num || '').toLowerCase().includes(q) ||
+      String(f.code_parrainage || '').toLowerCase().includes(q);
+  });
+
+  const total = D.fidelite.length;
+  const bronze = D.fidelite.filter(f => (f.niveau || 'Bronze') === 'Bronze').length;
+  const argent = D.fidelite.filter(f => (f.niveau || '') === 'Argent').length;
+  const or = D.fidelite.filter(f => (f.niveau || '') === 'Or').length;
+
+  document.getElementById('fid-total').textContent = total;
+  document.getElementById('fid-bronze').textContent = bronze;
+  document.getElementById('fid-argent').textContent = argent;
+  document.getElementById('fid-or').textContent = or;
+
+  const badge = document.getElementById('b-fid');
+  if(badge){
+    badge.style.display = total ? 'inline-flex' : 'none';
+    badge.textContent = total;
+  }
+
+  document.getElementById('fid-tb').innerHTML = rows.length ? rows.map(f => {
+    const date = f.created_at ? new Date(f.created_at).toLocaleDateString('fr-FR') : '–';
+    const nom = `${f.prenom || ''} ${f.nom || ''}`.trim() || '–';
+    const niveau = f.niveau || 'Bronze';
+    const visites = Number(f.nb_visites || 0);
+    const actif = f.actif !== false;
+
+    return `
+      <tr>
+        <td class="small">${date}</td>
+        <td class="name">${nom}</td>
+        <td>${f.email || '–'}</td>
+        <td>${f.telephone || '–'}</td>
+        <td class="gold">${f.membre_num || '–'}</td>
+        <td>${f.code_parrainage || '–'}</td>
+        <td><span class="badge ${niveau === 'Or' ? 'confirmed' : niveau === 'Argent' ? 'done' : 'pending'}"><span class="badge-dot"></span>${niveau}</span></td>
+        <td class="gold">${visites}</td>
+        <td>${actif ? '<span class="badge confirmed"><span class="badge-dot"></span>Actif</span>' : '<span class="badge cancelled"><span class="badge-dot"></span>Inactif</span>'}</td>
+        <td>
+          <button class="atb ok" onclick="addVisit('${f.id}', ${visites})">+ visite</button>
+          <button class="atb err" onclick="toggleFid('${f.id}', ${actif})">${actif ? 'Désactiver' : 'Activer'}</button>
+        </td>
+      </tr>
+    `;
+  }).join('') : '<tr><td colspan="10" class="small">Aucune carte fidélité créée pour le moment</td></tr>';
+}
+
+function filterFidelite(v){
+  fidSearch = v || '';
+  renderFidelite();
+}
+
+function calcNiveau(visites){
+  visites = Number(visites || 0);
+  if(visites >= 5) return 'Or';
+  if(visites >= 3) return 'Argent';
+  return 'Bronze';
+}
+
+async function addVisit(id, current){
+  const next = Number(current || 0) + 1;
+  const niveau = calcNiveau(next);
+
+  try{
+    await sbQ('fidelite',{id:`eq.${id}`},'PATCH',{
+      nb_visites: next,
+      niveau: niveau
+    });
+    toast('✓','Visite ajoutée');
+    loadSB();
+  } catch(e){
+    toast('⚠','Erreur ajout visite','warn');
+  }
+}
+
+async function toggleFid(id, actif){
+  try{
+    await sbQ('fidelite',{id:`eq.${id}`},'PATCH',{
+      actif: !actif
+    });
+    toast('✓','Statut fidélité modifié');
+    loadSB();
+  } catch(e){
+    toast('⚠','Erreur modification fidélité','warn');
+  }
+}
 // ── FINANCES ──
 function renderFinances(){
   const valid=D.reservations.filter(r=>r.statut!=='cancelled');
