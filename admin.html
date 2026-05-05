@@ -307,38 +307,24 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
         <span style="font-size:10px">🔐</span>
         <span style="font-size:9px;color:#4caf50;letter-spacing:1px">Authentification Supabase sécurisée</span>
       </div>
+
       <div class="lf">
         <label>Email administrateur</label>
         <input type="email" id="auth-email" placeholder="admin@eden-wellness.fr" onkeydown="if(event.key==='Enter')document.getElementById('auth-pwd').focus()">
       </div>
+
       <div class="lf">
         <label>Mot de passe</label>
-        <input type="password" id="auth-pwd" placeholder="••••••••••" onkeydown="if(event.key==='Enter')loginSupabase()">
+        <input type="password" id="auth-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginSupabase()">
       </div>
+
       <button class="login-btn" id="login-btn-sb" onclick="loginSupabase()">Accéder à l'espace admin</button>
       <p class="login-attempts" id="login-err"></p>
-      <div style="margin-top:14px;padding:10px 14px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.08)">
-        <p style="font-size:8px;color:var(--muted);line-height:2;letter-spacing:.5px">Créez votre compte admin sur <b style="color:var(--gold)">supabase.com</b> → Authentication → Users → Invite user. Entrez ensuite votre email et mot de passe ci-dessus.</p>
-      </div>
     </div>
-
-    <!-- Mode local fallback (si Supabase non configuré) -->
-    <div class="login-box" id="login-box-local" style="display:none">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;padding:10px 14px;background:rgba(240,160,48,.05);border:1px solid rgba(240,160,48,.15)">
-        <span style="font-size:10px">⚠</span>
-        <span style="font-size:9px;color:var(--warn);letter-spacing:1px">Mode local — Configurez Supabase pour sécuriser l'accès</span>
-      </div>
-      <div class="lf">
-        <label>Mot de passe</label>
-        <input type="password" id="pwd-local" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginLocal()">
-      </div>
-      <button class="login-btn" onclick="loginLocal()">Accéder</button>
-      <p class="login-attempts" id="login-err-local"></p>
-    </div>
-
-    <div class="login-sep"></div>
 
     <div id="sb-no-cfg" style="display:none"></div>
+  </div>
+</div>
 
 <!-- ══════════════════ APP ══════════════════ -->
 <div id="app">
@@ -942,20 +928,21 @@ window.onload = function(){
 
   checkSbConfig();
 
-  // Vérifier session existante
-  var sessionExp = localStorage.getItem(SESSION_K);
-  if(sessionExp && Date.now() < parseInt(sessionExp) && SB_TOKEN) {
-    // Session valide — connexion auto
-    showApp();
-  } else if(sessionStorage.getItem('eden_ok') === '1') {
-    showApp();
-  } else {
-    // Nettoyer session expirée
-    localStorage.removeItem(TOKEN_K);
-    localStorage.removeItem(RTOKEN_K);
-    localStorage.removeItem(SESSION_K);
-    sessionStorage.removeItem('eden_ok');
-  }
+  // Vérifier session Supabase existante uniquement
+var sessionExp = localStorage.getItem(SESSION_K);
+var token = localStorage.getItem(TOKEN_K);
+
+if(sessionExp && Date.now() < parseInt(sessionExp) && token) {
+  SB_TOKEN = token;
+  showApp();
+} else {
+  // Nettoyer session expirée ou invalide
+  SB_TOKEN = '';
+  localStorage.removeItem(TOKEN_K);
+  localStorage.removeItem(RTOKEN_K);
+  localStorage.removeItem(SESSION_K);
+  sessionStorage.removeItem('eden_ok');
+}
 };
 
 // ── VÉRIFIER CONFIG SUPABASE ──
@@ -1111,6 +1098,11 @@ async function logout(){
 
 // ── SHOW APP ──
 function showApp(){
+  if(!localStorage.getItem(TOKEN_K)){
+    var errEl = document.getElementById('login-err');
+    if(errEl) errEl.textContent = 'Connexion Supabase requise';
+    return;
+  }
   var ls = document.getElementById('login-screen');
   if(ls) ls.classList.add('hidden');
   var a = document.getElementById('app');
