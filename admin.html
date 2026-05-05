@@ -963,73 +963,22 @@ window.onload = function(){
   if(sessionStorage.getItem('eden_ok') === '1') showApp();
 };
 
-// ── LOGIN SUPABASE ──
-async function loginSupabase(){
-  var email = document.getElementById('auth-email') ? document.getElementById('auth-email').value.trim() : '';
-  var pwd   = document.getElementById('auth-pwd') ? document.getElementById('auth-pwd').value : '';
-  var errEl = document.getElementById('login-err');
-  var btn   = document.getElementById('login-btn-sb');
-
-  if(!email || !pwd){
-    if(errEl) errEl.textContent = 'Email et mot de passe requis';
-    return;
-  }
-
-  if(btn){
-    btn.textContent = 'Connexion en cours…';
-    btn.disabled = true;
-  }
-
-  if(errEl) errEl.textContent = '';
-
-  var url = (localStorage.getItem('eden_sb_url') || 'https://jdcxhejkuttaviiqqonz.supabase.co').trim();
-  var key = (localStorage.getItem('eden_sb_key') || 'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A').trim();
-
-  try {
-    var res = await fetch(url + '/auth/v1/token?grant_type=password', {
-      method: 'POST',
-      headers: {
-        'apikey': key,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email: email, password: pwd })
-    });
-
-    var data = await res.json();
-
-    if(!res.ok){
-      throw new Error(data.error_description || data.msg || 'Identifiants incorrects');
-    }
-
-    SB_TOKEN = data.access_token;
-    localStorage.setItem('eden_sb_token', data.access_token);
-    localStorage.setItem('eden_sb_refresh', data.refresh_token || '');
-    localStorage.setItem('eden_session_exp', (Date.now() + 3600000).toString());
-    sessionStorage.setItem('eden_ok', '1');
-
-    if(document.getElementById('auth-pwd')){
-      document.getElementById('auth-pwd').value = '';
-    }
-
-    showApp();
-
-  } catch(err){
-    if(errEl) errEl.textContent = err.message || 'Erreur de connexion';
-    if(document.getElementById('auth-pwd')){
-      document.getElementById('auth-pwd').value = '';
-    }
-  } finally {
-    if(btn){
-      btn.textContent = "Accéder à l'espace admin";
-      btn.disabled = false;
-    }
-  }
-}
-
-// Compatibilité si une ancienne touche Entrée appelle encore login()
+// ── LOGIN ──
 function login(){
-  loginSupabase();
+  var val = document.getElementById('pwd').value;
+  var stored = localStorage.getItem('eden_pwd') || 'eden2024';
+  var errEl = document.getElementById('login-err');
+  if(val === stored){
+    sessionStorage.setItem('eden_ok','1');
+    document.getElementById('pwd').value = '';
+    if(errEl) errEl.textContent = '';
+    showApp();
+  } else {
+    if(errEl) errEl.textContent = 'Mot de passe incorrect';
+    document.getElementById('pwd').value = '';
+  }
 }
+
 function logout(){
   sessionStorage.removeItem('eden_ok');
   document.getElementById('app').style.display = 'none';
