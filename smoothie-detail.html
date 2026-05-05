@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smoothie — EDEN Fuel Bar</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@100;200;300;400&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --gold:#c4a04e;
+  --gold-l:#dbbf78;
+  --gold-d:#8a7038;
+  --gold-p:#f2e8d0;
+
+  --dark:#060908;
+  --dark2:#0b100c;
+  --dark3:#11170f;
+  --dark4:#171d14;
+  --cream:#f4efe5;
+  --muted:#7a7a68;
+  --light:#c0bcac;
+
+  --serif:'Cormorant Garamond', Georgia, serif;
+  --play:'Playfair Display', Georgia, serif;
+  --sans:'Jost', system-ui, sans-serif;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+  --ease2:cubic-bezier(.22,1,.36,1);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body{
+  background:var(--dark);
+  color:var(--cream);
+  font-family:var(--sans);
+  font-weight:300;
+  overflow-x:hidden;
+  cursor:none;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-3;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(219,191,120,.11), transparent 28%),
+    radial-gradient(circle at 88% 20%, rgba(196,160,78,.08), transparent 30%),
+    radial-gradient(circle at 52% 86%, rgba(196,160,78,.06), transparent 35%),
+    linear-gradient(180deg,#040605 0%,#060908 38%,#090d08 100%);
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  pointer-events:none;
+  opacity:.38;
+  background:
+    linear-gradient(120deg,transparent 0%,rgba(255,255,255,.025) 48%,transparent 58%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.012) 0 1px,transparent 1px 118px);
+}
+
+#cd{
+  position:fixed;
+  width:5px;
+  height:5px;
+  background:var(--gold);
+  border-radius:50%;
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%);
+}
+
+#cr{
+  position:fixed;
+  width:34px;
+  height:34px;
+  border:1px solid rgba(196,160,78,.35);
+  border-radius:50%;
+  pointer-events:none;
+  z-index:9997;
+  transform:translate(-50%,-50%);
+  transition:.3s;
+}
+
+body.hov #cr{
+  width:52px;
+  height:52px;
+  border-color:rgba(196,160,78,.72);
+}
+
+#prog{
+  position:fixed;
+  top:0;
+  left:0;
+  height:2px;
+  width:0;
+  background:linear-gradient(90deg,var(--gold-d),var(--gold),var(--gold-l));
+  z-index:9996;
+}
+
+/* LUXE LIGHTS */
+.light-grid{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  opacity:.65;
+}
+
+.light-grid::before{
+  content:"";
+  position:absolute;
+  inset:-12%;
+  background:
+    linear-gradient(90deg,transparent 0%,rgba(196,160,78,.05) 50%,transparent 100%) 0 20%/100% 1px no-repeat,
+    linear-gradient(90deg,transparent 0%,rgba(196,160,78,.035) 50%,transparent 100%) 0 54%/100% 1px no-repeat,
+    linear-gradient(90deg,transparent 0%,rgba(196,160,78,.045) 50%,transparent 100%) 0 88%/100% 1px no-repeat,
+    linear-gradient(0deg,transparent 0%,rgba(196,160,78,.035) 50%,transparent 100%) 14% 0/1px 100% no-repeat,
+    linear-gradient(0deg,transparent 0%,rgba(196,160,78,.045) 50%,transparent 100%) 50% 0/1px 100% no-repeat,
+    linear-gradient(0deg,transparent 0%,rgba(196,160,78,.03) 50%,transparent 100%) 86% 0/1px 100% no-repeat;
+}
+
+.light-grid::after{
+  content:"";
+  position:absolute;
+  left:-45%;
+  top:34%;
+  width:42%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.48),transparent);
+  box-shadow:0 240px 0 rgba(196,160,78,.10),0 420px 0 rgba(196,160,78,.08);
+  animation:ledSweep 8s linear infinite;
+}
+
+@keyframes ledSweep{to{left:110%;}}
+
+.sparkles{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+.sparkles span{
+  position:absolute;
+  width:3px;
+  height:3px;
+  border-radius:50%;
+  background:rgba(219,191,120,.95);
+  box-shadow:0 0 10px rgba(219,191,120,.9),0 0 22px rgba(196,160,78,.5);
+  opacity:0;
+  animation:sparkle 9s infinite ease-in-out;
+}
+
+.sparkles span:nth-child(1){left:8%;top:18%;animation-delay:.2s;}
+.sparkles span:nth-child(2){left:18%;top:62%;animation-delay:2s;}
+.sparkles span:nth-child(3){left:32%;top:28%;animation-delay:4.2s;}
+.sparkles span:nth-child(4){left:47%;top:74%;animation-delay:1.4s;}
+.sparkles span:nth-child(5){left:61%;top:18%;animation-delay:3.1s;}
+.sparkles span:nth-child(6){left:72%;top:52%;animation-delay:5.4s;}
+.sparkles span:nth-child(7){left:86%;top:30%;animation-delay:1.9s;}
+.sparkles span:nth-child(8){left:94%;top:78%;animation-delay:6.2s;}
+.sparkles span:nth-child(9){left:25%;top:86%;animation-delay:7.1s;}
+.sparkles span:nth-child(10){left:55%;top:42%;animation-delay:2.8s;}
+
+@keyframes sparkle{
+  0%,100%{transform:translateY(0) scale(.35);opacity:0;}
+  20%{opacity:.9;}
+  50%{transform:translateY(-30px) scale(1);opacity:.68;}
+  80%{opacity:.12;}
+}
+
+/* NAV */
+nav{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:500;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 72px;
+  background:linear-gradient(180deg,rgba(6,9,8,.96),rgba(6,9,8,.76));
+  backdrop-filter:blur(22px);
+  border-bottom:1px solid rgba(196,160,78,.10);
+  box-shadow:0 18px 50px rgba(0,0,0,.30), inset 0 -1px 0 rgba(219,191,120,.06);
+}
+
+.logo{
+  font-family:var(--serif);
+  font-size:24px;
+  letter-spacing:8px;
+  color:var(--gold);
+  text-decoration:none;
+  text-shadow:0 0 18px rgba(196,160,78,.26);
+}
+
+.nav-links{
+  display:flex;
+  gap:40px;
+  list-style:none;
+}
+
+.nav-links a{
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:rgba(244,239,229,.60);
+  text-decoration:none;
+  transition:.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.on{color:var(--gold);}
+
+.btn-nav{
+  font-size:9px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  border:1px solid var(--gold);
+  background:var(--gold);
+  color:var(--dark);
+  padding:10px 24px;
+  text-decoration:none;
+  font-weight:400;
+  transition:.3s;
+  box-shadow:0 0 24px rgba(196,160,78,.16);
+}
+
+.btn-nav:hover{
+  background:var(--gold-l);
+  box-shadow:0 0 36px rgba(219,191,120,.28);
+}
+
+/* HERO */
+.hero{
+  position:relative;
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  align-items:center;
+  gap:1px;
+  padding:120px 80px 70px;
+  overflow:hidden;
+}
+
+.hero::before{
+  content:"SMOOTHIE";
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  font-family:var(--sans);
+  font-size:clamp(75px,13vw,190px);
+  font-weight:100;
+  letter-spacing:24px;
+  color:rgba(196,160,78,.026);
+  pointer-events:none;
+  white-space:nowrap;
+}
+
+.hero-left,
+.hero-right{
+  position:relative;
+  z-index:5;
+}
+
+.hero-left{
+  padding:50px 30px 50px 0;
+}
+
+.back-link{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  color:var(--gold);
+  text-decoration:none;
+  font-size:9px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  margin-bottom:34px;
+  transition:.3s;
+}
+
+.back-link:hover{
+  color:var(--gold-l);
+  transform:translateX(-4px);
+}
+
+.eyebrow{
+  display:block;
+  font-size:9px;
+  letter-spacing:6px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:18px;
+}
+
+.title{
+  font-family:var(--serif);
+  font-size:clamp(58px,9vw,118px);
+  font-weight:300;
+  line-height:.9;
+  color:var(--cream);
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  margin-bottom:26px;
+  text-shadow:0 20px 60px rgba(0,0,0,.55);
+}
+
+.title em{
+  display:block;
+  font-style:italic;
+  color:var(--gold-l);
+  font-weight:300;
+}
+
+.hero-line{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin:28px 0 30px;
+}
+
+.line{
+  width:70px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(196,160,78,.60));
+}
+
+.line.r{background:linear-gradient(270deg,transparent,rgba(196,160,78,.60));}
+
+.diamond{
+  width:7px;
+  height:7px;
+  transform:rotate(45deg);
+  background:var(--gold);
+  box-shadow:0 0 16px rgba(219,191,120,.70);
+}
+
+.short-desc{
+  font-size:15px;
+  color:var(--light);
+  line-height:2.25;
+  max-width:650px;
+  margin-bottom:34px;
+}
+
+.hero-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:34px;
+}
+
+.hero-tag{
+  border:1px solid rgba(196,160,78,.18);
+  background:rgba(196,160,78,.045);
+  color:var(--gold-l);
+  padding:8px 13px;
+  font-size:8px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+}
+
+.hero-actions{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+.btn-gold,
+.btn-outline{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:15px 34px;
+  font-size:9px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  text-decoration:none;
+  transition:.35s;
+}
+
+.btn-gold{
+  background:var(--gold);
+  border:1px solid var(--gold);
+  color:var(--dark);
+  box-shadow:0 0 24px rgba(196,160,78,.15);
+}
+
+.btn-gold:hover{
+  background:var(--gold-l);
+  transform:translateY(-2px);
+}
+
+.btn-outline{
+  border:1px solid rgba(196,160,78,.35);
+  color:var(--gold);
+  background:rgba(196,160,78,.025);
+}
+
+.btn-outline:hover{
+  border-color:var(--gold);
+  color:var(--gold-l);
+  background:rgba(196,160,78,.05);
+  transform:translateY(-2px);
+}
+
+/* IMAGE CARD */
+.hero-right{
+  min-height:650px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.image-frame{
+  width:min(520px,100%);
+  height:680px;
+  position:relative;
+  border:1px solid rgba(196,160,78,.22);
+  background:
+    radial-gradient(circle at 50% 30%, rgba(196,160,78,.10), transparent 42%),
+    var(--dark2);
+  box-shadow:0 45px 120px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.015);
+  overflow:hidden;
+}
+
+.image-frame::before{
+  content:"";
+  position:absolute;
+  inset:22px;
+  z-index:5;
+  border:1px solid rgba(196,160,78,.18);
+  pointer-events:none;
+}
+
+.image-frame::after{
+  content:"";
+  position:absolute;
+  top:-80%;
+  left:-65%;
+  width:62%;
+  height:250%;
+  transform:rotate(24deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),rgba(219,191,120,.045),transparent);
+  animation:frameShine 6s ease-in-out infinite;
+  pointer-events:none;
+  z-index:6;
+}
+
+@keyframes frameShine{
+  0%,32%{left:-70%;opacity:0;}
+  45%{opacity:1;}
+  70%,100%{left:122%;opacity:0;}
+}
+
+.image-frame img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter:brightness(.82) saturate(1.06) contrast(1.07);
+  transition:.75s var(--ease2);
+}
+
+.image-frame:hover img{
+  transform:scale(1.045);
+  filter:brightness(.96) saturate(1.12) contrast(1.1);
+}
+
+.image-overlay{
+  position:absolute;
+  inset:0;
+  z-index:3;
+  background:
+    linear-gradient(180deg,transparent 38%,rgba(6,9,8,.84) 100%),
+    radial-gradient(circle at top right, rgba(196,160,78,.12), transparent 34%);
+}
+
+.image-caption{
+  position:absolute;
+  left:38px;
+  right:38px;
+  bottom:34px;
+  z-index:7;
+  display:flex;
+  justify-content:space-between;
+  gap:24px;
+  align-items:flex-end;
+}
+
+.image-caption span{
+  display:block;
+  font-size:8px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:8px;
+}
+
+.image-caption strong{
+  display:block;
+  font-family:var(--serif);
+  font-size:34px;
+  font-weight:300;
+  font-style:italic;
+  color:var(--cream);
+  line-height:1;
+}
+
+.price-pill{
+  border:1px solid rgba(196,160,78,.22);
+  background:rgba(6,9,8,.56);
+  backdrop-filter:blur(10px);
+  padding:12px 14px;
+  color:var(--gold-l);
+  font-size:18px;
+  letter-spacing:2px;
+  white-space:nowrap;
+}
+
+/* CONTENT */
+.section{
+  padding:95px 80px;
+  position:relative;
+}
+
+.section-soft{
+  background:
+    radial-gradient(circle at top right, rgba(196,160,78,.055), transparent 32%),
+    radial-gradient(circle at bottom left, rgba(196,160,78,.035), transparent 34%),
+    var(--dark2);
+  border-top:1px solid rgba(196,160,78,.08);
+}
+
+.container{
+  max-width:1280px;
+  margin:0 auto;
+}
+
+.section-head{
+  text-align:center;
+  max-width:820px;
+  margin:0 auto 54px;
+}
+
+.section-eyebrow{
+  display:block;
+  font-size:9px;
+  letter-spacing:6px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:16px;
+}
+
+.section-title{
+  font-family:var(--serif);
+  font-size:clamp(38px,6vw,76px);
+  font-weight:300;
+  line-height:1;
+  color:var(--cream);
+  text-transform:uppercase;
+  letter-spacing:.055em;
+}
+
+.section-title em{
+  font-style:italic;
+  color:var(--gold-l);
+}
+
+.section-desc{
+  max-width:700px;
+  margin:24px auto 0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:2.3;
+}
+
+/* DETAILS GRID */
+.detail-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1px;
+  background:rgba(196,160,78,.10);
+  border:1px solid rgba(196,160,78,.12);
+  box-shadow:0 30px 80px rgba(0,0,0,.25);
+}
+
+.detail-card{
+  padding:42px 38px;
+  background:
+    radial-gradient(circle at top right, rgba(196,160,78,.055), transparent 34%),
+    linear-gradient(180deg, rgba(255,255,255,.014), rgba(255,255,255,.006)),
+    var(--dark3);
+  position:relative;
+  overflow:hidden;
+  min-height:280px;
+}
+
+.detail-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,transparent,rgba(196,160,78,.32),transparent) top/100% 1px no-repeat,
+    linear-gradient(0deg,transparent,rgba(196,160,78,.22),transparent) left/1px 100% no-repeat;
+  opacity:.5;
+  pointer-events:none;
+}
+
+.detail-kicker{
+  display:block;
+  color:var(--gold);
+  font-size:8px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  margin-bottom:16px;
+}
+
+.detail-card h3{
+  font-family:var(--sans);
+  font-size:22px;
+  font-weight:200;
+  letter-spacing:5px;
+  text-transform:uppercase;
+  color:var(--cream);
+  margin-bottom:18px;
+}
+
+.detail-card p{
+  font-size:13px;
+  color:var(--muted);
+  line-height:2.25;
+}
+
+.ingredient-list{
+  list-style:none;
+  display:grid;
+  gap:12px;
+  margin-top:20px;
+}
+
+.ingredient-list li{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:var(--light);
+  font-size:12px;
+  line-height:1.5;
+}
+
+.ingredient-list li::before{
+  content:"";
+  width:8px;
+  height:8px;
+  transform:rotate(45deg);
+  background:var(--gold);
+  opacity:.75;
+  box-shadow:0 0 10px rgba(196,160,78,.45);
+  flex-shrink:0;
+}
+
+/* RITUAL */
+.ritual-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1px;
+  background:rgba(196,160,78,.10);
+  border:1px solid rgba(196,160,78,.12);
+}
+
+.ritual-card{
+  min-height:230px;
+  padding:34px 28px;
+  background:
+    radial-gradient(circle at top right, rgba(196,160,78,.045), transparent 34%),
+    rgba(255,255,255,.012);
+  position:relative;
+  overflow:hidden;
+}
+
+.ritual-card::before{
+  content:"";
+  position:absolute;
+  right:20px;
+  top:20px;
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:54px;
+  line-height:1;
+  color:rgba(196,160,78,.10);
+}
+
+.ritual-card:nth-child(1)::before{content:"01";}
+.ritual-card:nth-child(2)::before{content:"02";}
+.ritual-card:nth-child(3)::before{content:"03";}
+.ritual-card:nth-child(4)::before{content:"04";}
+
+.ritual-icon{
+  width:42px;
+  height:42px;
+  transform:rotate(45deg);
+  border:1px solid rgba(196,160,78,.24);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:26px;
+  color:var(--gold);
+}
+
+.ritual-icon span{
+  transform:rotate(-45deg);
+}
+
+.ritual-card h4{
+  font-size:15px;
+  font-weight:200;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--cream);
+  margin-bottom:12px;
+}
+
+.ritual-card p{
+  font-size:12px;
+  color:var(--muted);
+  line-height:2;
+}
+
+/* PREVIEW STRIP */
+.preview-strip{
+  margin-top:34px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+
+.preview-item{
+  border:1px solid rgba(196,160,78,.12);
+  background:rgba(255,255,255,.012);
+  padding:22px 20px;
+  position:relative;
+  overflow:hidden;
+}
+
+.preview-item::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:2px;
+  background:var(--gold);
+  opacity:.55;
+}
+
+.preview-item span{
+  display:block;
+  color:var(--gold);
+  font-size:8px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+
+.preview-item strong{
+  display:block;
+  color:var(--cream);
+  font-size:15px;
+  font-weight:300;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+
+
+
+
+
+/* CAROUSEL COLLECTION SOUS CHAQUE SMOOTHIE — CORRIGÉ */
+.collection-section{
+  padding:95px 80px 110px;
+  background:
+    radial-gradient(circle at top center, rgba(196,160,78,.065), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(196,160,78,.04), transparent 28%),
+    var(--dark2);
+  border-top:1px solid rgba(196,160,78,.10);
+  border-bottom:1px solid rgba(196,160,78,.08);
+  position:relative;
+  overflow:hidden;
+}
+
+.collection-section::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.58),transparent);
+}
+
+.collection-head{
+  text-align:center;
+  max-width:860px;
+  margin:0 auto 48px;
+  position:relative;
+  z-index:2;
+}
+
+.collection-eyebrow{
+  display:block;
+  color:var(--gold);
+  font-size:9px;
+  letter-spacing:6px;
+  text-transform:uppercase;
+  margin-bottom:16px;
+}
+
+.collection-title{
+  font-family:var(--serif);
+  font-size:clamp(38px,6vw,76px);
+  font-weight:300;
+  letter-spacing:.055em;
+  line-height:1;
+  color:var(--cream);
+  text-transform:uppercase;
+  margin-bottom:18px;
+}
+
+.collection-title em{
+  color:var(--gold-l);
+  font-style:italic;
+}
+
+.collection-text{
+  color:var(--muted);
+  font-size:13px;
+  line-height:2.25;
+}
+
+.collection-frame{
+  max-width:1450px;
+  margin:0 auto;
+  position:relative;
+  border:1px solid rgba(196,160,78,.12);
+  background:
+    radial-gradient(circle at top right, rgba(196,160,78,.06), transparent 34%),
+    rgba(255,255,255,.012);
+  padding:28px 0 30px;
+  overflow:hidden;
+  box-shadow:0 30px 90px rgba(0,0,0,.28);
+}
+
+.collection-frame::before,
+.collection-frame::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:110px;
+  z-index:5;
+  pointer-events:none;
+}
+
+.collection-frame::before{
+  left:0;
+  background:linear-gradient(90deg,var(--dark2),transparent);
+}
+
+.collection-frame::after{
+  right:0;
+  background:linear-gradient(270deg,var(--dark2),transparent);
+}
+
+.collection-track{
+  display:flex;
+  gap:18px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  scroll-behavior:smooth;
+  scroll-snap-type:x mandatory;
+  padding:0 34px 12px;
+  -webkit-overflow-scrolling:touch;
+}
+
+.collection-track::-webkit-scrollbar{
+  height:8px;
+}
+
+.collection-track::-webkit-scrollbar-track{
+  background:rgba(255,255,255,.045);
+}
+
+.collection-track::-webkit-scrollbar-thumb{
+  background:linear-gradient(90deg,var(--gold-d),var(--gold-l));
+  border-radius:999px;
+}
+
+.collection-card{
+  flex:0 0 230px;
+  height:320px;
+  position:relative;
+  overflow:hidden;
+  text-decoration:none;
+  color:inherit;
+  border:1px solid rgba(196,160,78,.16);
+  background:var(--dark3);
+  box-shadow:0 20px 45px rgba(0,0,0,.30);
+  transition:.45s var(--ease2);
+  scroll-snap-align:center;
+}
+
+.collection-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  background:
+    linear-gradient(180deg,transparent 34%,rgba(6,9,8,.90) 100%),
+    radial-gradient(circle at top right,rgba(196,160,78,.13),transparent 36%);
+}
+
+.collection-card::after{
+  content:"";
+  position:absolute;
+  inset:12px;
+  z-index:3;
+  border:1px solid rgba(196,160,78,.16);
+  pointer-events:none;
+}
+
+.collection-card:hover{
+  transform:translateY(-5px);
+  border-color:rgba(219,191,120,.38);
+  box-shadow:0 28px 70px rgba(0,0,0,.42),0 0 32px rgba(196,160,78,.06);
+}
+
+.collection-card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  filter:brightness(.78) saturate(1.04) contrast(1.06);
+  transition:.65s var(--ease2);
+}
+
+.collection-card:hover img{
+  transform:scale(1.07);
+  filter:brightness(.98) saturate(1.12) contrast(1.08);
+}
+
+.collection-info{
+  position:absolute;
+  left:20px;
+  right:20px;
+  bottom:20px;
+  z-index:4;
+}
+
+.collection-info span{
+  display:block;
+  color:var(--gold);
+  font-size:7px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-bottom:7px;
+}
+
+.collection-info strong{
+  display:block;
+  color:var(--cream);
+  font-family:var(--serif);
+  font-size:25px;
+  font-style:italic;
+  font-weight:300;
+  line-height:1;
+  margin-bottom:10px;
+}
+
+.collection-info small{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:var(--gold-l);
+  font-size:8px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+}
+
+.collection-info small::after{
+  content:"→";
+  transition:.3s;
+}
+
+.collection-card:hover .collection-info small::after{
+  transform:translateX(5px);
+}
+
+.collection-controls{
+  max-width:1450px;
+  margin:22px auto 0;
+  display:flex;
+  justify-content:center;
+  gap:14px;
+}
+
+.collection-btn{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  border:1px solid rgba(196,160,78,.35);
+  background:rgba(6,9,8,.65);
+  color:var(--gold-l);
+  font-size:28px;
+  cursor:pointer;
+  transition:.3s;
+}
+
+.collection-btn:hover{
+  background:rgba(196,160,78,.12);
+  border-color:var(--gold);
+  box-shadow:0 0 18px rgba(196,160,78,.16);
+}
+
+@media(max-width:1050px){
+  .collection-section{
+    padding:74px 24px 90px;
+  }
+
+  .collection-frame::before,
+  .collection-frame::after{
+    width:70px;
+  }
+
+  .collection-card{
+    flex-basis:205px;
+    height:290px;
+  }
+}
+
+
+/* FOOTER */
+footer{
+  background:var(--dark2);
+  border-top:1px solid rgba(196,160,78,.08);
+  padding:56px 80px 32px;
+}
+
+.fg{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:64px;
+  margin-bottom:48px;
+}
+
+.flogo{
+  font-family:var(--sans);
+  font-size:26px;
+  letter-spacing:9px;
+  color:var(--gold);
+  display:block;
+  margin-bottom:12px;
+}
+
+.fabout{
+  font-size:12px;
+  color:var(--muted);
+  line-height:2;
+  max-width:230px;
+  margin-bottom:12px;
+}
+
+.ftag{
+  font-family:var(--sans);
+  font-size:12px;
+  font-style:italic;
+  color:var(--light);
+}
+
+.fc h5{
+  font-size:8px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:16px;
+}
+
+.fc ul{list-style:none;}
+.fc li{margin-bottom:8px;}
+
+.fc a{
+  font-size:12px;
+  color:var(--muted);
+  text-decoration:none;
+  transition:.3s;
+}
+
+.fc a:hover{color:var(--gold-l);}
+
+.fbot{
+  border-top:1px solid rgba(196,160,78,.06);
+  padding-top:20px;
+  display:flex;
+  justify-content:space-between;
+  font-size:10px;
+  color:var(--muted);
+}
+
+.fbot a{
+  color:var(--muted);
+  text-decoration:none;
+  margin-left:16px;
+}
+
+/* REVEAL */
+.rv{
+  opacity:0;
+  transform:translateY(36px);
+  transition:opacity .85s var(--ease), transform .85s var(--ease);
+}
+
+.rv.in{
+  opacity:1;
+  transform:none;
+}
+
+.rv.d1{transition-delay:.1s;}
+.rv.d2{transition-delay:.2s;}
+.rv.d3{transition-delay:.3s;}
+
+@media(max-width:1050px){
+  body{cursor:auto;}
+  #cd,#cr{display:none;}
+  nav{padding:14px 24px;}
+  .nav-links{display:none;}
+
+  .hero{
+    grid-template-columns:1fr;
+    padding:115px 24px 70px;
+    min-height:auto;
+  }
+
+  .hero-left{padding:30px 0;}
+  .hero-right{min-height:auto;}
+  .image-frame{height:560px;}
+
+  .section{
+    padding:74px 24px;
+  }
+
+  .detail-grid,
+  .ritual-grid,
+  .preview-strip{
+    grid-template-columns:1fr;
+  }
+
+  .fg{
+    grid-template-columns:1fr 1fr;
+    gap:32px;
+  }
+
+  footer{padding:48px 24px 32px;}
+}
+
+@media(max-width:620px){
+  .title{font-size:56px;}
+  .image-frame{height:480px;}
+  .hero-actions a{width:100%;}
+  .fg{grid-template-columns:1fr;}
+  .fbot{flex-direction:column;gap:14px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="light-grid"></div>
+
+<div class="sparkles">
+  <span></span><span></span><span></span><span></span><span></span>
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div id="cd"></div>
+<div id="cr"></div>
+<div id="prog"></div>
+
+<nav id="nav">
+  <a href="index.html" class="logo">EDEN</a>
+  <ul class="nav-links">
+    <li><a href="fuel-bar.html">Fuel Bar</a></li>
+    <li><a href="carte-bar.html">Cafés & Thés</a></li>
+    <li><a href="smoothies.html" class="on">Smoothies</a></li>
+    <li><a href="reservation.html">Réserver</a></li>
+  </ul>
+  <a href="reservation.html" class="btn-nav">Réserver →</a>
+</nav>
+
+<header class="hero">
+  <div class="hero-left">
+    <a href="smoothies.html" class="back-link">← Retour à la carte smoothies</a>
+    <span class="eyebrow" id="smoothieCategory">EDEN Fuel Bar</span>
+    <h1 class="title" id="smoothieTitle">Smoothie <em>signature</em></h1>
+
+    <div class="hero-line">
+      <div class="line"></div>
+      <div class="diamond"></div>
+      <div class="line r"></div>
+    </div>
+
+    <p class="short-desc" id="smoothieIntro">
+      Une création pensée pour prolonger votre expérience EDEN avec une recette fraîche, lisible et premium.
+    </p>
+
+    <div class="hero-tags" id="smoothieTags"></div>
+
+    <div class="hero-actions">
+      <a href="reservation.html" class="btn-gold">Réserver une séance →</a>
+      <a href="#details" class="btn-outline">Découvrir la recette</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="image-frame">
+      <img id="smoothieImage" src="images/smoothie-fjord.png" alt="Smoothie EDEN">
+      <div class="image-overlay"></div>
+      <div class="image-caption">
+        <div>
+          <span id="imageLabel">Signature EDEN</span>
+          <strong id="imageName">Smoothie</strong>
+        </div>
+        <div class="price-pill" id="smoothiePrice">7.50€</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="section section-soft" id="details">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="section-eyebrow">Détails de la création</span>
+      <h2 class="section-title">Une recette<br><em>avec une intention</em></h2>
+      <p class="section-desc" id="smoothieDetailIntro">
+        Chaque ingrédient a une place précise : goût, texture, fraîcheur, récupération et cohérence avec l’expérience vécue.
+      </p>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-card rv">
+        <span class="detail-kicker">Composition</span>
+        <h3>Ingrédients</h3>
+        <p id="compositionText"></p>
+        <ul class="ingredient-list" id="ingredientList"></ul>
+      </div>
+
+      <div class="detail-card rv d1">
+        <span class="detail-kicker">Pourquoi cette recette</span>
+        <h3>Logique bien-être</h3>
+        <p id="whyText"></p>
+      </div>
+
+      <div class="detail-card rv d2">
+        <span class="detail-kicker">Moment idéal</span>
+        <h3>Quand le conseiller</h3>
+        <p id="momentText"></p>
+      </div>
+
+      <div class="detail-card rv d3">
+        <span class="detail-kicker">Signature sensorielle</span>
+        <h3>Goût & texture</h3>
+        <p id="tasteText"></p>
+      </div>
+    </div>
+
+    <div class="preview-strip rv">
+      <div class="preview-item">
+        <span>Température</span>
+        <strong id="temperatureText">Froid</strong>
+      </div>
+      <div class="preview-item">
+        <span>Profil</span>
+        <strong id="profileText">Premium</strong>
+      </div>
+      <div class="preview-item">
+        <span>Prix</span>
+        <strong id="priceText">7.50€</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="section-eyebrow">Rituel de service</span>
+      <h2 class="section-title">Une présentation<br><em>haut standing</em></h2>
+      <p class="section-desc">
+        L’objectif est que chaque smoothie donne une impression de soin : verre propre, couleur lisible, finition nette et service cohérent avec l’univers EDEN.
+      </p>
+    </div>
+
+    <div class="ritual-grid">
+      <div class="ritual-card rv">
+        <div class="ritual-icon"><span>◈</span></div>
+        <h4>Préparation</h4>
+        <p>Préparé au moment de la commande pour garder la fraîcheur, la texture et l’intensité aromatique.</p>
+      </div>
+
+      <div class="ritual-card rv d1">
+        <div class="ritual-icon"><span>✦</span></div>
+        <h4>Dressage</h4>
+        <p>Verre propre, finition minimaliste, couleurs naturelles et rendu premium au comptoir.</p>
+      </div>
+
+      <div class="ritual-card rv d2">
+        <div class="ritual-icon"><span>❧</span></div>
+        <h4>Conseil</h4>
+        <p>Recommandé selon l’expérience vécue : chaud, froid, drainage, massage ou détente simple.</p>
+      </div>
+
+      <div class="ritual-card rv d3">
+        <div class="ritual-icon"><span>✧</span></div>
+        <h4>Dégustation</h4>
+        <p>À consommer au lounge ou à emporter après la séance, dans une logique de récupération agréable.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="collection-section" id="collection">
+  <div class="collection-head rv">
+    <span class="collection-eyebrow">Collection complète EDEN</span>
+    <h2 class="collection-title">Découvrir les<br><em>autres smoothies</em></h2>
+    <p class="collection-text">
+      Faites défiler la collection complète : chaque smoothie possède sa propre intention, son moment idéal
+      et sa signature visuelle.
+    </p>
+  </div>
+
+  <div class="collection-frame">
+    <div class="collection-track" id="collectionTrack"></div>
+  </div>
+
+  <div class="collection-controls">
+    <button class="collection-btn" type="button" id="collectionPrev">‹</button>
+    <button class="collection-btn" type="button" id="collectionNext">›</button>
+  </div>
+</section>
+
+<footer>
+  <div class="fg">
+    <div>
+      <span class="flogo">EDEN</span>
+      <p class="fabout">Un sanctuaire dédié à votre bien-être. Ouvert 7j/7 de 8h à 22h.</p>
+      <span class="ftag">Récupération · Détente · Équilibre</span>
+    </div>
+
+    <div class="fc">
+      <h5>Fuel Bar</h5>
+      <ul>
+        <li><a href="fuel-bar.html">Présentation</a></li>
+        <li><a href="carte-bar.html">Cafés & Thés</a></li>
+        <li><a href="smoothies.html" style="color:var(--gold-l)">Smoothies</a></li>
+      </ul>
+    </div>
+
+    <div class="fc">
+      <h5>Infos</h5>
+      <ul>
+        <li><a href="index.html#tarifs">Tarifs</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="parrainage.html">Parrainage</a></li>
+        <li><a href="mentions-legales.html">Mentions légales</a></li>
+      </ul>
+    </div>
+
+    <div class="fc">
+      <h5>Contact</h5>
+      <ul>
+        <li><a href="#">12 Rue du Bien-Être</a></li>
+        <li><a href="tel:+33100000000">01 00 00 00 00</a></li>
+        <li><a href="mailto:contact@eden-wellness.fr">contact@eden-wellness.fr</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="fbot">
+    <span>© 2026 EDEN Wellness SAS. Tous droits réservés.</span>
+    <div>
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="mentions-legales.html">CGV</a>
+    </div>
+  </div></footer>
+
+<script>
+const smoothies = [
+  {
+    name:"Le Fjord",
+    category:"Bain Nordique · 37–40°C",
+    image:"images/smoothie-fjord.png",
+    price:"7.50€",
+    temp:"Froid · Sans glace",
+    profile:"Hydratant · Antioxydant",
+    tags:["Bain nordique","Électrolytes","Antioxydants","Après chaleur"],
+    ingredients:["Myrtille","Grenade","Gingembre","Citron","Eau de coco"],
+    intro:"Une création fraîche, profonde et minérale, pensée pour accompagner la sortie du bain nordique avec une hydratation nette et une sensation de récupération propre.",
+    composition:"Le Fjord associe l’eau de coco, naturellement riche en électrolytes, avec la grenade et la myrtille, deux fruits très colorés qui donnent une signature visuelle forte et un profil antioxydant. Le citron apporte la tension aromatique, le gingembre ajoute une finition légèrement active.",
+    why:"Après une exposition chaude, le corps transpire, perd de l’eau et sollicite la circulation. Cette recette vise donc la réhydratation, la fraîcheur et l’apport de composés végétaux protecteurs, sans donner une sensation lourde.",
+    moment:"À conseiller après un bain nordique ou une séance chaude. Idéal quand le client veut une boisson fraîche, élégante et plus fonctionnelle qu’un simple jus.",
+    taste:"Fruité sombre, légèrement acidulé, avec une finale fraîche et subtilement épicée."
+  },
+  {
+    name:"L’Arctique",
+    category:"Bain Nordique · 37–40°C",
+    image:"images/arctique.png",
+    price:"7.50€",
+    temp:"Froid ou tempéré",
+    profile:"Réconfortant · Épicé doux",
+    tags:["Bain nordique","Curcuma","Ananas","Confort"],
+    ingredients:["Ananas","Curcuma","Poivre noir","Lait de coco","Miel"],
+    intro:"Une recette solaire et enveloppante, pensée pour créer un contraste premium entre chaleur, douceur et récupération.",
+    composition:"L’ananas apporte une base fruitée lumineuse, le lait de coco donne une texture plus ronde, le curcuma et le poivre noir apportent une signature épicée maîtrisée, et le miel équilibre l’ensemble.",
+    why:"Le curcuma est intéressant dans une logique de récupération, surtout lorsqu’il est associé au poivre noir. L’ananas, lui, apporte une note fraîche et digestive qui évite une sensation trop lourde.",
+    moment:"Parfait après un bain nordique, mais aussi en fin de journée pour un client qui veut quelque chose de plus doux, plus rond et plus premium.",
+    taste:"Texture veloutée, goût exotique, finale douce avec une pointe d’épice."
+  },
+  {
+    name:"Le Réveil",
+    category:"Bain Froid · 6–10°C",
+    image:"images/reveil.png",
+    price:"7.50€",
+    temp:"Tempéré · Jamais glacé",
+    profile:"Tonique · Réchauffant",
+    tags:["Bain froid","Vitamine C","Relance","Gingembre"],
+    ingredients:["Orange sanguine","Carotte","Gingembre","Citron","Piment de Cayenne"],
+    intro:"Un smoothie vif, nerveux et précis, conçu pour accompagner la relance corporelle après une immersion froide.",
+    composition:"L’orange sanguine et le citron donnent une base très vitaminée. La carotte arrondit la recette, le gingembre apporte de la chaleur, et le piment de Cayenne crée une finition très légère mais marquante.",
+    why:"Après le froid, le corps cherche à produire de la chaleur et à relancer la circulation. Cette recette accompagne cette sensation avec des notes vives, chaudes et dynamiques.",
+    moment:"À proposer juste après le bain froid, surtout aux clients qui veulent une sensation de réveil, de circulation et de regain d’énergie.",
+    taste:"Agrume intense, pointe végétale douce, finale chaude et tonique."
+  },
+  {
+    name:"La Flamme",
+    category:"Bain Froid · 6–10°C",
+    image:"images/smoothie-flamme.png",
+    price:"7.50€",
+    temp:"Tempéré",
+    profile:"Énergisant · Solaire",
+    tags:["Bain froid","Mangue","Curcuma","Énergie"],
+    ingredients:["Mangue","Citron","Gingembre frais","Curcuma","Eau de source"],
+    intro:"Une création solaire et énergisante, pensée pour réchauffer sans alourdir.",
+    composition:"La mangue donne du corps et une couleur forte. Le citron réveille la recette, le gingembre et le curcuma signent une identité plus active, tandis que l’eau de source garde une texture fluide.",
+    why:"La Flamme apporte une énergie naturelle, plus légère qu’une boisson lactée. Elle est idéale après le froid car elle donne une sensation de chaleur intérieure progressive.",
+    moment:"Après bain froid, avant une journée active ou pour un client qui aime les recettes plus expressives.",
+    taste:"Mangue vive, citron net, chaleur douce en fin de bouche."
+  },
+  {
+    name:"La Source",
+    category:"Sauna & Hammam · Chaleur",
+    image:"images/smoothie-source.png",
+    price:"7.50€",
+    temp:"Frais · Légèrement glacé",
+    profile:"Réhydratant · Minéral",
+    tags:["Sauna","Hammam","Hydratation","Menthe"],
+    ingredients:["Pastèque","Concombre","Menthe fraîche","Citron vert","Eau de coco"],
+    intro:"La Source est une boisson très fraîche, pensée comme une réhydratation élégante après une séance chaude.",
+    composition:"La pastèque et le concombre donnent une base très aqueuse. La menthe apporte une sensation de netteté, le citron vert structure la recette, et l’eau de coco complète l’hydratation.",
+    why:"Après une forte sudation, le corps demande de l’eau, des minéraux et une boisson facile à assimiler. La Source est légère, claire et très désaltérante.",
+    moment:"Idéale après sauna, hammam ou bain nordique lorsque le client veut se rafraîchir sans sucre excessif.",
+    taste:"Ultra frais, végétal léger, finale mentholée et citronnée."
+  },
+  {
+    name:"Le Hammam",
+    category:"Sauna & Hammam · Chaleur",
+    image:"images/hamm.png",
+    price:"7.50€",
+    temp:"Frais",
+    profile:"Floral · Doux",
+    tags:["Hammam","Pêche","Abricot","Eau de rose"],
+    ingredients:["Pêche","Abricot","Eau de rose","Citron","Miel de fleurs"],
+    intro:"Une recette douce, florale et sensorielle, inspirée de l’univers hammam et des notes orientales raffinées.",
+    composition:"La pêche et l’abricot apportent une rondeur fruitée. L’eau de rose donne une signature premium très identifiable, le citron équilibre, et le miel de fleurs apporte une douceur naturelle.",
+    why:"Après la chaleur humide, une boisson florale et fruitée prolonge l’impression de soin, de calme et de peau propre.",
+    moment:"À conseiller après hammam, massage ou séance détente. Très adaptée pour un moment lounge.",
+    taste:"Fruit jaune, douceur florale, finale délicate et élégante."
+  },
+  {
+    name:"Le Flux",
+    category:"Pressothérapie · Drainage",
+    image:"images/smoothie-flux.png",
+    price:"7.50€",
+    temp:"Froid",
+    profile:"Drainant · Microcirculation",
+    tags:["Pressothérapie","Drainage","Raisin noir","Myrtille"],
+    ingredients:["Raisin noir","Myrtille","Citron","Persil frais","Eau"],
+    intro:"Le Flux est conçu pour accompagner la sensation de jambes légères après une séance de pressothérapie.",
+    composition:"Le raisin noir et la myrtille donnent une base sombre, intense et riche en couleur. Le citron allège, le persil apporte une note végétale drainante, et l’eau garde une texture fluide.",
+    why:"La pressothérapie stimule le retour veineux et le système lymphatique. Cette recette reste légère pour prolonger cette sensation de fluidité.",
+    moment:"À conseiller après pressothérapie ou après une journée jambes lourdes.",
+    taste:"Fruits noirs, acidité fraîche, touche végétale discrète."
+  },
+  {
+    name:"La Lymphe",
+    category:"Pressothérapie · Drainage",
+    image:"images/lymphe.png",
+    price:"7.50€",
+    temp:"Froid",
+    profile:"Drainant · Léger",
+    tags:["Pressothérapie","Ananas","Céleri","Jambes légères"],
+    ingredients:["Ananas","Céleri","Citron vert","Gingembre","Eau de coco"],
+    intro:"Une recette fraîche et précise, pensée pour renforcer l’impression de légèreté après drainage.",
+    composition:"L’ananas apporte une base fruitée vive, le céleri donne une signature végétale très fraîche, le citron vert structure, le gingembre réveille, et l’eau de coco fluidifie la texture.",
+    why:"La recette cherche l’équilibre entre fraîcheur, digestion et légèreté. Elle accompagne parfaitement les soins de drainage.",
+    moment:"Après pressothérapie, massage drainant ou toute expérience orientée récupération des jambes.",
+    taste:"Ananas frais, pointe verte, finale citronnée et légèrement épicée."
+  },
+  {
+    name:"La Sérénité",
+    category:"Massage · Relâchement",
+    image:"images/seneri.png",
+    price:"7.50€",
+    temp:"Tempéré ou froid",
+    profile:"Apaisant · Onctueux",
+    tags:["Massage","Vanille","Amande","Détente"],
+    ingredients:["Banane","Lait d’amande","Datte","Cannelle","Vanille"],
+    intro:"Une recette douce et enveloppante, pensée pour prolonger l’état de calme après un massage.",
+    composition:"La banane apporte une texture onctueuse, le lait d’amande donne une base douce, la datte apporte une sucrosité naturelle, la cannelle structure, et la vanille signe le côté premium.",
+    why:"Après un massage, le client est dans un état de relâchement. Cette recette ne cherche pas à stimuler, mais à prolonger la détente avec une texture ronde et confortable.",
+    moment:"À proposer après massage, fauteuil massant ou moment de relaxation profonde.",
+    taste:"Doux, vanillé, légèrement épicé, presque dessert mais équilibré."
+  },
+  {
+    name:"Le Silence",
+    category:"Massage · Récupération",
+    image:"images/silence.png",
+    price:"7.50€",
+    temp:"Froid · Sans glace",
+    profile:"Repos · Floral",
+    tags:["Massage","Repos","Hibiscus","Cerise"],
+    ingredients:["Cerise","Hibiscus","Grenade","Miel","Eau"],
+    intro:"Le Silence est une création plus calme, plus profonde, pensée pour la fin de journée et la récupération.",
+    composition:"La cerise et la grenade donnent une base fruitée sombre. L’hibiscus apporte une touche florale et légèrement acidulée. Le miel arrondit la recette, l’eau garde une texture claire.",
+    why:"Cette boisson est conçue comme une transition vers le calme : moins gourmande qu’un smoothie lacté, mais très élégante et reposante.",
+    moment:"Idéale après un massage en fin de journée, ou pour un client qui veut une boisson raffinée sans lourdeur.",
+    taste:"Fruit rouge sombre, fleur d’hibiscus, douceur légère."
+  },
+  {
+    name:"L’Éternel",
+    category:"Toutes activités · Signature",
+    image:"images/eternel.png",
+    price:"7.00€",
+    temp:"Froid",
+    profile:"Intemporel · Fruité",
+    tags:["Signature","Fruits rouges","Amande","Plaisir"],
+    ingredients:["Fraise","Framboise","Banane","Lait d’amande","Miel"],
+    intro:"L’Éternel est le smoothie intemporel de la carte : simple, fruité, élégant et facile à choisir.",
+    composition:"Les fruits rouges donnent la couleur et l’acidité. La banane apporte la texture, le lait d’amande adoucit, et le miel lie l’ensemble avec une finition plus ronde.",
+    why:"Toutes les cartes premium ont besoin d’une valeur sûre. L’Éternel est ce choix rassurant : beau, bon, lisible et adapté à presque tous les moments.",
+    moment:"À conseiller quand le client hésite, ou lorsqu’il veut un smoothie gourmand mais pas trop lourd.",
+    taste:"Fruits rouges doux, texture veloutée, finale miel-amande."
+  }
+];
+
+function normalizeText(str){
+  return decodeURIComponent(String(str || ""))
+    .replace(/\+/g," ")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .replace(/[’']/g,"")
+    .toLowerCase()
+    .trim();
+}
+
+function getSmoothie(){
+  const params = new URLSearchParams(window.location.search);
+  const asked = params.get("s") || "Le Fjord";
+  const key = normalizeText(asked);
+  return smoothies.find(s => normalizeText(s.name) === key) || smoothies[0];
+}
+
+function updatePage(){
+  const s = getSmoothie();
+document.title = s.name + " — Smoothie EDEN";
+  document.getElementById("smoothieCategory").textContent = s.category;
+  document.getElementById("smoothieTitle").innerHTML = s.name.includes(" ")
+    ? s.name.replace(" ", "<br><em>") + "</em>"
+    : s.name + "<em>signature</em>";
+  document.getElementById("smoothieIntro").textContent = s.intro;
+  document.getElementById("smoothieImage").src = s.image;
+  document.getElementById("smoothieImage").alt = s.name;
+  document.getElementById("imageLabel").textContent = s.category;
+  document.getElementById("imageName").textContent = s.name;
+  document.getElementById("smoothiePrice").textContent = s.price;
+
+  const tags = document.getElementById("smoothieTags");
+  tags.innerHTML = "";
+  s.tags.forEach(t=>{
+    const span = document.createElement("span");
+    span.className = "hero-tag";
+    span.textContent = t;
+    tags.appendChild(span);
+  });
+
+  document.getElementById("smoothieDetailIntro").textContent =
+    "Cette fiche détaille la logique de " + s.name + " : composition, moment de consommation, texture et rôle dans l’expérience EDEN.";
+
+  document.getElementById("compositionText").textContent = s.composition;
+  document.getElementById("whyText").textContent = s.why;
+  document.getElementById("momentText").textContent = s.moment;
+  document.getElementById("tasteText").textContent = s.taste;
+  document.getElementById("temperatureText").textContent = s.temp;
+  document.getElementById("profileText").textContent = s.profile;
+  document.getElementById("priceText").textContent = s.price;
+
+  const list = document.getElementById("ingredientList");
+  list.innerHTML = "";
+  s.ingredients.forEach(i=>{
+    const li = document.createElement("li");
+    li.textContent = i;
+    list.appendChild(li);
+  });
+}
+
+updatePage();
+
+
+
+function buildCollectionCarousel(){
+  const track = document.getElementById("collectionTrack");
+  if(!track) return;
+
+  track.innerHTML = "";
+
+  smoothies.forEach(item=>{
+    const a = document.createElement("a");
+    a.className = "collection-card";
+    a.href = "smoothie-detail.html?s=" + encodeURIComponent(item.name);
+    a.innerHTML = `
+      <img src="${item.image}" alt="${item.name}" onerror="this.style.display='none'; this.parentElement.style.background='radial-gradient(circle at top right, rgba(196,160,78,.14), transparent 35%), #11170f';">
+      <div class="collection-info">
+        <span>${item.category}</span>
+        <strong>${item.name}</strong>
+        <small>Découvrir</small>
+      </div>
+    `;
+    track.appendChild(a);
+  });
+
+  track.querySelectorAll(".collection-card").forEach(el=>{
+    el.addEventListener("mouseenter",()=>document.body.classList.add("hov"));
+    el.addEventListener("mouseleave",()=>document.body.classList.remove("hov"));
+  });
+}
+
+buildCollectionCarousel();
+
+const collectionTrack = document.getElementById("collectionTrack");
+const collectionPrev = document.getElementById("collectionPrev");
+const collectionNext = document.getElementById("collectionNext");
+
+if(collectionTrack && collectionPrev && collectionNext){
+  collectionPrev.addEventListener("click",()=>{
+    collectionTrack.scrollBy({left:-520, behavior:"smooth"});
+  });
+
+  collectionNext.addEventListener("click",()=>{
+    collectionTrack.scrollBy({left:520, behavior:"smooth"});
+  });
+}
+
+
+
+const cd=document.getElementById("cd");
+const cr=document.getElementById("cr");
+let mx=0,my=0,rx=0,ry=0;
+
+document.addEventListener("mousemove",e=>{
+  mx=e.clientX;
+  my=e.clientY;
+  if(cd){
+    cd.style.left=mx+"px";
+    cd.style.top=my+"px";
+  }
+});
+
+(function loop(){
+  rx+=(mx-rx)*.12;
+  ry+=(my-ry)*.12;
+  if(cr){
+    cr.style.left=rx+"px";
+    cr.style.top=ry+"px";
+  }
+  requestAnimationFrame(loop);
+})();
+
+document.querySelectorAll("a,button,.detail-card,.ritual-card,.image-frame").forEach(el=>{
+  el.addEventListener("mouseenter",()=>document.body.classList.add("hov"));
+  el.addEventListener("mouseleave",()=>document.body.classList.remove("hov"));
+});
+
+window.addEventListener("scroll",()=>{
+  const h=document.documentElement.scrollHeight-innerHeight;
+  const progress=h>0?(scrollY/h*100):0;
+  document.getElementById("prog").style.width=progress+"%";
+});
+
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add("in");
+      io.unobserve(entry.target);
+    }
+  });
+},{threshold:.1});
+
+document.querySelectorAll(".rv").forEach(el=>io.observe(el));
+</script>
+
+
+<!-- ══ COOKIE BANNER ══ -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9990;background:rgba(6,9,8,.97);border-top:1px solid rgba(196,160,78,.2);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px;backdrop-filter:blur(12px);">
+  <div style="flex:1">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.9;max-width:680px">🍪 Nous utilisons des cookies pour améliorer votre expérience et analyser notre trafic. En continuant, vous acceptez notre <a href="rgpd.html" style="color:#c4a04e;text-decoration:underline">politique de confidentialité</a>.</p>
+  </div>
+  <div style="display:flex;gap:10px;flex-shrink:0">
+    <button onclick="refuseCookies()" style="background:none;border:1px solid rgba(196,160,78,.25);color:#7a7a68;padding:9px 20px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s">Refuser</button>
+    <button onclick="acceptCookies()" style="background:#c4a04e;color:#060908;border:none;padding:9px 24px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-weight:400;transition:all .3s">Accepter</button>
+  </div>
+</div>
+
+<!-- ══ CHATBOT FLOTTANT ══ -->
+<div id="chatbot-btn" onclick="toggleChat()" style="position:fixed;bottom:28px;right:28px;z-index:9980;width:52px;height:52px;background:linear-gradient(135deg,#c4a04e,#dbbf78);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 32px rgba(196,160,78,.35);transition:transform .3s;font-size:20px;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">💬</div>
+<div id="chatbot-panel" style="display:none;position:fixed;bottom:92px;right:28px;z-index:9980;width:320px;background:#0c110a;border:1px solid rgba(196,160,78,.2);box-shadow:0 20px 60px rgba(0,0,0,.6);">
+  <div style="padding:16px 20px;background:linear-gradient(135deg,rgba(196,160,78,.15),rgba(196,160,78,.05));border-bottom:1px solid rgba(196,160,78,.12);display:flex;align-items:center;justify-content:space-between">
+    <div><p style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#f4efe5">EDEN · Assistance</p><p style="font-size:9px;color:#7a7a68;letter-spacing:1px">Réponse en moins de 2h · 7j/7</p></div>
+    <button onclick="toggleChat()" style="background:none;border:none;color:#7a7a68;font-size:18px;cursor:pointer">×</button>
+  </div>
+  <div style="padding:16px 20px">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.8;margin-bottom:14px">Bonjour ! Comment puis-je vous aider ?</p>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <a href="reservation.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#c4a04e;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Réserver une séance</a>
+      <a href="faq.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Consulter la FAQ</a>
+      <a href="tel:+33100000000" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Appeler le 01 00 00 00 00</a>
+      <a href="mailto:contact@eden-wellness.fr" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Envoyer un email</a>
+    </div>
+    <p style="font-size:9px;color:#7a7a68;margin-top:14px;text-align:center">Ouvert 7j/7 · 8h–22h</p>
+  </div>
+</div>
+
+<script>
+// Cookie banner
+(function(){
+  if(!localStorage.getItem('eden_cookies')){
+    var b=document.getElementById('cookie-banner');
+    if(b){b.style.display='flex';setTimeout(function(){b.style.display='flex';},100);}
+  }
+})();
+function acceptCookies(){localStorage.setItem('eden_cookies','accepted');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function refuseCookies(){localStorage.setItem('eden_cookies','refused');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function toggleChat(){var p=document.getElementById('chatbot-panel');if(p)p.style.display=p.style.display==='none'?'block':'none';}
+</script>
+
+</body>
+</html>

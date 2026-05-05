@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fuel Bar — EDEN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#c4a04e;--gold-l:#dbbf78;--gold-d:#8a7038;
+  --dark:#060908;--dark2:#0c0d0b;--dark3:#11110e;
+  --cream:#f4efe5;--muted:#7a7a68;--light:#c0bcac;
+  --title:'Jost',system-ui,sans-serif;--sans:'Jost',system-ui,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--dark);color:var(--cream);font-family:var(--sans);
+  font-weight:300;overflow-x:hidden;cursor:none;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-2;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(219,191,120,.10), transparent 28%),
+    radial-gradient(circle at 82% 22%, rgba(196,160,78,.08), transparent 30%),
+    linear-gradient(180deg,#040605 0%,#060908 45%,#080806 100%);
+}
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:
+    linear-gradient(120deg, transparent 0%, rgba(255,255,255,.025) 48%, transparent 58%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.012) 0 1px,transparent 1px 120px);
+  opacity:.38;
+}
+#cd{position:fixed;width:5px;height:5px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+#cr{position:fixed;width:34px;height:34px;border:1px solid rgba(196,160,78,.35);border-radius:50%;pointer-events:none;z-index:9997;transform:translate(-50%,-50%);transition:.3s}
+body.hov #cr{width:52px;height:52px;border-color:rgba(196,160,78,.70)}
+#prog{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--gold-d),var(--gold),var(--gold-l));z-index:9996}
+
+/* SCINTILLEMENT */
+.luxe-sparkles{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.luxe-sparkles span{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(219,191,120,.95);box-shadow:0 0 10px rgba(219,191,120,.9),0 0 22px rgba(196,160,78,.5);opacity:0;animation:sparkleFloat 9s infinite ease-in-out}
+.luxe-sparkles span:nth-child(1){left:8%;top:18%;animation-delay:.2s}.luxe-sparkles span:nth-child(2){left:18%;top:62%;animation-delay:2s}.luxe-sparkles span:nth-child(3){left:32%;top:28%;animation-delay:4.2s}.luxe-sparkles span:nth-child(4){left:47%;top:74%;animation-delay:1.4s}.luxe-sparkles span:nth-child(5){left:61%;top:18%;animation-delay:3.1s}.luxe-sparkles span:nth-child(6){left:72%;top:52%;animation-delay:5.4s}.luxe-sparkles span:nth-child(7){left:86%;top:30%;animation-delay:1.9s}.luxe-sparkles span:nth-child(8){left:94%;top:78%;animation-delay:6.2s}
+@keyframes sparkleFloat{0%,100%{transform:translateY(0) scale(.4);opacity:0}20%{opacity:.9}50%{transform:translateY(-28px) scale(1);opacity:.65}80%{opacity:.15}}
+
+/* TICKER */
+.ticker{height:32px;background:var(--gold);display:flex;align-items:center;overflow:hidden;position:relative;z-index:200}
+.tick-inner{display:flex;animation:tick 38s linear infinite;white-space:nowrap}
+@keyframes tick{to{transform:translateX(-50%)}}
+.ti{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--dark);padding:0 34px;font-weight:400}
+.td{opacity:.32;font-size:14px;color:var(--dark)}
+
+/* NAV */
+nav{position:fixed;top:32px;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:20px 72px;background:linear-gradient(180deg,rgba(6,9,8,.96),rgba(6,9,8,.72));backdrop-filter:blur(22px);border-bottom:1px solid rgba(196,160,78,.08);box-shadow:0 20px 60px rgba(0,0,0,.35);transition:.35s}
+nav.solid{top:0;background:linear-gradient(180deg,rgba(6,9,8,.98),rgba(6,9,8,.88));padding:16px 72px}
+.logo{font-size:22px;letter-spacing:10px;color:var(--gold);text-decoration:none;text-shadow:0 0 18px rgba(196,160,78,.26);font-weight:100;text-transform:uppercase}
+.nav-links{display:flex;gap:34px;list-style:none}
+.nav-links a{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:rgba(244,239,229,.60);text-decoration:none;transition:.3s;font-weight:300}
+.nav-links a:hover,.nav-links a.on{color:var(--gold)}
+.btn-nav{font-size:9px;letter-spacing:4px;text-transform:uppercase;border:1px solid var(--gold);background:var(--gold);color:var(--dark);padding:10px 24px;text-decoration:none;font-weight:300;transition:.3s}
+.btn-nav:hover{background:var(--gold-l)}
+
+/* HERO */
+.hero{position:relative;min-height:94vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;padding:150px 80px 90px}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;filter:brightness(.17) saturate(1.12) contrast(1.08);transform:scale(1.08);animation:hzoom 22s ease-in-out infinite alternate}
+@keyframes hzoom{from{transform:scale(1.08)}to{transform:scale(1.15)}}
+.hero-overlay{position:absolute;inset:0;z-index:1;background:radial-gradient(circle at 50% 36%,rgba(196,160,78,.14),transparent 30%),radial-gradient(ellipse 90% 80% at 50% 45%,transparent 18%,rgba(6,9,8,.82) 100%),linear-gradient(180deg,rgba(6,9,8,.80) 0%,transparent 35%,rgba(6,9,8,1) 100%)}
+.hero::before{content:"FUEL BAR";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:clamp(70px,13vw,190px);letter-spacing:24px;color:rgba(196,160,78,.030);z-index:2;pointer-events:none;white-space:nowrap;font-weight:100}
+.hero-glow{position:absolute;left:50%;bottom:-140px;transform:translateX(-50%);width:900px;height:280px;background:radial-gradient(ellipse, rgba(219,191,120,.17), transparent 65%);filter:blur(20px);z-index:3}
+.hero-content{position:relative;z-index:10;max-width:1040px;margin:auto}
+.hero-badge{display:inline-flex;align-items:center;gap:12px;border:1px solid rgba(196,160,78,.28);padding:9px 20px;margin-bottom:28px;background:rgba(196,160,78,.06);animation:fadeUp .6s .2s both}
+.hero-badge-dot{width:7px;height:7px;background:var(--gold);transform:rotate(45deg);box-shadow:0 0 16px rgba(219,191,120,.7)}
+.hero-badge-txt{font-size:8px;letter-spacing:5px;text-transform:uppercase;color:var(--gold-l)}
+.hero-eyebrow{font-size:10px;letter-spacing:7px;text-transform:uppercase;color:var(--gold);margin-bottom:24px;display:block;animation:fadeUp .7s .35s both}
+.hero-h1{font-size:clamp(46px,7.5vw,92px);font-weight:100;letter-spacing:10px;color:var(--cream);line-height:1.08;text-shadow:0 14px 50px rgba(0,0,0,.56);animation:fadeUp .9s .5s both;text-transform:uppercase}
+.hero-h1 em{font-style:normal;color:var(--gold-l);display:block}
+.hero-sep{display:flex;align-items:center;justify-content:center;gap:16px;margin:34px auto;animation:fadeUp .7s .7s both}
+.sl{width:62px;height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.55))}
+.sr{background:linear-gradient(270deg,transparent,rgba(196,160,78,.55))}
+.sd{width:5px;height:5px;background:var(--gold);transform:rotate(45deg);box-shadow:0 0 12px rgba(219,191,120,.9)}
+.hero-desc{font-size:14px;color:rgba(192,188,172,.82);max-width:680px;margin:0 auto;line-height:2.3;animation:fadeUp .7s .85s both}
+.hero-mini{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;max-width:920px;margin:42px auto 0;border:1px solid rgba(196,160,78,.13);background:rgba(196,160,78,.11);animation:fadeUp .7s 1s both}
+.hm{padding:18px 24px;background:rgba(255,255,255,.018)}
+.hm strong{display:block;font-size:17px;font-weight:100;letter-spacing:5px;color:var(--gold);margin-bottom:6px}
+.hm span{display:block;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+
+/* MENU ACCES */
+.fuel-access{padding:90px 80px;background:radial-gradient(circle at 50% 0%, rgba(196,160,78,.08), transparent 36%),var(--dark);border-top:1px solid rgba(196,160,78,.10);border-bottom:1px solid rgba(196,160,78,.10)}
+.fuel-access-head{text-align:center;max-width:820px;margin:0 auto 52px}
+.fuel-access-eyebrow{display:block;font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.fuel-access-title{font-size:clamp(34px,5vw,64px);font-weight:100;letter-spacing:9px;text-transform:uppercase;color:var(--cream);line-height:1.16;margin-bottom:18px}
+.fuel-access-title em{font-style:normal;color:var(--gold-l)}
+.fuel-access-text{color:var(--muted);font-size:13px;line-height:2.2}
+.fuel-access-grid{max-width:1250px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(196,160,78,.12);border:1px solid rgba(196,160,78,.12)}
+.fuel-access-card{position:relative;min-height:330px;padding:42px 34px;overflow:hidden;text-decoration:none;background:radial-gradient(circle at top right,rgba(196,160,78,.055),transparent 35%),var(--dark2);transition:.45s var(--ease)}
+.fuel-access-card::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(196,160,78,.48) 50%,transparent 100%) top/100% 1px no-repeat,linear-gradient(90deg,transparent 0%,rgba(196,160,78,.32) 50%,transparent 100%) bottom/100% 1px no-repeat,linear-gradient(0deg,transparent 0%,rgba(196,160,78,.32) 50%,transparent 100%) left/1px 100% no-repeat,linear-gradient(0deg,transparent 0%,rgba(196,160,78,.32) 50%,transparent 100%) right/1px 100% no-repeat;opacity:0;transition:.4s;pointer-events:none}
+.fuel-access-card::after{content:"";position:absolute;top:-90%;left:-70%;width:70%;height:260%;transform:rotate(24deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),rgba(219,191,120,.04),transparent);opacity:0;transition:.75s var(--ease);pointer-events:none}
+.fuel-access-card:hover{transform:translateY(-5px);background:radial-gradient(circle at top right,rgba(196,160,78,.10),transparent 35%),var(--dark3);box-shadow:0 28px 80px rgba(0,0,0,.34)}
+.fuel-access-card:hover::before{opacity:1}.fuel-access-card:hover::after{left:115%;opacity:1}
+.fuel-card-num{position:absolute;top:24px;right:28px;font-size:64px;font-weight:100;letter-spacing:4px;color:rgba(196,160,78,.10);line-height:1}
+.fuel-card-icon{width:48px;height:48px;border:1px solid rgba(196,160,78,.28);display:flex;align-items:center;justify-content:center;transform:rotate(45deg);color:var(--gold);margin-bottom:34px;position:relative;z-index:2}
+.fuel-card-icon span{transform:rotate(-45deg);font-size:18px}
+.fuel-card-kicker{display:block;color:var(--gold);font-size:8px;letter-spacing:4px;text-transform:uppercase;margin-bottom:12px;position:relative;z-index:2}
+.fuel-card-title{font-size:23px;font-weight:100;letter-spacing:6px;text-transform:uppercase;color:var(--cream);line-height:1.35;margin-bottom:18px;position:relative;z-index:2}
+.fuel-card-text{color:var(--muted);font-size:12px;line-height:2.05;margin-bottom:28px;position:relative;z-index:2}
+.fuel-card-link{display:inline-flex;align-items:center;gap:10px;color:var(--gold);font-size:9px;letter-spacing:3px;text-transform:uppercase;position:relative;z-index:2;border-bottom:1px solid rgba(196,160,78,.28);padding-bottom:6px}
+.fuel-card-link::after{content:"→";transition:.3s}.fuel-access-card:hover .fuel-card-link::after{transform:translateX(5px)}
+
+/* SECTIONS */
+.section{padding:100px 80px;position:relative}
+.section-soft{background:radial-gradient(circle at top right, rgba(196,160,78,.055), transparent 34%),radial-gradient(circle at bottom left, rgba(219,191,120,.03), transparent 38%),var(--dark2)}
+.container{max-width:1400px;margin:0 auto}
+.section-head{text-align:center;margin-bottom:54px}
+.section-eyebrow{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:block}
+.section-title{font-size:clamp(34px,5vw,66px);font-weight:100;color:var(--cream);line-height:1.18;text-transform:uppercase;letter-spacing:9px}
+.section-title em{color:var(--gold-l);font-style:normal}
+.section-desc{max-width:700px;margin:24px auto 0;color:var(--muted);font-size:13px;line-height:2.25}
+
+/* SIGNATURE */
+.signature{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(196,160,78,.10);border-top:1px solid rgba(196,160,78,.10);border-bottom:1px solid rgba(196,160,78,.10)}
+.signature-left,.signature-right{min-height:520px;position:relative;overflow:hidden}
+.signature-left{padding:90px 80px;background:radial-gradient(circle at top right,rgba(196,160,78,.09),transparent 36%),var(--dark2);display:flex;flex-direction:column;justify-content:center}
+.signature-left::before{content:"FUEL";position:absolute;top:34px;right:28px;font-size:130px;letter-spacing:24px;color:rgba(196,160,78,.026);font-weight:100}
+.signature-left p{font-size:13px;color:var(--light);line-height:2.35;max-width:620px;position:relative;z-index:2}
+.signature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;margin-top:34px;background:rgba(196,160,78,.10);border:1px solid rgba(196,160,78,.10);position:relative;z-index:2}
+.sig-item{background:rgba(255,255,255,.016);padding:22px}
+.sig-item span{display:block;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.sig-item strong{display:block;font-size:18px;letter-spacing:5px;text-transform:uppercase;color:var(--cream);font-weight:100}
+.signature-right img{width:100%;height:100%;object-fit:cover;filter:brightness(.58) saturate(1.18) contrast(1.04);transition:.9s var(--ease)}
+.signature-right:hover img{transform:scale(1.05)}
+.signature-right::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--dark2),transparent 42%),radial-gradient(circle at center,transparent 35%,rgba(6,9,8,.46));z-index:2}
+
+/* CATEGORY NAV */
+.category-bar{position:sticky;top:75px;z-index:120;background:rgba(6,9,8,.92);backdrop-filter:blur(20px);border-top:1px solid rgba(196,160,78,.10);border-bottom:1px solid rgba(196,160,78,.10)}
+.category-inner{max-width:1400px;margin:0 auto;display:flex;justify-content:center;gap:1px;background:rgba(196,160,78,.08)}
+.cat-link{flex:1;text-align:center;padding:18px 16px;background:rgba(255,255,255,.012);color:var(--muted);text-decoration:none;font-size:9px;letter-spacing:4px;text-transform:uppercase;transition:.3s}
+.cat-link:hover,.cat-link.active{color:var(--gold);background:rgba(196,160,78,.045)}
+
+/* MENU */
+.menu-layout{display:grid;grid-template-columns:300px 1fr;gap:52px;align-items:start}
+.menu-side{position:sticky;top:150px;border:1px solid rgba(196,160,78,.14);background:radial-gradient(circle at top right,rgba(196,160,78,.07),transparent 35%),rgba(255,255,255,.014);padding:30px;box-shadow:0 24px 70px rgba(0,0,0,.22)}
+.side-title{font-size:15px;font-weight:200;letter-spacing:5px;text-transform:uppercase;color:var(--cream);margin-bottom:18px;line-height:1.5}
+.side-desc{font-size:11px;line-height:2;color:var(--muted);margin-bottom:24px}
+.side-list{list-style:none}.side-list li{border-top:1px solid rgba(196,160,78,.08)}
+.side-list a{display:flex;align-items:center;justify-content:space-between;padding:15px 0;color:var(--muted);text-decoration:none;font-size:10px;letter-spacing:3px;text-transform:uppercase;transition:.3s}
+.side-list a::after{content:"→";opacity:.35;transition:.3s}.side-list a:hover{color:var(--gold);padding-left:8px}.side-list a:hover::after{opacity:1}
+.side-note{margin-top:26px;border:1px solid rgba(196,160,78,.13);background:rgba(196,160,78,.045);padding:18px}
+.side-note strong{display:block;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.side-note span{display:block;font-size:11px;color:var(--muted);line-height:1.9}
+.menu-category{margin-bottom:54px;scroll-margin-top:150px}
+.category-head{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;padding-bottom:24px;margin-bottom:18px;border-bottom:1px solid rgba(196,160,78,.12)}
+.cat-left{display:flex;align-items:center;gap:18px}
+.cat-diamond{width:8px;height:8px;background:var(--gold);transform:rotate(45deg);box-shadow:0 0 16px rgba(219,191,120,.55)}
+.category-head h2{font-size:30px;font-weight:100;letter-spacing:9px;text-transform:uppercase;color:var(--cream)}
+.category-head small{color:var(--muted);font-size:9px;letter-spacing:3px;text-transform:uppercase}
+.product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.product-card{background:radial-gradient(circle at top right,rgba(196,160,78,.04),transparent 35%),rgba(255,255,255,.012);border:1px solid rgba(196,160,78,.10);padding:30px 30px 28px;position:relative;overflow:hidden;transition:.4s var(--ease);min-height:245px}
+.product-card.wide{grid-column:1 / -1;min-height:220px}
+.product-card::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(196,160,78,.42) 50%,transparent 100%) top/100% 1px no-repeat,linear-gradient(90deg,transparent 0%,rgba(196,160,78,.42) 50%,transparent 100%) bottom/100% 1px no-repeat,linear-gradient(0deg,transparent 0%,rgba(196,160,78,.42) 50%,transparent 100%) left/1px 100% no-repeat,linear-gradient(0deg,transparent 0%,rgba(196,160,78,.42) 50%,transparent 100%) right/1px 100% no-repeat;opacity:0;transition:.35s;pointer-events:none}
+.product-card::after{content:"";position:absolute;top:-90%;left:-70%;width:70%;height:260%;transform:rotate(24deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),rgba(219,191,120,.035),transparent);opacity:0;transition:.75s var(--ease);pointer-events:none}
+.product-card:hover{transform:translateY(-4px);background:radial-gradient(circle at top right,rgba(196,160,78,.08),transparent 35%),rgba(255,255,255,.018);box-shadow:0 22px 70px rgba(0,0,0,.24)}
+.product-card:hover::before{opacity:1}.product-card:hover::after{left:115%;opacity:1}
+.pc-top{display:flex;justify-content:space-between;gap:22px;align-items:flex-start;margin-bottom:18px;position:relative;z-index:2}
+.pc-tag{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:12px}
+.pc-name{font-size:22px;font-weight:100;letter-spacing:5px;text-transform:uppercase;color:var(--cream);line-height:1.35}
+.pc-price{font-size:30px;font-weight:100;letter-spacing:3px;color:var(--gold);white-space:nowrap;line-height:1}
+.pc-desc{font-size:12px;color:var(--muted);line-height:2.1;margin-bottom:22px;position:relative;z-index:2}
+.pc-details{list-style:none;display:grid;gap:8px;position:relative;z-index:2}
+.pc-details li{display:flex;align-items:center;gap:10px;color:var(--light);font-size:11px}
+.pc-details li::before{content:"";width:12px;height:1px;background:var(--gold);opacity:.7;flex-shrink:0}
+.pc-badge{display:inline-flex;align-items:center;margin-top:20px;padding:7px 12px;border:1px solid rgba(196,160,78,.17);color:var(--gold-l);font-size:8px;letter-spacing:3px;text-transform:uppercase;background:rgba(196,160,78,.035);position:relative;z-index:2}
+.pc-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;position:relative;z-index:2}
+.pc-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:10px 14px;border:1px solid rgba(196,160,78,.24);color:var(--gold);background:rgba(196,160,78,.035);text-decoration:none;font-size:8px;letter-spacing:3px;text-transform:uppercase;transition:.3s}
+.pc-btn::after{content:"→";transition:.3s}.pc-btn:hover{background:var(--gold);color:var(--dark);border-color:var(--gold)}.pc-btn:hover::after{transform:translateX(4px)}
+
+/* SMOOTHIE SLIDER */
+.smoothie-slider-wrap{grid-column:1 / -1;margin-top:18px;border:1px solid rgba(196,160,78,.12);background:radial-gradient(circle at top right,rgba(196,160,78,.06),transparent 35%),rgba(255,255,255,.012);overflow:hidden;position:relative;padding:26px 0}
+.smoothie-slider-wrap::before,.smoothie-slider-wrap::after{content:"";position:absolute;top:0;bottom:0;width:120px;z-index:4;pointer-events:none}
+.smoothie-slider-wrap::before{left:0;background:linear-gradient(90deg,var(--dark2),transparent)}
+.smoothie-slider-wrap::after{right:0;background:linear-gradient(270deg,var(--dark2),transparent)}
+.smoothie-slider-head{text-align:center;margin-bottom:22px;position:relative;z-index:5}
+.smoothie-slider-head span{display:block;color:var(--gold);font-size:8px;letter-spacing:4px;text-transform:uppercase;margin-bottom:8px}
+.smoothie-slider-head strong{display:block;font-size:20px;font-weight:100;letter-spacing:6px;text-transform:uppercase;color:var(--cream)}
+.smoothie-track{display:flex;gap:16px;width:max-content;animation:smoothieScroll 48s linear infinite}
+.smoothie-slider-wrap:hover .smoothie-track{animation-play-state:paused}
+@keyframes smoothieScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.smoothie-photo-card{width:210px;height:280px;flex:0 0 auto;position:relative;overflow:hidden;border:1px solid rgba(196,160,78,.14);background:var(--dark3);text-decoration:none}
+.smoothie-photo-card img{width:100%;height:100%;object-fit:cover;filter:brightness(.72) saturate(1.05) contrast(1.05);transition:.5s var(--ease)}
+.smoothie-photo-card:hover img{transform:scale(1.06);filter:brightness(.9) saturate(1.12) contrast(1.08)}
+.smoothie-photo-card::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(6,9,8,.86) 100%),radial-gradient(circle at top right,rgba(196,160,78,.12),transparent 36%);z-index:2}
+.smoothie-photo-card::after{content:"";position:absolute;inset:12px;border:1px solid rgba(196,160,78,.16);z-index:3;pointer-events:none}
+.smoothie-photo-info{position:absolute;left:18px;right:18px;bottom:18px;z-index:4}
+.smoothie-photo-info span{display:block;font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.smoothie-photo-info strong{display:block;font-weight:100;font-size:16px;letter-spacing:4px;text-transform:uppercase;color:var(--cream)}
+
+/* PANEL */
+.panel-premium{margin-top:14px;display:grid;grid-template-columns:1.1fr .9fr;gap:1px;background:rgba(196,160,78,.10);border:1px solid rgba(196,160,78,.12)}
+.panel-text{padding:46px;background:radial-gradient(circle at top right,rgba(196,160,78,.08),transparent 36%),var(--dark2)}
+.panel-text span{display:block;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.panel-text h3{font-size:32px;font-weight:100;letter-spacing:8px;text-transform:uppercase;color:var(--cream);line-height:1.25;margin-bottom:18px}
+.panel-text p{font-size:12px;color:var(--muted);line-height:2.2}
+.panel-list{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(196,160,78,.08)}
+.panel-item{background:rgba(255,255,255,.012);padding:34px 28px}
+.panel-item strong{display:block;font-size:20px;font-weight:100;letter-spacing:5px;color:var(--gold);margin-bottom:8px}
+.panel-item small{display:block;color:var(--muted);font-size:11px;line-height:1.9}
+
+/* CTA & FOOTER */
+.cta-section{padding:110px 80px;text-align:center;background:radial-gradient(circle at center,rgba(196,160,78,.08),transparent 45%),var(--dark2);border-top:1px solid rgba(196,160,78,.1);position:relative;overflow:hidden}
+.cta-title{font-size:clamp(34px,5vw,64px);font-weight:100;color:var(--cream);margin-bottom:18px;line-height:1.16;text-transform:uppercase;letter-spacing:9px}
+.cta-title em{font-style:normal;color:var(--gold-l)}
+.cta-sub{font-size:13px;color:var(--muted);max-width:560px;margin:0 auto 44px;line-height:2.3}
+.cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn-outline,.btn-primary{padding:16px 44px;font-size:10px;letter-spacing:4px;text-transform:uppercase;text-decoration:none;transition:.3s;display:inline-flex;align-items:center;justify-content:center}
+.btn-outline{border:1px solid rgba(196,160,78,.35);color:var(--gold-p)}.btn-outline:hover{border-color:var(--gold);color:var(--gold);background:rgba(196,160,78,.05)}
+.btn-primary{background:var(--gold);color:var(--dark);border:1px solid var(--gold)}.btn-primary:hover{background:var(--gold-l);border-color:var(--gold-l)}
+footer{background:var(--dark2);border-top:1px solid rgba(196,160,78,.08);padding:70px 80px 34px}
+.fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:64px;margin-bottom:48px}
+.flogo{font-size:22px;letter-spacing:10px;color:var(--gold);display:block;margin-bottom:12px;font-weight:100;text-transform:uppercase}
+.fabout{font-size:12px;color:var(--muted);line-height:2;max-width:250px;margin-bottom:12px}
+.ftag{font-size:13px;color:var(--light)}
+.fc h5{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.fc ul{list-style:none}.fc li{margin-bottom:8px}.fc a{font-size:12px;color:var(--muted);text-decoration:none;transition:.3s}.fc a:hover{color:var(--gold-l)}
+.fbot{border-top:1px solid rgba(196,160,78,.06);padding-top:20px;display:flex;justify-content:space-between;font-size:10px;color:var(--muted)}
+.fbot a{color:var(--muted);text-decoration:none;margin-left:16px}
+
+/* REVEAL */
+@keyframes fadeUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
+.rv{opacity:0;transform:translateY(44px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.rv.in{opacity:1;transform:none}.rv.d1{transition-delay:.1s}.rv.d2{transition-delay:.2s}.rv.d3{transition-delay:.3s}
+
+/* RESPONSIVE */
+@media(max-width:1000px){
+  body{cursor:auto}#cd,#cr{display:none}
+  nav,nav.solid{top:0;padding:14px 24px}.ticker,.nav-links{display:none}
+  .hero{min-height:82vh;padding:125px 24px 80px}.hero::before{font-size:60px;letter-spacing:10px}.hero-h1{letter-spacing:5px;font-size:clamp(38px,12vw,62px)}
+  .hero-mini,.fuel-access-grid{grid-template-columns:1fr 1fr}
+  .fuel-access{padding:75px 24px}.section,.cta-section{padding:78px 24px}
+  .section-title,.cta-title,.fuel-access-title{letter-spacing:5px}
+  .signature,.menu-layout,.product-grid,.panel-premium{grid-template-columns:1fr}
+  .signature-left{padding:70px 28px}.signature-left::before{font-size:72px;letter-spacing:12px}.signature-right{min-height:360px}
+  .category-bar{top:0;overflow-x:auto}.category-inner{width:max-content;min-width:100%}.cat-link{min-width:160px}
+  .menu-side{position:relative;top:auto}.category-head{align-items:flex-start;flex-direction:column}.category-head h2{font-size:22px;letter-spacing:5px}
+  .panel-list{grid-template-columns:1fr}.fg{grid-template-columns:1fr 1fr;gap:32px}footer{padding:48px 24px 32px}
+}
+@media(max-width:620px){
+  .hero-mini,.fuel-access-grid{grid-template-columns:1fr}.fg{grid-template-columns:1fr}.fbot{flex-direction:column;gap:14px}.btn-outline,.btn-primary{width:100%}.pc-top{flex-direction:column}
+}
+
+/* =========================================================
+   BANDEAU DORÉ + MENU EDEN FINAL — FUEL BAR
+   ========================================================= */
+.ticker{
+  position:fixed !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  width:100% !important;
+  height:34px !important;
+  z-index:1000000 !important;
+  display:flex !important;
+  align-items:center !important;
+  overflow:hidden !important;
+  background:linear-gradient(90deg,#b9903e 0%,#d9b95f 50%,#b9903e 100%) !important;
+  border-bottom:1px solid rgba(6,9,8,.55) !important;
+  box-shadow:0 8px 24px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+.ticker-inner{
+  display:flex !important;
+  align-items:center !important;
+  white-space:nowrap !important;
+  animation:edenTicker 36s linear infinite !important;
+}
+
+@keyframes edenTicker{
+  to{transform:translateX(-50%);}
+}
+
+.ticker-inner span{
+  color:#070908 !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:10px !important;
+  letter-spacing:4px !important;
+  text-transform:uppercase !important;
+  font-weight:400 !important;
+  padding:0 34px !important;
+}
+
+.ticker-inner span.dot{
+  padding:0 !important;
+  opacity:.42 !important;
+  font-size:15px !important;
+}
+
+.eden-menu{
+  position:fixed !important;
+  top:34px !important;
+  left:0 !important;
+  right:0 !important;
+  height:84px !important;
+  z-index:999999 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 52px !important;
+  background:linear-gradient(180deg,rgba(6,9,8,.985),rgba(6,9,8,.92)) !important;
+  border-bottom:1px solid rgba(196,160,78,.12) !important;
+  box-shadow:0 18px 55px rgba(0,0,0,.42) !important;
+  backdrop-filter:blur(18px) !important;
+  -webkit-backdrop-filter:blur(18px) !important;
+}
+
+.eden-menu::before{
+  content:"" !important;
+  position:absolute !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.42),transparent) !important;
+  pointer-events:none !important;
+}
+
+.eden-menu *{
+  box-sizing:border-box !important;
+}
+
+.eden-menu-inner{
+  width:100% !important;
+  max-width:1820px !important;
+  display:grid !important;
+  grid-template-columns:230px 1fr 230px !important;
+  align-items:center !important;
+  gap:32px !important;
+}
+
+.eden-logo{
+  justify-self:start !important;
+  color:#c4a04e !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:26px !important;
+  font-weight:200 !important;
+  letter-spacing:15px !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  text-shadow:0 0 18px rgba(196,160,78,.18) !important;
+  line-height:1 !important;
+}
+
+.eden-links{
+  justify-self:center !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:48px !important;
+  padding:0 !important;
+  margin:0 !important;
+  list-style:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+.eden-links > li{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+.eden-links > li > a{
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:16px 0 !important;
+  color:rgba(244,239,229,.68) !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:10px !important;
+  font-weight:300 !important;
+  letter-spacing:6px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  transition:.3s ease !important;
+}
+
+.eden-links > li > a::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:calc(100% + 34px) !important;
+  max-width:155px !important;
+  height:46px !important;
+  transform:translate(-50%,-50%) !important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.020),rgba(255,255,255,.006)),
+    radial-gradient(circle at 50% 0%,rgba(196,160,78,.09),transparent 58%),
+    linear-gradient(180deg,rgba(14,17,14,.96),rgba(7,9,8,.94)) !important;
+  border:1px solid rgba(196,160,78,.12) !important;
+  box-shadow:0 12px 26px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.025) !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  z-index:-1 !important;
+  transition:.28s ease !important;
+}
+
+.eden-links > li > a::after{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  bottom:6px !important;
+  width:78px !important;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.68),transparent) !important;
+  transform:translateX(-50%) scaleX(0) !important;
+  transform-origin:center !important;
+  box-shadow:0 0 10px rgba(196,160,78,.20) !important;
+  transition:.28s ease !important;
+}
+
+.eden-links > li > a:hover,
+.eden-links > li > a.active,
+.eden-dropdown:hover > a{
+  color:#dbbf78 !important;
+}
+
+.eden-links > li > a:hover::before,
+.eden-links > li > a.active::before,
+.eden-dropdown:hover > a::before{
+  opacity:1 !important;
+}
+
+.eden-links > li > a:hover::after,
+.eden-links > li > a.active::after,
+.eden-dropdown:hover > a::after{
+  transform:translateX(-50%) scaleX(1) !important;
+}
+
+.eden-reserve{
+  justify-self:end !important;
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:48px !important;
+  padding:0 36px !important;
+  color:#060908 !important;
+  background:linear-gradient(135deg,#c4a04e,#dbbf78) !important;
+  border:1px solid rgba(196,160,78,.75) !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:10px !important;
+  font-weight:400 !important;
+  letter-spacing:4px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  overflow:hidden !important;
+  box-shadow:0 0 24px rgba(196,160,78,.16),0 14px 34px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.18) !important;
+  transition:.3s ease !important;
+}
+
+.eden-reserve::before{
+  content:"" !important;
+  position:absolute !important;
+  top:-90% !important;
+  left:-80% !important;
+  width:70% !important;
+  height:260% !important;
+  transform:rotate(24deg) !important;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent) !important;
+  opacity:0 !important;
+  transition:.75s cubic-bezier(.22,1,.36,1) !important;
+}
+
+.eden-reserve:hover{
+  transform:translateY(-2px) !important;
+}
+
+.eden-reserve:hover::before{
+  left:120% !important;
+  opacity:1 !important;
+}
+
+/* Sous-menu Fuel Bar propre, sans anciens motifs */
+.eden-dropdown{
+  position:relative !important;
+  z-index:1000000 !important;
+}
+
+.eden-dropdown::before{
+  content:"" !important;
+  position:absolute !important;
+  left:-42px !important;
+  right:-42px !important;
+  top:100% !important;
+  height:32px !important;
+  background:transparent !important;
+}
+
+.eden-submenu{
+  position:absolute !important;
+  top:calc(100% + 18px) !important;
+  left:50% !important;
+  width:430px !important;
+  padding:12px !important;
+  transform:translateX(-50%) translateY(10px) !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.10),transparent 34%),
+    linear-gradient(180deg,rgba(12,15,12,.98),rgba(7,9,8,.98)) !important;
+  border:1px solid rgba(196,160,78,.18) !important;
+  box-shadow:0 30px 85px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.035) !important;
+  transition:.35s cubic-bezier(.22,1,.36,1) !important;
+  z-index:1000001 !important;
+}
+
+.eden-submenu::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:-7px !important;
+  width:12px !important;
+  height:12px !important;
+  transform:translateX(-50%) rotate(45deg) !important;
+  background:#0c0f0c !important;
+  border-left:1px solid rgba(196,160,78,.18) !important;
+  border-top:1px solid rgba(196,160,78,.18) !important;
+}
+
+.eden-dropdown:hover .eden-submenu,
+.eden-dropdown:focus-within .eden-submenu{
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  transform:translateX(-50%) translateY(0) !important;
+}
+
+.eden-submenu a{
+  display:grid !important;
+  grid-template-columns:42px 1fr !important;
+  column-gap:14px !important;
+  row-gap:3px !important;
+  padding:14px 16px !important;
+  text-align:left !important;
+  text-decoration:none !important;
+  border:1px solid transparent !important;
+  background:rgba(255,255,255,.010) !important;
+  transition:.3s ease !important;
+}
+
+.eden-submenu a:not(:last-child){
+  margin-bottom:6px !important;
+}
+
+.eden-submenu a::before,
+.eden-submenu a::after{
+  display:none !important;
+}
+
+.eden-submenu a span{
+  grid-row:1 / 3 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:34px !important;
+  height:34px !important;
+  border:1px solid rgba(196,160,78,.20) !important;
+  color:#c4a04e !important;
+  font-family:var(--serif,'Cormorant Garamond',Georgia,serif) !important;
+  font-size:16px !important;
+}
+
+.eden-submenu a strong{
+  color:#f4efe5 !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:10px !important;
+  letter-spacing:3px !important;
+  text-transform:uppercase !important;
+  font-weight:300 !important;
+}
+
+.eden-submenu a small{
+  color:#7a7a68 !important;
+  font-size:11px !important;
+  text-transform:none !important;
+}
+
+.eden-submenu a:hover{
+  background:radial-gradient(circle at top right,rgba(196,160,78,.09),transparent 34%),rgba(196,160,78,.035) !important;
+  border-color:rgba(196,160,78,.18) !important;
+}
+
+.eden-submenu a:hover span{
+  background:#c4a04e !important;
+  color:#060908 !important;
+}
+
+.eden-burger{
+  display:none !important;
+  justify-self:end !important;
+  width:44px !important;
+  height:44px !important;
+  border:1px solid rgba(196,160,78,.25) !important;
+  background:rgba(196,160,78,.035) !important;
+  align-items:center !important;
+  justify-content:center !important;
+  cursor:pointer !important;
+}
+
+.eden-burger span,
+.eden-burger span::before,
+.eden-burger span::after{
+  display:block !important;
+  width:18px !important;
+  height:1px !important;
+  background:#c4a04e !important;
+  position:relative !important;
+}
+
+.eden-burger span::before,
+.eden-burger span::after{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+}
+
+.eden-burger span::before{top:-6px !important;}
+.eden-burger span::after{top:6px !important;}
+
+@media(max-width:1200px){
+  .eden-menu-inner{
+    grid-template-columns:170px 1fr 190px !important;
+  }
+
+  .eden-links{
+    gap:28px !important;
+  }
+
+  .eden-links > li > a{
+    letter-spacing:4px !important;
+  }
+}
+
+@media(max-width:1050px){
+  .ticker{
+    height:32px !important;
+  }
+
+  .eden-menu{
+    top:32px !important;
+    height:auto !important;
+    padding:14px 22px !important;
+  }
+
+  .eden-menu-inner{
+    grid-template-columns:1fr auto !important;
+  }
+
+  .eden-burger{
+    display:flex !important;
+  }
+
+  .eden-links{
+    grid-column:1 / -1 !important;
+    width:100% !important;
+    display:none !important;
+    flex-direction:column !important;
+    gap:8px !important;
+    margin-top:12px !important;
+  }
+
+  .eden-menu.open .eden-links{
+    display:flex !important;
+  }
+
+  .eden-links > li,
+  .eden-links > li > a{
+    width:100% !important;
+  }
+
+  .eden-links > li > a{
+    padding:14px 16px !important;
+    border:1px solid rgba(196,160,78,.12) !important;
+    background:rgba(255,255,255,.012) !important;
+  }
+
+  .eden-reserve{
+    display:none !important;
+  }
+
+  .eden-submenu{
+    position:static !important;
+    width:100% !important;
+    transform:none !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+    margin:8px 0 0 !important;
+    box-shadow:none !important;
+  }
+
+  .eden-submenu::before{
+    display:none !important;
+  }
+}
+
+
+/* =========================================================
+   FUEL BAR — ÉQUIPEMENTS LOUNGE PREMIUM
+   ========================================================= */
+.fuel-amenities-section{
+  position:relative;
+  padding:110px 80px;
+  background:
+    radial-gradient(circle at 12% 8%,rgba(196,160,78,.075),transparent 32%),
+    radial-gradient(circle at 88% 12%,rgba(219,191,120,.045),transparent 34%),
+    linear-gradient(180deg,#070807 0%,#050605 100%);
+  border-top:1px solid rgba(196,160,78,.10);
+  border-bottom:1px solid rgba(196,160,78,.10);
+  overflow:hidden;
+}
+
+.fuel-amenities-section::before{
+  content:"LOUNGE";
+  position:absolute;
+  left:50%;
+  top:48%;
+  transform:translate(-50%,-50%);
+  font-family:var(--sans,'Jost',system-ui,sans-serif);
+  font-size:clamp(96px,16vw,240px);
+  font-weight:100;
+  letter-spacing:26px;
+  color:rgba(196,160,78,.025);
+  pointer-events:none;
+  white-space:nowrap;
+}
+
+.fuel-amenities-section::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:0;
+  transform:translateX(-50%);
+  width:min(940px,82vw);
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(196,160,78,.45),transparent);
+}
+
+.fuel-amenities-inner{
+  position:relative;
+  z-index:2;
+  max-width:1420px;
+  margin:0 auto;
+}
+
+.fuel-amenities-head{
+  max-width:860px;
+  margin:0 auto 58px;
+  text-align:center;
+}
+
+.fuel-amenities-eyebrow{
+  display:block;
+  color:#c4a04e;
+  font-size:9px;
+  letter-spacing:6px;
+  text-transform:uppercase;
+  margin-bottom:18px;
+}
+
+.fuel-amenities-head h2{
+  font-family:var(--sans,'Jost',system-ui,sans-serif);
+  font-size:clamp(34px,5vw,68px);
+  font-weight:100;
+  letter-spacing:8px;
+  line-height:1.14;
+  text-transform:uppercase;
+  color:#f4efe5;
+}
+
+.fuel-amenities-head h2::after{
+  content:"";
+  display:block;
+  width:min(280px,42vw);
+  height:1px;
+  margin:28px auto 0;
+  background:linear-gradient(90deg,transparent,rgba(196,160,78,.55),transparent);
+  box-shadow:0 0 18px rgba(196,160,78,.12);
+}
+
+.fuel-amenities-head p{
+  max-width:760px;
+  margin:28px auto 0;
+  color:#918d7d;
+  font-size:13px;
+  line-height:2.25;
+}
+
+.fuel-amenities-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:12px;
+}
+
+.fuel-amenity-card{
+  position:relative;
+  min-height:280px;
+  padding:34px 28px;
+  border:1px solid rgba(196,160,78,.15);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.024),rgba(255,255,255,.006)),
+    radial-gradient(circle at 84% 8%,rgba(196,160,78,.085),transparent 34%),
+    linear-gradient(180deg,#11120f 0%,#090a09 64%,#060706 100%);
+  box-shadow:
+    0 24px 64px rgba(0,0,0,.30),
+    inset 0 1px 0 rgba(255,255,255,.030);
+  overflow:hidden;
+  transition:transform .4s cubic-bezier(.22,1,.36,1), border-color .4s cubic-bezier(.22,1,.36,1), box-shadow .4s cubic-bezier(.22,1,.36,1);
+}
+
+.fuel-amenity-card::before{
+  content:"";
+  position:absolute;
+  left:22px;
+  right:22px;
+  top:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(196,160,78,.52),transparent);
+}
+
+.fuel-amenity-card::after{
+  content:"";
+  position:absolute;
+  top:-90%;
+  left:-76%;
+  width:72%;
+  height:260%;
+  transform:rotate(24deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),rgba(219,191,120,.040),transparent);
+  opacity:0;
+  transition:.8s cubic-bezier(.22,1,.36,1);
+  pointer-events:none;
+}
+
+.fuel-amenity-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(196,160,78,.30);
+  box-shadow:
+    0 34px 82px rgba(0,0,0,.40),
+    0 0 34px rgba(196,160,78,.055),
+    inset 0 1px 0 rgba(255,255,255,.036);
+}
+
+.fuel-amenity-card:hover::after{
+  left:120%;
+  opacity:1;
+}
+
+.fuel-amenity-num{
+  display:block;
+  font-family:var(--serif,'Cormorant Garamond',Georgia,serif);
+  font-size:54px;
+  line-height:1;
+  color:rgba(196,160,78,.28);
+  margin-bottom:26px;
+}
+
+.fuel-amenity-line{
+  width:62px;
+  height:1px;
+  margin-bottom:24px;
+  background:linear-gradient(90deg,rgba(196,160,78,.72),transparent);
+}
+
+.fuel-amenity-card h3{
+  font-family:var(--sans,'Jost',system-ui,sans-serif);
+  font-size:16px;
+  font-weight:300;
+  letter-spacing:4px;
+  line-height:1.55;
+  text-transform:uppercase;
+  color:#f4efe5;
+  margin-bottom:16px;
+}
+
+.fuel-amenity-card p{
+  color:#8f8b7b;
+  font-size:12px;
+  line-height:2.05;
+}
+
+@media(max-width:1250px){
+  .fuel-amenities-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+
+@media(max-width:820px){
+  .fuel-amenities-section{
+    padding:82px 24px;
+  }
+
+  .fuel-amenities-head h2{
+    letter-spacing:4px;
+  }
+
+  .fuel-amenities-grid{
+    grid-template-columns:1fr;
+  }
+
+  .fuel-amenity-card{
+    min-height:auto;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="ticker">
+  <div class="ticker-inner">
+    <span>Bain Nordique</span><span class="dot">◆</span>
+    <span>Bain Froid</span><span class="dot">◆</span>
+    <span>Sauna & Hammam</span><span class="dot">◆</span>
+    <span>Pressothérapie</span><span class="dot">◆</span>
+    <span>Espace Détente</span><span class="dot">◆</span>
+    <span>Fuel Bar</span><span class="dot">◆</span>
+    <span>Vestiaires Premium</span><span class="dot">◆</span>
+
+    <span>Bain Nordique</span><span class="dot">◆</span>
+    <span>Bain Froid</span><span class="dot">◆</span>
+    <span>Sauna & Hammam</span><span class="dot">◆</span>
+    <span>Pressothérapie</span><span class="dot">◆</span>
+    <span>Espace Détente</span><span class="dot">◆</span>
+    <span>Fuel Bar</span><span class="dot">◆</span>
+    <span>Vestiaires Premium</span><span class="dot">◆</span>
+  </div>
+</div>
+
+
+<nav id="nav" class="eden-menu">
+  <div class="eden-menu-inner">
+    <a href="index.html" class="eden-logo">EDEN</a>
+
+    <button class="eden-burger" type="button" aria-label="Ouvrir le menu">
+      <span></span>
+    </button>
+
+    <ul class="eden-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="index.html#tarifs">Tarifs</a></li>
+
+      <li class="eden-dropdown">
+        <a href="fuel-bar.html" class="active">Fuel Bar</a>
+
+        <div class="eden-submenu">
+          <a href="fuel-bar.html"><span>01</span><strong>Accueil Fuel Bar</strong><small>Présentation générale</small></a>
+          <a href="smoothies.html"><span>02</span><strong>Smoothies</strong><small>Créations signature</small></a>
+          <a href="softs.html"><span>03</span><strong>Softs premium</strong><small>Boissons fraîches</small></a>
+          <a href="carte-bar.html#cafes"><span>04</span><strong>Cafés</strong><small>Boissons chaudes</small></a>
+          <a href="carte-bar.html#thes"><span>05</span><strong>Thés & infusions</strong><small>Palais des Thés</small></a>
+        </div>
+      </li>
+
+      <li><a href="faq.html">FAQ</a></li>
+      <li><a href="parrainage.html">Parrainage</a></li>
+    </ul>
+
+    <a href="reservation.html" class="eden-reserve">Réserver →</a>
+  </div>
+</nav>
+
+<div class="luxe-sparkles"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+<div id="cd"></div><div id="cr"></div><div id="prog"></div>
+<section class="hero">
+  <div class="hero-bg"><img src="images/bar.png" alt="Fuel Bar EDEN" onerror="this.onerror=null;this.src='images/Acceuil.png';"></div>
+  <div class="hero-overlay"></div><div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><div class="hero-badge-dot"></div><span class="hero-badge-txt">Bar bien-être · Premium · Signature</span></div>
+    <span class="hero-eyebrow">EDEN Fuel Bar</span>
+    <h1 class="hero-h1">Boire mieux,<br><em>récupérer mieux</em></h1>
+    <div class="hero-sep"><div class="sl"></div><div class="sd"></div><div class="sl sr"></div></div>
+    <p class="hero-desc">Le Fuel Bar prolonge l’expérience EDEN avec une carte élégante, fraîche et accessible : smoothies signature, cafés, thés, softs premium, sirops Monin et boissons pensées pour accompagner vos moments de récupération.</p>
+    <div class="hero-mini">
+      <div class="hm"><strong>4</strong><span>Univers boissons</span></div>
+      <div class="hm"><strong>14</strong><span>Sirops Monin</span></div>
+      <div class="hm"><strong>100%</strong><span>Ambiance lounge</span></div>
+      <div class="hm"><strong>7j/7</strong><span>Après expérience</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="fuel-access">
+  <div class="fuel-access-head rv">
+    <span class="fuel-access-eyebrow">Navigation Fuel Bar</span>
+    <h2 class="fuel-access-title">Choisissez votre<br><em>univers</em></h2>
+    <p class="fuel-access-text">Accédez directement à la carte qui vous intéresse : smoothies signature, softs premium, cafés & thés ou créations EDEN.</p>
+  </div>
+  <div class="fuel-access-grid">
+    <a href="smoothies.html" class="fuel-access-card rv"><div class="fuel-card-num">01</div><div class="fuel-card-icon"><span>◈</span></div><span class="fuel-card-kicker">Fruits · Récupération</span><h3 class="fuel-card-title">Smoothies<br>signature</h3><p class="fuel-card-text">Des recettes pensées selon l’expérience vécue : bain froid, bain nordique, sauna, pressothérapie ou massage.</p><span class="fuel-card-link">Voir les smoothies</span></a>
+    <a href="softs.html" class="fuel-access-card rv d1"><div class="fuel-card-num">02</div><div class="fuel-card-icon"><span>✦</span></div><span class="fuel-card-kicker">Frais · Sans alcool</span><h3 class="fuel-card-title">Softs<br>premium</h3><p class="fuel-card-text">Eaux fraîches, citronnades, jus, diabolos Monin et boissons sans alcool dans une présentation sobre et haut standing.</p><span class="fuel-card-link">Voir les softs</span></a>
+    <a href="carte-bar.html#cafes" class="fuel-access-card rv d2"><div class="fuel-card-num">03</div><div class="fuel-card-icon"><span>❧</span></div><span class="fuel-card-kicker">Chaud · Lounge</span><h3 class="fuel-card-title">Cafés<br>& boissons chaudes</h3><p class="fuel-card-text">Espressos, allongés, cappuccinos et boissons chaudes pour prolonger l’expérience dans une ambiance calme et premium.</p><span class="fuel-card-link">Voir les cafés</span></a>
+    <a href="carte-bar.html#thes" class="fuel-access-card rv d3"><div class="fuel-card-num">04</div><div class="fuel-card-icon"><span>✧</span></div><span class="fuel-card-kicker">Palais des Thés</span><h3 class="fuel-card-title">Thés<br>& infusions</h3><p class="fuel-card-text">Thés en mousseline, infusions détente et sélection Palais des Thés pour une pause chaude, élégante et cohérente avec l’univers EDEN.</p><span class="fuel-card-link">Voir les thés</span></a>
+  </div>
+</section>
+
+<section class="signature">
+  <div class="signature-left">
+    <span class="section-eyebrow rv">L’esprit Fuel Bar</span>
+    <h2 class="section-title rv d1">Une carte<br><em>simple & premium</em></h2>
+    <p class="rv d2">Ici, pas de carte confuse ni de surcharge inutile. Le Fuel Bar EDEN est pensé comme une extension naturelle du centre : une sélection claire, esthétique, cohérente avec l’univers bien-être, et suffisamment variée pour répondre à tous les moments de la journée.</p>
+    <div class="signature-grid rv d3">
+      <div class="sig-item"><span>Positionnement</span><strong>Lounge premium</strong></div>
+      <div class="sig-item"><span>Service</span><strong>Rapide & propre</strong></div>
+      <div class="sig-item"><span>Objectif</span><strong>Hydratation</strong></div>
+      <div class="sig-item"><span>Expérience</span><strong>Après soin</strong></div>
+    </div>
+  </div>
+  <div class="signature-right"><img src="images/bar.png" alt="EDEN Fuel Bar lounge" onerror="this.onerror=null;this.src='images/Acceuil.png';"></div>
+</section>
+
+<div class="category-bar">
+  <div class="category-inner">
+    <a href="#smoothies" class="cat-link">Smoothies</a>
+    <a href="#chaud" class="cat-link">Cafés & thés</a>
+    <a href="#softs" class="cat-link">Softs</a>
+    <a href="#sirops" class="cat-link">Sirops Monin</a>
+    <a href="#signature" class="cat-link">Créations EDEN</a>
+  </div>
+</div>
+
+<section class="section section-soft">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="section-eyebrow">Carte EDEN</span>
+      <h2 class="section-title">Choisissez votre<br><em>moment</em></h2>
+      <p class="section-desc">Une carte pensée pour combler les écarts entre les expériences : avant une séance, après le bain froid, pendant une pause lounge ou simplement pour profiter de l’atmosphère EDEN.</p>
+    </div>
+    <div class="menu-layout">
+      <aside class="menu-side rv">
+        <h3 class="side-title">Navigation</h3>
+        <p class="side-desc">Accédez directement aux familles de boissons. La carte reste volontairement courte, lisible et premium.</p>
+        <ul class="side-list">
+          <li><a href="#smoothies">Smoothies signature</a></li><li><a href="#chaud">Cafés & thés</a></li><li><a href="#softs">Softs premium</a></li><li><a href="#sirops">Sirops Monin</a></li><li><a href="#signature">Créations EDEN</a></li>
+        </ul>
+        <div class="side-note"><strong>Conseil EDEN</strong><span>Après une expérience chaude ou froide, privilégiez une boisson fraîche, légère et hydratante.</span></div>
+      </aside>
+
+      <div class="menu-content">
+
+        <div class="menu-category rv" id="smoothies">
+          <div class="category-head"><div class="cat-left"><span class="cat-diamond"></span><h2>Smoothies Signature</h2></div><small>Fraîcheur · Fruits · Récupération</small></div>
+          <div class="product-grid">
+
+            <div class="product-card"><div class="pc-top"><div><span class="pc-tag">Signature EDEN</span><h3 class="pc-name">Sérénité</h3></div><div class="pc-price">7€</div></div><p class="pc-desc">Une recette douce, fruitée et élégante pour prolonger la détente après une séance bien-être.</p><ul class="pc-details"><li>Texture fraîche et légère</li><li>Idéal après sauna ou hammam</li><li>Service Fuel Bar</li></ul><span class="pc-badge">Le plus doux</span><div class="pc-actions"><a href="smoothie-detail.html?s=La%20S%C3%A9r%C3%A9nit%C3%A9" class="pc-btn">Découvrir</a></div></div>
+
+            <div class="product-card"><div class="pc-top"><div><span class="pc-tag">Vitalité</span><h3 class="pc-name">Flamme</h3></div><div class="pc-price">7€</div></div><p class="pc-desc">Une création plus vive, pensée pour réveiller le palais et retrouver une sensation d’énergie.</p><ul class="pc-details"><li>Goût plus intense</li><li>Moment dynamisant</li><li>Parfait avant une journée active</li></ul><span class="pc-badge">Énergie douce</span><div class="pc-actions"><a href="smoothie-detail.html?s=La%20Flamme" class="pc-btn">Découvrir</a></div></div>
+
+            <div class="product-card"><div class="pc-top"><div><span class="pc-tag">Fraîcheur</span><h3 class="pc-name">Éternel</h3></div><div class="pc-price">7€</div></div><p class="pc-desc">Une recette fraîche et équilibrée, conçue pour rester premium, simple et facile à choisir.</p><ul class="pc-details"><li>Profil frais</li><li>Après bain froid</li><li>Finition légère</li></ul><span class="pc-badge">Le plus équilibré</span><div class="pc-actions"><a href="smoothie-detail.html?s=L%27%C3%89ternel" class="pc-btn">Découvrir</a></div></div>
+
+            <div class="product-card"><div class="pc-top"><div><span class="pc-tag">Premium</span><h3 class="pc-name">Signature du jour</h3></div><div class="pc-price">8€</div></div><p class="pc-desc">Une création variable selon l’inspiration, la saison et les produits disponibles au Fuel Bar.</p><ul class="pc-details"><li>Recette limitée</li><li>Présentation premium</li><li>Option recommandée par l’équipe</li></ul><span class="pc-badge">Édition limitée</span></div>
+
+            <div class="smoothie-slider-wrap">
+              <div class="smoothie-slider-head"><span>Collection EDEN</span><strong>Nos smoothies en images</strong></div>
+              <div class="smoothie-track">
+                <a href="smoothie-detail.html?s=La%20S%C3%A9r%C3%A9nit%C3%A9" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/seneri.png" alt="Smoothie Sérénité"><div class="smoothie-photo-info"><span>Signature</span><strong>Sérénité</strong></div></a>
+                <a href="smoothie-detail.html?s=La%20Flamme" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/smoothie-flamme.png" alt="Smoothie Flamme"><div class="smoothie-photo-info"><span>Vitalité</span><strong>Flamme</strong></div></a>
+                <a href="smoothie-detail.html?s=L%27%C3%89ternel" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/eternel.png" alt="Smoothie Éternel"><div class="smoothie-photo-info"><span>Fraîcheur</span><strong>Éternel</strong></div></a>
+                <a href="smoothie-detail.html?s=Le%20Fjord" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/smoothie-fjord.png" alt="Smoothie Le Fjord"><div class="smoothie-photo-info"><span>Bain nordique</span><strong>Le Fjord</strong></div></a>
+                <a href="smoothie-detail.html?s=L%27Arctique" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/arctique.png" alt="Smoothie L'Arctique"><div class="smoothie-photo-info"><span>Bain nordique</span><strong>L’Arctique</strong></div></a>
+                <a href="smoothie-detail.html?s=Le%20R%C3%A9veil" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/reveil.png" alt="Smoothie Le Réveil"><div class="smoothie-photo-info"><span>Bain froid</span><strong>Le Réveil</strong></div></a>
+                <a href="smoothie-detail.html?s=La%20Source" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/smoothie-source.png" alt="Smoothie La Source"><div class="smoothie-photo-info"><span>Bain froid</span><strong>La Source</strong></div></a>
+                <a href="smoothie-detail.html?s=Le%20Hammam" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/hamm.png" alt="Smoothie Le Hammam"><div class="smoothie-photo-info"><span>Sauna</span><strong>Le Hammam</strong></div></a>
+                <a href="smoothie-detail.html?s=La%20Lymphe" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/lymphe.png" alt="Smoothie La Lymphe"><div class="smoothie-photo-info"><span>Sauna</span><strong>La Lymphe</strong></div></a>
+                <a href="smoothie-detail.html?s=La%20Lymphe" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/lymphe.png" alt="Smoothie La Lymphe"><div class="smoothie-photo-info"><span>Pressothérapie</span><strong>La Lymphe</strong></div></a>
+                <a href="smoothie-detail.html?s=Le%20Flux" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/smoothie-flux.png" alt="Smoothie Le Flux"><div class="smoothie-photo-info"><span>Pressothérapie</span><strong>Le Flux</strong></div></a>
+                <a href="smoothie-detail.html?s=Le%20Silence" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/silence.png" alt="Smoothie Le Silence"><div class="smoothie-photo-info"><span>Massage</span><strong>Le Silence</strong></div></a>
+
+                <a href="smoothie-detail.html?s=La%20S%C3%A9r%C3%A9nit%C3%A9" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/seneri.png" alt="Smoothie Sérénité"><div class="smoothie-photo-info"><span>Signature</span><strong>Sérénité</strong></div></a>
+                <a href="smoothie-detail.html?s=La%20Flamme" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/smoothie-flamme.png" alt="Smoothie Flamme"><div class="smoothie-photo-info"><span>Vitalité</span><strong>Flamme</strong></div></a>
+                <a href="smoothie-detail.html?s=L%27%C3%89ternel" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/eternel.png" alt="Smoothie Éternel"><div class="smoothie-photo-info"><span>Fraîcheur</span><strong>Éternel</strong></div></a>
+                <a href="smoothie-detail.html?s=Le%20Fjord" class="smoothie-photo-card"><img onerror="this.closest('.smoothie-photo-card').style.display='none';" src="images/smoothie-fjord.png" alt="Smoothie Le Fjord"><div class="smoothie-photo-info"><span>Bain nordique</span><strong>Le Fjord</strong></div></a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="menu-category rv" id="chaud">
+          <div class="category-head"><div class="cat-left"><span class="cat-diamond"></span><h2>Cafés & Thés</h2></div><small>Chaud · Lounge · Détente</small></div>
+          <div class="product-grid">
+            <div class="product-card"><div class="pc-top"><div><span class="pc-tag">Carte chaude</span><h3 class="pc-name">Cafés</h3></div><div class="pc-price">Dès 2,50€</div></div><p class="pc-desc">Espressos, allongés, cappuccinos et boissons chaudes pour accompagner un moment lounge avant ou après votre expérience EDEN.</p><ul class="pc-details"><li>Espresso au grain</li><li>Boissons chaudes classiques</li><li>Service sobre et premium</li></ul><span class="pc-badge">Carte cafés complète</span><div class="pc-actions"><a href="carte-bar.html#cafes" class="pc-btn">Découvrir les cafés</a></div></div>
+            <div class="product-card"><div class="pc-top"><div><span class="pc-tag">Palais des Thés</span><h3 class="pc-name">Thés & infusions</h3></div><div class="pc-price">Dès 4€</div></div><p class="pc-desc">Une sélection de thés et infusions Palais des Thés pour prolonger la détente avec une boisson chaude, élégante et cohérente avec l’univers bien-être.</p><ul class="pc-details"><li>Thés en mousseline</li><li>Infusions détente</li><li>Sélection premium</li></ul><span class="pc-badge">Sélection Palais des Thés</span><div class="pc-actions"><a href="carte-bar.html#thes" class="pc-btn">Découvrir les thés</a></div></div>
+          </div>
+        </div>
+
+        <div class="menu-category rv" id="softs">
+          <div class="category-head"><div class="cat-left"><span class="cat-diamond"></span><h2>Softs Premium</h2></div><small>Frais · Simple · Accessible</small></div>
+          <div class="product-grid">
+            <div class="product-card"><div class="pc-top"><div><span class="pc-tag">Hydratation</span><h3 class="pc-name">Carte softs</h3></div><div class="pc-price">Dès 2€</div></div><p class="pc-desc">Eaux fraîches, citronnades, jus, diabolos Monin et créations sans alcool.</p><ul class="pc-details"><li>Softs premium</li><li>Sans alcool</li><li>Présentation sobre et haut standing</li></ul><span class="pc-badge">Carte complète</span><div class="pc-actions"><a href="softs.html" class="pc-btn">Découvrir les softs</a></div></div>
+            <div class="product-card"><div class="pc-top"><div><span class="pc-tag">Classique</span><h3 class="pc-name">Citronnades</h3></div><div class="pc-price">Dès 4€</div></div><p class="pc-desc">Des boissons fraîches, simples et lumineuses, parfaitement cohérentes avec l’univers bien-être.</p><ul class="pc-details"><li>Citronnade EDEN</li><li>Citron menthe</li><li>Citron framboise</li></ul><span class="pc-badge">Très frais</span><div class="pc-actions"><a href="softs.html#citronnades" class="pc-btn">Découvrir</a></div></div>
+          </div>
+        </div>
+
+        <div class="menu-category rv" id="sirops">
+          <div class="category-head"><div class="cat-left"><span class="cat-diamond"></span><h2>Sirops Monin</h2></div><small>14 parfums · Propre · Élégant</small></div>
+          <div class="product-grid">
+            <div class="product-card wide"><div class="pc-top"><div><span class="pc-tag">Sélection professionnelle</span><h3 class="pc-name">Sirops Monin</h3></div><div class="pc-price">3€</div></div><p class="pc-desc">Une sélection de parfums simples, populaires et lisibles pour créer des diabolos, eaux aromatisées ou boissons fraîches personnalisées. Présentation sobre, bouteilles alignées, étiquette sombre et service premium.</p><ul class="pc-details"><li>Menthe · Grenadine · Fraise · Pêche</li><li>Citron · Framboise · Passion · Vanille</li><li>Cassis · Cerise · Caramel · Noisette</li><li>Coco · Mojito Mint</li></ul><span class="pc-badge">Option diabolo +0,50€</span><div class="pc-actions"><a href="softs.html#monin" class="pc-btn">Découvrir les sirops</a></div></div>
+          </div>
+          <div class="panel-premium">
+            <div class="panel-text"><span>Visuel bar</span><h3>Une ligne de bouteilles sobre et haut standing</h3><p>Les sirops sont pensés comme un vrai élément décoratif du Fuel Bar : alignement propre, étiquettes sombres, touches gold, éclairage doux et service minimaliste.</p></div>
+            <div class="panel-list"><div class="panel-item"><strong>14</strong><small>Parfums populaires faciles à comprendre</small></div><div class="panel-item"><strong>3€</strong><small>Prix simple pour eau aromatisée ou sirop</small></div><div class="panel-item"><strong>+0,50€</strong><small>Option diabolo avec eau pétillante</small></div><div class="panel-item"><strong>Gold</strong><small>Présentation sombre, propre et premium</small></div></div>
+          </div>
+        </div>
+
+        <div class="menu-category rv" id="signature">
+          <div class="category-head"><div class="cat-left"><span class="cat-diamond"></span><h2>Créations EDEN</h2></div><small>Sur mesure · Plus wow · Signature</small></div>
+          <div class="product-grid">
+            <div class="product-card"><div class="pc-top"><div><span class="pc-tag">Après bain froid</span><h3 class="pc-name">Cold Reset</h3></div><div class="pc-price">5€</div></div><p class="pc-desc">Une boisson fraîche, pétillante et légère pour accompagner la sortie d’un bain froid.</p><ul class="pc-details"><li>Eau pétillante</li><li>Citron ou menthe</li><li>Finition rafraîchissante</li></ul></div>
+            <div class="product-card"><div class="pc-top"><div><span class="pc-tag">Après sauna</span><h3 class="pc-name">Golden Hydrate</h3></div><div class="pc-price">5€</div></div><p class="pc-desc">Une boisson douce et hydratante, pensée pour retrouver une sensation de fraîcheur après le chaud.</p><ul class="pc-details"><li>Base eau fraîche</li><li>Note fruitée légère</li><li>Service premium</li></ul><span class="pc-badge">Recommandé après sauna</span></div>
+            <div class="product-card wide"><div class="pc-top"><div><span class="pc-tag">Offre groupe</span><h3 class="pc-name">Plateau Fuel Bar</h3></div><div class="pc-price">Sur devis</div></div><p class="pc-desc">Pour les groupes, événements privés ou privatisations : sélection de boissons fraîches, smoothies, cafés, thés, softs et options personnalisées selon la durée et le nombre de participants.</p><ul class="pc-details"><li>Groupe ou privatisation</li><li>Offre ajustée au nombre de personnes</li><li>Présentation premium sur plateau</li></ul><span class="pc-badge">Demande personnalisée</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="fuel-amenities-section" id="equipements-fuelbar">
+  <div class="fuel-amenities-inner">
+
+    <div class="fuel-amenities-head">
+      <span class="fuel-amenities-eyebrow">Équipements disponibles</span>
+      <h2>Un espace lounge pensé pour prolonger l’expérience.</h2>
+      <p>
+        Le Fuel Bar EDEN n’est pas seulement un point de service : c’est un lieu de transition,
+        de détente et de convivialité, conçu pour rester après une séance, partager un moment,
+        se restaurer ou profiter d’un espace calme dans une ambiance haut standing.
+      </p>
+    </div>
+
+    <div class="fuel-amenities-grid">
+      <article class="fuel-amenity-card">
+        <span class="fuel-amenity-num">01</span>
+        <div class="fuel-amenity-line"></div>
+        <h3>Échiquier & dames</h3>
+        <p>
+          Une table de jeu élégante pour des moments calmes, stratégiques et conviviaux,
+          dans une atmosphère feutrée et premium.
+        </p>
+      </article>
+
+      <article class="fuel-amenity-card">
+        <span class="fuel-amenity-num">02</span>
+        <div class="fuel-amenity-line"></div>
+        <h3>Espace détente assis</h3>
+        <p>
+          Assises confortables, tables basses et zone lounge pour se poser, échanger,
+          lire, attendre ou simplement prolonger le bien-être après une expérience EDEN.
+        </p>
+      </article>
+
+      <article class="fuel-amenity-card">
+        <span class="fuel-amenity-num">03</span>
+        <div class="fuel-amenity-line"></div>
+        <h3>Tables pour se restaurer</h3>
+        <p>
+          Des espaces propres et structurés pour consommer smoothies, softs, cafés,
+          thés ou formules bien-être dans un cadre plus raffiné qu’un simple comptoir.
+        </p>
+      </article>
+
+      <article class="fuel-amenity-card">
+        <span class="fuel-amenity-num">04</span>
+        <div class="fuel-amenity-line"></div>
+        <h3>Billard lounge</h3>
+        <p>
+          Un équipement signature pour créer une vraie ambiance club privé :
+          détente, échange, plaisir et expérience mémorable.
+        </p>
+      </article>
+
+      <article class="fuel-amenity-card">
+        <span class="fuel-amenity-num">05</span>
+        <div class="fuel-amenity-line"></div>
+        <h3>Jeu de fléchettes</h3>
+        <p>
+          Une animation simple, élégante et conviviale, idéale pour dynamiser
+          l’espace sans casser l’image premium du lieu.
+        </p>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2 class="cta-title rv">Prolongez<br><em>l’expérience EDEN</em></h2>
+    <p class="cta-sub rv d1">Réservez votre moment bien-être et profitez du Fuel Bar avant ou après votre séance. Une carte courte, claire et premium pour compléter votre expérience.</p>
+    <div class="cta-btns rv d2"><a href="reservation.html" class="btn-primary">Réserver une séance</a><a href="softs.html" class="btn-outline">Voir les softs</a><a href="smoothies.html" class="btn-outline">Voir les smoothies</a></div>
+  </div>
+</section>
+
+<footer>
+  <div class="fg">
+    <div><span class="flogo">EDEN</span><p class="fabout">Un sanctuaire dédié à votre bien-être. Récupération, détente, équilibre et expérience premium.</p><span class="ftag">Récupération · Détente · Équilibre</span></div>
+    <div class="fc"><h5>Espaces</h5><ul><li><a href="index.html#experiences">Bain Nordique</a></li><li><a href="index.html#experiences">Sauna & Hammam</a></li><li><a href="index.html#experiences">Pressothérapie</a></li><li><a href="fuel-bar.html" style="color:var(--gold-l)">Fuel Bar</a></li></ul></div>
+    <div class="fc"><h5>Carte</h5><ul><li><a href="smoothies.html">Smoothies</a></li><li><a href="carte-bar.html#cafes">Cafés</a></li><li><a href="carte-bar.html#thes">Thés</a></li><li><a href="softs.html">Softs</a></li></ul></div>
+    <div class="fc"><h5>Contact</h5><ul><li><a href="#">12 Rue du Bien-Être</a></li><li><a href="tel:+33100000000">01 00 00 00 00</a></li><li><a href="mailto:contact@eden-wellness.fr">contact@eden-wellness.fr</a></li></ul></div>
+  </div>
+  <div class="fbot"><span>© 2026 EDEN Wellness SAS. Tous droits réservés.</span><div><a href="mentions-legales.html">Mentions légales</a><a href="mentions-legales.html">CGV</a></div></div></footer>
+
+<script>
+const cd=document.getElementById('cd');
+const cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  if(cd){cd.style.left=mx+'px';cd.style.top=my+'px'}
+});
+(function loop(){
+  rx+=(mx-rx)*.12; ry+=(my-ry)*.12;
+  if(cr){cr.style.left=rx+'px';cr.style.top=ry+'px'}
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button,.product-card,.fuel-access-card,.sig-item,.panel-item,.smoothie-photo-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hov'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hov'));
+});
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement.scrollHeight-innerHeight;
+  const prog=document.getElementById('prog');
+  if(prog)prog.style.width=(scrollY/h*100)+'%';
+  const nav=document.getElementById('nav');
+  if(nav)nav.classList.toggle('solid',scrollY>60);
+  const sections=document.querySelectorAll('.menu-category');
+  const links=document.querySelectorAll('.cat-link');
+  let current='';
+  sections.forEach(section=>{
+    const top=section.offsetTop-180;
+    if(scrollY>=top){current=section.getAttribute('id')}
+  });
+  links.forEach(link=>{
+    link.classList.remove('active');
+    if(link.getAttribute('href')==='#'+current){link.classList.add('active')}
+  });
+});
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){entry.target.classList.add('in');io.unobserve(entry.target)}
+  });
+},{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+</script>
+
+<script>
+const edenBurgerFuel = document.querySelector(".eden-burger");
+const edenMenuFuel = document.querySelector(".eden-menu");
+
+if(edenBurgerFuel && edenMenuFuel){
+  edenBurgerFuel.addEventListener("click",()=>{
+    edenMenuFuel.classList.toggle("open");
+  });
+}
+</script>
+
+
+<!-- ══ COOKIE BANNER ══ -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9990;background:rgba(6,9,8,.97);border-top:1px solid rgba(196,160,78,.2);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px;backdrop-filter:blur(12px);">
+  <div style="flex:1">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.9;max-width:680px">🍪 Nous utilisons des cookies pour améliorer votre expérience et analyser notre trafic. En continuant, vous acceptez notre <a href="rgpd.html" style="color:#c4a04e;text-decoration:underline">politique de confidentialité</a>.</p>
+  </div>
+  <div style="display:flex;gap:10px;flex-shrink:0">
+    <button onclick="refuseCookies()" style="background:none;border:1px solid rgba(196,160,78,.25);color:#7a7a68;padding:9px 20px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s">Refuser</button>
+    <button onclick="acceptCookies()" style="background:#c4a04e;color:#060908;border:none;padding:9px 24px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-weight:400;transition:all .3s">Accepter</button>
+  </div>
+</div>
+
+<!-- ══ CHATBOT FLOTTANT ══ -->
+<div id="chatbot-btn" onclick="toggleChat()" style="position:fixed;bottom:28px;right:28px;z-index:9980;width:52px;height:52px;background:linear-gradient(135deg,#c4a04e,#dbbf78);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 32px rgba(196,160,78,.35);transition:transform .3s;font-size:20px;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">💬</div>
+<div id="chatbot-panel" style="display:none;position:fixed;bottom:92px;right:28px;z-index:9980;width:320px;background:#0c110a;border:1px solid rgba(196,160,78,.2);box-shadow:0 20px 60px rgba(0,0,0,.6);">
+  <div style="padding:16px 20px;background:linear-gradient(135deg,rgba(196,160,78,.15),rgba(196,160,78,.05));border-bottom:1px solid rgba(196,160,78,.12);display:flex;align-items:center;justify-content:space-between">
+    <div><p style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#f4efe5">EDEN · Assistance</p><p style="font-size:9px;color:#7a7a68;letter-spacing:1px">Réponse en moins de 2h · 7j/7</p></div>
+    <button onclick="toggleChat()" style="background:none;border:none;color:#7a7a68;font-size:18px;cursor:pointer">×</button>
+  </div>
+  <div style="padding:16px 20px">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.8;margin-bottom:14px">Bonjour ! Comment puis-je vous aider ?</p>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <a href="reservation.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#c4a04e;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Réserver une séance</a>
+      <a href="faq.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Consulter la FAQ</a>
+      <a href="tel:+33100000000" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Appeler le 01 00 00 00 00</a>
+      <a href="mailto:contact@eden-wellness.fr" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Envoyer un email</a>
+    </div>
+    <p style="font-size:9px;color:#7a7a68;margin-top:14px;text-align:center">Ouvert 7j/7 · 8h–22h</p>
+  </div>
+</div>
+
+<script>
+// Cookie banner
+(function(){
+  if(!localStorage.getItem('eden_cookies')){
+    var b=document.getElementById('cookie-banner');
+    if(b){b.style.display='flex';setTimeout(function(){b.style.display='flex';},100);}
+  }
+})();
+function acceptCookies(){localStorage.setItem('eden_cookies','accepted');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function refuseCookies(){localStorage.setItem('eden_cookies','refused');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function toggleChat(){var p=document.getElementById('chatbot-panel');if(p)p.style.display=p.style.display==='none'?'block':'none';}
+</script>
+
+</body>
+</html>

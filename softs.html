@@ -1,0 +1,2357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Softs Premium — EDEN Fuel Bar</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --gold:#c4a04e;
+  --gold-l:#dbbf78;
+  --gold-d:#8a7038;
+  --gold-p:#f2e8d0;
+  --dark:#060908;
+  --dark2:#0c0d0b;
+  --dark3:#11110e;
+  --dark4:#17140f;
+  --cream:#f4efe5;
+  --muted:#7a7a68;
+  --light:#c0bcac;
+  --title:'Jost',system-ui,sans-serif;
+  --sans:'Jost',system-ui,sans-serif;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+  --ease2:cubic-bezier(.22,1,.36,1);
+}
+
+*,*::before,*::after{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  background:var(--dark);
+  color:var(--cream);
+  font-family:var(--sans);
+  font-weight:300;
+  overflow-x:hidden;
+  cursor:none;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-2;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(219,191,120,.10), transparent 28%),
+    radial-gradient(circle at 82% 22%, rgba(196,160,78,.08), transparent 30%),
+    radial-gradient(circle at 50% 85%, rgba(196,160,78,.055), transparent 35%),
+    linear-gradient(180deg,#040605 0%,#060908 42%,#080806 100%);
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  background:
+    linear-gradient(120deg, transparent 0%, rgba(255,255,255,.025) 48%, transparent 58%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,.012) 0px,
+      rgba(255,255,255,.012) 1px,
+      transparent 1px,
+      transparent 120px
+    );
+  opacity:.38;
+}
+
+/* CURSOR */
+#cd{
+  position:fixed;
+  width:5px;
+  height:5px;
+  background:var(--gold);
+  border-radius:50%;
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%);
+}
+
+#cr{
+  position:fixed;
+  width:34px;
+  height:34px;
+  border:1px solid rgba(196,160,78,.35);
+  border-radius:50%;
+  pointer-events:none;
+  z-index:9997;
+  transform:translate(-50%,-50%);
+  transition:width .3s,height .3s,border-color .3s;
+}
+
+body.hov #cr{
+  width:52px;
+  height:52px;
+  border-color:rgba(196,160,78,.70);
+}
+
+#prog{
+  position:fixed;
+  top:0;
+  left:0;
+  height:2px;
+  background:linear-gradient(90deg,var(--gold-d),var(--gold),var(--gold-l));
+  z-index:9996;
+}
+
+/* SPARKLES */
+.luxe-sparkles{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:1;
+  overflow:hidden;
+}
+
+.luxe-sparkles span{
+  position:absolute;
+  width:3px;
+  height:3px;
+  border-radius:50%;
+  background:rgba(219,191,120,.95);
+  box-shadow:
+    0 0 10px rgba(219,191,120,.9),
+    0 0 22px rgba(196,160,78,.5);
+  opacity:0;
+  animation:sparkleFloat 9s infinite ease-in-out;
+}
+
+.luxe-sparkles span:nth-child(1){left:8%;top:18%;animation-delay:.2s;}
+.luxe-sparkles span:nth-child(2){left:18%;top:62%;animation-delay:2s;}
+.luxe-sparkles span:nth-child(3){left:32%;top:28%;animation-delay:4.2s;}
+.luxe-sparkles span:nth-child(4){left:47%;top:74%;animation-delay:1.4s;}
+.luxe-sparkles span:nth-child(5){left:61%;top:18%;animation-delay:3.1s;}
+.luxe-sparkles span:nth-child(6){left:72%;top:52%;animation-delay:5.4s;}
+.luxe-sparkles span:nth-child(7){left:86%;top:30%;animation-delay:1.9s;}
+.luxe-sparkles span:nth-child(8){left:94%;top:78%;animation-delay:6.2s;}
+.luxe-sparkles span:nth-child(9){left:25%;top:86%;animation-delay:7.1s;}
+.luxe-sparkles span:nth-child(10){left:55%;top:42%;animation-delay:2.8s;}
+.luxe-sparkles span:nth-child(11){left:78%;top:12%;animation-delay:8s;}
+.luxe-sparkles span:nth-child(12){left:39%;top:10%;animation-delay:5.8s;}
+
+@keyframes sparkleFloat{
+  0%,100%{transform:translateY(0) scale(.4);opacity:0;}
+  20%{opacity:.9;}
+  50%{transform:translateY(-28px) scale(1);opacity:.65;}
+  80%{opacity:.15;}
+}
+
+/* TICKER */
+.ticker{
+  height:32px;
+  background:var(--gold);
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  position:relative;
+  z-index:200;
+}
+
+.tick-inner{
+  display:flex;
+  animation:tick 38s linear infinite;
+  white-space:nowrap;
+}
+
+@keyframes tick{
+  to{transform:translateX(-50%);}
+}
+
+.ti{
+  font-size:10px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--dark);
+  padding:0 34px;
+  font-weight:400;
+}
+
+.td{
+  opacity:.32;
+  font-size:14px;
+  color:var(--dark);
+}
+
+/* NAV */
+nav{
+  position:fixed;
+  top:32px;
+  left:0;
+  right:0;
+  z-index:500;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 72px;
+  background:linear-gradient(180deg,rgba(6,9,8,.96),rgba(6,9,8,.72));
+  backdrop-filter:blur(22px);
+  border-bottom:1px solid rgba(196,160,78,.08);
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.35),
+    inset 0 -1px 0 rgba(219,191,120,.08);
+  transition:.35s;
+}
+
+nav.solid{
+  top:0;
+  background:linear-gradient(180deg,rgba(6,9,8,.98),rgba(6,9,8,.88));
+  padding:16px 72px;
+}
+
+.logo{
+  font-family:var(--title);
+  font-size:22px;
+  letter-spacing:10px;
+  color:var(--gold);
+  text-decoration:none;
+  text-shadow:0 0 18px rgba(196,160,78,.26);
+  font-weight:100;
+  text-transform:uppercase;
+}
+
+.nav-links{
+  display:flex;
+  gap:34px;
+  list-style:none;
+}
+
+.nav-links a{
+  font-size:10px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:rgba(244,239,229,.60);
+  text-decoration:none;
+  transition:.3s;
+  font-weight:300;
+}
+
+.nav-links a:hover,
+.nav-links a.on{
+  color:var(--gold);
+}
+
+.btn-nav{
+  font-size:9px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  border:1px solid var(--gold);
+  background:var(--gold);
+  color:var(--dark);
+  padding:10px 24px;
+  text-decoration:none;
+  font-weight:300;
+  transition:all .3s;
+  box-shadow:
+    0 0 24px rgba(196,160,78,.16),
+    inset 0 0 0 1px rgba(255,255,255,.12);
+}
+
+.btn-nav:hover{
+  background:var(--gold-l);
+  box-shadow:
+    0 0 36px rgba(219,191,120,.28),
+    0 12px 35px rgba(0,0,0,.45);
+}
+
+/* HERO */
+.hero{
+  position:relative;
+  min-height:92vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  overflow:hidden;
+  padding:150px 80px 90px;
+}
+
+.hero-bg{
+  position:absolute;
+  inset:0;
+  z-index:0;
+}
+
+.hero-bg img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter:brightness(.17) saturate(1.1) contrast(1.08);
+  transform:scale(1.08);
+  animation:hzoom 22s ease-in-out infinite alternate;
+}
+
+@keyframes hzoom{
+  from{transform:scale(1.08);}
+  to{transform:scale(1.15);}
+}
+
+.hero-overlay{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:
+    radial-gradient(circle at 50% 36%,rgba(196,160,78,.14),transparent 30%),
+    radial-gradient(ellipse 90% 80% at 50% 45%,transparent 18%,rgba(6,9,8,.82) 100%),
+    linear-gradient(180deg,rgba(6,9,8,.80) 0%,transparent 35%,rgba(6,9,8,1) 100%);
+}
+
+.hero::before{
+  content:"SOFTS";
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  font-family:var(--title);
+  font-size:clamp(96px,18vw,260px);
+  letter-spacing:28px;
+  color:rgba(196,160,78,.030);
+  z-index:2;
+  pointer-events:none;
+  white-space:nowrap;
+  font-weight:100;
+}
+
+.hero-glow{
+  position:absolute;
+  left:50%;
+  bottom:-140px;
+  transform:translateX(-50%);
+  width:900px;
+  height:280px;
+  background:radial-gradient(ellipse, rgba(219,191,120,.17), transparent 65%);
+  filter:blur(20px);
+  pointer-events:none;
+  z-index:3;
+}
+
+.hero-content{
+  position:relative;
+  z-index:10;
+  max-width:1040px;
+  margin:auto;
+}
+
+.hero-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+  border:1px solid rgba(196,160,78,.28);
+  padding:9px 20px;
+  margin-bottom:28px;
+  background:rgba(196,160,78,.06);
+  box-shadow:0 0 30px rgba(196,160,78,.06);
+  animation:fadeUp .6s .2s both;
+}
+
+.hero-badge-dot{
+  width:7px;
+  height:7px;
+  background:var(--gold);
+  transform:rotate(45deg);
+  box-shadow:0 0 16px rgba(219,191,120,.7);
+  animation:goldPulse 2.2s infinite;
+}
+
+@keyframes goldPulse{
+  0%,100%{opacity:.55;box-shadow:0 0 0 0 rgba(196,160,78,.35);}
+  50%{opacity:1;box-shadow:0 0 0 8px rgba(196,160,78,0);}
+}
+
+.hero-badge-txt{
+  font-size:8px;
+  letter-spacing:5px;
+  text-transform:uppercase;
+  color:var(--gold-l);
+  font-weight:300;
+}
+
+.hero-eyebrow{
+  font-size:10px;
+  letter-spacing:7px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:24px;
+  display:block;
+  animation:fadeUp .7s .35s both;
+  font-weight:300;
+}
+
+.hero-h1{
+  font-family:var(--title);
+  font-size:clamp(46px,7.5vw,92px);
+  font-weight:100;
+  letter-spacing:10px;
+  color:var(--cream);
+  line-height:1.08;
+  text-shadow:
+    0 0 35px rgba(196,160,78,.10),
+    0 14px 50px rgba(0,0,0,.56);
+  animation:fadeUp .9s .5s both;
+  text-transform:uppercase;
+}
+
+.hero-h1 em{
+  font-style:normal;
+  color:var(--gold-l);
+  display:block;
+  font-weight:100;
+}
+
+.hero-sep{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  margin:34px auto;
+  animation:fadeUp .7s .7s both;
+}
+
+.sl{
+  width:62px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(196,160,78,.55));
+}
+
+.sr{
+  background:linear-gradient(270deg,transparent,rgba(196,160,78,.55));
+}
+
+.sd{
+  width:5px;
+  height:5px;
+  background:var(--gold);
+  transform:rotate(45deg);
+  box-shadow:
+    0 0 12px rgba(219,191,120,.9),
+    0 0 28px rgba(196,160,78,.45);
+  animation:diamondPulse 2.8s infinite ease-in-out;
+}
+
+@keyframes diamondPulse{
+  0%,100%{opacity:.45;transform:rotate(45deg) scale(.85);}
+  50%{opacity:1;transform:rotate(45deg) scale(1.2);}
+}
+
+.hero-desc{
+  font-size:14px;
+  color:rgba(192,188,172,.82);
+  max-width:700px;
+  margin:0 auto;
+  line-height:2.3;
+  animation:fadeUp .7s .85s both;
+}
+
+.hero-mini{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1px;
+  max-width:920px;
+  margin:42px auto 0;
+  border:1px solid rgba(196,160,78,.13);
+  background:rgba(196,160,78,.11);
+  animation:fadeUp .7s 1s both;
+}
+
+.hm{
+  padding:18px 24px;
+  background:rgba(255,255,255,.018);
+}
+
+.hm strong{
+  display:block;
+  font-size:17px;
+  font-weight:100;
+  letter-spacing:5px;
+  color:var(--gold);
+  margin-bottom:6px;
+}
+
+.hm span{
+  display:block;
+  font-size:8px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+/* GLOBAL */
+.section{
+  padding:96px 80px;
+  position:relative;
+}
+
+.section-tight{
+  padding:74px 80px;
+}
+
+.section-dark{
+  background:var(--dark);
+}
+
+.section-soft{
+  background:
+    radial-gradient(circle at top right, rgba(196,160,78,.055), transparent 34%),
+    radial-gradient(circle at bottom left, rgba(219,191,120,.03), transparent 38%),
+    var(--dark2);
+}
+
+.container{
+  max-width:1400px;
+  margin:0 auto;
+}
+
+.section-head{
+  text-align:center;
+  margin-bottom:52px;
+}
+
+.section-eyebrow{
+  font-size:9px;
+  letter-spacing:6px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:16px;
+  display:block;
+  font-weight:300;
+}
+
+.section-title{
+  font-family:var(--title);
+  font-size:clamp(34px,5vw,66px);
+  font-weight:100;
+  color:var(--cream);
+  line-height:1.18;
+  text-transform:uppercase;
+  letter-spacing:9px;
+}
+
+.section-title em{
+  color:var(--gold-l);
+  font-style:normal;
+  font-weight:100;
+}
+
+.section-desc{
+  max-width:720px;
+  margin:24px auto 0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:2.25;
+}
+
+.sep{
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(196,160,78,.25),transparent);
+  position:relative;
+}
+
+.sep::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:-3px;
+  width:7px;
+  height:7px;
+  background:var(--gold);
+  transform:translateX(-50%) rotate(45deg);
+  box-shadow:0 0 18px rgba(219,191,120,.65);
+  opacity:.75;
+}
+
+/* INTRO PANEL */
+.intro-panel{
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:1px;
+  background:rgba(196,160,78,.10);
+  border-top:1px solid rgba(196,160,78,.10);
+  border-bottom:1px solid rgba(196,160,78,.10);
+}
+
+.intro-left,
+.intro-right{
+  min-height:520px;
+  position:relative;
+  overflow:hidden;
+}
+
+.intro-left{
+  padding:86px 80px;
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.09),transparent 36%),
+    var(--dark2);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.intro-left::before{
+  content:"FRESH";
+  position:absolute;
+  top:34px;
+  right:28px;
+  font-family:var(--title);
+  font-size:126px;
+  letter-spacing:24px;
+  color:rgba(196,160,78,.026);
+  font-weight:100;
+}
+
+.intro-left p{
+  font-size:13px;
+  color:var(--light);
+  line-height:2.35;
+  max-width:620px;
+  position:relative;
+  z-index:2;
+}
+
+.intro-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:1px;
+  margin-top:34px;
+  background:rgba(196,160,78,.10);
+  border:1px solid rgba(196,160,78,.10);
+  position:relative;
+  z-index:2;
+}
+
+.intro-item{
+  background:rgba(255,255,255,.016);
+  padding:22px;
+}
+
+.intro-item span{
+  display:block;
+  font-size:8px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:8px;
+}
+
+.intro-item strong{
+  display:block;
+  font-family:var(--title);
+  font-size:18px;
+  letter-spacing:5px;
+  text-transform:uppercase;
+  color:var(--cream);
+  font-weight:100;
+}
+
+.intro-right{
+  background:
+    radial-gradient(circle at center,rgba(196,160,78,.08),transparent 42%),
+    var(--dark3);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:70px;
+}
+
+.bottle-scene{
+  width:min(420px,100%);
+  aspect-ratio:1/1.15;
+  position:relative;
+  border:1px solid rgba(196,160,78,.12);
+  background:
+    radial-gradient(circle at 50% 35%, rgba(219,191,120,.12), transparent 38%),
+    radial-gradient(circle at 50% 80%, rgba(196,160,78,.08), transparent 42%),
+    rgba(255,255,255,.012);
+  box-shadow:
+    0 40px 110px rgba(0,0,0,.34),
+    inset 0 0 0 1px rgba(255,255,255,.02);
+  overflow:hidden;
+}
+
+.bottle-scene::before{
+  content:"";
+  position:absolute;
+  inset:28px;
+  border:1px solid rgba(196,160,78,.16);
+}
+
+.glass{
+  position:absolute;
+  left:50%;
+  bottom:70px;
+  transform:translateX(-50%);
+  width:120px;
+  height:160px;
+  border:1px solid rgba(219,191,120,.38);
+  border-top:1px solid rgba(219,191,120,.22);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.015)),
+    linear-gradient(180deg,transparent 45%,rgba(196,160,78,.18) 46%,rgba(196,160,78,.10));
+  clip-path:polygon(12% 0,88% 0,76% 100%,24% 100%);
+  z-index:4;
+}
+
+.ice{
+  position:absolute;
+  width:26px;
+  height:26px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.04);
+  transform:rotate(45deg);
+  z-index:5;
+}
+
+.ice.i1{left:43%;bottom:142px;}
+.ice.i2{left:52%;bottom:112px;width:22px;height:22px;}
+.ice.i3{left:46%;bottom:94px;width:18px;height:18px;}
+
+.bottle{
+  position:absolute;
+  top:68px;
+  left:50%;
+  transform:translateX(-50%) rotate(-22deg);
+  width:86px;
+  height:230px;
+  border-radius:16px 16px 28px 28px;
+  border:1px solid rgba(196,160,78,.35);
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.10),transparent 18%,rgba(196,160,78,.08) 65%,rgba(255,255,255,.04)),
+    linear-gradient(180deg,rgba(196,160,78,.14),rgba(6,9,8,.64));
+  box-shadow:0 22px 55px rgba(0,0,0,.42);
+  z-index:3;
+}
+
+.bottle::before{
+  content:"";
+  position:absolute;
+  top:-42px;
+  left:25px;
+  width:36px;
+  height:48px;
+  border:1px solid rgba(196,160,78,.28);
+  background:rgba(6,9,8,.82);
+}
+
+.bottle::after{
+  content:"MONIN";
+  position:absolute;
+  left:50%;
+  top:72px;
+  transform:translateX(-50%);
+  width:58px;
+  height:86px;
+  border:1px solid rgba(196,160,78,.28);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:8px;
+  letter-spacing:2px;
+  color:var(--gold);
+  background:rgba(6,9,8,.74);
+}
+
+.pour{
+  position:absolute;
+  top:188px;
+  left:52%;
+  width:4px;
+  height:126px;
+  transform:rotate(-22deg);
+  background:linear-gradient(180deg,rgba(219,191,120,.95),rgba(196,160,78,.28));
+  filter:drop-shadow(0 0 12px rgba(219,191,120,.55));
+  z-index:2;
+  border-radius:20px;
+}
+
+.scene-label{
+  position:absolute;
+  bottom:28px;
+  left:28px;
+  right:28px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-top:1px solid rgba(196,160,78,.12);
+  padding-top:18px;
+  z-index:6;
+}
+
+.scene-label span{
+  font-size:8px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--gold);
+}
+
+.scene-label strong{
+  font-size:10px;
+  letter-spacing:3px;
+  color:var(--muted);
+  text-transform:uppercase;
+  font-weight:300;
+}
+
+/* CATEGORY BAR */
+.category-bar{
+  position:sticky;
+  top:75px;
+  z-index:120;
+  background:rgba(6,9,8,.92);
+  backdrop-filter:blur(20px);
+  border-top:1px solid rgba(196,160,78,.10);
+  border-bottom:1px solid rgba(196,160,78,.10);
+}
+
+.category-inner{
+  max-width:1400px;
+  margin:0 auto;
+  display:flex;
+  justify-content:center;
+  gap:1px;
+  background:rgba(196,160,78,.08);
+}
+
+.cat-link{
+  flex:1;
+  text-align:center;
+  padding:18px 16px;
+  background:rgba(255,255,255,.012);
+  color:var(--muted);
+  text-decoration:none;
+  font-size:9px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  transition:.3s;
+}
+
+.cat-link:hover,
+.cat-link.active{
+  color:var(--gold);
+  background:rgba(196,160,78,.045);
+}
+
+/* MENU */
+.menu-layout{
+  display:grid;
+  grid-template-columns:300px 1fr;
+  gap:52px;
+  align-items:start;
+}
+
+.menu-side{
+  position:sticky;
+  top:150px;
+  border:1px solid rgba(196,160,78,.14);
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.07),transparent 35%),
+    rgba(255,255,255,.014);
+  padding:30px;
+  box-shadow:0 24px 70px rgba(0,0,0,.22);
+}
+
+.side-title{
+  font-family:var(--title);
+  font-size:15px;
+  font-weight:200;
+  letter-spacing:5px;
+  text-transform:uppercase;
+  color:var(--cream);
+  margin-bottom:18px;
+  line-height:1.5;
+}
+
+.side-desc{
+  font-size:11px;
+  line-height:2;
+  color:var(--muted);
+  margin-bottom:24px;
+}
+
+.side-list{
+  list-style:none;
+}
+
+.side-list li{
+  border-top:1px solid rgba(196,160,78,.08);
+}
+
+.side-list a{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:15px 0;
+  color:var(--muted);
+  text-decoration:none;
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  transition:.3s;
+}
+
+.side-list a::after{
+  content:"→";
+  opacity:.35;
+  transition:.3s;
+}
+
+.side-list a:hover{
+  color:var(--gold);
+  padding-left:8px;
+}
+
+.side-list a:hover::after{
+  opacity:1;
+}
+
+.side-note{
+  margin-top:26px;
+  border:1px solid rgba(196,160,78,.13);
+  background:rgba(196,160,78,.045);
+  padding:18px;
+}
+
+.side-note strong{
+  display:block;
+  font-size:9px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:8px;
+  font-weight:300;
+}
+
+.side-note span{
+  display:block;
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.9;
+}
+
+.menu-category{
+  margin-bottom:52px;
+  scroll-margin-top:150px;
+}
+
+.menu-category:last-child{
+  margin-bottom:0;
+}
+
+.category-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:32px;
+  padding-bottom:22px;
+  margin-bottom:18px;
+  border-bottom:1px solid rgba(196,160,78,.12);
+}
+
+.cat-left{
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+
+.cat-diamond{
+  width:8px;
+  height:8px;
+  background:var(--gold);
+  transform:rotate(45deg);
+  box-shadow:0 0 16px rgba(219,191,120,.55);
+}
+
+.category-head h2{
+  font-family:var(--title);
+  font-size:30px;
+  font-weight:100;
+  letter-spacing:9px;
+  text-transform:uppercase;
+  color:var(--cream);
+}
+
+.category-head small{
+  color:var(--muted);
+  font-size:9px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+}
+
+.product-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.product-card{
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.04),transparent 35%),
+    rgba(255,255,255,.012);
+  border:1px solid rgba(196,160,78,.10);
+  padding:30px 30px 28px;
+  position:relative;
+  overflow:hidden;
+  transition:.4s var(--ease2);
+  min-height:230px;
+}
+
+.product-card.wide{
+  grid-column:1 / -1;
+  min-height:220px;
+}
+
+.product-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,transparent 0%,rgba(196,160,78,.42) 50%,transparent 100%) top/100% 1px no-repeat,
+    linear-gradient(90deg,transparent 0%,rgba(196,160,78,.42) 50%,transparent 100%) bottom/100% 1px no-repeat,
+    linear-gradient(0deg,transparent 0%,rgba(196,160,78,.42) 50%,transparent 100%) left/1px 100% no-repeat,
+    linear-gradient(0deg,transparent 0%,rgba(196,160,78,.42) 50%,transparent 100%) right/1px 100% no-repeat;
+  opacity:0;
+  transition:.35s;
+  pointer-events:none;
+}
+
+.product-card::after{
+  content:"";
+  position:absolute;
+  top:-90%;
+  left:-70%;
+  width:70%;
+  height:260%;
+  transform:rotate(24deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),rgba(219,191,120,.035),transparent);
+  opacity:0;
+  transition:.75s var(--ease2);
+  pointer-events:none;
+}
+
+.product-card:hover{
+  transform:translateY(-4px);
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.08),transparent 35%),
+    rgba(255,255,255,.018);
+  box-shadow:0 22px 70px rgba(0,0,0,.24);
+}
+
+.product-card:hover::before{
+  opacity:1;
+}
+
+.product-card:hover::after{
+  left:115%;
+  opacity:1;
+}
+
+.pc-top{
+  display:flex;
+  justify-content:space-between;
+  gap:22px;
+  align-items:flex-start;
+  margin-bottom:18px;
+  position:relative;
+  z-index:2;
+}
+
+.pc-tag{
+  font-size:8px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--gold);
+  display:block;
+  margin-bottom:12px;
+}
+
+.pc-name{
+  font-family:var(--title);
+  font-size:22px;
+  font-weight:100;
+  letter-spacing:5px;
+  text-transform:uppercase;
+  color:var(--cream);
+  line-height:1.35;
+}
+
+.pc-price{
+  font-family:var(--title);
+  font-size:30px;
+  font-weight:100;
+  letter-spacing:3px;
+  color:var(--gold);
+  white-space:nowrap;
+  line-height:1;
+}
+
+.pc-desc{
+  font-size:12px;
+  color:var(--muted);
+  line-height:2.1;
+  margin-bottom:22px;
+  position:relative;
+  z-index:2;
+}
+
+.pc-details{
+  list-style:none;
+  display:grid;
+  gap:8px;
+  position:relative;
+  z-index:2;
+}
+
+.pc-details li{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:var(--light);
+  font-size:11px;
+}
+
+.pc-details li::before{
+  content:"";
+  width:12px;
+  height:1px;
+  background:var(--gold);
+  opacity:.7;
+  flex-shrink:0;
+}
+
+.pc-badge{
+  display:inline-flex;
+  align-items:center;
+  margin-top:20px;
+  padding:7px 12px;
+  border:1px solid rgba(196,160,78,.17);
+  color:var(--gold-l);
+  font-size:8px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  background:rgba(196,160,78,.035);
+  position:relative;
+  z-index:2;
+}
+
+/* MONIN */
+.monin-panel{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns:.95fr 1.05fr;
+  gap:1px;
+  background:rgba(196,160,78,.10);
+  border:1px solid rgba(196,160,78,.12);
+}
+
+.monin-text{
+  padding:46px;
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.08),transparent 36%),
+    var(--dark2);
+}
+
+.monin-text span{
+  display:block;
+  font-size:8px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:14px;
+}
+
+.monin-text h3{
+  font-family:var(--title);
+  font-size:32px;
+  font-weight:100;
+  letter-spacing:8px;
+  text-transform:uppercase;
+  color:var(--cream);
+  line-height:1.25;
+  margin-bottom:18px;
+}
+
+.monin-text p{
+  font-size:12px;
+  color:var(--muted);
+  line-height:2.2;
+}
+
+.monin-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:1px;
+  background:rgba(196,160,78,.08);
+}
+
+.monin-item{
+  background:rgba(255,255,255,.012);
+  padding:22px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.monin-item strong{
+  font-size:11px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--cream);
+  font-weight:300;
+}
+
+.monin-item span{
+  width:8px;
+  height:8px;
+  background:var(--gold);
+  transform:rotate(45deg);
+  opacity:.7;
+  flex-shrink:0;
+}
+
+/* COMBOS */
+.combo-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.combo-card{
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.055),transparent 35%),
+    rgba(255,255,255,.014);
+  border:1px solid rgba(196,160,78,.12);
+  padding:34px;
+  position:relative;
+  overflow:hidden;
+  transition:.4s var(--ease2);
+}
+
+.combo-card::before{
+  content:"";
+  position:absolute;
+  inset:18px;
+  border:1px solid rgba(196,160,78,.08);
+  pointer-events:none;
+}
+
+.combo-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 24px 70px rgba(0,0,0,.26);
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.10),transparent 35%),
+    rgba(255,255,255,.018);
+}
+
+.combo-label{
+  font-size:8px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:18px;
+  display:block;
+  position:relative;
+  z-index:2;
+}
+
+.combo-title{
+  font-family:var(--title);
+  font-size:24px;
+  letter-spacing:6px;
+  text-transform:uppercase;
+  font-weight:100;
+  color:var(--cream);
+  margin-bottom:14px;
+  position:relative;
+  z-index:2;
+}
+
+.combo-desc{
+  font-size:12px;
+  color:var(--muted);
+  line-height:2.1;
+  margin-bottom:24px;
+  position:relative;
+  z-index:2;
+}
+
+.combo-price{
+  font-family:var(--title);
+  font-size:32px;
+  letter-spacing:4px;
+  font-weight:100;
+  color:var(--gold);
+  position:relative;
+  z-index:2;
+}
+
+/* CTA */
+.cta-section{
+  padding:108px 80px;
+  text-align:center;
+  background:
+    radial-gradient(circle at center,rgba(196,160,78,.08),transparent 45%),
+    var(--dark2);
+  border-top:1px solid rgba(196,160,78,.1);
+  position:relative;
+  overflow:hidden;
+}
+
+.cta-section::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:720px;
+  height:720px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(196,160,78,.08),transparent 70%);
+  pointer-events:none;
+}
+
+.cta-inner{
+  position:relative;
+  z-index:2;
+}
+
+.cta-title{
+  font-family:var(--title);
+  font-size:clamp(34px,5vw,64px);
+  font-weight:100;
+  color:var(--cream);
+  margin-bottom:18px;
+  line-height:1.16;
+  text-transform:uppercase;
+  letter-spacing:9px;
+}
+
+.cta-title em{
+  font-style:normal;
+  color:var(--gold-l);
+  font-weight:100;
+}
+
+.cta-sub{
+  font-size:13px;
+  color:var(--muted);
+  max-width:580px;
+  margin:0 auto 44px;
+  line-height:2.3;
+}
+
+.cta-btns{
+  display:flex;
+  gap:16px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.btn-outline,
+.btn-primary{
+  padding:16px 44px;
+  font-family:var(--sans);
+  font-size:10px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  text-decoration:none;
+  transition:.3s;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:300;
+}
+
+.btn-outline{
+  border:1px solid rgba(196,160,78,.35);
+  color:var(--gold-p);
+}
+
+.btn-outline:hover{
+  border-color:var(--gold);
+  color:var(--gold);
+  background:rgba(196,160,78,.05);
+}
+
+.btn-primary{
+  background:var(--gold);
+  color:var(--dark);
+  border:1px solid var(--gold);
+}
+
+.btn-primary:hover{
+  background:var(--gold-l);
+  border-color:var(--gold-l);
+}
+
+/* FOOTER */
+footer{
+  background:var(--dark2);
+  border-top:1px solid rgba(196,160,78,.08);
+  padding:70px 80px 34px;
+}
+
+.fg{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:64px;
+  margin-bottom:48px;
+}
+
+.flogo{
+  font-family:var(--title);
+  font-size:22px;
+  letter-spacing:10px;
+  color:var(--gold);
+  display:block;
+  margin-bottom:12px;
+  font-weight:100;
+  text-transform:uppercase;
+}
+
+.fabout{
+  font-size:12px;
+  color:var(--muted);
+  line-height:2;
+  max-width:250px;
+  margin-bottom:12px;
+}
+
+.ftag{
+  font-size:13px;
+  color:var(--light);
+}
+
+.fc h5{
+  font-size:8px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:16px;
+}
+
+.fc ul{
+  list-style:none;
+}
+
+.fc li{
+  margin-bottom:8px;
+}
+
+.fc a{
+  font-size:12px;
+  color:var(--muted);
+  text-decoration:none;
+  transition:.3s;
+}
+
+.fc a:hover{
+  color:var(--gold-l);
+}
+
+.fbot{
+  border-top:1px solid rgba(196,160,78,.06);
+  padding-top:20px;
+  display:flex;
+  justify-content:space-between;
+  font-size:10px;
+  color:var(--muted);
+}
+
+.fbot a{
+  color:var(--muted);
+  text-decoration:none;
+  margin-left:16px;
+}
+
+/* REVEAL */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(36px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+.rv{
+  opacity:0;
+  transform:translateY(44px);
+  transition:opacity .9s var(--ease),transform .9s var(--ease);
+}
+
+.rv.in{
+  opacity:1;
+  transform:none;
+}
+
+.rv.d1{transition-delay:.1s;}
+.rv.d2{transition-delay:.2s;}
+.rv.d3{transition-delay:.3s;}
+.rv.d4{transition-delay:.4s;}
+
+/* RESPONSIVE */
+@media(max-width:980px){
+  body{cursor:auto;}
+  #cd,#cr{display:none;}
+
+  nav{
+    top:0;
+    padding:14px 24px;
+  }
+
+  nav.solid{
+    padding:14px 24px;
+  }
+
+  .ticker{
+    display:none;
+  }
+
+  .nav-links{
+    display:none;
+  }
+
+  .hero{
+    min-height:82vh;
+    padding:125px 24px 80px;
+  }
+
+  .hero::before{
+    font-size:76px;
+    letter-spacing:12px;
+  }
+
+  .hero-h1{
+    letter-spacing:5px;
+    font-size:clamp(38px,12vw,62px);
+  }
+
+  .hero-mini{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .section-title,
+  .cta-title{
+    letter-spacing:5px;
+  }
+
+  .section,
+  .section-tight,
+  .cta-section{
+    padding:78px 24px;
+  }
+
+  .intro-panel,
+  .menu-layout,
+  .product-grid,
+  .monin-panel,
+  .combo-grid{
+    grid-template-columns:1fr;
+  }
+
+  .intro-left{
+    padding:70px 28px;
+  }
+
+  .intro-left::before{
+    font-size:70px;
+    letter-spacing:12px;
+  }
+
+  .intro-right{
+    min-height:420px;
+    padding:38px;
+  }
+
+  .category-bar{
+    top:0;
+    overflow-x:auto;
+  }
+
+  .category-inner{
+    width:max-content;
+    min-width:100%;
+  }
+
+  .cat-link{
+    min-width:170px;
+  }
+
+  .menu-side{
+    position:relative;
+    top:auto;
+  }
+
+  .category-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .category-head h2{
+    font-size:22px;
+    letter-spacing:5px;
+  }
+
+  .fg{
+    grid-template-columns:1fr 1fr;
+    gap:32px;
+  }
+
+  footer{
+    padding:48px 24px 32px;
+  }
+}
+
+@media(max-width:620px){
+  .hero-mini,
+  .intro-grid,
+  .monin-grid{
+    grid-template-columns:1fr;
+  }
+
+  .fg{
+    grid-template-columns:1fr;
+  }
+
+  .fbot{
+    flex-direction:column;
+    gap:14px;
+  }
+
+  .btn-outline,
+  .btn-primary{
+    width:100%;
+  }
+
+  .pc-top{
+    flex-direction:column;
+  }
+}
+
+/* IMAGE JUS D’ORANGE PREMIUM */
+.soft-hero-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain !important;
+  object-position:center center !important;
+  display:block;
+  filter:brightness(.9) contrast(1.08) saturate(1.12);
+  transition:transform .8s cubic-bezier(.22,1,.36,1), filter .8s cubic-bezier(.22,1,.36,1);
+  z-index:2;
+}
+
+.bottle-scene:hover .soft-hero-img{
+  transform:scale(1.025);
+  filter:brightness(.96) contrast(1.12) saturate(1.16);
+}
+
+.bottle-scene{
+  background:
+    radial-gradient(circle at 50% 45%, rgba(219,191,120,.10), transparent 42%),
+    linear-gradient(180deg,#0b0c0a,#050605) !important;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="luxe-sparkles">
+  <span></span><span></span><span></span><span></span>
+  <span></span><span></span><span></span><span></span>
+  <span></span><span></span><span></span><span></span>
+</div>
+
+<div id="cd"></div>
+<div id="cr"></div>
+<div id="prog"></div>
+
+<div class="ticker">
+  <div class="tick-inner">
+    <span class="ti">Softs premium</span><span class="td">·</span>
+    <span class="ti">Citronnade</span><span class="td">·</span>
+    <span class="ti">Eaux aromatisées</span><span class="td">·</span>
+    <span class="ti">Diabolos Monin</span><span class="td">·</span>
+    <span class="ti">Jus frais</span><span class="td">·</span>
+    <span class="ti">Boissons signature</span><span class="td">·</span>
+    <span class="ti">Softs premium</span><span class="td">·</span>
+    <span class="ti">Citronnade</span><span class="td">·</span>
+    <span class="ti">Eaux aromatisées</span><span class="td">·</span>
+    <span class="ti">Diabolos Monin</span><span class="td">·</span>
+    <span class="ti">Jus frais</span><span class="td">·</span>
+    <span class="ti">Boissons signature</span><span class="td">·</span>
+  </div>
+</div>
+
+<nav id="nav">
+  <a href="index.html" class="logo">EDEN</a>
+  <ul class="nav-links">
+    <li><a href="index.html#experiences">Expériences</a></li>
+    <li><a href="fuel-bar.html">Fuel Bar</a></li>
+    <li><a href="smoothies.html">Smoothies</a></li>
+    <li><a href="softs.html" class="on">Softs</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+  </ul>
+  <a href="reservation.html" class="btn-nav">Réserver →</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg">
+    <img src="images/softs.png" alt="Softs Premium EDEN">
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-glow"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      <span class="hero-badge-txt">Frais · Simple · Premium</span>
+    </div>
+
+    <span class="hero-eyebrow">EDEN Fuel Bar</span>
+
+    <h1 class="hero-h1">
+      Softs premium,<br>
+      <em>fraîcheur élégante</em>
+    </h1>
+
+    <div class="hero-sep">
+      <div class="sl"></div>
+      <div class="sd"></div>
+      <div class="sl sr"></div>
+    </div>
+
+    <p class="hero-desc">
+      Une carte courte, propre et haut standing : eaux fraîches, citronnades, jus, diabolos Monin,
+      eaux aromatisées et créations EDEN pour accompagner vos expériences bien-être.
+    </p>
+
+    <div class="hero-mini">
+      <div class="hm">
+        <strong>14</strong>
+        <span>Sirops Monin</span>
+      </div>
+      <div class="hm">
+        <strong>4</strong>
+        <span>Familles softs</span>
+      </div>
+      <div class="hm">
+        <strong>3€</strong>
+        <span>Dès le premier verre</span>
+      </div>
+      <div class="hm">
+        <strong>0%</strong>
+        <span>Sans alcool</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<section class="intro-panel">
+  <div class="intro-left">
+    <span class="section-eyebrow rv">Softs EDEN</span>
+    <h2 class="section-title rv d1">Une offre<br><em>lisible & premium</em></h2>
+    <p class="rv d2">
+      La page softs doit rester simple, mais pas basique. L’objectif est d’avoir une carte facile à comprendre,
+      cohérente avec le Fuel Bar, visuellement forte et rentable : quelques boissons essentielles,
+      des sirops Monin bien présentés et des créations EDEN qui ajoutent du caractère.
+    </p>
+
+    <div class="intro-grid rv d3">
+      <div class="intro-item">
+        <span>Positionnement</span>
+        <strong>Sans alcool</strong>
+      </div>
+      <div class="intro-item">
+        <span>Ambiance</span>
+        <strong>Sombre gold</strong>
+      </div>
+      <div class="intro-item">
+        <span>Service</span>
+        <strong>Frais rapide</strong>
+      </div>
+      <div class="intro-item">
+        <span>Moment</span>
+        <strong>Après soin</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="intro-right">
+    <div class="bottle-scene">
+      <img src="images/jus-orange-premium.png" alt="Jus d’orange premium EDEN" class="soft-hero-img">
+    </div>
+  </div>
+</section>
+
+<div class="category-bar">
+  <div class="category-inner">
+    <a href="#essentiels" class="cat-link">Essentiels</a>
+    <a href="#citronnades" class="cat-link">Citronnades</a>
+    <a href="#monin" class="cat-link">Monin</a>
+    <a href="#eden" class="cat-link">Créations EDEN</a>
+    <a href="#combos" class="cat-link">Combos</a>
+  </div>
+</div>
+
+<section class="section section-soft">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="section-eyebrow">Carte softs</span>
+      <h2 class="section-title">La sélection<br><em>fraîcheur</em></h2>
+      <p class="section-desc">
+        Une carte pensée pour combler les espaces entre les expériences : avant une séance,
+        après un bain froid, en sortie de sauna ou pendant un moment lounge.
+      </p>
+    </div>
+
+    <div class="menu-layout">
+      <aside class="menu-side rv">
+        <h3 class="side-title">Navigation</h3>
+        <p class="side-desc">
+          Accédez directement aux familles de softs. L’offre reste courte,
+          claire et premium pour éviter l’effet carte trop chargée.
+        </p>
+
+        <ul class="side-list">
+          <li><a href="#essentiels">Essentiels frais</a></li>
+          <li><a href="#citronnades">Citronnades</a></li>
+          <li><a href="#monin">Sirops Monin</a></li>
+          <li><a href="#eden">Créations EDEN</a></li>
+          <li><a href="#combos">Combos softs</a></li>
+        </ul>
+
+        <div class="side-note">
+          <strong>Conseil EDEN</strong>
+          <span>Après sauna ou hammam, privilégiez une boisson légère, fraîche et peu sucrée.</span>
+        </div>
+      </aside>
+
+      <div class="menu-content">
+
+        <div class="menu-category rv" id="essentiels">
+          <div class="category-head">
+            <div class="cat-left">
+              <span class="cat-diamond"></span>
+              <h2>Essentiels frais</h2>
+            </div>
+            <small>Hydratation · Simple · Efficace</small>
+          </div>
+
+          <div class="product-grid">
+            <div class="product-card">
+              <div class="pc-top">
+                <div>
+                  <span class="pc-tag">Hydratation</span>
+                  <h3 class="pc-name">Eau plate</h3>
+                </div>
+                <div class="pc-price">2€</div>
+              </div>
+              <p class="pc-desc">L’essentiel après une expérience chaude, froide ou une séance de récupération.</p>
+              <ul class="pc-details">
+                <li>Servie fraîche</li>
+                <li>Format pratique</li>
+                <li>Idéal après sauna</li>
+              </ul>
+            </div>
+
+            <div class="product-card">
+              <div class="pc-top">
+                <div>
+                  <span class="pc-tag">Fraîcheur vive</span>
+                  <h3 class="pc-name">Eau pétillante</h3>
+                </div>
+                <div class="pc-price">2,50€</div>
+              </div>
+              <p class="pc-desc">Une alternative plus vive pour accompagner un moment au lounge ou une sortie de bain froid.</p>
+              <ul class="pc-details">
+                <li>Fines bulles</li>
+                <li>Très rafraîchissant</li>
+                <li>Base parfaite pour diabolo</li>
+              </ul>
+            </div>
+
+            <div class="product-card">
+              <div class="pc-top">
+                <div>
+                  <span class="pc-tag">Fruité</span>
+                  <h3 class="pc-name">Jus de fruit</h3>
+                </div>
+                <div class="pc-price">4€</div>
+              </div>
+              <p class="pc-desc">Une option simple, rassurante et facile à vendre pour ceux qui veulent une boisson fruitée directe.</p>
+              <ul class="pc-details">
+                <li>Orange, pomme ou ananas</li>
+                <li>Service frais</li>
+                <li>Option lounge</li>
+              </ul>
+            </div>
+
+            <div class="product-card">
+              <div class="pc-top">
+                <div>
+                  <span class="pc-tag">Premium simple</span>
+                  <h3 class="pc-name">Ice Tea maison</h3>
+                </div>
+                <div class="pc-price">4,50€</div>
+              </div>
+              <p class="pc-desc">Une boisson froide, douce et élégante, parfaite pour une carte plus haut de gamme sans complexité.</p>
+              <ul class="pc-details">
+                <li>Thé infusé froid</li>
+                <li>Note pêche ou citron</li>
+                <li>Servi avec glace</li>
+              </ul>
+              <span class="pc-badge">Très lounge</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-category rv" id="citronnades">
+          <div class="category-head">
+            <div class="cat-left">
+              <span class="cat-diamond"></span>
+              <h2>Citronnades</h2>
+            </div>
+            <small>Frais · Clair · Premium</small>
+          </div>
+
+          <div class="product-grid">
+            <div class="product-card">
+              <div class="pc-top">
+                <div>
+                  <span class="pc-tag">Classique</span>
+                  <h3 class="pc-name">Citronnade EDEN</h3>
+                </div>
+                <div class="pc-price">4€</div>
+              </div>
+              <p class="pc-desc">Une citronnade fraîche, claire et lumineuse. Simple, lisible, efficace.</p>
+              <ul class="pc-details">
+                <li>Citron</li>
+                <li>Eau fraîche</li>
+                <li>Finition légère</li>
+              </ul>
+              <span class="pc-badge">Signature simple</span>
+            </div>
+
+            <div class="product-card">
+              <div class="pc-top">
+                <div>
+                  <span class="pc-tag">Pétillant</span>
+                  <h3 class="pc-name">Citronnade sparkling</h3>
+                </div>
+                <div class="pc-price">4,50€</div>
+              </div>
+              <p class="pc-desc">Une version pétillante, plus vive, parfaite après un bain froid ou pendant un moment lounge.</p>
+              <ul class="pc-details">
+                <li>Eau pétillante</li>
+                <li>Citron</li>
+                <li>Glaçons</li>
+              </ul>
+            </div>
+
+            <div class="product-card">
+              <div class="pc-top">
+                <div>
+                  <span class="pc-tag">Menthe</span>
+                  <h3 class="pc-name">Citron menthe</h3>
+                </div>
+                <div class="pc-price">4,50€</div>
+              </div>
+              <p class="pc-desc">Une boisson très fraîche, avec une note mentholée élégante et facile à comprendre.</p>
+              <ul class="pc-details">
+                <li>Citron</li>
+                <li>Menthe fraîche</li>
+                <li>Moment après sauna</li>
+              </ul>
+            </div>
+
+            <div class="product-card">
+              <div class="pc-top">
+                <div>
+                  <span class="pc-tag">Rouge léger</span>
+                  <h3 class="pc-name">Citron framboise</h3>
+                </div>
+                <div class="pc-price">4,90€</div>
+              </div>
+              <p class="pc-desc">Une version plus fruitée, visuelle et élégante, avec une belle couleur dans le verre.</p>
+              <ul class="pc-details">
+                <li>Citron</li>
+                <li>Framboise</li>
+                <li>Présentation premium</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-category rv" id="monin">
+          <div class="category-head">
+            <div class="cat-left">
+              <span class="cat-diamond"></span>
+              <h2>Sirops Monin</h2>
+            </div>
+            <small>14 parfums · Diabolo · Eau aromatisée</small>
+          </div>
+
+          <div class="product-grid">
+            <div class="product-card wide">
+              <div class="pc-top">
+                <div>
+                  <span class="pc-tag">Sélection professionnelle</span>
+                  <h3 class="pc-name">Sirops Monin</h3>
+                </div>
+                <div class="pc-price">3€</div>
+              </div>
+              <p class="pc-desc">
+                Une sélection de parfums populaires, simples et lisibles pour créer des diabolos,
+                eaux aromatisées ou boissons fraîches personnalisées.
+              </p>
+              <ul class="pc-details">
+                <li>Base eau plate ou pétillante</li>
+                <li>Service avec glaçons</li>
+                <li>Présentation sobre et premium</li>
+              </ul>
+              <span class="pc-badge">Option diabolo +0,50€</span>
+            </div>
+          </div>
+
+          <div class="monin-panel">
+            <div class="monin-text">
+              <span>Liste professionnelle</span>
+              <h3>14 parfums simples et populaires</h3>
+              <p>
+                L’objectif est d’avoir une offre complète mais lisible. Les parfums ci-dessous sont faciles à comprendre,
+                rapides à servir et adaptés à une carte premium sans alcool.
+              </p>
+            </div>
+
+            <div class="monin-grid">
+              <div class="monin-item"><strong>Menthe</strong><span></span></div>
+              <div class="monin-item"><strong>Grenadine</strong><span></span></div>
+              <div class="monin-item"><strong>Fraise</strong><span></span></div>
+              <div class="monin-item"><strong>Pêche</strong><span></span></div>
+              <div class="monin-item"><strong>Citron</strong><span></span></div>
+              <div class="monin-item"><strong>Framboise</strong><span></span></div>
+              <div class="monin-item"><strong>Passion</strong><span></span></div>
+              <div class="monin-item"><strong>Vanille</strong><span></span></div>
+              <div class="monin-item"><strong>Cassis</strong><span></span></div>
+              <div class="monin-item"><strong>Cerise</strong><span></span></div>
+              <div class="monin-item"><strong>Caramel</strong><span></span></div>
+              <div class="monin-item"><strong>Noisette</strong><span></span></div>
+              <div class="monin-item"><strong>Coco</strong><span></span></div>
+              <div class="monin-item"><strong>Mojito Mint</strong><span></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-category rv" id="eden">
+          <div class="category-head">
+            <div class="cat-left">
+              <span class="cat-diamond"></span>
+              <h2>Créations EDEN</h2>
+            </div>
+            <small>Plus wow · Sans alcool · Signature</small>
+          </div>
+
+          <div class="product-grid">
+            <div class="product-card">
+              <div class="pc-top">
+                <div>
+                  <span class="pc-tag">Après bain froid</span>
+                  <h3 class="pc-name">Cold Reset</h3>
+                </div>
+                <div class="pc-price">5€</div>
+              </div>
+              <p class="pc-desc">Une boisson fraîche, pétillante et légère pour accompagner la sortie d’un bain froid.</p>
+              <ul class="pc-details">
+                <li>Eau pétillante</li>
+                <li>Citron ou menthe</li>
+                <li>Finition rafraîchissante</li>
+              </ul>
+            </div>
+
+            <div class="product-card">
+              <div class="pc-top">
+                <div>
+                  <span class="pc-tag">Après sauna</span>
+                  <h3 class="pc-name">Golden Hydrate</h3>
+                </div>
+                <div class="pc-price">5€</div>
+              </div>
+              <p class="pc-desc">Une boisson douce et hydratante, pensée pour retrouver une sensation de fraîcheur après le chaud.</p>
+              <ul class="pc-details">
+                <li>Base eau fraîche</li>
+                <li>Note fruitée légère</li>
+                <li>Service premium</li>
+              </ul>
+              <span class="pc-badge">Recommandé après sauna</span>
+            </div>
+
+            <div class="product-card">
+              <div class="pc-top">
+                <div>
+                  <span class="pc-tag">Lounge</span>
+                  <h3 class="pc-name">Amber Fizz</h3>
+                </div>
+                <div class="pc-price">5,50€</div>
+              </div>
+              <p class="pc-desc">Une boisson pétillante, visuelle et plus premium, parfaite pour un verre lounge sans alcool.</p>
+              <ul class="pc-details">
+                <li>Eau pétillante</li>
+                <li>Sirop premium</li>
+                <li>Verre avec glaçons</li>
+              </ul>
+            </div>
+
+            <div class="product-card">
+              <div class="pc-top">
+                <div>
+                  <span class="pc-tag">Très frais</span>
+                  <h3 class="pc-name">Mint Crystal</h3>
+                </div>
+                <div class="pc-price">5€</div>
+              </div>
+              <p class="pc-desc">Une création simple, fraîche et mentholée pour garder un effet propre et haut standing.</p>
+              <ul class="pc-details">
+                <li>Menthe</li>
+                <li>Citron léger</li>
+                <li>Glaçons</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-category rv" id="combos">
+          <div class="category-head">
+            <div class="cat-left">
+              <span class="cat-diamond"></span>
+              <h2>Combos softs</h2>
+            </div>
+            <small>Offres simples · Panier moyen · Expérience</small>
+          </div>
+
+          <div class="combo-grid">
+            <div class="combo-card">
+              <span class="combo-label">Après sauna</span>
+              <h3 class="combo-title">Hydrate</h3>
+              <p class="combo-desc">Eau plate ou pétillante + citronnade légère.</p>
+              <div class="combo-price">6€</div>
+            </div>
+
+            <div class="combo-card">
+              <span class="combo-label">Moment lounge</span>
+              <h3 class="combo-title">Fresh duo</h3>
+              <p class="combo-desc">Deux softs au choix pour partager un moment après l’expérience.</p>
+              <div class="combo-price">8€</div>
+            </div>
+
+            <div class="combo-card">
+              <span class="combo-label">Groupe</span>
+              <h3 class="combo-title">Plateau soft</h3>
+              <p class="combo-desc">Sélection de softs et eaux aromatisées pour groupe ou privatisation.</p>
+              <div class="combo-price">Sur devis</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2 class="cta-title rv">Rafraîchir<br><em>l’expérience EDEN</em></h2>
+    <p class="cta-sub rv d1">
+      Découvrez nos softs premium au Fuel Bar avant ou après votre séance. Une carte sans alcool,
+      simple, visuelle et parfaitement intégrée à l’univers EDEN.
+    </p>
+    <div class="cta-btns rv d2">
+      <a href="fuel-bar.html" class="btn-primary">Retour Fuel Bar</a>
+      <a href="smoothies.html" class="btn-outline">Voir les smoothies</a>
+      <a href="reservation.html" class="btn-outline">Réserver une séance</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fg">
+    <div>
+      <span class="flogo">EDEN</span>
+      <p class="fabout">
+        Un sanctuaire dédié à votre bien-être. Récupération, détente, équilibre et expérience premium.
+      </p>
+      <span class="ftag">Récupération · Détente · Équilibre</span>
+    </div>
+
+    <div class="fc">
+      <h5>Fuel Bar</h5>
+      <ul>
+        <li><a href="fuel-bar.html">Accueil Fuel Bar</a></li>
+        <li><a href="smoothies.html">Smoothies</a></li>
+        <li><a href="softs.html" style="color:var(--gold-l)">Softs</a></li>
+        <li><a href="#monin">Sirops Monin</a></li>
+      </ul>
+    </div>
+
+    <div class="fc">
+      <h5>Carte</h5>
+      <ul>
+        <li><a href="#essentiels">Essentiels</a></li>
+        <li><a href="#citronnades">Citronnades</a></li>
+        <li><a href="#eden">Créations EDEN</a></li>
+        <li><a href="#combos">Combos</a></li>
+      </ul>
+    </div>
+
+    <div class="fc">
+      <h5>Contact</h5>
+      <ul>
+        <li><a href="#">12 Rue du Bien-Être</a></li>
+        <li><a href="tel:+33100000000">01 00 00 00 00</a></li>
+        <li><a href="mailto:contact@eden-wellness.fr">contact@eden-wellness.fr</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="fbot">
+    <span>© 2026 EDEN Wellness SAS. Tous droits réservés.</span>
+    <div>
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="mentions-legales.html">CGV</a>
+    </div>
+  </div></footer>
+
+<script>
+const cd=document.getElementById('cd');
+const cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;
+  my=e.clientY;
+  if(cd){
+    cd.style.left=mx+'px';
+    cd.style.top=my+'px';
+  }
+});
+
+(function loop(){
+  rx+=(mx-rx)*.12;
+  ry+=(my-ry)*.12;
+  if(cr){
+    cr.style.left=rx+'px';
+    cr.style.top=ry+'px';
+  }
+  requestAnimationFrame(loop);
+})();
+
+document.querySelectorAll('a,button,.product-card,.combo-card,.intro-item,.monin-item,.bottle-scene').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hov'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hov'));
+});
+
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement.scrollHeight-innerHeight;
+  const prog=document.getElementById('prog');
+  if(prog)prog.style.width=(scrollY/h*100)+'%';
+
+  const nav=document.getElementById('nav');
+  if(nav)nav.classList.toggle('solid',scrollY>60);
+
+  const sections=document.querySelectorAll('.menu-category');
+  const links=document.querySelectorAll('.cat-link');
+  let current='';
+
+  sections.forEach(section=>{
+    const top=section.offsetTop-180;
+    if(scrollY>=top){
+      current=section.getAttribute('id');
+    }
+  });
+
+  links.forEach(link=>{
+    link.classList.remove('active');
+    if(link.getAttribute('href')==='#'+current){
+      link.classList.add('active');
+    }
+  });
+});
+
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('in');
+      io.unobserve(entry.target);
+    }
+  });
+},{threshold:.1});
+
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+</script>
+
+
+<!-- ══ COOKIE BANNER ══ -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9990;background:rgba(6,9,8,.97);border-top:1px solid rgba(196,160,78,.2);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px;backdrop-filter:blur(12px);">
+  <div style="flex:1">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.9;max-width:680px">🍪 Nous utilisons des cookies pour améliorer votre expérience et analyser notre trafic. En continuant, vous acceptez notre <a href="rgpd.html" style="color:#c4a04e;text-decoration:underline">politique de confidentialité</a>.</p>
+  </div>
+  <div style="display:flex;gap:10px;flex-shrink:0">
+    <button onclick="refuseCookies()" style="background:none;border:1px solid rgba(196,160,78,.25);color:#7a7a68;padding:9px 20px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s">Refuser</button>
+    <button onclick="acceptCookies()" style="background:#c4a04e;color:#060908;border:none;padding:9px 24px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-weight:400;transition:all .3s">Accepter</button>
+  </div>
+</div>
+
+<!-- ══ CHATBOT FLOTTANT ══ -->
+<div id="chatbot-btn" onclick="toggleChat()" style="position:fixed;bottom:28px;right:28px;z-index:9980;width:52px;height:52px;background:linear-gradient(135deg,#c4a04e,#dbbf78);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 32px rgba(196,160,78,.35);transition:transform .3s;font-size:20px;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">💬</div>
+<div id="chatbot-panel" style="display:none;position:fixed;bottom:92px;right:28px;z-index:9980;width:320px;background:#0c110a;border:1px solid rgba(196,160,78,.2);box-shadow:0 20px 60px rgba(0,0,0,.6);">
+  <div style="padding:16px 20px;background:linear-gradient(135deg,rgba(196,160,78,.15),rgba(196,160,78,.05));border-bottom:1px solid rgba(196,160,78,.12);display:flex;align-items:center;justify-content:space-between">
+    <div><p style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#f4efe5">EDEN · Assistance</p><p style="font-size:9px;color:#7a7a68;letter-spacing:1px">Réponse en moins de 2h · 7j/7</p></div>
+    <button onclick="toggleChat()" style="background:none;border:none;color:#7a7a68;font-size:18px;cursor:pointer">×</button>
+  </div>
+  <div style="padding:16px 20px">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.8;margin-bottom:14px">Bonjour ! Comment puis-je vous aider ?</p>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <a href="reservation.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#c4a04e;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Réserver une séance</a>
+      <a href="faq.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Consulter la FAQ</a>
+      <a href="tel:+33100000000" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Appeler le 01 00 00 00 00</a>
+      <a href="mailto:contact@eden-wellness.fr" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Envoyer un email</a>
+    </div>
+    <p style="font-size:9px;color:#7a7a68;margin-top:14px;text-align:center">Ouvert 7j/7 · 8h–22h</p>
+  </div>
+</div>
+
+<script>
+// Cookie banner
+(function(){
+  if(!localStorage.getItem('eden_cookies')){
+    var b=document.getElementById('cookie-banner');
+    if(b){b.style.display='flex';setTimeout(function(){b.style.display='flex';},100);}
+  }
+})();
+function acceptCookies(){localStorage.setItem('eden_cookies','accepted');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function refuseCookies(){localStorage.setItem('eden_cookies','refused');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function toggleChat(){var p=document.getElementById('chatbot-panel');if(p)p.style.display=p.style.display==='none'?'block':'none';}
+</script>
+
+</body>
+</html>

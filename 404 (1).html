@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Page introuvable · EDEN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;0,400;1,200;1,300;1,400&family=Jost:wght@100;200;300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #c4a04e;
+  --gold-l: #dbbf78;
+  --gold-d: #8a6f2e;
+  --dark: #060908;
+  --dark2: #0a0e07;
+  --cream: #f4efe5;
+  --muted: #4a4a3a;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Jost', system-ui, sans-serif;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  background: var(--dark);
+  color: var(--cream);
+  font-family: var(--sans);
+  font-weight: 300;
+  overflow: hidden;
+}
+
+/* ── CANVAS PARTICLE BG ── */
+#canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: .6;
+}
+
+/* ── GRAIN OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: .4;
+}
+
+/* ── RADIAL GLOW ── */
+body::after {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px;
+  height: 900px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(196,160,78,.05) 0%, transparent 65%);
+  z-index: 1;
+  pointer-events: none;
+  animation: breathe 6s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: .6; }
+  50% { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+}
+
+/* ── MAIN CONTAINER ── */
+.container {
+  position: relative;
+  z-index: 10;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+}
+
+/* ── 404 GIANT NUMBER ── */
+.four-wrap {
+  position: relative;
+  margin-bottom: 0;
+  line-height: 1;
+  opacity: 0;
+  animation: fadeUp .9s cubic-bezier(.22,.68,0,1.2) .1s forwards;
+}
+
+.four-num {
+  font-family: var(--serif);
+  font-size: clamp(160px, 22vw, 280px);
+  font-weight: 200;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(196,160,78,.25);
+  letter-spacing: -10px;
+  position: relative;
+  user-select: none;
+  line-height: .85;
+}
+
+.four-num-fill {
+  position: absolute;
+  inset: 0;
+  font-family: var(--serif);
+  font-size: clamp(160px, 22vw, 280px);
+  font-weight: 200;
+  letter-spacing: -10px;
+  background: linear-gradient(135deg, rgba(196,160,78,.06) 0%, rgba(196,160,78,.18) 40%, rgba(196,160,78,.06) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: .85;
+}
+
+/* Scan line animée à travers le 404 */
+.scan-line {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(196,160,78,.6), transparent);
+  animation: scan 3.5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes scan {
+  0% { top: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 24px 0;
+  opacity: 0;
+  animation: fadeUp .9s cubic-bezier(.22,.68,0,1.2) .35s forwards;
+}
+.div-line {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(196,160,78,.4));
+}
+.div-line.r {
+  background: linear-gradient(270deg, transparent, rgba(196,160,78,.4));
+}
+.div-diamond {
+  width: 6px;
+  height: 6px;
+  border: 1px solid rgba(196,160,78,.5);
+  transform: rotate(45deg);
+  animation: spin-slow 8s linear infinite;
+}
+@keyframes spin-slow { to { transform: rotate(45deg) rotateZ(360deg); } }
+
+/* ── EYEBROW ── */
+.eyebrow {
+  font-size: 8px;
+  letter-spacing: 7px;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 18px;
+  opacity: 0;
+  animation: fadeUp .9s cubic-bezier(.22,.68,0,1.2) .2s forwards;
+}
+
+/* ── HEADLINE ── */
+.headline {
+  font-family: var(--serif);
+  font-size: clamp(26px, 4vw, 44px);
+  font-weight: 300;
+  color: var(--cream);
+  line-height: 1.25;
+  margin-bottom: 14px;
+  opacity: 0;
+  animation: fadeUp .9s cubic-bezier(.22,.68,0,1.2) .45s forwards;
+}
+.headline em {
+  font-style: italic;
+  color: var(--gold-l);
+}
+
+/* ── SUBLINE ── */
+.subline {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 2.2;
+  max-width: 380px;
+  margin: 0 auto 44px;
+  opacity: 0;
+  animation: fadeUp .9s cubic-bezier(.22,.68,0,1.2) .55s forwards;
+  letter-spacing: .4px;
+}
+
+/* ── CTA ── */
+.cta-wrap {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp .9s cubic-bezier(.22,.68,0,1.2) .7s forwards;
+}
+
+.cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--gold);
+  color: var(--dark);
+  text-decoration: none;
+  padding: 15px 40px;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  font-weight: 400;
+  transition: all .35s cubic-bezier(.22,.68,0,1.2);
+  position: relative;
+  overflow: hidden;
+}
+.cta-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gold-l);
+  transform: translateX(-100%);
+  transition: transform .35s ease;
+}
+.cta-primary:hover::before { transform: translateX(0); }
+.cta-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(196,160,78,.3); }
+.cta-primary span { position: relative; z-index: 1; }
+.cta-arrow {
+  position: relative;
+  z-index: 1;
+  transition: transform .35s;
+  font-size: 14px;
+}
+.cta-primary:hover .cta-arrow { transform: translateX(5px); }
+
+.cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(196,160,78,.25);
+  color: rgba(244,239,229,.5);
+  text-decoration: none;
+  padding: 15px 36px;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 300;
+  transition: all .3s;
+}
+.cta-secondary:hover {
+  border-color: rgba(196,160,78,.5);
+  color: var(--cream);
+  transform: translateY(-2px);
+}
+
+/* ── COUNTDOWN ── */
+.countdown {
+  position: absolute;
+  bottom: 44px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  animation: fadeIn 1s ease 1.2s forwards;
+  white-space: nowrap;
+}
+.cd-track {
+  width: 120px;
+  height: 1px;
+  background: rgba(196,160,78,.1);
+  position: relative;
+  overflow: hidden;
+}
+.cd-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: var(--gold);
+  width: 0%;
+  animation: fillBar 10s linear 1.4s forwards;
+}
+@keyframes fillBar { to { width: 100%; } }
+.cd-txt {
+  font-size: 8px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cd-num {
+  font-family: var(--serif);
+  font-size: 13px;
+  color: var(--gold);
+  min-width: 18px;
+}
+
+/* ── CORNER DECO ── */
+.corner {
+  position: fixed;
+  width: 80px;
+  height: 80px;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+  animation: fadeIn 1s ease .8s forwards;
+}
+.corner.tl { top: 28px; left: 28px; border-top: 1px solid rgba(196,160,78,.2); border-left: 1px solid rgba(196,160,78,.2); }
+.corner.tr { top: 28px; right: 28px; border-top: 1px solid rgba(196,160,78,.2); border-right: 1px solid rgba(196,160,78,.2); }
+.corner.bl { bottom: 28px; left: 28px; border-bottom: 1px solid rgba(196,160,78,.2); border-left: 1px solid rgba(196,160,78,.2); }
+.corner.br { bottom: 28px; right: 28px; border-bottom: 1px solid rgba(196,160,78,.2); border-right: 1px solid rgba(196,160,78,.2); }
+
+/* ── LOGO TOP ── */
+.logo-top {
+  position: fixed;
+  top: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  text-decoration: none;
+  opacity: 0;
+  animation: fadeIn 1s ease .2s forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.logo-text {
+  font-family: var(--serif);
+  font-size: 18px;
+  letter-spacing: 12px;
+  color: var(--gold);
+}
+.logo-sub {
+  font-size: 6px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── KEYFRAMES ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- Canvas particules -->
+<canvas id="canvas"></canvas>
+
+<!-- Coins décoratifs -->
+<div class="corner tl"></div>
+<div class="corner tr"></div>
+<div class="corner bl"></div>
+<div class="corner br"></div>
+
+<!-- Logo -->
+<a href="index.html" class="logo-top">
+  <span class="logo-text">EDEN</span>
+  <span class="logo-sub">Bien-être & Récupération</span>
+</a>
+
+<!-- Contenu principal -->
+<div class="container">
+
+  <!-- Grand 404 -->
+  <div class="four-wrap">
+    <div class="scan-line"></div>
+    <div class="four-num">404</div>
+    <div class="four-num-fill">404</div>
+  </div>
+
+  <div class="divider">
+    <div class="div-line"></div>
+    <div class="div-diamond"></div>
+    <div class="div-line r"></div>
+  </div>
+
+  <span class="eyebrow">Page introuvable</span>
+
+  <h1 class="headline">
+    Cette page s'est <em>égarée</em><br>dans le silence
+  </h1>
+
+  <p class="subline">
+    La page que vous cherchez n'existe pas ou a été déplacée.<br>
+    Retrouvez votre chemin vers l'essentiel.
+  </p>
+
+  <div class="cta-wrap">
+    <a href="index.html" class="cta-primary">
+      <span>Retour à l'accueil</span>
+      <span class="cta-arrow">→</span>
+    </a>
+    <a href="reservation.html" class="cta-secondary">
+      Réserver une séance
+    </a>
+  </div>
+
+</div>
+
+<!-- Countdown redirect -->
+<div class="countdown">
+  <span class="cd-txt">Redirection dans</span>
+  <span class="cd-num" id="cd-num">10</span>
+  <div class="cd-track"><div class="cd-fill"></div></div>
+  <span class="cd-txt">secondes</span>
+</div>
+
+<script>
+// ── PARTICLES ──
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.size = Math.random() * 1.2 + .2;
+    this.speedX = (Math.random() - .5) * .3;
+    this.speedY = (Math.random() - .5) * .3;
+    this.opacity = Math.random() * .4 + .05;
+    this.pulse = Math.random() * Math.PI * 2;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.pulse += .015;
+    this.opacity = (.15 + Math.sin(this.pulse) * .1);
+    if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(196,160,78,${this.opacity})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+// Lignes entre particules proches
+function drawConnections() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 100) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(196,160,78,${.04 * (1 - dist/100)})`;
+        ctx.lineWidth = .5;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, W, H);
+  drawConnections();
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ── COUNTDOWN REDIRECT ──
+let count = 10;
+const cdNum = document.getElementById('cd-num');
+const iv = setInterval(() => {
+  count--;
+  cdNum.textContent = count;
+  if (count <= 0) {
+    clearInterval(iv);
+    window.location.href = 'index.html';
+  }
+}, 1000);
+
+// Annuler si l'utilisateur interagit
+document.addEventListener('mousemove', () => clearInterval(iv), { once: true });
+document.addEventListener('click', () => clearInterval(iv), { once: true });
+</script>
+</body>
+</html>

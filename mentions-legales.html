@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentions Légales & CGV — EDEN Bien-Être</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@100;200;300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#c4a04e;--gold-light:#dbbf78;--gold-dim:#8a7038;
+  --dark:#060908;--dark2:#0c110a;--dark3:#111608;
+  --green-deep:#0f1a0b;--green-rich:#162010;
+  --cream:#f4efe5;--muted:#7a7a68;--light:#b8b4a4;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Jost',system-ui,sans-serif;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--cream);font-family:var(--sans);font-weight:300;overflow-x:hidden;cursor:none;}
+
+#cd{position:fixed;width:5px;height:5px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+#cr{position:fixed;width:32px;height:32px;border:1px solid rgba(196,160,78,.4);border-radius:50%;pointer-events:none;z-index:9997;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s;}
+body.hov #cr{width:50px;height:50px;border-color:rgba(196,160,78,.65);}
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--gold);z-index:9996;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:20px 72px;background:rgba(6,9,8,.95);backdrop-filter:blur(24px);border-bottom:1px solid rgba(196,160,78,.1);}
+.logo{font-family:var(--serif);font-size:24px;letter-spacing:8px;color:var(--gold);text-decoration:none;}
+.nav-links{display:flex;gap:40px;list-style:none;}
+.nav-links a{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(244,239,229,.5);text-decoration:none;transition:color .3s;}
+.nav-links a:hover{color:var(--gold);}
+.btn-nav{font-size:9px;letter-spacing:3px;text-transform:uppercase;border:1px solid var(--gold);background:var(--gold);color:var(--dark);padding:10px 24px;text-decoration:none;font-weight:400;transition:all .3s;}
+.btn-nav:hover{background:var(--gold-light);}
+
+/* HERO */
+.page-hero{
+  padding:140px 80px 72px;text-align:center;
+  background:var(--dark2);border-bottom:1px solid rgba(196,160,78,.1);
+  position:relative;overflow:hidden;
+}
+.page-hero::before{
+  content:'EDEN';font-family:var(--serif);font-size:300px;
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  color:rgba(196,160,78,.03);pointer-events:none;letter-spacing:20px;
+}
+.hero-eyebrow{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;display:block;}
+.hero-title{font-family:var(--serif);font-size:clamp(36px,5vw,64px);font-weight:300;letter-spacing:4px;color:var(--cream);}
+.hero-title em{font-style:italic;color:var(--gold-light);}
+.hero-sep{display:flex;align-items:center;gap:14px;justify-content:center;margin:24px auto;}
+.sl{width:50px;height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.5));}
+.sr{background:linear-gradient(270deg,transparent,rgba(196,160,78,.5));}
+.sd{width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:.7;}
+.hero-date{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
+
+/* LAYOUT */
+.main-layout{display:grid;grid-template-columns:260px 1fr;gap:0;max-width:1400px;margin:0 auto;padding:80px 80px 120px;}
+
+/* SIDEBAR */
+.sidebar{padding-right:60px;position:sticky;top:100px;align-self:start;}
+.sidebar-title{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:24px;}
+.sidebar-nav{list-style:none;}
+.sidebar-nav li{margin-bottom:2px;}
+.sidebar-link{
+  display:block;padding:10px 0;border-bottom:1px solid rgba(196,160,78,.06);
+  font-size:11px;color:var(--muted);text-decoration:none;
+  transition:color .3s,padding-left .3s;letter-spacing:.5px;
+}
+.sidebar-link:hover,.sidebar-link.on{color:var(--gold);padding-left:8px;}
+.sidebar-sep{height:1px;background:rgba(196,160,78,.1);margin:16px 0;}
+
+/* CONTENT */
+.content{border-left:1px solid rgba(196,160,78,.08);padding-left:72px;}
+
+/* Section */
+.doc-section{margin-bottom:72px;padding-bottom:72px;border-bottom:1px solid rgba(196,160,78,.06);}
+.doc-section:last-child{border-bottom:none;}
+.section-num{font-family:var(--serif);font-size:11px;font-style:italic;color:var(--gold-dim);margin-bottom:8px;display:block;}
+.section-title{font-family:var(--serif);font-size:28px;font-weight:300;color:var(--cream);margin-bottom:24px;letter-spacing:1px;}
+.section-title em{font-style:italic;color:var(--gold-light);}
+.section-sub{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(196,160,78,.1);display:block;margin-top:32px;}
+
+/* Typography */
+p{font-size:13px;color:var(--muted);line-height:2.4;margin-bottom:16px;}
+p:last-child{margin-bottom:0;}
+strong{color:var(--light);font-weight:400;}
+.highlight{
+  background:rgba(196,160,78,.05);border-left:2px solid var(--gold);
+  padding:16px 20px;margin:20px 0;
+}
+.highlight p{color:var(--light);}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 32px;margin:20px 0;}
+.info-item{}
+.info-label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dim);margin-bottom:4px;}
+.info-val{font-size:13px;color:var(--light);}
+ul.legal-list{list-style:none;margin:16px 0;}
+ul.legal-list li{
+  font-size:13px;color:var(--muted);line-height:2;
+  padding:8px 0;border-bottom:1px solid rgba(196,160,78,.05);
+  display:flex;align-items:flex-start;gap:12px;
+}
+ul.legal-list li::before{content:'—';color:var(--gold);flex-shrink:0;margin-top:1px;}
+table.legal-table{width:100%;border-collapse:collapse;margin:20px 0;}
+table.legal-table th{
+  font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);
+  padding:12px 16px;border-bottom:1px solid rgba(196,160,78,.2);text-align:left;
+}
+table.legal-table td{
+  font-size:12px;color:var(--muted);padding:12px 16px;
+  border-bottom:1px solid rgba(196,160,78,.05);line-height:1.8;
+}
+table.legal-table tr:hover td{background:rgba(196,160,78,.02);}
+
+/* TAB SWITCHER */
+.tab-bar{display:flex;gap:0;margin-bottom:56px;border-bottom:1px solid rgba(196,160,78,.15);}
+.tab-btn{
+  padding:16px 32px;font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-family:var(--sans);font-weight:300;transition:all .3s;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+}
+.tab-btn:hover{color:var(--light);}
+.tab-btn.on{color:var(--gold);border-bottom-color:var(--gold);}
+.tab-content{display:none;}
+.tab-content.show{display:block;}
+
+/* FOOTER */
+footer{background:var(--dark2);border-top:1px solid rgba(196,160,78,.1);padding:56px 80px 32px;}
+.fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:64px;margin-bottom:48px;}
+.flogo{font-family:var(--serif);font-size:26px;letter-spacing:9px;color:var(--gold);display:block;margin-bottom:14px;}
+.fabout{font-size:12px;color:var(--muted);line-height:2.1;max-width:230px;margin-bottom:16px;}
+.ftag{font-family:var(--serif);font-size:12px;font-style:italic;color:var(--light);}
+.fc h5{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
+.fc ul{list-style:none;}
+.fc li{margin-bottom:10px;}
+.fc a{font-size:12px;color:var(--muted);text-decoration:none;transition:color .25s;}
+.fc a:hover{color:var(--gold-light);}
+.fbot{border-top:1px solid rgba(196,160,78,.08);padding-top:24px;display:flex;justify-content:space-between;font-size:10px;color:var(--muted);}
+.fbot a{color:var(--muted);text-decoration:none;margin-left:18px;transition:color .25s;}
+.fbot a:hover{color:var(--gold);}
+
+/* BACK TO TOP */
+#btt{
+  position:fixed;bottom:36px;right:36px;z-index:400;
+  width:44px;height:44px;background:var(--dark2);
+  border:1px solid rgba(196,160,78,.25);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .4s;opacity:0;pointer-events:none;font-family:var(--sans);
+}
+#btt.show{opacity:1;pointer-events:all;}
+#btt:hover{background:var(--gold);color:var(--dark);}
+
+@keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.rv{opacity:0;transform:translateY(30px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+.rv.in{opacity:1;transform:none;}
+
+@media(max-width:900px){
+  nav{padding:13px 24px;}.nav-links{display:none;}
+  .page-hero{padding:120px 24px 56px;}
+  .main-layout{grid-template-columns:1fr;padding:48px 24px 80px;}
+  .sidebar{display:none;}
+  .content{border-left:none;padding-left:0;}
+  .info-grid{grid-template-columns:1fr;}
+  .fg{grid-template-columns:1fr 1fr;gap:36px;}
+}
+</style>
+</head>
+<body>
+
+<div id="cd"></div><div id="cr"></div>
+<div id="prog"></div>
+
+<nav>
+  <a href="index.html" class="logo">EDEN</a>
+  <ul class="nav-links">
+    <li><a href="index.html#experiences">Expériences</a></li>
+    <li><a href="index.html#tarifs">Tarifs</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="parrainage.html">Parrainage</a></li>
+  </ul>
+  <a href="reservation.html" class="btn-nav">Réserver</a>
+</nav>
+
+<!-- Hero -->
+<div class="page-hero">
+  <span class="hero-eyebrow">Informations légales</span>
+  <h1 class="hero-title">Mentions légales<br><em>& Conditions Générales</em></h1>
+  <div class="hero-sep"><div class="sl"></div><div class="sd"></div><div class="sl sr"></div></div>
+  <span class="hero-date">Dernière mise à jour : 26 avril 2026</span>
+</div>
+
+<!-- Main -->
+<div class="main-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <p class="sidebar-title">Sommaire</p>
+    <ul class="sidebar-nav">
+      <li><a class="sidebar-link on" href="#" id="nav-ml" onclick="showTab('ml');return false;">Mentions Légales</a></li>
+      <li><a class="sidebar-link" href="#" id="nav-cgv" onclick="showTab('cgv');return false;">CGV</a></li>
+    </ul>
+    <div class="sidebar-sep"></div>
+    <p class="sidebar-title" id="sb-ml-title">Mentions légales</p>
+    <ul class="sidebar-nav" id="sb-ml">
+      <li><a class="sidebar-link" href="#" onclick="showTab('ml');scrollTo('editeur');return false;">01 — Éditeur du site</a></li>
+      <li><a class="sidebar-link" href="#" onclick="showTab('ml');scrollTo('hebergement');return false;">02 — Hébergement</a></li>
+      <li><a class="sidebar-link" href="#" onclick="showTab('ml');scrollTo('propriete');return false;">03 — Propriété intellectuelle</a></li>
+      <li><a class="sidebar-link" href="#" onclick="showTab('ml');scrollTo('donnees');return false;">04 — Données personnelles</a></li>
+      <li><a class="sidebar-link" href="#" onclick="showTab('ml');scrollTo('cookies');return false;">05 — Cookies</a></li>
+      <li><a class="sidebar-link" href="#" onclick="showTab('ml');scrollTo('responsabilite');return false;">06 — Responsabilité</a></li>
+    </ul>
+    <div class="sidebar-sep"></div>
+    <p class="sidebar-title" id="sb-cgv-title">Conditions générales</p>
+    <ul class="sidebar-nav" id="sb-cgv">
+      <li><a class="sidebar-link" href="#" onclick="showTab('cgv');scrollTo('objet');return false;">01 — Objet</a></li>
+      <li><a class="sidebar-link" href="#" onclick="showTab('cgv');scrollTo('reservation-cgv');return false;">02 — Réservation</a></li>
+      <li><a class="sidebar-link" href="#" onclick="showTab('cgv');scrollTo('tarifs-cgv');return false;">03 — Tarifs & paiement</a></li>
+      <li><a class="sidebar-link" href="#" onclick="showTab('cgv');scrollTo('annulation');return false;">04 — Annulation</a></li>
+      <li><a class="sidebar-link" href="#" onclick="showTab('cgv');scrollTo('obligations');return false;">05 — Obligations</a></li>
+      <li><a class="sidebar-link" href="#" onclick="showTab('cgv');scrollTo('sante');return false;">06 — Santé & sécurité</a></li>
+      <li><a class="sidebar-link" href="#" onclick="showTab('cgv');scrollTo('litiges');return false;">07 — Litiges</a></li>
+    </ul>
+  </aside>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <button class="tab-btn on" onclick="showTab('ml')">Mentions Légales</button>
+      <button class="tab-btn" onclick="showTab('cgv')">Conditions Générales de Vente</button>
+    </div>
+
+    <!-- ══ MENTIONS LÉGALES ══ -->
+    <div class="tab-content show" id="tab-ml">
+
+      <div class="doc-section rv" id="editeur">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Éditeur <em>du site</em></h2>
+        <p>Conformément aux dispositions de la loi n° 2004-575 du 21 juin 2004 pour la Confiance en l'Économie Numérique (LCEN), les présentes mentions légales définissent les conditions d'utilisation du site internet <strong>eden-wellness.fr</strong> exploité par la société EDEN Wellness.</p>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-label">Raison sociale</div><div class="info-val">EDEN Wellness SAS</div></div>
+          <div class="info-item"><div class="info-label">Forme juridique</div><div class="info-val">Société par Actions Simplifiée</div></div>
+          <div class="info-item"><div class="info-label">Capital social</div><div class="info-val">10 000 €</div></div>
+          <div class="info-item"><div class="info-label">SIRET</div><div class="info-val">000 000 000 00000</div></div>
+          <div class="info-item"><div class="info-label">APE / NAF</div><div class="info-val">9604Z — Entretien corporel</div></div>
+          <div class="info-item"><div class="info-label">TVA intracommunautaire</div><div class="info-val">FR 00 000000000</div></div>
+          <div class="info-item"><div class="info-label">Siège social</div><div class="info-val">12 Rue du Bien-Être, 22000 Saint-Brieuc</div></div>
+          <div class="info-item"><div class="info-label">Directeur de la publication</div><div class="info-val">Luca Jacob</div></div>
+          <div class="info-item"><div class="info-label">Email</div><div class="info-val">contact@eden-wellness.fr</div></div>
+          <div class="info-item"><div class="info-label">Téléphone</div><div class="info-val">01 00 00 00 00</div></div>
+        </div>
+      </div>
+
+      <div class="doc-section rv" id="hebergement">
+        <span class="section-num">02</span>
+        <h2 class="section-title"><em>Hébergement</em></h2>
+        <p>Le site eden-wellness.fr est hébergé par :</p>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-label">Hébergeur</div><div class="info-val">Netlify, Inc.</div></div>
+          <div class="info-item"><div class="info-label">Adresse</div><div class="info-val">512 2nd Street, Suite 200, San Francisco, CA 94107, USA</div></div>
+          <div class="info-item"><div class="info-label">Site web</div><div class="info-val">netlify.com</div></div>
+        </div>
+        <p>Les données de réservation sont hébergées sur <strong>Supabase, Inc.</strong> (infrastructure cloud sécurisée, serveurs localisés en Europe — région AWS eu-west-1).</p>
+      </div>
+
+      <div class="doc-section rv" id="propriete">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Propriété <em>intellectuelle</em></h2>
+        <p>L'ensemble du contenu du site eden-wellness.fr — textes, images, photographies, vidéos, logos, icônes, sons, logiciels, mise en page graphique, charte graphique — est la propriété exclusive de <strong>EDEN Wellness SAS</strong> ou de ses partenaires, et est protégé par les lois françaises et internationales relatives à la propriété intellectuelle.</p>
+        <div class="highlight">
+          <p>Toute reproduction, représentation, modification, publication ou adaptation, totale ou partielle, de tout ou partie des éléments du site, quel que soit le moyen ou le procédé utilisé, est interdite sans l'autorisation écrite préalable d'EDEN Wellness SAS.</p>
+        </div>
+        <p>Toute utilisation non autorisée du site ou de l'un quelconque des éléments qu'il contient sera considérée comme constitutive d'une contrefaçon et poursuivie conformément aux dispositions des articles L.335-2 et suivants du Code de Propriété Intellectuelle.</p>
+      </div>
+
+      <div class="doc-section rv" id="donnees">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Données <em>personnelles</em></h2>
+        <p>EDEN Wellness SAS s'engage à protéger la vie privée de ses utilisateurs conformément au Règlement Général sur la Protection des Données (RGPD — Règlement UE 2016/679) et à la loi Informatique et Libertés n° 78-17 du 6 janvier 1978 modifiée.</p>
+
+        <span class="section-sub">Données collectées</span>
+        <p>Dans le cadre de la réservation en ligne, EDEN Wellness collecte les données suivantes :</p>
+        <ul class="legal-list">
+          <li>Nom et prénom</li>
+          <li>Adresse email</li>
+          <li>Numéro de téléphone (facultatif)</li>
+          <li>Date et heure de réservation choisies</li>
+          <li>Formule et options sélectionnées</li>
+          <li>Code promotionnel utilisé</li>
+        </ul>
+
+        <span class="section-sub">Finalité du traitement</span>
+        <p>Les données collectées sont utilisées exclusivement pour :</p>
+        <ul class="legal-list">
+          <li>La gestion et la confirmation des réservations</li>
+          <li>L'envoi de confirmations et rappels par email</li>
+          <li>La gestion du programme de parrainage</li>
+          <li>L'amélioration de nos services</li>
+          <li>Le respect de nos obligations légales et comptables</li>
+        </ul>
+
+        <span class="section-sub">Durée de conservation</span>
+        <p>Les données de réservation sont conservées <strong>3 ans</strong> à compter de la dernière interaction, conformément aux obligations légales. Les données de facturation sont conservées <strong>10 ans</strong> en vertu du Code de commerce.</p>
+
+        <span class="section-sub">Vos droits</span>
+        <p>Conformément au RGPD, vous disposez des droits suivants sur vos données personnelles :</p>
+        <ul class="legal-list">
+          <li><strong>Droit d'accès</strong> — obtenir une copie de vos données</li>
+          <li><strong>Droit de rectification</strong> — corriger des données inexactes</li>
+          <li><strong>Droit à l'effacement</strong> — demander la suppression de vos données</li>
+          <li><strong>Droit à la portabilité</strong> — recevoir vos données dans un format structuré</li>
+          <li><strong>Droit d'opposition</strong> — vous opposer au traitement de vos données</li>
+          <li><strong>Droit à la limitation</strong> — limiter l'utilisation de vos données</li>
+        </ul>
+        <p>Pour exercer ces droits, adressez votre demande par email à <strong>contact@eden-wellness.fr</strong> ou par courrier à notre siège social. Nous nous engageons à répondre dans un délai d'un mois. Vous avez également le droit d'introduire une réclamation auprès de la <strong>CNIL</strong> (Commission Nationale de l'Informatique et des Libertés — cnil.fr).</p>
+      </div>
+
+      <div class="doc-section rv" id="cookies">
+        <span class="section-num">05</span>
+        <h2 class="section-title"><em>Cookies</em></h2>
+        <p>Le site eden-wellness.fr utilise des cookies pour améliorer votre expérience de navigation. Un cookie est un petit fichier texte déposé sur votre terminal lors de votre visite.</p>
+        <table class="legal-table">
+          <thead>
+            <tr><th>Type de cookie</th><th>Finalité</th><th>Durée</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Cookies essentiels</strong></td><td>Fonctionnement du site, gestion de la session</td><td>Session</td></tr>
+            <tr><td><strong>Cookies de préférence</strong></td><td>Mémorisation de vos choix (langue, affichage)</td><td>12 mois</td></tr>
+            <tr><td><strong>Cookies analytiques</strong></td><td>Mesure d'audience anonymisée</td><td>13 mois</td></tr>
+          </tbody>
+        </table>
+        <p>Conformément à la réglementation en vigueur, les cookies non essentiels ne sont déposés qu'après recueil de votre consentement. Vous pouvez à tout moment modifier vos préférences via les paramètres de votre navigateur.</p>
+      </div>
+
+      <div class="doc-section rv" id="responsabilite">
+        <span class="section-num">06</span>
+        <h2 class="section-title"><em>Responsabilité</em></h2>
+        <p>EDEN Wellness SAS s'efforce d'assurer l'exactitude et la mise à jour des informations publiées sur ce site. Toutefois, EDEN Wellness SAS ne peut garantir l'exactitude, la précision ou l'exhaustivité des informations mises à disposition sur ce site.</p>
+        <p>EDEN Wellness SAS décline toute responsabilité pour tout dommage résultant d'une intrusion frauduleuse d'un tiers ayant entraîné une modification des informations mises à disposition sur le site, et de manière générale, pour tout dommage direct ou indirect, quelle qu'en soit la cause, l'origine, la nature ou la conséquence, provoqué à raison de l'accès de quiconque au site ou de l'impossibilité d'y accéder.</p>
+        <p>Les liens hypertextes présents sur le site peuvent renvoyer vers d'autres sites internet. EDEN Wellness SAS ne peut être tenu responsable du contenu de ces sites tiers.</p>
+      </div>
+
+    </div><!-- /tab-ml -->
+
+    <!-- ══ CGV ══ -->
+    <div class="tab-content" id="tab-cgv">
+
+      <div class="highlight" style="margin-bottom:40px;">
+        <p>Les présentes Conditions Générales de Vente (CGV) s'appliquent à toute réservation effectuée sur le site eden-wellness.fr ou par téléphone auprès d'EDEN Wellness SAS. Toute réservation implique l'acceptation pleine et entière des présentes CGV.</p>
+      </div>
+
+      <div class="doc-section rv" id="objet">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Objet <em>& champ d'application</em></h2>
+        <p>Les présentes CGV ont pour objet de définir les droits et obligations des parties dans le cadre de la vente de séances de bien-être, d'accès aux espaces thermiques et de prestations associées proposées par <strong>EDEN Wellness SAS</strong> (ci-après « EDEN ») à ses clients (ci-après « le Client »).</p>
+        <p>EDEN se réserve le droit de modifier les présentes CGV à tout moment. Les CGV applicables sont celles en vigueur à la date de la réservation.</p>
+      </div>
+
+      <div class="doc-section rv" id="reservation-cgv">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Réservation & <em>confirmation</em></h2>
+
+        <span class="section-sub">Modalités de réservation</span>
+        <p>La réservation peut être effectuée par les moyens suivants :</p>
+        <ul class="legal-list">
+          <li>En ligne sur eden-wellness.fr, 24h/24 et 7j/7</li>
+          <li>Par téléphone au 01 00 00 00 00, du lundi au dimanche de 8h à 22h</li>
+          <li>Par email à contact@eden-wellness.fr</li>
+          <li>Directement à l'accueil EDEN, sous réserve de disponibilités</li>
+        </ul>
+
+        <span class="section-sub">Confirmation</span>
+        <p>Toute réservation en ligne donne lieu à l'envoi automatique d'un <strong>email de confirmation</strong> à l'adresse fournie par le Client, accompagné d'un code de réservation unique. Cette confirmation vaut contrat entre EDEN et le Client.</p>
+        <div class="highlight">
+          <p>La réservation n'est définitive qu'après réception de la confirmation par email. EDEN se réserve le droit d'annuler toute réservation en cas d'indisponibilité, avec remboursement intégral ou report sans frais.</p>
+        </div>
+
+        <span class="section-sub">Capacité juridique</span>
+        <p>Le Client déclare avoir la pleine capacité juridique pour s'engager dans le cadre des présentes CGV. L'accès aux espaces EDEN est exclusivement réservé aux personnes âgées de <strong>18 ans et plus</strong>.</p>
+      </div>
+
+      <div class="doc-section rv" id="tarifs-cgv">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Tarifs <em>& paiement</em></h2>
+
+        <span class="section-sub">Prix</span>
+        <p>Les prix sont indiqués en euros (€) toutes taxes comprises (TTC). EDEN se réserve le droit de modifier ses tarifs à tout moment. Les prix applicables sont ceux en vigueur au moment de la réservation, tels qu'affichés sur le site.</p>
+        <table class="legal-table">
+          <thead><tr><th>Formule</th><th>Durée</th><th>Tarif</th><th>Inclus</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Sérénité</strong></td><td>2h</td><td>49 €</td><td>Accès espaces + 1 boisson</td></tr>
+            <tr><td><strong>Équilibre</strong></td><td>3h30</td><td>79 €</td><td>Accès complet + pressothérapie + bar libre</td></tr>
+            <tr><td><strong>Immersion</strong></td><td>Journée</td><td>119 €</td><td>Tout inclus + pièce de sommeil</td></tr>
+          </tbody>
+        </table>
+
+        <span class="section-sub">Modalités de paiement</span>
+        <p>Le paiement s'effectue à l'accueil EDEN, le jour de la séance, par les moyens suivants :</p>
+        <ul class="legal-list">
+          <li>Carte bancaire (Visa, Mastercard, American Express)</li>
+          <li>Apple Pay et Google Pay</li>
+          <li>Espèces</li>
+          <li>Carte cadeau EDEN</li>
+          <li>Crédit de parrainage EDEN</li>
+          <li>Chèques vacances ANCV (en complément)</li>
+        </ul>
+        <p>Aucune somme n'est prélevée lors de la réservation en ligne. La réservation est gratuite et sans prépaiement.</p>
+
+        <span class="section-sub">Codes promotionnels</span>
+        <p>Les codes promotionnels sont valables une seule fois par Client et ne sont pas cumulables entre eux. Un code ne peut être utilisé que pour la formule et la période précisées dans les conditions de l'offre concernée.</p>
+      </div>
+
+      <div class="doc-section rv" id="annulation">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Annulation <em>& modification</em></h2>
+        <table class="legal-table">
+          <thead><tr><th>Délai d'annulation</th><th>Conditions</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Plus de 48h avant</strong></td><td>Annulation gratuite — remboursement intégral ou report sans frais</td></tr>
+            <tr><td><strong>Entre 24h et 48h avant</strong></td><td>Report gratuit sur un créneau disponible dans les 30 jours</td></tr>
+            <tr><td><strong>Moins de 24h avant</strong></td><td>Report possible sous réserve de disponibilité — ou bon valable 3 mois</td></tr>
+            <tr><td><strong>Non-présentation (no-show)</strong></td><td>Bon d'une valeur équivalente, valable 3 mois</td></tr>
+          </tbody>
+        </table>
+        <p>Pour toute annulation ou modification, le Client doit contacter EDEN par téléphone au <strong>01 00 00 00 00</strong> ou par email à <strong>contact@eden-wellness.fr</strong>, en indiquant son code de réservation.</p>
+        <div class="highlight">
+          <p>En cas de force majeure, de maladie ou d'urgence médicale dûment justifiée, EDEN s'engage à trouver une solution adaptée au cas par cas, indépendamment des délais indiqués ci-dessus.</p>
+        </div>
+
+        <span class="section-sub">Annulation par EDEN</span>
+        <p>EDEN se réserve le droit d'annuler une réservation en cas de force majeure, de travaux d'urgence ou de fermeture exceptionnelle. Dans ce cas, le Client sera informé dans les meilleurs délais et se verra proposer un report sans frais ou un remboursement intégral.</p>
+      </div>
+
+      <div class="doc-section rv" id="obligations">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Obligations <em>du Client</em></h2>
+
+        <span class="section-sub">Règlement intérieur</span>
+        <p>Le Client s'engage à respecter le règlement intérieur d'EDEN, affiché à l'accueil et disponible sur demande. Le non-respect de ce règlement peut entraîner l'exclusion immédiate sans remboursement.</p>
+        <ul class="legal-list">
+          <li>Arriver 15 minutes avant le créneau réservé</li>
+          <li>Porter un maillot de bain dans les espaces aquatiques</li>
+          <li>Respecter le silence et la tranquillité des autres clients</li>
+          <li>Ne pas consommer d'alcool apporté de l'extérieur dans les espaces</li>
+          <li>Ne pas utiliser son téléphone dans les zones de soins et de repos</li>
+          <li>Ranger le matériel mis à disposition après utilisation</li>
+          <li>Signaler à l'accueil tout incident ou problème de santé</li>
+        </ul>
+
+        <span class="section-sub">Responsabilité des effets personnels</span>
+        <p>EDEN met à disposition des casiers sécurisés. Néanmoins, EDEN décline toute responsabilité en cas de perte, vol ou détérioration d'effets personnels laissés dans les vestiaires ou dans l'établissement.</p>
+      </div>
+
+      <div class="doc-section rv" id="sante">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Santé <em>& sécurité</em></h2>
+
+        <span class="section-sub">Contre-indications</span>
+        <p>Certaines conditions médicales sont incompatibles avec l'utilisation des espaces thermiques. Le Client déclare sur l'honneur ne pas être concerné par les contre-indications suivantes, ou avoir obtenu l'accord de son médecin :</p>
+        <ul class="legal-list">
+          <li>Grossesse (toutes les zones thermiques sont déconseillées)</li>
+          <li>Maladies cardiovasculaires ou hypertension artérielle non contrôlée</li>
+          <li>Épilepsie ou troubles neurologiques</li>
+          <li>Plaies ouvertes, infections cutanées actives ou maladies dermatologiques contagieuses</li>
+          <li>Consommation d'alcool dans les 4 heures précédant la séance</li>
+        </ul>
+
+        <span class="section-sub">Responsabilité médicale</span>
+        <p>EDEN ne peut être tenu responsable des accidents ou malaises pouvant survenir si le Client a dissimulé une contre-indication médicale. En cas de doute sur votre état de santé, consultez votre médecin avant toute réservation.</p>
+        <div class="highlight">
+          <p>L'équipe EDEN est formée aux premiers secours. Un défibrillateur est disponible à l'accueil. En cas d'urgence, composez le 15 (SAMU) ou le 18 (pompiers).</p>
+        </div>
+
+        <span class="section-sub">Photographies</span>
+        <p>Afin de respecter la vie privée de l'ensemble des clients, les photographies et enregistrements vidéo sont <strong>strictement interdits</strong> dans les espaces de soins, les vestiaires et les zones thermiques. Ils sont autorisés uniquement dans les espaces communs (accueil, Fuel Bar), sous réserve que les autres clients ne soient pas identifiables.</p>
+      </div>
+
+      <div class="doc-section rv" id="litiges">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Litiges <em>& droit applicable</em></h2>
+
+        <span class="section-sub">Médiation</span>
+        <p>Conformément aux articles L.612-1 et suivants du Code de la consommation, le Client peut recourir gratuitement à la médiation pour tout litige relatif à l'exécution du contrat. Le médiateur compétent est :</p>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-label">Médiateur</div><div class="info-val">Médiation Tourisme et Voyage (MTV)</div></div>
+          <div class="info-item"><div class="info-label">Site web</div><div class="info-val">mtv.travel</div></div>
+          <div class="info-item"><div class="info-label">Adresse</div><div class="info-val">BP 80303 — 75823 Paris Cedex 17</div></div>
+        </div>
+
+        <span class="section-sub">Droit applicable</span>
+        <p>Les présentes CGV sont soumises au droit français. En cas de litige, les parties s'engagent à rechercher une solution amiable avant tout recours judiciaire. À défaut d'accord amiable, tout litige relatif à l'interprétation ou à l'exécution des présentes CGV sera soumis à la compétence exclusive des <strong>tribunaux français</strong>.</p>
+
+        <span class="section-sub">Contact</span>
+        <p>Pour toute réclamation ou question relative aux présentes CGV :</p>
+        <ul class="legal-list">
+          <li><strong>Email :</strong> contact@eden-wellness.fr</li>
+          <li><strong>Téléphone :</strong> 01 00 00 00 00 (lun-dim, 8h-22h)</li>
+          <li><strong>Courrier :</strong> EDEN Wellness SAS — 12 Rue du Bien-Être — 22000 Saint-Brieuc</li>
+        </ul>
+      </div>
+
+    </div><!-- /tab-cgv -->
+
+  </div><!-- /content -->
+</div><!-- /main-layout -->
+
+<!-- Footer -->
+<footer>
+  <div class="fg">
+    <div><span class="flogo">EDEN</span><p class="fabout">Un sanctuaire dédié à votre bien-être. Ouvert 7j/7 de 8h à 22h.</p><span class="ftag">Récupération · Détente · Équilibre</span></div>
+    <div class="fc"><h5>Espaces</h5><ul><li><a href="index.html#experiences">Bain Nordique</a></li><li><a href="index.html#experiences">Sauna & Hammam</a></li><li><a href="index.html#experiences">Pressothérapie</a></li><li><a href="index.html#experiences">Fuel Bar</a></li></ul></div>
+    <div class="fc"><h5>Infos</h5><ul><li><a href="index.html#tarifs">Tarifs</a></li><li><a href="faq.html">FAQ</a></li><li><a href="parrainage.html">Parrainage</a></li><li><a href="mentions-legales.html" style="color:var(--gold-light)">Mentions légales</a></li></ul></div>
+    <div class="fc"><h5>Contact</h5><ul><li><a href="#">12 Rue du Bien-Être</a></li><li><a href="tel:+33100000000">01 00 00 00 00</a></li><li><a href="mailto:contact@eden-wellness.fr">contact@eden-wellness.fr</a></li></ul></div>
+  </div>
+  <div class="fbot"><span>© 2026 EDEN Wellness SAS. Tous droits réservés.</span><div><a href="mentions-legales.html" style="color:var(--gold)">Mentions légales</a><a href="mentions-legales.html">CGV</a><a href="#">Confidentialité</a></div></div></footer>
+
+<button id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+/* Cursor */
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px';});
+(function l(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(l);})();
+document.querySelectorAll('a,button,.tab-btn,.sidebar-link').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hov'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hov'));
+});
+
+/* Scroll */
+window.addEventListener('scroll',()=>{
+  document.getElementById('prog').style.width=(scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%';
+  document.getElementById('btt').classList.toggle('show',scrollY>400);
+  updateActiveSidebarLink();
+});
+
+/* Tabs */
+let currentTab = 'ml';
+function showTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('show'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-'+tab).classList.add('show');
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    if((tab==='ml'&&b.textContent.includes('Mentions'))||(tab==='cgv'&&b.textContent.includes('Conditions')))
+      b.classList.add('on');
+  });
+  document.getElementById('nav-ml').classList.toggle('on', tab==='ml');
+  document.getElementById('nav-cgv').classList.toggle('on', tab==='cgv');
+}
+
+/* Scroll to section */
+function scrollTo(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  // Attendre que le tab soit affiché puis scroller
+  setTimeout(()=>{
+    const top = el.getBoundingClientRect().top + window.scrollY - 100;
+    window.scrollTo({top, behavior:'smooth'});
+  }, 80);
+}
+
+/* Active sidebar link on scroll */
+function updateActiveSidebarLink(){
+  const ids = currentTab === 'ml'
+    ? ['editeur','hebergement','propriete','donnees','cookies','responsabilite']
+    : ['objet','reservation-cgv','tarifs-cgv','annulation','obligations','sante','litiges'];
+  let active = ids[0];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el && el.getBoundingClientRect().top < 160) active = id;
+  });
+  document.querySelectorAll('.sidebar-link').forEach(l=>{
+    const fn = l.getAttribute('onclick')||'';
+    l.classList.toggle('on', fn.includes("'"+active+"'"));
+  });
+}
+
+/* Reveal */
+const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}}),{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+</script>
+
+<!-- ══ COOKIE BANNER ══ -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9990;background:rgba(6,9,8,.97);border-top:1px solid rgba(196,160,78,.2);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px;backdrop-filter:blur(12px);">
+  <div style="flex:1">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.9;max-width:680px">🍪 Nous utilisons des cookies pour améliorer votre expérience et analyser notre trafic. En continuant, vous acceptez notre <a href="rgpd.html" style="color:#c4a04e;text-decoration:underline">politique de confidentialité</a>.</p>
+  </div>
+  <div style="display:flex;gap:10px;flex-shrink:0">
+    <button onclick="refuseCookies()" style="background:none;border:1px solid rgba(196,160,78,.25);color:#7a7a68;padding:9px 20px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s">Refuser</button>
+    <button onclick="acceptCookies()" style="background:#c4a04e;color:#060908;border:none;padding:9px 24px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-weight:400;transition:all .3s">Accepter</button>
+  </div>
+</div>
+
+<!-- ══ CHATBOT FLOTTANT ══ -->
+<div id="chatbot-btn" onclick="toggleChat()" style="position:fixed;bottom:28px;right:28px;z-index:9980;width:52px;height:52px;background:linear-gradient(135deg,#c4a04e,#dbbf78);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 32px rgba(196,160,78,.35);transition:transform .3s;font-size:20px;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">💬</div>
+<div id="chatbot-panel" style="display:none;position:fixed;bottom:92px;right:28px;z-index:9980;width:320px;background:#0c110a;border:1px solid rgba(196,160,78,.2);box-shadow:0 20px 60px rgba(0,0,0,.6);">
+  <div style="padding:16px 20px;background:linear-gradient(135deg,rgba(196,160,78,.15),rgba(196,160,78,.05));border-bottom:1px solid rgba(196,160,78,.12);display:flex;align-items:center;justify-content:space-between">
+    <div><p style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#f4efe5">EDEN · Assistance</p><p style="font-size:9px;color:#7a7a68;letter-spacing:1px">Réponse en moins de 2h · 7j/7</p></div>
+    <button onclick="toggleChat()" style="background:none;border:none;color:#7a7a68;font-size:18px;cursor:pointer">×</button>
+  </div>
+  <div style="padding:16px 20px">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.8;margin-bottom:14px">Bonjour ! Comment puis-je vous aider ?</p>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <a href="reservation.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#c4a04e;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Réserver une séance</a>
+      <a href="faq.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Consulter la FAQ</a>
+      <a href="tel:+33100000000" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Appeler le 01 00 00 00 00</a>
+      <a href="mailto:contact@eden-wellness.fr" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Envoyer un email</a>
+    </div>
+    <p style="font-size:9px;color:#7a7a68;margin-top:14px;text-align:center">Ouvert 7j/7 · 8h–22h</p>
+  </div>
+</div>
+
+<script>
+// Cookie banner
+(function(){
+  if(!localStorage.getItem('eden_cookies')){
+    var b=document.getElementById('cookie-banner');
+    if(b){b.style.display='flex';setTimeout(function(){b.style.display='flex';},100);}
+  }
+})();
+function acceptCookies(){localStorage.setItem('eden_cookies','accepted');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function refuseCookies(){localStorage.setItem('eden_cookies','refused');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function toggleChat(){var p=document.getElementById('chatbot-panel');if(p)p.style.display=p.style.display==='none'?'block':'none';}
+</script>
+
+</body>
+</html>

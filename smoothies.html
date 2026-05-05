@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smoothies & Boissons — Fuel Bar EDEN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@100;200;300;400&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#c4a04e;--gold-l:#dbbf78;--gold-d:#8a7038;
+  --dark:#060908;--dark2:#0c110a;--dark3:#111608;
+  --cream:#f4efe5;--muted:#7a7a68;--light:#c0bcac;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --play:'Playfair Display',Georgia,serif;
+  --sans:'Jost',system-ui,sans-serif;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+
+  /* Couleurs par activité */
+  --col-bn:#5b9bd5;   /* Bain Nordique — bleu chaud */
+  --col-bf:#4fc3f7;   /* Bain Froid — bleu clair */
+  --col-sa:#e07850;   /* Sauna & Hammam — orange */
+  --col-pr:#9c7fd5;   /* Pressothérapie — violet */
+  --col-ma:#7ab87a;   /* Massage — vert */
+  --col-all:#c4a04e;  /* Toutes activités — or */
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--cream);font-family:var(--sans);font-weight:300;overflow-x:hidden;cursor:none;}
+
+#cd{position:fixed;width:5px;height:5px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+#cr{position:fixed;width:34px;height:34px;border:1px solid rgba(196,160,78,.35);border-radius:50%;pointer-events:none;z-index:9997;transform:translate(-50%,-50%);transition:width .3s,height .3s;}
+body.hov #cr{width:52px;height:52px;border-color:rgba(196,160,78,.65);}
+#prog{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--gold-d),var(--gold),var(--gold-l));z-index:9996;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:20px 72px;background:rgba(6,9,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(196,160,78,.1);}
+.logo{font-family:'Cormorant Garamond',serif;font-size:24px;letter-spacing:8px;color:var(--gold);text-decoration:none;}
+.nav-links{display:flex;gap:40px;list-style:none;}
+.nav-links a{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(244,239,229,.6);text-decoration:none;transition:color .3s;}
+.nav-links a:hover,.nav-links a.on{color:var(--gold);}
+.btn-nav{font-size:9px;letter-spacing:3px;text-transform:uppercase;border:1px solid var(--gold);background:var(--gold);color:var(--dark);padding:10px 24px;text-decoration:none;font-weight:400;transition:all .3s;}
+
+/* HERO */
+.hero{
+  padding:160px 80px 80px;text-align:center;
+  background:var(--dark2);position:relative;overflow:hidden;
+  border-bottom:1px solid rgba(196,160,78,.08);
+}
+.hero::before{
+  content:'SMOOTHIES';font-family:'Jost',sans-serif;font-size:180px;
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  color:rgba(196,160,78,.025);pointer-events:none;white-space:nowrap;letter-spacing:8px;
+}
+.h-eyebrow{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:20px;}
+.h-title{font-family:'Jost',sans-serif;font-size:clamp(40px,6vw,80px);font-weight:200;color:var(--cream);line-height:.95;margin-bottom:24px;letter-spacing:12px;text-transform:uppercase;}
+.h-title em{font-style:italic;color:var(--gold-l);}
+.h-sep{display:flex;align-items:center;gap:14px;justify-content:center;margin:24px auto;}
+.sl{width:60px;height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.5));}
+.sr{background:linear-gradient(270deg,transparent,rgba(196,160,78,.5));}
+.sd{width:5px;height:5px;transform:rotate(45deg);background:var(--gold);opacity:.8;}
+.h-sub{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--muted);max-width:540px;margin:0 auto 40px;line-height:1.8;letter-spacing:.3px;}
+
+/* LÉGENDE ACTIVITÉS */
+.legend{
+  display:flex;gap:0;justify-content:center;flex-wrap:wrap;
+  border:1px solid rgba(196,160,78,.12);max-width:860px;margin:0 auto;
+  background:rgba(196,160,78,.02);
+}
+.leg-item{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 24px;border-right:1px solid rgba(196,160,78,.08);
+  font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--light);
+  transition:color .3s;
+}
+.leg-item:hover{color:var(--gold);}
+.leg-item:last-child{border-right:none;}
+.leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+/* INTRO VISION */
+.vision{
+  max-width:860px;margin:0 auto;padding:88px 80px;
+  text-align:center;border-bottom:1px solid rgba(196,160,78,.08);
+  position:relative;
+}
+.vision::after{
+  content:'◈';position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);
+  color:var(--gold);font-size:16px;background:var(--dark);padding:0 12px;
+}
+.vision-title{font-family:'Jost',sans-serif;font-size:18px;font-weight:200;color:var(--cream);margin-bottom:16px;letter-spacing:5px;text-transform:uppercase;}
+.vision-title em{font-style:italic;color:var(--gold-l);}
+.vision-text{font-size:14px;color:var(--muted);line-height:2.6;max-width:640px;margin:0 auto;}
+
+/* TABS */
+.menu-tabs{
+  display:flex;gap:0;justify-content:center;flex-wrap:wrap;
+  background:var(--dark);border-bottom:1px solid rgba(196,160,78,.1);
+  position:sticky;top:68px;z-index:100;
+}
+.tab{
+  padding:20px 28px;font-size:8.5px;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--muted);cursor:pointer;background:none;border:none;
+  font-family:var(--sans);transition:all .3s;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  display:flex;align-items:center;gap:10px;
+}
+.tab:hover{color:var(--light);}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold);}
+.tab-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* CONTENU */
+.carte{max-width:1100px;margin:0 auto;padding:72px 80px 120px;}
+
+/* Section activité */
+.act-section{margin-bottom:80px;scroll-margin-top:130px;}
+
+/* Header activité */
+.act-header{
+  display:grid;grid-template-columns:auto 1fr;gap:0;
+  margin-bottom:40px;overflow:hidden;
+}
+.act-color-bar{width:4px;flex-shrink:0;}
+.act-header-inner{padding:32px 32px 32px 28px;border:1px solid rgba(255,255,255,.05);border-left:none;background:rgba(255,255,255,.01);}
+.act-eyebrow{font-size:8px;letter-spacing:5px;text-transform:uppercase;margin-bottom:8px;}
+.act-title{font-family:'Jost',sans-serif;font-size:18px;font-weight:200;color:var(--cream);margin-bottom:8px;letter-spacing:5px;text-transform:uppercase;}
+.act-title em{font-style:italic;}
+.act-why{font-size:12px;color:var(--light);line-height:2.1;max-width:700px;opacity:.8;}
+.act-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:8px;letter-spacing:2px;text-transform:uppercase;
+  padding:4px 12px;margin-top:12px;
+}
+
+/* Grille smoothies */
+.smoothie-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+/* Carte smoothie */
+.sm-card{
+  border:1px solid rgba(255,255,255,.06);
+  padding:36px 32px;position:relative;overflow:hidden;
+  transition:all .5s var(--ease);
+  background:var(--dark2);
+}
+.sm-card::before{
+  content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(90deg,transparent 0%,rgba(196,160,78,.5) 50%,transparent 100%) top/100% 1px no-repeat,
+    linear-gradient(90deg,transparent 0%,rgba(196,160,78,.5) 50%,transparent 100%) bottom/100% 1px no-repeat,
+    linear-gradient(0deg,transparent 0%,rgba(196,160,78,.5) 50%,transparent 100%) left/1px 100% no-repeat,
+    linear-gradient(0deg,transparent 0%,rgba(196,160,78,.5) 50%,transparent 100%) right/1px 100% no-repeat;
+  opacity:0;transition:opacity .5s;pointer-events:none;z-index:3;
+}
+.sm-card:hover::before{opacity:1;}
+.sm-card:hover{background:rgba(196,160,78,.025);}
+.sm-accent{position:absolute;top:0;left:0;right:0;height:3px;}
+.sm-num{
+  font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;
+  line-height:1;margin-bottom:12px;opacity:.45;font-style:italic;
+}
+.sm-name{font-family:'Jost',sans-serif;font-size:15px;font-weight:200;color:var(--cream);margin-bottom:6px;letter-spacing:4px;text-transform:uppercase;}
+.sm-name em{font-style:italic;}
+.sm-comp{
+  font-size:11px;color:var(--muted);line-height:1.9;
+  margin-bottom:16px;
+}
+.sm-comp strong{color:var(--cream);font-weight:300;letter-spacing:.3px;}
+.sm-why{
+  font-size:11px;color:var(--light);font-style:italic;
+  padding:12px 16px;border-left:2px solid;margin-bottom:20px;
+  line-height:1.9;background:rgba(196,160,78,.04);
+  font-family:'Cormorant Garamond',serif;font-size:13px;
+}
+.sm-footer{display:flex;justify-content:space-between;align-items:center;}
+.sm-price{font-family:'Jost',sans-serif;font-size:15px;font-weight:300;color:var(--gold);letter-spacing:2px;}
+.sm-temp{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+
+/* Section universelle */
+.universal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+
+/* Divider */
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.25),transparent);margin:72px 0;position:relative;}
+
+/* Note bas */
+.note-bas{
+  background:rgba(196,160,78,.05);border:1px solid rgba(196,160,78,.15);
+  padding:28px 32px;margin-top:56px;display:flex;gap:16px;align-items:flex-start;
+}
+.note-icon{color:var(--gold);font-size:14px;flex-shrink:0;}
+.note-txt{font-size:12px;color:var(--muted);line-height:2;}
+
+/* CTA */
+.carte-cta{text-align:center;padding:80px;background:var(--dark2);border-top:1px solid rgba(196,160,78,.08);}
+.cta-title{font-family:'Jost',sans-serif;font-size:clamp(22px,3vw,38px);font-weight:200;color:var(--cream);margin-bottom:12px;letter-spacing:6px;text-transform:uppercase;}
+.cta-title em{font-style:italic;color:var(--gold-l);}
+.cta-sub{font-size:13px;color:var(--muted);margin-bottom:36px;}
+.btn-gold{background:var(--gold);color:var(--dark);padding:15px 40px;font-size:9px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;font-weight:400;transition:all .3s;display:inline-block;}
+.btn-gold:hover{background:var(--gold-l);}
+.btn-outline{border:1px solid rgba(196,160,78,.35);color:var(--gold);padding:15px 40px;font-size:9px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;font-weight:300;transition:all .3s;display:inline-block;margin-left:12px;}
+.btn-outline:hover{border-color:var(--gold);}
+
+/* Footer */
+footer{background:var(--dark2);border-top:1px solid rgba(196,160,78,.08);padding:56px 80px 32px;}
+.fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:64px;margin-bottom:48px;}
+.flogo{font-family:'Jost',sans-serif;font-size:26px;letter-spacing:9px;color:var(--gold);display:block;margin-bottom:12px;}
+.fabout{font-size:12px;color:var(--muted);line-height:2;max-width:230px;margin-bottom:12px;}
+.ftag{font-family:'Jost',sans-serif;font-size:12px;font-style:italic;color:var(--light);}
+.fc h5{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
+.fc ul{list-style:none;}
+.fc li{margin-bottom:8px;}
+.fc a{font-size:12px;color:var(--muted);text-decoration:none;transition:color .25s;}
+.fc a:hover{color:var(--gold-l);}
+.fbot{border-top:1px solid rgba(196,160,78,.06);padding-top:20px;display:flex;justify-content:space-between;font-size:10px;color:var(--muted);}
+.fbot a{color:var(--muted);text-decoration:none;margin-left:16px;}
+
+.rv{opacity:0;transform:translateY(24px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+.rv.in{opacity:1;transform:none;}
+.rv.d1{transition-delay:.1s;}.rv.d2{transition-delay:.2s;}.rv.d3{transition-delay:.3s;}
+
+@media(max-width:900px){
+  nav{padding:14px 24px;}.nav-links{display:none;}
+  .hero{padding:120px 24px 60px;}
+  .vision{padding:48px 24px;}
+  .menu-tabs{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;}
+  .carte{padding:48px 24px 80px;}
+  .smoothie-grid,.universal-grid{grid-template-columns:1fr;}
+  .legend{flex-wrap:wrap;}
+  .fg{grid-template-columns:1fr 1fr;gap:32px;}
+  footer,.carte-cta{padding:48px 24px;}
+}
+.smoothie-slide {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+/* DIAPO SMOOTHIES */
+.smoothie-diapo-section {
+  padding: 100px 5vw 120px;
+  background: #050806;
+  border-top: 1px solid rgba(196, 160, 78, 0.25);
+}
+
+.diapo-header {
+  text-align: center;
+  max-width: 850px;
+  margin: 0 auto 55px;
+}
+
+.diapo-eyebrow {
+  font-family: var(--sans);
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: var(--gold);
+  margin-bottom: 18px;
+}
+
+.diapo-header h2 {
+  font-family: var(--serif);
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cream);
+  margin: 0 0 15px;
+}
+
+.diapo-header p {
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: rgba(244, 239, 229, 0.6);
+}
+
+.smoothie-slider-wrapper {
+  position: relative;
+  max-width: 1450px;
+  margin: 0 auto;
+}
+
+.smoothie-slider {
+  display: flex;
+  gap: 26px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  padding: 10px 4px 35px;
+}
+
+.smoothie-slider::-webkit-scrollbar {
+  height: 8px;
+}
+
+.smoothie-slider::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+}
+
+.smoothie-slider::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #8a7038, #dbbf78);
+  border-radius: 999px;
+}
+
+.smoothie-slide {
+  position: relative;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  flex: 0 0 360px;
+  height: 500px;
+  overflow: hidden;
+  border: 1px solid rgba(196, 160, 78, 0.38);
+  background: #080b08;
+  scroll-snap-align: center;
+  box-shadow: 0 25px 65px rgba(0,0,0,0.55);
+}
+
+.smoothie-slide::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,0.88) 100%);
+  z-index: 1;
+}
+
+.smoothie-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: 0.6s ease;
+}
+
+.smoothie-slide:hover img {
+  transform: scale(1.06);
+  filter: brightness(1.08);
+}
+
+.slide-info {
+  position: absolute;
+  left: 25px;
+  right: 25px;
+  bottom: 25px;
+  z-index: 2;
+}
+
+.slide-info span {
+  display: block;
+  font-family: var(--serif);
+  font-size: 3.7rem;
+  font-style: italic;
+  color: var(--gold-l);
+  margin-bottom: 10px;
+}
+
+.slide-info h3 {
+  font-family: var(--sans);
+  font-size: 1rem;
+  font-weight: 300;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--cream);
+  margin: 0;
+}
+
+.slider-btn {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(196, 160, 78, 0.55);
+  background: rgba(5, 8, 6, 0.82);
+  color: var(--gold-l);
+  font-size: 2.4rem;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.slider-btn.prev {
+  left: -25px;
+}
+
+.slider-btn.next {
+  right: -25px;
+}
+
+.slider-btn:hover {
+  background: rgba(196, 160, 78, 0.18);
+}
+
+@media (max-width: 768px) {
+  .smoothie-diapo-section {
+    padding: 80px 18px 90px;
+  }
+
+  .smoothie-slide {
+    flex: 0 0 82vw;
+    height: 460px;
+  }
+
+  .slider-btn {
+    display: none;
+  }
+}
+/* =========================================================
+   MENU EDEN FIX — ISOLÉ, VISIBLE, NON CASSÉ PAR L'ANCIEN CSS
+   ========================================================= */
+.eden-menu{
+  position:fixed !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  height:84px !important;
+  z-index:999999 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 52px !important;
+  background:
+    linear-gradient(180deg,rgba(6,9,8,.985),rgba(6,9,8,.92)) !important;
+  border-bottom:1px solid rgba(196,160,78,.12) !important;
+  box-shadow:0 18px 55px rgba(0,0,0,.42) !important;
+  backdrop-filter:blur(18px) !important;
+  -webkit-backdrop-filter:blur(18px) !important;
+}
+
+.eden-menu::before{
+  content:"" !important;
+  position:absolute !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.42),transparent) !important;
+  pointer-events:none !important;
+}
+
+.eden-menu *{
+  box-sizing:border-box !important;
+}
+
+.eden-menu-inner{
+  width:100% !important;
+  max-width:1820px !important;
+  display:grid !important;
+  grid-template-columns:230px 1fr 230px !important;
+  align-items:center !important;
+  gap:32px !important;
+}
+
+.eden-logo{
+  justify-self:start !important;
+  color:#c4a04e !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:26px !important;
+  font-weight:200 !important;
+  letter-spacing:15px !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  text-shadow:0 0 18px rgba(196,160,78,.18) !important;
+  line-height:1 !important;
+}
+
+.eden-links{
+  justify-self:center !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:48px !important;
+  padding:0 !important;
+  margin:0 !important;
+  list-style:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+.eden-links > li{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+.eden-links > li > a{
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:16px 0 !important;
+  color:rgba(244,239,229,.68) !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:10px !important;
+  font-weight:300 !important;
+  letter-spacing:6px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  transition:.3s ease !important;
+}
+
+.eden-links > li > a::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:calc(100% + 34px) !important;
+  max-width:155px !important;
+  height:46px !important;
+  transform:translate(-50%,-50%) !important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.020),rgba(255,255,255,.006)),
+    radial-gradient(circle at 50% 0%,rgba(196,160,78,.09),transparent 58%),
+    linear-gradient(180deg,rgba(14,17,14,.96),rgba(7,9,8,.94)) !important;
+  border:1px solid rgba(196,160,78,.12) !important;
+  box-shadow:0 12px 26px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.025) !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  z-index:-1 !important;
+  transition:.28s ease !important;
+}
+
+.eden-links > li > a::after{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  bottom:6px !important;
+  width:78px !important;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.68),transparent) !important;
+  transform:translateX(-50%) scaleX(0) !important;
+  transform-origin:center !important;
+  box-shadow:0 0 10px rgba(196,160,78,.20) !important;
+  transition:.28s ease !important;
+}
+
+.eden-links > li > a:hover,
+.eden-links > li > a.active,
+.eden-dropdown:hover > a{
+  color:#dbbf78 !important;
+}
+
+.eden-links > li > a:hover::before,
+.eden-links > li > a.active::before,
+.eden-dropdown:hover > a::before{
+  opacity:1 !important;
+}
+
+.eden-links > li > a:hover::after,
+.eden-links > li > a.active::after,
+.eden-dropdown:hover > a::after{
+  transform:translateX(-50%) scaleX(1) !important;
+}
+
+.eden-reserve{
+  justify-self:end !important;
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:48px !important;
+  padding:0 36px !important;
+  color:#060908 !important;
+  background:linear-gradient(135deg,#c4a04e,#dbbf78) !important;
+  border:1px solid rgba(196,160,78,.75) !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:10px !important;
+  font-weight:400 !important;
+  letter-spacing:4px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  overflow:hidden !important;
+  box-shadow:0 0 24px rgba(196,160,78,.16),0 14px 34px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.18) !important;
+  transition:.3s ease !important;
+}
+
+.eden-reserve::before{
+  content:"" !important;
+  position:absolute !important;
+  top:-90% !important;
+  left:-80% !important;
+  width:70% !important;
+  height:260% !important;
+  transform:rotate(24deg) !important;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent) !important;
+  opacity:0 !important;
+  transition:.75s cubic-bezier(.22,1,.36,1) !important;
+}
+
+.eden-reserve:hover{
+  transform:translateY(-2px) !important;
+}
+
+.eden-reserve:hover::before{
+  left:120% !important;
+  opacity:1 !important;
+}
+
+/* Sous-menu Fuel Bar */
+.eden-dropdown{
+  position:relative !important;
+  z-index:1000000 !important;
+}
+
+.eden-dropdown::before{
+  content:"" !important;
+  position:absolute !important;
+  left:-42px !important;
+  right:-42px !important;
+  top:100% !important;
+  height:32px !important;
+  background:transparent !important;
+}
+
+.eden-submenu{
+  position:absolute !important;
+  top:calc(100% + 18px) !important;
+  left:50% !important;
+  width:430px !important;
+  padding:12px !important;
+  transform:translateX(-50%) translateY(10px) !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.10),transparent 34%),
+    linear-gradient(180deg,rgba(12,15,12,.98),rgba(7,9,8,.98)) !important;
+  border:1px solid rgba(196,160,78,.18) !important;
+  box-shadow:0 30px 85px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.035) !important;
+  transition:.35s cubic-bezier(.22,1,.36,1) !important;
+  z-index:1000001 !important;
+}
+
+.eden-submenu::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:-7px !important;
+  width:12px !important;
+  height:12px !important;
+  transform:translateX(-50%) rotate(45deg) !important;
+  background:#0c0f0c !important;
+  border-left:1px solid rgba(196,160,78,.18) !important;
+  border-top:1px solid rgba(196,160,78,.18) !important;
+}
+
+.eden-dropdown:hover .eden-submenu,
+.eden-dropdown:focus-within .eden-submenu{
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  transform:translateX(-50%) translateY(0) !important;
+}
+
+.eden-submenu a{
+  display:grid !important;
+  grid-template-columns:42px 1fr !important;
+  column-gap:14px !important;
+  row-gap:3px !important;
+  padding:14px 16px !important;
+  text-align:left !important;
+  text-decoration:none !important;
+  border:1px solid transparent !important;
+  background:rgba(255,255,255,.010) !important;
+  transition:.3s ease !important;
+}
+
+.eden-submenu a:not(:last-child){
+  margin-bottom:6px !important;
+}
+
+.eden-submenu a span{
+  grid-row:1 / 3 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:34px !important;
+  height:34px !important;
+  border:1px solid rgba(196,160,78,.20) !important;
+  color:#c4a04e !important;
+  font-family:'Cormorant Garamond',Georgia,serif !important;
+  font-size:16px !important;
+}
+
+.eden-submenu a strong{
+  color:#f4efe5 !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:10px !important;
+  letter-spacing:3px !important;
+  text-transform:uppercase !important;
+  font-weight:300 !important;
+}
+
+.eden-submenu a small{
+  color:#7a7a68 !important;
+  font-size:11px !important;
+  text-transform:none !important;
+}
+
+.eden-submenu a:hover{
+  background:radial-gradient(circle at top right,rgba(196,160,78,.09),transparent 34%),rgba(196,160,78,.035) !important;
+  border-color:rgba(196,160,78,.18) !important;
+}
+
+.eden-submenu a:hover span{
+  background:#c4a04e !important;
+  color:#060908 !important;
+}
+
+/* Bouton mobile */
+.eden-burger{
+  display:none !important;
+  justify-self:end !important;
+  width:44px !important;
+  height:44px !important;
+  border:1px solid rgba(196,160,78,.25) !important;
+  background:rgba(196,160,78,.035) !important;
+  align-items:center !important;
+  justify-content:center !important;
+  cursor:pointer !important;
+}
+
+.eden-burger span,
+.eden-burger span::before,
+.eden-burger span::after{
+  display:block !important;
+  width:18px !important;
+  height:1px !important;
+  background:#c4a04e !important;
+  position:relative !important;
+}
+
+.eden-burger span::before,
+.eden-burger span::after{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+}
+
+.eden-burger span::before{top:-6px !important;}
+.eden-burger span::after{top:6px !important;}
+
+/* Décale le hero sous le menu */
+.hero{
+  padding-top:174px !important;
+}
+
+/* Enlève les carrés derrière les infos */
+.trust-bar .trust-item,
+.trust-bar .feature-item,
+.trust-bar .small-card,
+.trust-bar .badge,
+.trust-bar .pill,
+.trust-bar .info-pill,
+.trust-bar .top-pill{
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  min-height:auto !important;
+  border-radius:0 !important;
+}
+
+.trust-bar .trust-item::before,
+.trust-bar .trust-item::after{
+  display:none !important;
+}
+
+@media(max-width:1200px){
+  .eden-menu-inner{
+    grid-template-columns:170px 1fr 190px !important;
+  }
+
+  .eden-links{
+    gap:28px !important;
+  }
+
+  .eden-links > li > a{
+    letter-spacing:4px !important;
+  }
+}
+
+@media(max-width:1050px){
+  .eden-menu{
+    height:auto !important;
+    padding:14px 22px !important;
+  }
+
+  .eden-menu-inner{
+    grid-template-columns:1fr auto !important;
+  }
+
+  .eden-burger{
+    display:flex !important;
+  }
+
+  .eden-links{
+    grid-column:1 / -1 !important;
+    width:100% !important;
+    display:none !important;
+    flex-direction:column !important;
+    gap:8px !important;
+    margin-top:12px !important;
+  }
+
+  .eden-menu.open .eden-links{
+    display:flex !important;
+  }
+
+  .eden-links > li,
+  .eden-links > li > a{
+    width:100% !important;
+  }
+
+  .eden-links > li > a{
+    padding:14px 16px !important;
+    border:1px solid rgba(196,160,78,.12) !important;
+    background:rgba(255,255,255,.012) !important;
+  }
+
+  .eden-reserve{
+    display:none !important;
+  }
+
+  .eden-submenu{
+    position:static !important;
+    width:100% !important;
+    transform:none !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+    margin:8px 0 0 !important;
+    box-shadow:none !important;
+  }
+
+  .eden-submenu::before{
+    display:none !important;
+  }
+
+  .hero{
+    padding-top:138px !important;
+  }
+}
+
+
+</style>
+</head>
+<body>
+<nav id="nav" class="eden-menu">
+  <div class="eden-menu-inner">
+    <a href="index.html" class="eden-logo">EDEN</a>
+
+    <button class="eden-burger" type="button" aria-label="Ouvrir le menu">
+      <span></span>
+    </button>
+
+    <ul class="eden-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="#tarifs">Tarifs</a></li>
+
+      <li class="eden-dropdown">
+        <a href="fuel-bar.html" class="active">Fuel Bar</a>
+
+        <div class="eden-submenu">
+          <a href="fuel-bar.html"><span>01</span><strong>Accueil Fuel Bar</strong><small>Présentation générale</small></a>
+          <a href="smoothies.html"><span>02</span><strong>Smoothies</strong><small>Créations signature</small></a>
+          <a href="softs.html"><span>03</span><strong>Softs premium</strong><small>Boissons fraîches</small></a>
+          <a href="carte-bar.html#cafes"><span>04</span><strong>Cafés</strong><small>Boissons chaudes</small></a>
+          <a href="carte-bar.html#thes"><span>05</span><strong>Thés & infusions</strong><small>Palais des Thés</small></a>
+        </div>
+      </li>
+
+      <li><a href="faq.html">FAQ</a></li>
+      <li><a href="parrainage.html">Parrainage</a></li>
+    </ul>
+
+    <a href="reservation.html" class="eden-reserve">Réserver →</a>
+  </div>
+</nav>
+
+<div id="cd"></div><div id="cr"></div>
+<div id="prog"></div>
+
+
+
+<!-- HERO -->
+<div class="hero">
+  <span class="h-eyebrow">Fuel Bar EDEN · Tout fait maison</span>
+  <h1 class="h-title">Smoothies & Boissons</h1>
+  <div class="h-sep"><div class="sl"></div><div class="sd"></div><div class="sl sr"></div></div>
+  <p class="h-sub">Chaque boisson est pensée pour l'activité que vous venez de vivre — ou celle qui vous attend.</p>
+  <div class="legend">
+    <div class="leg-item"><span class="leg-dot" style="background:var(--col-bn)"></span>Bain Nordique</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--col-bf)"></span>Bain Froid</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--col-sa)"></span>Sauna & Hammam</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--col-pr)"></span>Pressothérapie</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--col-ma)"></span>Massage</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--col-all)"></span>Toutes activités</div>
+  </div>
+</div>
+
+<!-- VISION -->
+<div class="vision rv">
+  <h2 class="vision-title">Une boisson, une intention</h2>
+  <p class="vision-text">Chez EDEN, chaque smoothie est conçu en fonction de ce que votre corps traverse. Le bain froid active la circulation et sollicite les mécanismes anti-inflammatoires — il appelle des fruits riches en antioxydants et en vitamine C. Le sauna ouvre les pores, accélère le cœur, minéralise — il réclame de l'hydratation et des électrolytes. Le massage libère les tensions et les toxines — il demande des composants drainants et régénérants. Pas de hasard. Pas de générique. Chaque verre a un sens.</p>
+</div>
+
+<!-- TABS -->
+<div class="menu-tabs">
+  <button class="tab on" onclick="scrollToAct('bn')"><span class="tab-dot" style="background:var(--col-bn)"></span>Bain Nordique</button>
+  <button class="tab" onclick="scrollToAct('bf')"><span class="tab-dot" style="background:var(--col-bf)"></span>Bain Froid</button>
+  <button class="tab" onclick="scrollToAct('sa')"><span class="tab-dot" style="background:var(--col-sa)"></span>Sauna & Hammam</button>
+  <button class="tab" onclick="scrollToAct('pr')"><span class="tab-dot" style="background:var(--col-pr)"></span>Pressothérapie</button>
+  <button class="tab" onclick="scrollToAct('ma')"><span class="tab-dot" style="background:var(--col-ma)"></span>Massage</button>
+  <button class="tab" onclick="scrollToAct('all')"><span class="tab-dot" style="background:var(--col-all)"></span>Toutes activités</button>
+</div>
+
+<div class="carte">
+
+<!-- ══ BAIN NORDIQUE ══ -->
+<div class="act-section rv" id="bn">
+  <div class="act-header">
+    <div class="act-color-bar" style="background:var(--col-bn)"></div>
+    <div class="act-header-inner">
+      <div class="act-eyebrow" style="color:var(--col-bn)">Bain Nordique · 37–40°C</div>
+      <div class="act-title" style="color:inherit">Pour le bain nordique</div>
+      <p class="act-why">La chaleur du bain nordique dilate les vaisseaux, accélère la circulation et favorise la transpiration. Le corps a besoin de se réhydrater, de reconstituer ses minéraux et d'apporter des composants anti-inflammatoires pour prolonger les bienfaits thermiques.</p>
+      <div class="act-tag" style="background:rgba(91,155,213,.08);color:var(--col-bn);border:1px solid rgba(91,155,213,.2)">
+        ◈ Idéal après · Riche en électrolytes & antioxydants
+      </div>
+    </div>
+  </div>
+  <div class="smoothie-grid">
+
+    <a href="smoothie-detail.html?s=Le+Fjord" class="sm-card rv" style="text-decoration:none;cursor:pointer;display:block;">
+      <div class="sm-accent" style="background:var(--col-bn)"></div>
+      <div class="sm-num" style="color:var(--col-bn)">I</div>
+      <div class="sm-name">Le Fjord</div>
+      <div class="sm-comp"><strong>Myrtille · Grenade · Gingembre · Citron · Eau de coco</strong><br>Base hydratante avec eau de coco pour les électrolytes naturels, grenade et myrtille pour les antioxydants puissants, gingembre pour l'effet anti-inflammatoire.</div>
+      <div class="sm-why" style="border-color:var(--col-bn)">La grenade est l'un des fruits les plus riches en polyphénols — elle potentialise les effets de la chaleur sur la circulation.</div>
+      <div class="sm-footer">
+        <span class="sm-price">7.50€</span>
+        <span class="sm-temp">Froid · Sans glace</span>
+        <span style="font-size:9px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-left:auto;">Voir →</span>
+      </div>
+    </a>
+
+    <a href="smoothie-detail.html?s=L%27Arctique" class="sm-card rv d1" style="text-decoration:none;cursor:pointer;display:block;">
+  <div class="sm-accent" style="background:var(--col-bn)"></div>
+  <div class="sm-num" style="color:var(--col-bn)">II</div>
+  <div class="sm-name">L'Arctique</div>
+  <div class="sm-comp"><strong>Ananas · Curcuma · Poivre noir · Lait de coco · Miel</strong><br>Le curcuma associé au poivre noir décuple l'absorption des composés anti-inflammatoires. L'ananas apporte la bromélaïne, enzyme qui aide à réduire les tensions musculaires.</div>
+  <div class="sm-why" style="border-color:var(--col-bn)">Le poivre noir augmente l'absorption du curcuma de 2000% — une association rare et puissante.</div>
+  <div class="sm-footer">
+    <span class="sm-price">7.50€</span>
+    <span class="sm-temp">Froid ou tempéré</span>
+    <span style="font-size:9px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-left:auto;">Voir →</span>
+  </div>
+</a>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══ BAIN FROID ══ -->
+<div class="act-section rv" id="bf">
+  <div class="act-header">
+    <div class="act-color-bar" style="background:var(--col-bf)"></div>
+    <div class="act-header-inner">
+      <div class="act-eyebrow" style="color:var(--col-bf)">Bain Froid · 6–10°C</div>
+      <div class="act-title" style="color:inherit">Pour le bain froid</div>
+      <p class="act-why">Le bain froid provoque une vasoconstriction puis une vasodilatation puissante dès la sortie — une stimulation circulatoire intense. Il génère aussi un stress oxydatif léger que des antioxydants ciblés aident à neutraliser. Le corps a besoin de se réchauffer de l'intérieur et de récupérer son énergie rapidement.</p>
+      <div class="act-tag" style="background:rgba(79,195,247,.08);color:var(--col-bf);border:1px solid rgba(79,195,247,.2)">
+        ◈ Idéal après · Réchauffant & anti-oxydant
+      </div>
+    </div>
+  </div>
+  <div class="smoothie-grid">
+
+    <a href="smoothie-detail.html?s=Le+R%C3%A9veil" class="sm-card rv" style="text-decoration:none;cursor:pointer;display:block;">
+  <div class="sm-accent" style="background:var(--col-bf)"></div>
+  <div class="sm-num" style="color:var(--col-bf)">III</div>
+  <div class="sm-name">Le Réveil</div>
+  <div class="sm-comp"><strong>Orange sanguine · Carotte · Gingembre · Citron · Piment de Cayenne</strong><br>Vitamine C massive pour le stress oxydatif post-froid. Le piment de Cayenne et le gingembre réchauffent de l'intérieur et relancent la circulation périphérique rapidement.</div>
+  <div class="sm-why" style="border-color:var(--col-bf)">Après l'immersion froide, le corps relance sa production de chaleur — ce smoothie accompagne ce mécanisme naturel.</div>
+  <div class="sm-footer">
+    <span class="sm-price">7.50€</span>
+    <span class="sm-temp">Tempéré · Jamais glacé</span>
+    <span style="font-size:9px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-left:auto;">Voir →</span>
+  </div>
+</a>
+
+    <a href="smoothie-detail.html?s=La+Flamme" class="sm-card rv d1" style="text-decoration:none;cursor:pointer;display:block;">
+  <div class="sm-accent" style="background:var(--col-bf)"></div>
+  <div class="sm-num" style="color:var(--col-bf)">IV</div>
+  <div class="sm-name">La Flamme</div>
+  <div class="sm-comp"><strong>Mangue · Citron · Gingembre frais · Curcuma · Eau de source</strong><br>Combinaison de fruits riches en bêta-carotène et d'épices réchauffantes. Léger, digeste, et particulièrement efficace pour relancer la chaleur corporelle sans surcharger l'organisme.</div>
+  <div class="sm-why" style="border-color:var(--col-bf)">La mangue apporte des glucides naturels qui compensent rapidement la dépense énergétique du bain froid.</div>
+  <div class="sm-footer">
+    <span class="sm-price">7.50€</span>
+    <span class="sm-temp">Tempéré</span>
+    <span style="font-size:9px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-left:auto;">Voir →</span>
+  </div>
+</a>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══ SAUNA & HAMMAM ══ -->
+<div class="act-section rv" id="sa">
+  <div class="act-header">
+    <div class="act-color-bar" style="background:var(--col-sa)"></div>
+    <div class="act-header-inner">
+      <div class="act-eyebrow" style="color:var(--col-sa)">Sauna & Hammam · 80–95°C</div>
+      <div class="act-title" style="color:inherit">Pour le sauna & hammam</div>
+      <p class="act-why">La transpiration intense du sauna entraîne une perte significative d'eau, de sodium, de potassium et de magnésium. La priorité absolue est la réhydratation et la remineralisation. Des fruits à haute teneur en eau et en électrolytes naturels sont essentiels — associés à des composants qui soutiennent la détoxification naturelle amorcée par la chaleur.</p>
+      <div class="act-tag" style="background:rgba(224,120,80,.08);color:var(--col-sa);border:1px solid rgba(224,120,80,.2)">
+        ◈ Idéal après · Reminéralisant & détoxifiant
+      </div>
+    </div>
+  </div>
+  <div class="smoothie-grid">
+
+    <a href="smoothie-detail.html?s=La+Source" class="sm-card rv" style="text-decoration:none;cursor:pointer;display:block;">
+  <div class="sm-accent" style="background:var(--col-sa)"></div>
+  <div class="sm-num" style="color:var(--col-sa)">V</div>
+  <div class="sm-name">La Source</div>
+  <div class="sm-comp"><strong>Pastèque · Concombre · Menthe fraîche · Citron vert · Eau de coco</strong><br>Le sauna vide. La Source remplit. Composée à 95% d'eau, cette boisson est une réhydratation immédiate, profonde et minéralisante.</div>
+  <div class="sm-why" style="border-color:var(--col-sa)">La pastèque contient aussi de la L-citrulline, un acide aminé qui améliore la circulation sanguine.</div>
+  <div class="sm-footer">
+    <span class="sm-price">7.50€</span>
+    <span class="sm-temp">Frais · Légèrement glacé</span>
+    <span style="font-size:9px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-left:auto;">Voir →</span>
+  </div>
+</a>
+
+    <a href="smoothie-detail.html?s=Le+Hammam" class="sm-card rv d1" style="text-decoration:none;cursor:pointer;display:block;">
+      <div class="sm-accent" style="background:var(--col-sa)"></div>
+      <div class="sm-num" style="color:var(--col-sa)">VI</div>
+      <div class="sm-name">Le Hammam</div>
+      <div class="sm-comp"><strong>Pêche · Abricot · Eau de rose · Citron · Miel de fleurs</strong><br>Inspiré du thé du Hammam. Des fruits à haute teneur en bêta-carotène et potassium pour la remineralisation. L'eau de rose apporte une dimension florale et légèrement apaisante après la chaleur intense.</div>
+      <div class="sm-why" style="border-color:var(--col-sa)">L'abricot est particulièrement riche en potassium — l'électrolyte le plus perdu lors de la sudation.</div>
+      <div class="sm-footer">
+        <span class="sm-price">7.50€</span>
+        <span class="sm-temp">Frais</span>
+        <span style="font-size:9px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-left:auto;">Voir →</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══ PRESSOTHÉRAPIE ══ -->
+<div class="act-section rv" id="pr">
+  <div class="act-header">
+    <div class="act-color-bar" style="background:var(--col-pr)"></div>
+    <div class="act-header-inner">
+      <div class="act-eyebrow" style="color:var(--col-pr)">Pressothérapie · Drainage lymphatique</div>
+      <div class="act-title" style="color:inherit">Pour la pressothérapie</div>
+      <p class="act-why">La pressothérapie stimule le système lymphatique et favorise l'élimination des toxines et des déchets métaboliques. Pour en maximiser les effets, le corps a besoin de fruits et de plantes à propriétés drainantes et dépuratives, qui accompagnent le travail entamé par les bottes de compression.</p>
+      <div class="act-tag" style="background:rgba(156,127,213,.08);color:var(--col-pr);border:1px solid rgba(156,127,213,.2)">
+        ◈ Idéal après · Drainant & dépuratif
+      </div>
+    </div>
+  </div>
+  <div class="smoothie-grid">
+
+    <a href="smoothie-detail.html?s=Le+Flux" class="sm-card rv" style="text-decoration:none;cursor:pointer;display:block;">
+      <div class="sm-accent" style="background:var(--col-pr)"></div>
+      <div class="sm-num" style="color:var(--col-pr)">VII</div>
+      <div class="sm-name">Le Flux</div>
+      <div class="sm-comp"><strong>Raisin noir · Myrtille · Citron · Persil frais · Eau</strong><br>Le raisin noir et la myrtille sont riches en resvératrol et en anthocyanes — des composés qui soutiennent la microcirculation. Le persil, souvent méconnu, est un drainant naturel puissant qui accompagne idéalement le drainage lymphatique.</div>
+      <div class="sm-why" style="border-color:var(--col-pr)">Le persil contient de l'apiol, un composé actif reconnu pour ses propriétés diurétiques et drainantes.</div>
+      <div class="sm-footer">
+        <span class="sm-price">7.50€</span>
+        <span class="sm-temp">Froid</span>
+        <span style="font-size:9px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-left:auto;">Voir →</span>
+      </div>
+    </a>
+
+    <a href="smoothie-detail.html?s=La+Lymphe" class="sm-card rv d1" style="text-decoration:none;cursor:pointer;display:block;">
+  <div class="sm-accent" style="background:var(--col-pr)"></div>
+  <div class="sm-num" style="color:var(--col-pr)">VIII</div>
+  <div class="sm-name">La Lymphe</div>
+  <div class="sm-comp"><strong>Ananas · Céleri · Citron vert · Gingembre · Eau de coco</strong><br>L'ananas apporte la bromélaïne, enzyme anti-inflammatoire et drainante par excellence. Le céleri est l'un des végétaux les plus actifs sur la rétention d'eau. Une association précise, pensée pour les jambes légères.</div>
+  <div class="sm-why" style="border-color:var(--col-pr)">La bromélaïne de l'ananas est cliniquement reconnue pour réduire l'œdème et améliorer le retour veineux.</div>
+  <div class="sm-footer">
+    <span class="sm-price">7.50€</span>
+    <span class="sm-temp">Froid</span>
+    <span style="font-size:9px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-left:auto;">Voir →</span>
+  </div>
+</a>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══ MASSAGE ══ -->
+<div class="act-section rv" id="ma">
+  <div class="act-header">
+    <div class="act-color-bar" style="background:var(--col-ma)"></div>
+    <div class="act-header-inner">
+      <div class="act-eyebrow" style="color:var(--col-ma)">Massage & Fauteuil massant</div>
+      <div class="act-title" style="color:inherit">Pour le massage</div>
+      <p class="act-why">Le massage libère les tensions musculaires, mobilise les toxines stockées dans les tissus et active le système nerveux parasympathique — la détente profonde. L'organisme entre dans un état de récupération active. Des composants calmants, riches en magnésium et en tryptophane naturel, prolongent cet état.</p>
+      <div class="act-tag" style="background:rgba(122,184,122,.08);color:var(--col-ma);border:1px solid rgba(122,184,122,.2)">
+        ◈ Idéal après · Apaisant & régénérant
+      </div>
+    </div>
+  </div>
+  <div class="smoothie-grid">
+
+    <a href="smoothie-detail.html?s=La+S%C3%A9r%C3%A9nit%C3%A9" class="sm-card rv" style="text-decoration:none;cursor:pointer;display:block;">
+  <div class="sm-accent" style="background:var(--col-ma)"></div>
+  <div class="sm-num" style="color:var(--col-ma)">IX</div>
+  <div class="sm-name">La Sérénité</div>
+  <div class="sm-comp"><strong>Banane · Lait d'amande · Datte · Cannelle · Vanille</strong><br>La banane est riche en tryptophane, précurseur naturel de la sérotonine — l'hormone du bien-être. Les dattes apportent des sucres naturels lents et du magnésium. La cannelle régule la glycémie pour une énergie stable et douce.</div>
+  <div class="sm-why" style="border-color:var(--col-ma)">Ce smoothie accompagne l'état parasympathique activé par le massage — douceur, chaleur, profondeur.</div>
+  <div class="sm-footer">
+    <span class="sm-price">7.50€</span>
+    <span class="sm-temp">Tempéré ou froid</span>
+    <span style="font-size:9px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-left:auto;">Voir →</span>
+  </div>
+</a>
+
+    <a href="smoothie-detail.html?s=Le+Silence" class="sm-card rv d1" style="text-decoration:none;cursor:pointer;display:block;">
+  <div class="sm-accent" style="background:var(--col-ma)"></div>
+  <div class="sm-num" style="color:var(--col-ma)">X</div>
+  <div class="sm-name">Le Silence</div>
+  <div class="sm-comp"><strong>Cerise · Hibiscus · Grenade · Miel · Eau</strong><br>La cerise est l'une des rares sources naturelles de mélatonine — elle favorise un repos profond. L'hibiscus, riche en flavonoïdes, apporte une action apaisante et légèrement hypotensive. Pour une récupération complète.</div>
+  <div class="sm-why" style="border-color:var(--col-ma)">Idéal en fin de journée après une séance — le corps est prêt à récupérer, cette boisson l'y accompagne.</div>
+  <div class="sm-footer">
+    <span class="sm-price">7.50€</span>
+    <span class="sm-temp">Froid · Sans glace</span>
+    <span style="font-size:9px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-left:auto;">Voir →</span>
+  </div>
+</a>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══ TOUTES ACTIVITÉS ══ -->
+<div class="act-section rv" id="all">
+  <div class="act-header">
+    <div class="act-color-bar" style="background:var(--col-all)"></div>
+    <div class="act-header-inner">
+      <div class="act-eyebrow" style="color:var(--col-all)">Toutes activités · En tout moment</div>
+      <div class="act-title" style="color:inherit">Les intemporels</div>
+      <p class="act-why">Des boissons pensées pour accompagner n'importe quel moment de votre séance — avant, pendant, après. Des assemblages équilibrés, sans intention spécifique, simplement bons et faits maison.</p>
+    </div>
+  </div>
+  <div class="universal-grid">
+
+    <a href="smoothie-detail.html?s=L%27%C3%89ternel" class="sm-card rv" style="text-decoration:none;cursor:pointer;display:block;">
+  <div class="sm-accent" style="background:var(--col-all)"></div>
+  <div class="sm-num" style="color:var(--col-all)">XI</div>
+  <div class="sm-name">L'Éternel</div>
+  <div class="sm-comp"><strong>Fraise · Framboise · Banane · Lait d'amande · Miel</strong><br>Doux, rond, fruité. Le smoothie du moment présent — aucune intention particulière, juste du plaisir.</div>
+  <div class="sm-footer" style="margin-top:16px">
+    <span class="sm-price">7.00€</span>
+    <span class="sm-temp">Froid</span>
+    <span style="font-size:9px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-left:auto;">Voir →</span>
+  </div>
+</a>
+
+    <div class="sm-card rv d1">
+      <div class="sm-accent" style="background:var(--col-all)"></div>
+      <div class="sm-num" style="color:var(--col-all)">XII</div>
+      <div class="sm-name">Le Vert</div>
+      <div class="sm-comp"><strong>Épinard · Pomme · Concombre · Citron · Gingembre</strong><br>Un green smoothie classique réinterprété — équilibré entre fraîcheur végétale et punch d'agrumes.</div>
+      <div class="sm-footer" style="margin-top:16px">
+        <span class="sm-price">7.00€</span>
+        <span class="sm-temp">Froid</span>
+      </div>
+    </div>
+
+    <div class="sm-card rv d2">
+      <div class="sm-accent" style="background:var(--col-all)"></div>
+      <div class="sm-num" style="color:var(--col-all)">XIII</div>
+      <div class="sm-name">L'Ambre</div>
+      <div class="sm-comp"><strong>Mangue · Ananas · Citron · Curcuma · Eau de source</strong><br>Lumineux et ensoleillé. Une boisson qui met de bonne humeur, à tout moment de la journée.</div>
+      <div class="sm-footer" style="margin-top:16px">
+        <span class="sm-price">7.00€</span>
+        <span class="sm-temp">Froid</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- NOTE BAS DE PAGE -->
+<div class="note-bas rv">
+  <span class="note-icon">◈</span>
+  <p class="note-txt">Tous nos smoothies sont préparés au moment de la commande, à partir de fruits frais ou surgelés de qualité, sans sirop ajouté. Les ingrédients peuvent varier selon la saison et les arrivages. Notre équipe peut adapter chaque recette à vos préférences ou intolérances — n'hésitez pas à demander. Les effets mentionnés sont d'ordre nutritionnel général et ne constituent pas des allégations médicales.</p>
+</div>
+
+</div><!-- /carte -->
+
+<!-- CTA -->
+<div class="carte-cta">
+  <h2 class="cta-title">Votre séance,<br>votre boisson</h2>
+  <p class="cta-sub">Réservez votre créneau. À votre sortie, votre boisson vous attend — pensée pour ce que vous venez de vivre.</p>
+  <a href="reservation.html" class="btn-gold">Réserver →</a>
+  <a href="carte-bar.html" class="btn-outline">Cafés & Thés</a>
+</div>
+<!-- DIAPO SMOOTHIES -->
+<section class="smoothie-diapo-section" id="smoothie-diapo">
+  <div class="diapo-header">
+    <p class="diapo-eyebrow">EDEN · FUEL BAR</p>
+    <h2>Collection Smoothies</h2>
+    <p>La carte complète, classée dans l’ordre des expériences.</p>
+  </div>
+
+  <div class="smoothie-slider-wrapper">
+    <button class="slider-btn prev" type="button">‹</button>
+
+    <div class="smoothie-slider" id="smoothieSlider">
+
+      <a class="smoothie-slide" href="smoothie-detail.html?s=Le%20Fjord">
+        <img src="images/smoothie-fjord.png" alt="Le Fjord">
+        <div class="slide-info"><span>I</span><h3>Le Fjord</h3></div>
+      </a>
+
+      <a class="smoothie-slide" href="smoothie-detail.html?s=L%27Arctique">
+        <img src="images/arctique.png" alt="L’Arctique">
+        <div class="slide-info"><span>II</span><h3>L’Arctique</h3></div>
+      </a>
+
+      <a class="smoothie-slide" href="smoothie-detail.html?s=Le%20R%C3%A9veil">
+        <img src="images/reveil.png" alt="Le Réveil">
+        <div class="slide-info"><span>III</span><h3>Le Réveil</h3></div>
+      </a>
+
+      <a class="smoothie-slide" href="smoothie-detail.html?s=La%20Flamme">
+        <img src="images/smoothie-flamme.png" alt="La Flamme">
+        <div class="slide-info"><span>IV</span><h3>La Flamme</h3></div>
+      </a>
+
+      <a class="smoothie-slide" href="smoothie-detail.html?s=La%20Source">
+        <img src="images/smoothie-source.png" alt="La Source">
+        <div class="slide-info"><span>V</span><h3>La Source</h3></div>
+      </a>
+
+      <a class="smoothie-slide" href="smoothie-detail.html?s=Le%20Hammam">
+        <img src="images/hamm.png" alt="Le Hammam">
+        <div class="slide-info"><span>VI</span><h3>Le Hammam</h3></div>
+      </a>
+
+      <a class="smoothie-slide" href="smoothie-detail.html?s=Le%20Flux">
+        <img src="images/smoothie-flux.png" alt="Le Flux">
+        <div class="slide-info"><span>VII</span><h3>Le Flux</h3></div>
+      </a>
+
+      <a class="smoothie-slide" href="smoothie-detail.html?s=La%20Lymphe">
+        <img src="images/lymphe.png" alt="La Lymphe">
+        <div class="slide-info"><span>VIII</span><h3>La Lymphe</h3></div>
+      </a>
+
+      <a class="smoothie-slide" href="smoothie-detail.html?s=La%20S%C3%A9r%C3%A9nit%C3%A9">
+        <img src="images/seneri.png" alt="La Sérénité">
+        <div class="slide-info"><span>IX</span><h3>La Sérénité</h3></div>
+      </a>
+
+      <a class="smoothie-slide" href="smoothie-detail.html?s=Le%20Silence">
+        <img src="images/silence.png" alt="Le Silence">
+        <div class="slide-info"><span>X</span><h3>Le Silence</h3></div>
+      </a>
+
+      <a class="smoothie-slide" href="smoothie-detail.html?s=L%27%C3%89ternel">
+        <img src="images/eternel.png" alt="L’Éternel">
+        <div class="slide-info"><span>XI</span><h3>L’Éternel</h3></div>
+      </a>
+
+    </div>
+
+    <button class="slider-btn next" type="button">›</button>
+  </div>
+</section>
+<!-- FOOTER -->
+<footer>
+  <div class="fg">
+    <div><span class="flogo">EDEN</span><p class="fabout">Un sanctuaire dédié à votre bien-être. Ouvert 7j/7 de 8h à 22h.</p><span class="ftag">Récupération · Détente · Équilibre</span></div>
+    <div class="fc"><h5>Fuel Bar</h5><ul><li><a href="fuel-bar.html">Présentation</a></li><li><a href="carte-bar.html">Cafés & Thés</a></li><li><a href="smoothies.html" style="color:var(--gold-l)">Smoothies</a></li></ul></div>
+    <div class="fc"><h5>Infos</h5><ul><li><a href="index.html#tarifs">Tarifs</a></li><li><a href="faq.html">FAQ</a></li><li><a href="parrainage.html">Parrainage</a></li><li><a href="mentions-legales.html">Mentions légales</a></li></ul></div>
+    <div class="fc"><h5>Contact</h5><ul><li><a href="#">12 Rue du Bien-Être</a></li><li><a href="tel:+33100000000">01 00 00 00 00</a></li><li><a href="mailto:contact@eden-wellness.fr">contact@eden-wellness.fr</a></li></ul></div>
+  </div>
+  <div class="fbot"><span>© 2026 EDEN Wellness SAS. Tous droits réservés.</span><div><a href="mentions-legales.html">Mentions légales</a><a href="mentions-legales.html">CGV</a></div></div></footer>
+
+<script>
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px';});
+(function l(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(l);})();
+document.querySelectorAll('a,button,.sm-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hov'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hov'));
+});
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('prog').style.width=(scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%';
+  updateTabs();
+});
+
+function scrollToAct(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const top=el.getBoundingClientRect().top+window.scrollY-140;
+  window.scrollTo({top,behavior:'smooth'});
+}
+
+function updateTabs(){
+  const ids=['bn','bf','sa','pr','ma','all'];
+  const tabs=document.querySelectorAll('.tab');
+  let active=0;
+  ids.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el&&el.getBoundingClientRect().top<200)active=i;
+  });
+  tabs.forEach((t,i)=>t.classList.toggle('on',i===active));
+}
+
+const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}}),{threshold:.08});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+// Diapo smoothies
+var smoothieSlider = document.getElementById("smoothieSlider");
+var prevBtn = document.querySelector(".slider-btn.prev");
+var nextBtn = document.querySelector(".slider-btn.next");
+
+if (smoothieSlider && prevBtn && nextBtn) {
+  nextBtn.addEventListener("click", function() {
+    smoothieSlider.scrollBy({
+      left: 420,
+      behavior: "smooth"
+    });
+  });
+
+  prevBtn.addEventListener("click", function() {
+    smoothieSlider.scrollBy({
+      left: -420,
+      behavior: "smooth"
+    });
+  });
+}
+</script>
+<script>
+const edenBurger = document.querySelector(".eden-burger");
+const edenMenu = document.querySelector(".eden-menu");
+
+if(edenBurger && edenMenu){
+  edenBurger.addEventListener("click",()=>{
+    edenMenu.classList.toggle("open");
+  });
+}
+</script>
+
+<!-- ══ COOKIE BANNER ══ -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9990;background:rgba(6,9,8,.97);border-top:1px solid rgba(196,160,78,.2);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px;backdrop-filter:blur(12px);">
+  <div style="flex:1">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.9;max-width:680px">🍪 Nous utilisons des cookies pour améliorer votre expérience et analyser notre trafic. En continuant, vous acceptez notre <a href="rgpd.html" style="color:#c4a04e;text-decoration:underline">politique de confidentialité</a>.</p>
+  </div>
+  <div style="display:flex;gap:10px;flex-shrink:0">
+    <button onclick="refuseCookies()" style="background:none;border:1px solid rgba(196,160,78,.25);color:#7a7a68;padding:9px 20px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s">Refuser</button>
+    <button onclick="acceptCookies()" style="background:#c4a04e;color:#060908;border:none;padding:9px 24px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-weight:400;transition:all .3s">Accepter</button>
+  </div>
+</div>
+
+<!-- ══ CHATBOT FLOTTANT ══ -->
+<div id="chatbot-btn" onclick="toggleChat()" style="position:fixed;bottom:28px;right:28px;z-index:9980;width:52px;height:52px;background:linear-gradient(135deg,#c4a04e,#dbbf78);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 32px rgba(196,160,78,.35);transition:transform .3s;font-size:20px;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">💬</div>
+<div id="chatbot-panel" style="display:none;position:fixed;bottom:92px;right:28px;z-index:9980;width:320px;background:#0c110a;border:1px solid rgba(196,160,78,.2);box-shadow:0 20px 60px rgba(0,0,0,.6);">
+  <div style="padding:16px 20px;background:linear-gradient(135deg,rgba(196,160,78,.15),rgba(196,160,78,.05));border-bottom:1px solid rgba(196,160,78,.12);display:flex;align-items:center;justify-content:space-between">
+    <div><p style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#f4efe5">EDEN · Assistance</p><p style="font-size:9px;color:#7a7a68;letter-spacing:1px">Réponse en moins de 2h · 7j/7</p></div>
+    <button onclick="toggleChat()" style="background:none;border:none;color:#7a7a68;font-size:18px;cursor:pointer">×</button>
+  </div>
+  <div style="padding:16px 20px">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.8;margin-bottom:14px">Bonjour ! Comment puis-je vous aider ?</p>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <a href="reservation.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#c4a04e;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Réserver une séance</a>
+      <a href="faq.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Consulter la FAQ</a>
+      <a href="tel:+33100000000" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Appeler le 01 00 00 00 00</a>
+      <a href="mailto:contact@eden-wellness.fr" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Envoyer un email</a>
+    </div>
+    <p style="font-size:9px;color:#7a7a68;margin-top:14px;text-align:center">Ouvert 7j/7 · 8h–22h</p>
+  </div>
+</div>
+
+<script>
+// Cookie banner
+(function(){
+  if(!localStorage.getItem('eden_cookies')){
+    var b=document.getElementById('cookie-banner');
+    if(b){b.style.display='flex';setTimeout(function(){b.style.display='flex';},100);}
+  }
+})();
+function acceptCookies(){localStorage.setItem('eden_cookies','accepted');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function refuseCookies(){localStorage.setItem('eden_cookies','refused');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function toggleChat(){var p=document.getElementById('chatbot-panel');if(p)p.style.display=p.style.display==='none'?'block':'none';}
+</script>
+
+</body>
+</html>

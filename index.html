@@ -1,0 +1,3196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDEN — Récupération · Détente · Équilibre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@100;200;300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #c4a04e;
+  --gold-light: #dbbf78;
+  --gold-dim: #8a7038;
+  --gold-pale: #f2e8d0;
+  --dark:  #060908;
+  --dark2: #0c110a;
+  --dark3: #111608;
+  --green-deep: #0f1a0b;
+  --green-rich: #162010;
+  --cream: #f4efe5;
+  --cream2: #e8e0d0;
+  --muted: #7a7a68;
+  --light: #b8b4a4;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Jost', system-ui, sans-serif;
+  --ease: cubic-bezier(.22,.68,0,1.2);
+  --ease2: cubic-bezier(.25,.46,.45,.94);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{background:var(--dark);color:var(--cream);font-family:var(--sans);font-weight:300;overflow-x:hidden;cursor:none;}
+
+/* ─────────────────── CURSOR ─────────────────── */
+#cur-dot{position:fixed;width:5px;height:5px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .12s,opacity .2s;}
+#cur-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(196,160,78,.4);border-radius:50%;pointer-events:none;z-index:9997;transform:translate(-50%,-50%);transition:width .35s var(--ease2),height .35s var(--ease2),border-color .3s;}
+body.hovering #cur-ring{width:52px;height:52px;border-color:rgba(196,160,78,.7);}
+body.hovering #cur-dot{opacity:.5;}
+body.clicking #cur-ring{width:24px;height:24px;border-color:var(--gold);}
+
+/* ─────────────────── TICKER ─────────────────── */
+.ticker{height:32px;background:var(--gold);display:flex;align-items:center;overflow:hidden;position:relative;z-index:200;}
+.ticker-inner{display:flex;animation:tick 35s linear infinite;white-space:nowrap;}
+@keyframes tick{to{transform:translateX(-50%)}}
+.ticker-inner span{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--dark);padding:0 36px;font-weight:400;}
+.ticker-inner span.dot{padding:0;opacity:.35;font-size:14px;}
+
+/* ─────────────────── NAV ─────────────────── */
+nav{position:fixed;top:32px;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:24px 72px;transition:all .6s var(--ease2);}
+nav.solid{background:rgba(6,9,8,.9);backdrop-filter:blur(24px) saturate(1.8);padding:16px 72px;border-bottom:1px solid rgba(196,160,78,.12);}
+.logo-link{font-family:var(--serif);font-size:24px;letter-spacing:8px;color:var(--gold);text-decoration:none;font-weight:300;transition:letter-spacing .4s;}
+.logo-link:hover{letter-spacing:12px;}
+.nav-center{display:flex;gap:52px;list-style:none;}
+.nav-center a{font-size:10px;letter-spacing:3.5px;text-transform:uppercase;color:rgba(244,239,229,.6);text-decoration:none;transition:color .3s;position:relative;}
+.nav-center a::after{content:'';position:absolute;bottom:-5px;left:0;width:0;height:1px;background:var(--gold);transition:width .4s var(--ease2);}
+.nav-center a:hover{color:var(--gold);}
+.nav-center a:hover::after{width:100%;}
+.nav-right{display:flex;align-items:center;gap:24px;}
+.nav-tel{font-size:10px;letter-spacing:2px;color:var(--muted);text-decoration:none;transition:color .3s;}
+.nav-tel:hover{color:var(--gold);}
+.btn-nav{font-size:9px;letter-spacing:3px;text-transform:uppercase;border:1px solid rgba(196,160,78,.5);color:var(--gold);padding:10px 24px;text-decoration:none;transition:all .3s;font-weight:400;}
+.btn-nav:hover{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+
+/* ─────────────────── HERO ─────────────────── */
+.hero{position:relative;height:100vh;min-height:700px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;overflow:hidden;}
+.hero-img{position:absolute;inset:0;z-index:0;}
+.hero-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.28) saturate(1.4) contrast(1.1);transform:scale(1.08);animation:hzoom 22s ease-in-out infinite alternate;}
+@keyframes hzoom{from{transform:scale(1.08)}to{transform:scale(1.15)}}
+.hero-overlay{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 90% 80% at 50% 45%,transparent 25%,rgba(6,9,8,.6) 100%);}
+.hero-vignette{position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(6,9,8,.55) 0%,transparent 25%,transparent 55%,rgba(6,9,8,1) 100%);}
+.hero-content{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;width:100%;max-width:900px;padding:0 40px;}
+.hero-eyebrow{font-size:10px;letter-spacing:7px;text-transform:uppercase;color:var(--gold);margin-bottom:28px;opacity:0;animation:fadeUp .8s .4s forwards;}
+/* Flanking lines around EDEN title */
+.hero-title-row{display:flex;align-items:center;justify-content:center;gap:28px;width:100%;opacity:0;animation:fadeUp 1.2s .6s forwards;}
+.hero-title-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.4));max-width:120px;}
+.hero-title-line.right{background:linear-gradient(270deg,transparent,rgba(196,160,78,.4));}
+.hero-h1{font-family:var(--serif);font-size:clamp(80px,12vw,160px);font-weight:300;line-height:.88;letter-spacing:20px;color:var(--cream);}
+.hero-sub{font-family:var(--serif);font-size:clamp(15px,1.8vw,20px);font-style:italic;color:var(--gold-light);margin-top:18px;letter-spacing:3px;opacity:0;animation:fadeUp .8s .9s forwards;}
+.hero-sep{display:flex;align-items:center;justify-content:center;gap:16px;margin:36px auto;opacity:0;animation:fadeUp .6s 1.05s forwards;}
+.hero-sep-line{width:60px;height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.5));}
+.hero-sep-line.r{background:linear-gradient(270deg,transparent,rgba(196,160,78,.5));}
+.hero-sep-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:.7;}
+.hero-desc{font-size:13px;letter-spacing:.5px;color:rgba(184,180,164,.75);max-width:480px;line-height:2.3;opacity:0;animation:fadeUp .8s 1.15s forwards;}
+.hero-btns{display:flex;gap:16px;margin-top:44px;justify-content:center;opacity:0;animation:fadeUp .8s 1.35s forwards;}
+.btn-gold{background:var(--gold);color:var(--dark);border:none;padding:16px 44px;font-family:var(--sans);font-size:10px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;font-weight:400;transition:all .35s var(--ease2);display:inline-flex;align-items:center;gap:10px;}
+.btn-gold:hover{background:var(--gold-light);transform:translateY(-3px);}
+.btn-outline{border:1px solid rgba(196,160,78,.35);color:var(--gold-pale);padding:16px 44px;font-family:var(--sans);font-size:10px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;font-weight:300;transition:all .35s var(--ease2);display:inline-flex;align-items:center;gap:10px;}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-3px);}
+/* scroll hint — positioned absolutely, no overlap with buttons */
+.scroll-hint{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:10;display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:fadeUp .6s 2.2s forwards;}
+.scroll-hint span{font-size:8px;letter-spacing:5px;text-transform:uppercase;color:var(--muted);}
+.scroll-bar{width:1px;height:48px;background:linear-gradient(var(--gold),transparent);animation:scbar 2.2s ease-in-out infinite;}
+@keyframes scbar{0%,100%{opacity:.3;transform:scaleY(.6)}50%{opacity:1;transform:scaleY(1)}}
+
+/* ─────────────────── SEPARATOR ─────────────────── */
+.sep{height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.3),transparent);}
+.sep-thick{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5;}
+
+/* ─────────────────── VISION ─────────────────── */
+.vision{padding:140px 80px;display:grid;grid-template-columns:1fr 1fr;gap:120px;align-items:center;max-width:1400px;margin:0 auto;}
+.vision-label{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:28px;display:block;}
+.h2{font-family:var(--serif);font-size:clamp(36px,4.5vw,64px);font-weight:300;line-height:1.1;color:var(--cream);}
+.h2 em{font-style:italic;color:var(--gold-light);}
+.vision-body p{font-size:14px;line-height:2.3;color:var(--light);margin:28px 0;}
+.pillars{margin-top:48px;}
+.pillar{display:flex;align-items:center;gap:20px;padding:20px 0;border-bottom:1px solid rgba(196,160,78,.1);cursor:default;transition:all .3s;}
+.pillar:first-child{border-top:1px solid rgba(196,160,78,.1);}
+.pillar:hover{padding-left:16px;}
+.pn{font-family:var(--serif);font-size:11px;color:var(--gold-dim);min-width:28px;font-style:italic;}
+.pt{font-family:var(--serif);font-size:19px;color:var(--cream);flex:1;}
+.pa{color:var(--gold);opacity:0;transition:opacity .3s;font-size:18px;}
+.pillar:hover .pa{opacity:1;}
+.vision-img-wrap{position:relative;}
+.vision-img-inner{overflow:hidden;aspect-ratio:2/3;}
+.vision-img-inner img{width:100%;height:100%;object-fit:cover;filter:brightness(.75) saturate(1.3);transition:transform .9s var(--ease2);}
+.vision-img-wrap:hover .vision-img-inner img{transform:scale(1.06);}
+.vision-img-wrap::before{content:'';position:absolute;inset:20px;border:1px solid rgba(196,160,78,.25);z-index:2;pointer-events:none;transition:inset .4s;}
+.vision-img-wrap:hover::before{inset:12px;border-color:rgba(196,160,78,.5);}
+.vision-img-caption{position:absolute;bottom:32px;left:-24px;background:var(--dark2);border:1px solid rgba(196,160,78,.2);padding:16px 24px;z-index:3;}
+.vision-img-caption p{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+.vision-img-caption span{font-family:var(--serif);font-size:16px;color:var(--cream);}
+
+/* ─────────────────── EXPERIENCES ─────────────────── */
+.exp-section{background:var(--dark2);padding:120px 80px;}
+.exp-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:64px;max-width:1400px;margin-left:auto;margin-right:auto;}
+/* Grid: row1 = 3 equal cards, row2 = 2 equal cards — NO gaps, NO empty cells */
+.exp-grid{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:3px;}
+.exp-row{display:grid;gap:3px;}
+.exp-row.r3{grid-template-columns:repeat(3,1fr);}
+.exp-row.r2{grid-template-columns:repeat(2,1fr);}
+.exp-card{overflow:hidden;position:relative;cursor:pointer;background:var(--dark3);}
+.exp-row.r3 .exp-card{height:420px;}
+.exp-row.r2 .exp-card{height:340px;}
+.exp-card img{width:100%;height:100%;object-fit:cover;filter:brightness(.42) saturate(1.2);transition:filter .7s var(--ease2),transform .9s var(--ease2);}
+.exp-card:hover img{filter:brightness(.62) saturate(1.5);transform:scale(1.07);}
+.exp-info{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:36px;background:linear-gradient(0deg,rgba(6,9,8,.92) 0%,rgba(6,9,8,.08) 55%,transparent 100%);}
+.exp-tag{font-size:8px;letter-spacing:3.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;opacity:.9;}
+.exp-name{font-family:var(--serif);font-size:24px;font-weight:300;color:var(--cream);line-height:1.15;}
+.exp-peek{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.8;max-height:0;overflow:hidden;transition:max-height .5s var(--ease2),opacity .4s;opacity:0;}
+.exp-card:hover .exp-peek{max-height:60px;opacity:1;}
+.exp-btn{position:absolute;top:24px;right:24px;width:38px;height:38px;border:1px solid rgba(196,160,78,.3);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:14px;transform:rotate(-45deg);transition:all .4s var(--ease2);}
+.exp-card:hover .exp-btn{transform:rotate(0);background:var(--gold);color:var(--dark);border-color:var(--gold);}
+/* Gold line accent at bottom on hover */
+.exp-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease2);}
+.exp-card:hover::after{transform:scaleX(1);}
+
+/* ─────────────────── MARQUEE ─────────────────── */
+.marquee{padding:72px 0;background:var(--green-deep);border-top:1px solid rgba(196,160,78,.15);border-bottom:1px solid rgba(196,160,78,.15);overflow:hidden;}
+.marquee-inner{display:flex;animation:tick 50s linear infinite;white-space:nowrap;}
+.marquee-inner span{font-family:var(--serif);font-size:clamp(26px,4vw,52px);font-weight:300;font-style:italic;color:rgba(244,239,229,.55);padding:0 80px;flex-shrink:0;}
+.marquee-inner span.mdot{font-family:var(--sans);font-size:10px;letter-spacing:2px;color:var(--gold);vertical-align:middle;padding:0;flex-shrink:0;}
+
+/* ─────────────────── SPACES ─────────────────── */
+.spaces-section{padding:120px 80px 0;}
+.spaces-row{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-top:64px;}
+.space-card{position:relative;overflow:hidden;aspect-ratio:9/16;cursor:pointer;}
+.space-card img{width:100%;height:100%;object-fit:cover;filter:brightness(.45);transition:filter .6s,transform .8s var(--ease2);}
+.space-card:hover img{filter:brightness(.68);transform:scale(1.09);}
+.space-overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,9,8,.9) 0%,transparent 55%);display:flex;flex-direction:column;justify-content:flex-end;padding:24px;}
+.space-tag{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.space-name{font-family:var(--serif);font-size:17px;color:var(--cream);}
+/* Hover line reveal */
+.space-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease2);}
+.space-card:hover::after{transform:scaleX(1);}
+
+/* ─────────────────── STATS ─────────────────── */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);}
+.stat{padding:60px 40px;text-align:center;border-right:1px solid rgba(196,160,78,.1);position:relative;transition:background .4s;}
+.stat:last-child{border-right:none;}
+.stat:hover{background:rgba(196,160,78,.04);}
+.stat-n{font-family:var(--serif);font-size:clamp(48px,6vw,80px);font-weight:300;color:var(--gold);line-height:1;display:block;}
+.stat-l{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-top:14px;display:block;line-height:1.8;}
+
+/* ─────────────────── FUEL BAR ─────────────────── */
+.fuelbar{display:grid;grid-template-columns:1fr 1fr;min-height:640px;}
+.fuelbar-left{background:var(--green-rich);padding:110px 90px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;}
+.fuelbar-left::before{content:'';position:absolute;top:-120px;right:-120px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(196,160,78,.06),transparent 70%);pointer-events:none;}
+.fuelbar-right{position:relative;overflow:hidden;}
+.fuelbar-right img{width:100%;height:100%;object-fit:cover;filter:brightness(.55) saturate(1.4);transition:transform .9s var(--ease2);}
+.fuelbar-right:hover img{transform:scale(1.05);}
+.fuelbar-right::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--green-rich) 0%,transparent 40%);z-index:1;}
+
+/* ─────────────────── GALLERY ─────────────────── */
+.gallery-section{padding:100px 0;overflow:hidden;}
+.gallery-header{padding:0 80px;margin-bottom:56px;}
+.gallery-grid{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:58px;gap:3px;}
+.g{overflow:hidden;cursor:pointer;position:relative;}
+.g:nth-child(1){grid-column:span 5;grid-row:span 7;}
+.g:nth-child(2){grid-column:span 4;grid-row:span 4;}
+.g:nth-child(3){grid-column:span 3;grid-row:span 4;}
+.g:nth-child(4){grid-column:span 3;grid-row:span 3;}
+.g:nth-child(5){grid-column:span 4;grid-row:span 3;}
+.g:nth-child(6){grid-column:span 5;grid-row:span 4;}
+.g:nth-child(7){grid-column:span 7;grid-row:span 4;}
+.g img{width:100%;height:100%;object-fit:cover;filter:brightness(.5) saturate(1.1);transition:filter .6s,transform .8s var(--ease2);}
+.g:hover img{filter:brightness(.75) saturate(1.5);transform:scale(1.07);}
+.g-label{position:absolute;bottom:0;left:0;right:0;padding:16px 20px;background:linear-gradient(transparent,rgba(6,9,8,.85));font-family:var(--serif);font-size:14px;color:var(--cream);opacity:0;transform:translateY(8px);transition:opacity .4s,transform .4s;}
+.g:hover .g-label{opacity:1;transform:translateY(0);}
+
+/* ─────────────────── LIGHTBOX ─────────────────── */
+.lb{position:fixed;inset:0;z-index:9000;background:rgba(6,9,8,.96);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;}
+.lb.open{opacity:1;pointer-events:all;}
+.lb img{max-width:90vw;max-height:85vh;object-fit:contain;border:1px solid rgba(196,160,78,.2);}
+.lb-close{position:absolute;top:32px;right:40px;color:var(--gold);font-size:28px;cursor:pointer;font-weight:100;line-height:1;transition:transform .3s;}
+.lb-close:hover{transform:rotate(90deg);}
+.lb-caption{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-family:var(--serif);font-size:16px;font-style:italic;color:var(--light);letter-spacing:2px;}
+
+/* ─────────────────── TARIFS ─────────────────── */
+.tarifs-section{background:var(--dark2);padding:120px 80px;}
+.tarifs-top{text-align:center;margin-bottom:80px;}
+.tarifs-note{font-size:11px;letter-spacing:2px;color:var(--muted);margin-top:16px;}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;max-width:1100px;margin:0 auto;border:1px solid rgba(196,160,78,.1);}
+.pc{background:var(--dark3);padding:60px 44px;position:relative;transition:all .4s var(--ease2);}
+.pc:hover{background:rgba(196,160,78,.04);transform:translateY(-6px);}
+.pc.hot{background:var(--green-rich);border:1px solid rgba(196,160,78,.3);margin:-1px;}
+.pc.hot:hover{transform:translateY(-6px);}
+.pc-badge{position:absolute;top:0;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--dark);padding:5px 22px;font-size:8px;letter-spacing:3px;text-transform:uppercase;font-weight:400;white-space:nowrap;}
+.pc-name{font-family:var(--serif);font-size:30px;font-weight:300;color:var(--cream);margin-bottom:6px;}
+.pc-dur{font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:44px;}
+.pc-price{font-family:var(--serif);font-size:72px;font-weight:300;color:var(--gold);line-height:1;}
+.pc-unit{font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:44px;margin-top:6px;}
+.pc-list{list-style:none;margin-bottom:44px;}
+.pc-list li{font-size:13px;color:var(--light);padding:11px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:14px;}
+.pc-list li::before{content:'';width:18px;height:1px;background:var(--gold);flex-shrink:0;opacity:.7;}
+.pc-cta{display:block;width:100%;text-align:center;padding:15px;text-decoration:none;font-size:9px;letter-spacing:3px;text-transform:uppercase;font-weight:400;transition:all .35s;}
+.pc-cta.outline{border:1px solid rgba(196,160,78,.35);color:var(--gold);}
+.pc-cta.outline:hover{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+.pc-cta.solid{background:var(--gold);color:var(--dark);border:1px solid var(--gold);}
+.pc-cta.solid:hover{background:var(--gold-light);border-color:var(--gold-light);}
+
+/* ─────────────────── À LA CARTE ─────────────────── */
+.carte-section{padding:100px 80px;background:var(--dark);}
+.carte-header{text-align:center;margin-bottom:72px;}
+.carte-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;max-width:1400px;margin:0 auto;border:1px solid rgba(196,160,78,.08);}
+.cc{background:var(--dark2);padding:44px 40px;position:relative;overflow:hidden;transition:all .4s;}
+.cc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease2);}
+.cc:hover::before{transform:scaleX(1);}
+.cc:hover{background:rgba(196,160,78,.03);}
+.cc.special{background:var(--green-rich);}
+.cc-icon{font-size:20px;color:var(--gold);display:block;margin-bottom:20px;}
+.cc-tag{font-size:8px;letter-spacing:3.5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:block;}
+.cc-name{font-family:var(--serif);font-size:23px;font-weight:300;color:var(--cream);margin-bottom:12px;}
+.cc-desc{font-size:12px;color:var(--muted);line-height:2;margin-bottom:24px;}
+.cc-inc{list-style:none;margin-bottom:28px;}
+.cc-inc li{font-size:11px;color:var(--light);padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:10px;}
+.cc-inc li::before{content:'';width:14px;height:1px;background:var(--gold);opacity:.55;flex-shrink:0;}
+.cc-price{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+.cc-amount{font-family:var(--serif);font-size:38px;font-weight:300;color:var(--gold);}
+.cc-per{font-size:11px;color:var(--muted);letter-spacing:1px;}
+.cc-link{display:inline-flex;align-items:center;gap:8px;margin-top:24px;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(196,160,78,.3);padding-bottom:4px;transition:all .3s;}
+.cc-link:hover{border-color:var(--gold);gap:14px;}
+
+/* ─────────────────── PARTICLES ─────────────────── */
+#particles{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden;}
+.particle{position:absolute;width:1px;height:1px;background:var(--gold);border-radius:50%;opacity:0;animation:pfloat linear infinite;}
+@keyframes pfloat{0%{opacity:0;transform:translateY(0) translateX(0)}10%{opacity:.6}90%{opacity:.2}100%{opacity:0;transform:translateY(-120px) translateX(20px)}}
+
+/* ─────────────────── TRUST BAR ─────────────────── */
+.trust-bar{background:var(--green-deep);border-bottom:1px solid rgba(196,160,78,.12);padding:28px 80px;display:flex;align-items:center;justify-content:center;gap:64px;}
+.trust-item{display:flex;align-items:center;gap:14px;}
+.trust-icon{font-size:18px;color:var(--gold);}
+.trust-text{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--light);}
+.trust-sep{width:1px;height:24px;background:rgba(196,160,78,.2);}
+
+/* ─────────────────── TESTIMONIALS ENHANCED ─────────────────── */
+.testi{background:var(--green-deep);padding:140px 80px;text-align:center;position:relative;overflow:hidden;}
+.testi::before{content:'"';font-family:var(--serif);font-size:500px;line-height:.85;position:absolute;top:-60px;left:50%;transform:translateX(-50%);color:rgba(196,160,78,.04);pointer-events:none;z-index:0;}
+.testi-stars{display:flex;justify-content:center;gap:6px;margin-bottom:40px;position:relative;z-index:1;}
+.testi-stars span{color:var(--gold);font-size:13px;}
+.testi-slider{max-width:820px;margin:0 auto;position:relative;z-index:1;}
+.testi-slide{display:none;}
+.testi-slide.active{display:block;}
+.testi-q{font-family:var(--serif);font-size:clamp(20px,2.8vw,34px);font-weight:300;font-style:italic;color:var(--cream);line-height:1.75;}
+.testi-a{margin-top:36px;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);}
+.testi-nav{display:flex;justify-content:center;gap:10px;margin-top:52px;position:relative;z-index:1;}
+.testi-dot{width:28px;height:1px;background:rgba(196,160,78,.3);cursor:pointer;transition:background .3s,height .2s;}
+.testi-dot.on{background:var(--gold);height:2px;}
+
+/* ─────────────────── CARTE GRID responsive ─────────────────── */
+.carte-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;max-width:1400px;margin:0 auto;border:1px solid rgba(196,160,78,.08);}
+
+.cta{padding:160px 80px;text-align:center;position:relative;overflow:hidden;}
+.cta::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(196,160,78,.055),transparent 70%);pointer-events:none;}
+.cta-sub{font-size:13px;color:var(--muted);max-width:480px;margin:24px auto 56px;line-height:2.2;}
+.cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.cta-extra{margin-top:40px;font-size:11px;color:var(--muted);letter-spacing:1px;}
+.cta-extra a{color:var(--gold-light);text-decoration:none;border-bottom:1px solid rgba(196,160,78,.3);padding-bottom:1px;transition:border-color .3s;}
+.cta-extra a:hover{border-color:var(--gold-light);}
+
+/* ─────────────────── FOOTER ─────────────────── */
+footer{background:var(--dark2);border-top:1px solid rgba(196,160,78,.12);padding:88px 80px 44px;}
+.footer-grid{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr;gap:80px;margin-bottom:72px;}
+.f-logo{font-family:var(--serif);font-size:30px;letter-spacing:10px;color:var(--gold);display:block;margin-bottom:20px;}
+.f-about{font-size:13px;color:var(--muted);line-height:2.1;max-width:260px;margin-bottom:24px;}
+.f-tagline{font-family:var(--serif);font-size:13px;font-style:italic;color:var(--light);}
+.f-col h5{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:28px;}
+.f-col ul{list-style:none;}
+.f-col li{margin-bottom:13px;}
+.f-col a{font-size:13px;color:var(--muted);text-decoration:none;transition:color .3s;}
+.f-col a:hover{color:var(--gold-light);}
+.footer-bottom{border-top:1px solid rgba(196,160,78,.08);padding-top:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;font-size:11px;color:var(--muted);}
+.footer-bottom a{color:var(--muted);text-decoration:none;transition:color .3s;margin-left:24px;}
+.footer-bottom a:hover{color:var(--gold);}
+
+/* ─────────────────── HOURS BADGE ─────────────────── */
+.hours{position:fixed;bottom:36px;right:36px;z-index:400;background:rgba(12,17,10,.95);border:1px solid rgba(196,160,78,.25);padding:14px 20px;display:flex;align-items:center;gap:12px;backdrop-filter:blur(20px);transform:translateY(120px);transition:transform .7s var(--ease2);opacity:0;}
+.hours.show{transform:translateY(0);opacity:1;}
+.hours-dot{width:8px;height:8px;border-radius:50%;background:#5ca05a;flex-shrink:0;box-shadow:0 0 0 0 rgba(92,160,90,.5);animation:gpulse 2.5s infinite;}
+@keyframes gpulse{0%,100%{box-shadow:0 0 0 0 rgba(92,160,90,.4)}60%{box-shadow:0 0 0 10px rgba(92,160,90,0)}}
+.hours-txt{font-size:11px;letter-spacing:1px;color:var(--light);}
+.hours-txt strong{color:var(--gold);}
+
+/* ─────────────────── ANIMATIONS ─────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
+.rv{opacity:0;transform:translateY(44px);transition:opacity .9s var(--ease2),transform .9s var(--ease2);}
+.rv.in{opacity:1;transform:none;}
+.rv.d1{transition-delay:.1s;}.rv.d2{transition-delay:.2s;}.rv.d3{transition-delay:.3s;}.rv.d4{transition-delay:.4s;}.rv.d5{transition-delay:.5s;}
+
+/* ─────────────────── MODAL RESERVATION ─────────────────── */
+.modal-bg{position:fixed;inset:0;z-index:8000;background:rgba(6,9,8,.88);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;}
+.modal-bg.open{opacity:1;pointer-events:all;}
+.modal{background:var(--dark2);border:1px solid rgba(196,160,78,.2);padding:56px 64px;width:100%;max-width:560px;position:relative;}
+.modal-close{position:absolute;top:24px;right:28px;font-size:22px;color:var(--muted);cursor:pointer;line-height:1;transition:color .3s;background:none;border:none;font-family:var(--sans);}
+.modal-close:hover{color:var(--gold);}
+.modal h3{font-family:var(--serif);font-size:32px;font-weight:300;color:var(--cream);margin-bottom:8px;}
+.modal p{font-size:12px;color:var(--muted);margin-bottom:36px;line-height:1.8;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.form-field{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.form-field label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
+.form-field input,.form-field select,.form-field textarea{background:rgba(255,255,255,.04);border:1px solid rgba(196,160,78,.18);color:var(--cream);padding:13px 16px;font-family:var(--sans);font-size:13px;font-weight:300;outline:none;transition:border-color .3s;width:100%;}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:rgba(196,160,78,.5);}
+.form-field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%23c4a04e' opacity='.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+.form-field select option{background:var(--dark2);color:var(--cream);}
+.form-field textarea{resize:vertical;min-height:80px;}
+.form-submit{width:100%;background:var(--gold);color:var(--dark);border:none;padding:16px;font-family:var(--sans);font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:400;cursor:pointer;transition:all .35s var(--ease2);margin-top:8px;}
+.form-submit:hover{background:var(--gold-light);}
+.form-note{font-size:10px;color:var(--muted);text-align:center;margin-top:16px;line-height:1.8;}
+
+/* ─────────────────── PAGE LOADER ─────────────────── */
+#loader{
+  position:fixed;inset:0;z-index:99999;
+  background:var(--dark);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .8s var(--ease2),visibility .8s;
+}
+#loader.done{opacity:0;visibility:hidden;pointer-events:none;}
+.loader-logo{
+  font-family:var(--serif);font-size:clamp(48px,8vw,96px);letter-spacing:20px;
+  color:var(--gold);font-weight:300;
+  clip-path:inset(0 100% 0 0);
+  animation:logoReveal 1.4s .3s var(--ease2) forwards;
+}
+@keyframes logoReveal{to{clip-path:inset(0 0% 0 0)}}
+.loader-tagline{
+  font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--muted);
+  margin-top:20px;opacity:0;animation:fadeUp .6s 1.2s forwards;
+}
+.loader-bar-wrap{
+  width:160px;height:1px;background:rgba(196,160,78,.15);margin-top:48px;
+  overflow:hidden;opacity:0;animation:fadeUp .4s 1s forwards;
+}
+.loader-bar{
+  height:100%;background:var(--gold);width:0;
+  animation:loadFill 1.6s .8s var(--ease2) forwards;
+}
+@keyframes loadFill{to{width:100%}}
+.loader-pct{
+  font-size:9px;letter-spacing:3px;color:var(--muted);margin-top:14px;
+  opacity:0;animation:fadeUp .4s 1s forwards;
+}
+
+/* ─────────────────── PROMO POPUP ─────────────────── */
+#popup-bg{
+  position:fixed;inset:0;z-index:8500;
+  background:rgba(6,9,8,.75);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .5s;
+}
+#popup-bg.show{opacity:1;pointer-events:all;}
+.popup{
+  position:relative;width:100%;max-width:640px;margin:20px;
+  display:grid;grid-template-columns:1fr 1.2fr;
+  border:1px solid rgba(196,160,78,.2);overflow:hidden;
+}
+.popup-img{
+  position:relative;overflow:hidden;min-height:420px;
+}
+.popup-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.5) saturate(1.3);}
+.popup-img::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(6,9,8,.3));
+}
+.popup-body{
+  background:var(--dark2);padding:52px 40px;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.popup-close{
+  position:absolute;top:16px;right:20px;z-index:2;
+  background:none;border:none;color:var(--muted);font-size:20px;
+  cursor:pointer;line-height:1;transition:color .3s;font-family:var(--sans);
+}
+.popup-close:hover{color:var(--gold);}
+.popup-eyebrow{
+  font-size:8px;letter-spacing:5px;text-transform:uppercase;color:var(--gold);
+  margin-bottom:18px;
+}
+.popup-title{
+  font-family:var(--serif);font-size:clamp(28px,3vw,38px);font-weight:300;
+  color:var(--cream);line-height:1.15;margin-bottom:12px;
+}
+.popup-title em{font-style:italic;color:var(--gold-light);}
+.popup-desc{font-size:12px;color:var(--muted);line-height:2;margin-bottom:28px;}
+.popup-code-wrap{
+  border:1px solid rgba(196,160,78,.25);padding:16px 20px;
+  margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;
+}
+.popup-code{
+  font-family:var(--serif);font-size:28px;font-weight:300;
+  color:var(--gold);letter-spacing:4px;
+}
+.popup-copy{
+  font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);
+  background:none;border:1px solid rgba(196,160,78,.2);padding:6px 12px;
+  cursor:pointer;transition:all .3s;font-family:var(--sans);color:var(--gold);
+}
+.popup-copy:hover{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+.popup-cta{
+  display:block;width:100%;text-align:center;padding:14px;
+  background:var(--gold);color:var(--dark);text-decoration:none;
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;font-weight:400;
+  border:none;cursor:pointer;font-family:var(--sans);
+  transition:background .3s;
+}
+.popup-cta:hover{background:var(--gold-light);}
+.popup-skip{
+  display:block;text-align:center;margin-top:14px;font-size:10px;
+  color:var(--muted);cursor:pointer;transition:color .3s;
+  background:none;border:none;font-family:var(--sans);width:100%;
+}
+.popup-skip:hover{color:var(--light);}
+.popup-expire{
+  font-size:9px;letter-spacing:2px;color:var(--muted);text-align:center;
+  margin-top:12px;
+}
+#popup-countdown{color:var(--gold);font-weight:400;}
+
+/* ─────────────────── CALENDRIER CUSTOM ─────────────────── */
+.cal-wrap{position:relative;}
+.cal-trigger{
+  background:rgba(255,255,255,.04);border:1px solid rgba(196,160,78,.18);
+  color:var(--cream);padding:13px 16px;font-family:var(--sans);font-size:13px;
+  font-weight:300;width:100%;text-align:left;cursor:pointer;
+  transition:border-color .3s;display:flex;align-items:center;justify-content:space-between;
+}
+.cal-trigger:hover,.cal-trigger:focus{border-color:rgba(196,160,78,.5);outline:none;}
+.cal-trigger .cal-icon{font-size:12px;color:var(--gold);opacity:.7;}
+.cal-trigger.filled{color:var(--cream);}
+.cal-trigger:not(.filled){color:var(--muted);}
+.cal-panel{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:600;
+  background:var(--dark2);border:1px solid rgba(196,160,78,.2);
+  padding:0;opacity:0;pointer-events:none;
+  transform:translateY(-8px);
+  transition:opacity .3s var(--ease2),transform .3s var(--ease2);
+  min-width:300px;
+}
+.cal-panel.open{opacity:1;pointer-events:all;transform:translateY(0);}
+.cal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;border-bottom:1px solid rgba(196,160,78,.1);
+}
+.cal-month{
+  font-family:var(--serif);font-size:16px;font-weight:300;color:var(--cream);
+  letter-spacing:1px;
+}
+.cal-nav{
+  background:none;border:none;color:var(--gold);font-size:16px;cursor:pointer;
+  padding:4px 8px;transition:color .3s;font-family:var(--sans);line-height:1;
+}
+.cal-nav:hover{color:var(--gold-light);}
+.cal-days-header{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  padding:12px 16px 8px;
+}
+.cal-day-name{
+  text-align:center;font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);padding:4px 0;
+}
+.cal-days{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  padding:0 16px 16px;gap:2px;
+}
+.cal-day{
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:var(--light);cursor:pointer;border-radius:2px;
+  transition:all .2s;position:relative;background:none;border:none;font-family:var(--sans);
+}
+.cal-day:hover:not(.disabled):not(.empty){
+  background:rgba(196,160,78,.12);color:var(--gold);
+}
+.cal-day.today{color:var(--gold);font-weight:400;}
+.cal-day.today::after{
+  content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);
+  width:4px;height:1px;background:var(--gold);border-radius:2px;
+}
+.cal-day.selected{
+  background:var(--gold);color:var(--dark);font-weight:400;
+}
+.cal-day.selected:hover{background:var(--gold-light);}
+.cal-day.disabled{color:rgba(122,122,104,.3);cursor:default;}
+.cal-day.empty{cursor:default;}
+.cal-time-section{
+  border-top:1px solid rgba(196,160,78,.1);padding:16px 20px;
+}
+.cal-time-label{
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);
+  margin-bottom:12px;display:block;
+}
+.cal-slots{display:flex;flex-wrap:wrap;gap:8px;}
+.cal-slot{
+  padding:7px 14px;border:1px solid rgba(196,160,78,.2);
+  font-size:11px;color:var(--light);cursor:pointer;
+  transition:all .2s;background:none;font-family:var(--sans);
+}
+.cal-slot:hover{border-color:var(--gold);color:var(--gold);}
+.cal-slot.sel-slot{background:rgba(196,160,78,.15);border-color:var(--gold);color:var(--gold);}
+.cal-slot.full{opacity:.3;cursor:default;text-decoration:line-through;}
+.cal-confirm{
+  margin:12px 20px 16px;display:block;width:calc(100% - 40px);
+  background:var(--gold);color:var(--dark);border:none;padding:11px;
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;font-family:var(--sans);font-weight:400;
+  transition:background .3s;opacity:.4;pointer-events:none;
+}
+.cal-confirm.ready{opacity:1;pointer-events:all;}
+.cal-confirm.ready:hover{background:var(--gold-light);}
+
+/* ─────────────────── RESPONSIVE ─────────────────── */
+@media(max-width:900px){
+  nav{padding:16px 28px;}
+  nav.solid{padding:14px 28px;}
+  .nav-center{display:none;}
+  .vision{grid-template-columns:1fr;gap:56px;padding:80px 28px;}
+  .exp-section{padding:80px 28px;}
+  .exp-grid{grid-template-columns:1fr;grid-auto-rows:auto;}
+  .exp-card{aspect-ratio:16/9;}
+  .exp-card:nth-child(n){grid-column:span 12;grid-row:span 1;}
+  .spaces-row{grid-template-columns:repeat(2,1fr);}
+  .stats-bar{grid-template-columns:repeat(2,1fr);}
+  .fuelbar{grid-template-columns:1fr;}
+  .fuelbar-left{padding:72px 36px;}
+  .pricing-grid,.carte-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:40px;}
+  .modal{padding:36px 28px;margin:20px;}
+  .form-row{grid-template-columns:1fr;}
+  .gallery-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:200px;}
+  .g:nth-child(n){grid-column:span 1;grid-row:span 1;}
+}
+
+/* =========================================================
+   MENU EDEN FIX — ISOLÉ, VISIBLE, NON CASSÉ PAR L'ANCIEN CSS
+   ========================================================= */
+.eden-menu{
+  position:fixed !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  height:84px !important;
+  z-index:999999 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 52px !important;
+  background:
+    linear-gradient(180deg,rgba(6,9,8,.985),rgba(6,9,8,.92)) !important;
+  border-bottom:1px solid rgba(196,160,78,.12) !important;
+  box-shadow:0 18px 55px rgba(0,0,0,.42) !important;
+  backdrop-filter:blur(18px) !important;
+  -webkit-backdrop-filter:blur(18px) !important;
+}
+
+.eden-menu::before{
+  content:"" !important;
+  position:absolute !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.42),transparent) !important;
+  pointer-events:none !important;
+}
+
+.eden-menu *{
+  box-sizing:border-box !important;
+}
+
+.eden-menu-inner{
+  width:100% !important;
+  max-width:1820px !important;
+  display:grid !important;
+  grid-template-columns:230px 1fr 230px !important;
+  align-items:center !important;
+  gap:32px !important;
+}
+
+.eden-logo{
+  justify-self:start !important;
+  color:#c4a04e !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:26px !important;
+  font-weight:200 !important;
+  letter-spacing:15px !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  text-shadow:0 0 18px rgba(196,160,78,.18) !important;
+  line-height:1 !important;
+}
+
+.eden-links{
+  justify-self:center !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:48px !important;
+  padding:0 !important;
+  margin:0 !important;
+  list-style:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+.eden-links > li{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+.eden-links > li > a{
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:16px 0 !important;
+  color:rgba(244,239,229,.68) !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:10px !important;
+  font-weight:300 !important;
+  letter-spacing:6px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  transition:.3s ease !important;
+}
+
+.eden-links > li > a::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:calc(100% + 34px) !important;
+  max-width:155px !important;
+  height:46px !important;
+  transform:translate(-50%,-50%) !important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.020),rgba(255,255,255,.006)),
+    radial-gradient(circle at 50% 0%,rgba(196,160,78,.09),transparent 58%),
+    linear-gradient(180deg,rgba(14,17,14,.96),rgba(7,9,8,.94)) !important;
+  border:1px solid rgba(196,160,78,.12) !important;
+  box-shadow:0 12px 26px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.025) !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  z-index:-1 !important;
+  transition:.28s ease !important;
+}
+
+.eden-links > li > a::after{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  bottom:6px !important;
+  width:78px !important;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.68),transparent) !important;
+  transform:translateX(-50%) scaleX(0) !important;
+  transform-origin:center !important;
+  box-shadow:0 0 10px rgba(196,160,78,.20) !important;
+  transition:.28s ease !important;
+}
+
+.eden-links > li > a:hover,
+.eden-links > li > a.active,
+.eden-dropdown:hover > a{
+  color:#dbbf78 !important;
+}
+
+.eden-links > li > a:hover::before,
+.eden-links > li > a.active::before,
+.eden-dropdown:hover > a::before{
+  opacity:1 !important;
+}
+
+.eden-links > li > a:hover::after,
+.eden-links > li > a.active::after,
+.eden-dropdown:hover > a::after{
+  transform:translateX(-50%) scaleX(1) !important;
+}
+
+.eden-reserve{
+  justify-self:end !important;
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:48px !important;
+  padding:0 36px !important;
+  color:#060908 !important;
+  background:linear-gradient(135deg,#c4a04e,#dbbf78) !important;
+  border:1px solid rgba(196,160,78,.75) !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:10px !important;
+  font-weight:400 !important;
+  letter-spacing:4px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  overflow:hidden !important;
+  box-shadow:0 0 24px rgba(196,160,78,.16),0 14px 34px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.18) !important;
+  transition:.3s ease !important;
+}
+
+.eden-reserve::before{
+  content:"" !important;
+  position:absolute !important;
+  top:-90% !important;
+  left:-80% !important;
+  width:70% !important;
+  height:260% !important;
+  transform:rotate(24deg) !important;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent) !important;
+  opacity:0 !important;
+  transition:.75s cubic-bezier(.22,1,.36,1) !important;
+}
+
+.eden-reserve:hover{
+  transform:translateY(-2px) !important;
+}
+
+.eden-reserve:hover::before{
+  left:120% !important;
+  opacity:1 !important;
+}
+
+/* Sous-menu Fuel Bar */
+.eden-dropdown{
+  position:relative !important;
+  z-index:1000000 !important;
+}
+
+.eden-dropdown::before{
+  content:"" !important;
+  position:absolute !important;
+  left:-42px !important;
+  right:-42px !important;
+  top:100% !important;
+  height:32px !important;
+  background:transparent !important;
+}
+
+.eden-submenu{
+  position:absolute !important;
+  top:calc(100% + 18px) !important;
+  left:50% !important;
+  width:430px !important;
+  padding:12px !important;
+  transform:translateX(-50%) translateY(10px) !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.10),transparent 34%),
+    linear-gradient(180deg,rgba(12,15,12,.98),rgba(7,9,8,.98)) !important;
+  border:1px solid rgba(196,160,78,.18) !important;
+  box-shadow:0 30px 85px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.035) !important;
+  transition:.35s cubic-bezier(.22,1,.36,1) !important;
+  z-index:1000001 !important;
+}
+
+.eden-submenu::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:-7px !important;
+  width:12px !important;
+  height:12px !important;
+  transform:translateX(-50%) rotate(45deg) !important;
+  background:#0c0f0c !important;
+  border-left:1px solid rgba(196,160,78,.18) !important;
+  border-top:1px solid rgba(196,160,78,.18) !important;
+}
+
+.eden-dropdown:hover .eden-submenu,
+.eden-dropdown:focus-within .eden-submenu{
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  transform:translateX(-50%) translateY(0) !important;
+}
+
+.eden-submenu a{
+  display:grid !important;
+  grid-template-columns:42px 1fr !important;
+  column-gap:14px !important;
+  row-gap:3px !important;
+  padding:14px 16px !important;
+  text-align:left !important;
+  text-decoration:none !important;
+  border:1px solid transparent !important;
+  background:rgba(255,255,255,.010) !important;
+  transition:.3s ease !important;
+}
+
+.eden-submenu a:not(:last-child){
+  margin-bottom:6px !important;
+}
+
+.eden-submenu a span{
+  grid-row:1 / 3 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:34px !important;
+  height:34px !important;
+  border:1px solid rgba(196,160,78,.20) !important;
+  color:#c4a04e !important;
+  font-family:'Cormorant Garamond',Georgia,serif !important;
+  font-size:16px !important;
+}
+
+.eden-submenu a strong{
+  color:#f4efe5 !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:10px !important;
+  letter-spacing:3px !important;
+  text-transform:uppercase !important;
+  font-weight:300 !important;
+}
+
+.eden-submenu a small{
+  color:#7a7a68 !important;
+  font-size:11px !important;
+  text-transform:none !important;
+}
+
+.eden-submenu a:hover{
+  background:radial-gradient(circle at top right,rgba(196,160,78,.09),transparent 34%),rgba(196,160,78,.035) !important;
+  border-color:rgba(196,160,78,.18) !important;
+}
+
+.eden-submenu a:hover span{
+  background:#c4a04e !important;
+  color:#060908 !important;
+}
+
+/* Bouton mobile */
+.eden-burger{
+  display:none !important;
+  justify-self:end !important;
+  width:44px !important;
+  height:44px !important;
+  border:1px solid rgba(196,160,78,.25) !important;
+  background:rgba(196,160,78,.035) !important;
+  align-items:center !important;
+  justify-content:center !important;
+  cursor:pointer !important;
+}
+
+.eden-burger span,
+.eden-burger span::before,
+.eden-burger span::after{
+  display:block !important;
+  width:18px !important;
+  height:1px !important;
+  background:#c4a04e !important;
+  position:relative !important;
+}
+
+.eden-burger span::before,
+.eden-burger span::after{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+}
+
+.eden-burger span::before{top:-6px !important;}
+.eden-burger span::after{top:6px !important;}
+
+/* Décale le hero sous le menu */
+.hero{
+  padding-top:174px !important;
+}
+
+/* Enlève les carrés derrière les infos */
+.trust-bar .trust-item,
+.trust-bar .feature-item,
+.trust-bar .small-card,
+.trust-bar .badge,
+.trust-bar .pill,
+.trust-bar .info-pill,
+.trust-bar .top-pill{
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  min-height:auto !important;
+  border-radius:0 !important;
+}
+
+.trust-bar .trust-item::before,
+.trust-bar .trust-item::after{
+  display:none !important;
+}
+
+@media(max-width:1200px){
+  .eden-menu-inner{
+    grid-template-columns:170px 1fr 190px !important;
+  }
+
+  .eden-links{
+    gap:28px !important;
+  }
+
+  .eden-links > li > a{
+    letter-spacing:4px !important;
+  }
+}
+
+@media(max-width:1050px){
+  .eden-menu{
+    height:auto !important;
+    padding:14px 22px !important;
+  }
+
+  .eden-menu-inner{
+    grid-template-columns:1fr auto !important;
+  }
+
+  .eden-burger{
+    display:flex !important;
+  }
+
+  .eden-links{
+    grid-column:1 / -1 !important;
+    width:100% !important;
+    display:none !important;
+    flex-direction:column !important;
+    gap:8px !important;
+    margin-top:12px !important;
+  }
+
+  .eden-menu.open .eden-links{
+    display:flex !important;
+  }
+
+  .eden-links > li,
+  .eden-links > li > a{
+    width:100% !important;
+  }
+
+  .eden-links > li > a{
+    padding:14px 16px !important;
+    border:1px solid rgba(196,160,78,.12) !important;
+    background:rgba(255,255,255,.012) !important;
+  }
+
+  .eden-reserve{
+    display:none !important;
+  }
+
+  .eden-submenu{
+    position:static !important;
+    width:100% !important;
+    transform:none !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+    margin:8px 0 0 !important;
+    box-shadow:none !important;
+  }
+
+  .eden-submenu::before{
+    display:none !important;
+  }
+
+  .hero{
+    padding-top:138px !important;
+  }
+}
+
+
+/* =========================================================
+   BANDEAU DORÉ INFORMATIF — HAUT DE PAGE
+   ========================================================= */
+.ticker{
+  position:fixed !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  width:100% !important;
+  height:34px !important;
+  z-index:1000000 !important;
+  display:flex !important;
+  align-items:center !important;
+  overflow:hidden !important;
+  background:linear-gradient(90deg,#b9903e 0%,#d9b95f 50%,#b9903e 100%) !important;
+  border-bottom:1px solid rgba(6,9,8,.55) !important;
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+.ticker-inner{
+  display:flex !important;
+  align-items:center !important;
+  white-space:nowrap !important;
+  animation:edenTicker 36s linear infinite !important;
+}
+
+@keyframes edenTicker{
+  to{transform:translateX(-50%);}
+}
+
+.ticker-inner span{
+  color:#070908 !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:10px !important;
+  letter-spacing:4px !important;
+  text-transform:uppercase !important;
+  font-weight:400 !important;
+  padding:0 34px !important;
+}
+
+.ticker-inner span.dot{
+  padding:0 !important;
+  opacity:.42 !important;
+  font-size:15px !important;
+}
+
+/* Le menu descend sous le bandeau */
+.eden-menu,
+nav.eden-menu,
+nav,
+nav.solid{
+  top:34px !important;
+}
+
+/* La barre de progression ne masque pas le bandeau */
+#prog{
+  top:34px !important;
+  z-index:999999 !important;
+}
+
+/* Le haut de page reste visible sous bandeau + menu */
+.hero{
+  padding-top:174px !important;
+}
+
+@media(max-width:1050px){
+  .ticker{
+    height:32px !important;
+  }
+
+  .eden-menu,
+  nav.eden-menu,
+  nav,
+  nav.solid{
+    top:32px !important;
+  }
+
+  #prog{
+    top:32px !important;
+  }
+
+  .ticker-inner span{
+    font-size:9px !important;
+    letter-spacing:3px !important;
+    padding:0 24px !important;
+  }
+
+  .hero{
+    padding-top:138px !important;
+  }
+}
+
+
+/* =========================================================
+   POPUP INDEX — VERSION PROPRE DEVANT LE MENU
+   ========================================================= */
+#popup-bg{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2000000 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:132px 24px 40px !important;
+  background:rgba(3,5,4,.82) !important;
+  backdrop-filter:blur(10px) !important;
+  -webkit-backdrop-filter:blur(10px) !important;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .45s ease !important;
+}
+
+#popup-bg.show{
+  opacity:1 !important;
+  pointer-events:all !important;
+}
+
+#popup-bg .popup{
+  position:relative !important;
+  inset:auto !important;
+  width:min(920px,100%) !important;
+  max-width:920px !important;
+  max-height:calc(100vh - 170px) !important;
+  margin:0 auto !important;
+  display:grid !important;
+  grid-template-columns:.95fr 1.05fr !important;
+  overflow:hidden !important;
+  border:1px solid rgba(196,160,78,.24) !important;
+  background:#070807 !important;
+  box-shadow:
+    0 38px 110px rgba(0,0,0,.62),
+    0 0 45px rgba(196,160,78,.08),
+    inset 0 1px 0 rgba(255,255,255,.035) !important;
+  transform:none !important;
+}
+
+#popup-bg .popup-img{
+  position:relative !important;
+  inset:auto !important;
+  min-height:430px !important;
+  width:auto !important;
+  height:auto !important;
+  margin:0 !important;
+  overflow:hidden !important;
+  z-index:1 !important;
+}
+
+#popup-bg .popup-img img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  display:block !important;
+  filter:brightness(.62) saturate(1.18) contrast(1.05) !important;
+}
+
+#popup-bg .popup-img::after{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  background:
+    linear-gradient(90deg,transparent,rgba(6,9,8,.28)),
+    radial-gradient(circle at bottom left,rgba(196,160,78,.16),transparent 42%) !important;
+  pointer-events:none !important;
+}
+
+#popup-bg .popup-body{
+  position:relative !important;
+  inset:auto !important;
+  margin:0 !important;
+  padding:54px 46px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.10),transparent 34%),
+    linear-gradient(180deg,#0d0e0c 0%,#070807 100%) !important;
+  z-index:2 !important;
+  min-width:0 !important;
+}
+
+#popup-bg .popup-close{
+  position:absolute !important;
+  top:18px !important;
+  right:18px !important;
+  width:40px !important;
+  height:40px !important;
+  z-index:20 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border:1px solid rgba(196,160,78,.32) !important;
+  background:rgba(6,9,8,.72) !important;
+  color:#dbbf78 !important;
+  font-size:25px !important;
+  line-height:1 !important;
+  cursor:pointer !important;
+  transition:.25s ease !important;
+}
+
+#popup-bg .popup-close:hover{
+  background:#c4a04e !important;
+  color:#060908 !important;
+  transform:rotate(90deg) !important;
+}
+
+#popup-bg .popup-eyebrow{
+  color:#c4a04e !important;
+  font-size:9px !important;
+  letter-spacing:4px !important;
+  text-transform:uppercase !important;
+  margin-bottom:18px !important;
+}
+
+#popup-bg .popup-title{
+  font-family:var(--serif,'Cormorant Garamond',Georgia,serif) !important;
+  font-size:clamp(34px,4vw,54px) !important;
+  font-weight:300 !important;
+  line-height:1.05 !important;
+  color:#f4efe5 !important;
+  margin:0 0 18px !important;
+}
+
+#popup-bg .popup-title em{
+  color:#dbbf78 !important;
+  font-style:italic !important;
+}
+
+#popup-bg .popup-desc{
+  color:rgba(244,239,229,.68) !important;
+  font-size:13px !important;
+  line-height:2 !important;
+  margin:0 0 26px !important;
+}
+
+#popup-bg .popup-code-wrap{
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  margin:0 0 18px !important;
+}
+
+#popup-bg .popup-code{
+  flex:1 !important;
+  padding:15px 18px !important;
+  border:1px solid rgba(196,160,78,.22) !important;
+  background:rgba(255,255,255,.025) !important;
+  color:#dbbf78 !important;
+  letter-spacing:4px !important;
+  text-align:center !important;
+}
+
+#popup-bg .popup-copy,
+#popup-bg .popup-cta{
+  border:1px solid rgba(196,160,78,.55) !important;
+  background:linear-gradient(135deg,#c4a04e,#dbbf78) !important;
+  color:#060908 !important;
+  cursor:pointer !important;
+}
+
+#popup-bg .popup-copy{
+  padding:15px 18px !important;
+}
+
+#popup-bg .popup-cta{
+  width:100% !important;
+  padding:16px 20px !important;
+  margin-top:8px !important;
+  font-size:10px !important;
+  letter-spacing:3px !important;
+  text-transform:uppercase !important;
+}
+
+#popup-bg .popup-skip{
+  margin-top:12px !important;
+  background:transparent !important;
+  border:none !important;
+  color:rgba(244,239,229,.62) !important;
+  cursor:pointer !important;
+}
+
+#popup-bg .popup-expire{
+  margin-top:20px !important;
+  color:#7a7a68 !important;
+  font-size:11px !important;
+  letter-spacing:2px !important;
+  text-transform:uppercase !important;
+}
+
+@media(max-width:780px){
+  #popup-bg{
+    padding:116px 16px 24px !important;
+  }
+
+  #popup-bg .popup{
+    grid-template-columns:1fr !important;
+    max-height:calc(100vh - 140px) !important;
+    overflow:auto !important;
+  }
+
+  #popup-bg .popup-img{
+    min-height:190px !important;
+  }
+
+  #popup-bg .popup-body{
+    padding:38px 26px 30px !important;
+  }
+
+  #popup-bg .popup-code-wrap{
+    flex-direction:column !important;
+  }
+
+  #popup-bg .popup-code,
+  #popup-bg .popup-copy{
+    width:100% !important;
+  }
+}
+<style>
+  ... tout ton CSS actuel ...
+
+  /* UNIFORMISATION POLICES EDEN */
+  body,
+  button,
+  input,
+  select,
+  textarea,
+  a,
+  p,
+  span,
+  li,
+  label,
+  small,
+  strong{
+    font-family:'Jost', system-ui, sans-serif !important;
+  }
+
+  h1,h2,h3,h4,h5,h6,
+  .hero-h1,
+  .h1,
+  .h2,
+  .section-title,
+  .cta-title,
+  .pc-name,
+  .cc-name,
+  .exp-name,
+  .space-name,
+  .flogo,
+  .logo,
+  .logo-link,
+  .eden-logo{
+    font-family:'Jost', system-ui, sans-serif !important;
+    font-weight:100 !important;
+    letter-spacing:clamp(4px,.7vw,10px) !important;
+    text-transform:uppercase !important;
+  }
+
+  em,
+  .h1 em,
+  .h2 em,
+  .hero-h1 em,
+  .section-title em,
+  .cta-title em{
+    font-family:'Jost', system-ui, sans-serif !important;
+    font-style:normal !important;
+    font-weight:100 !important;
+    color:var(--gold-light) !important;
+  }
+</style>
+</style>
+</head>
+<body>
+
+<div class="ticker">
+  <div class="ticker-inner">
+    <span>Bain Nordique</span><span class="dot">◆</span>
+    <span>Bain Froid</span><span class="dot">◆</span>
+    <span>Sauna & Hammam</span><span class="dot">◆</span>
+    <span>Pressothérapie</span><span class="dot">◆</span>
+    <span>Espace Détente</span><span class="dot">◆</span>
+    <span>Fuel Bar</span><span class="dot">◆</span>
+    <span>Vestiaires Premium</span><span class="dot">◆</span>
+
+    <span>Bain Nordique</span><span class="dot">◆</span>
+    <span>Bain Froid</span><span class="dot">◆</span>
+    <span>Sauna & Hammam</span><span class="dot">◆</span>
+    <span>Pressothérapie</span><span class="dot">◆</span>
+    <span>Espace Détente</span><span class="dot">◆</span>
+    <span>Fuel Bar</span><span class="dot">◆</span>
+    <span>Vestiaires Premium</span><span class="dot">◆</span>
+  </div>
+</div>
+
+
+<nav id="nav" class="eden-menu">
+  <div class="eden-menu-inner">
+    <a href="index.html" class="eden-logo">EDEN</a>
+
+    <button class="eden-burger" type="button" aria-label="Ouvrir le menu">
+      <span></span>
+    </button>
+
+    <ul class="eden-links">
+      <li><a href="index.html" class="active">Accueil</a></li>
+      <li><a href="#tarifs">Tarifs</a></li>
+
+      <li class="eden-dropdown">
+        <a href="fuel-bar.html">Fuel Bar</a>
+
+        <div class="eden-submenu">
+          <a href="fuel-bar.html"><span>01</span><strong>Accueil Fuel Bar</strong><small>Présentation générale</small></a>
+          <a href="smoothies.html"><span>02</span><strong>Smoothies</strong><small>Créations signature</small></a>
+          <a href="softs.html"><span>03</span><strong>Softs premium</strong><small>Boissons fraîches</small></a>
+          <a href="carte-bar.html#cafes"><span>04</span><strong>Cafés</strong><small>Boissons chaudes</small></a>
+          <a href="carte-bar.html#thes"><span>05</span><strong>Thés & infusions</strong><small>Palais des Thés</small></a>
+        </div>
+      </li>
+
+      <li><a href="faq.html">FAQ</a></li>
+      <li><a href="parrainage.html">Parrainage</a></li>
+    </ul>
+
+    <a href="reservation.html" class="eden-reserve">Réserver →</a>
+  </div>
+</nav>
+
+
+<!-- PAGE LOADER -->
+<div id="loader">
+  <div class="loader-logo">EDEN</div>
+  <p class="loader-tagline">Récupération · Détente · Équilibre</p>
+  <div class="loader-bar-wrap"><div class="loader-bar" id="lbar"></div></div>
+  <p class="loader-pct" id="lpct">0%</p>
+</div>
+
+<!-- PROMO POPUP -->
+<div id="popup-bg">
+  <div class="popup">
+    <div class="popup-img">
+      <img src="images/bain_nordique.png" alt="Bain Nordique EDEN">
+    </div>
+    <div class="popup-body">
+      <button class="popup-close" onclick="closePopup()">×</button>
+      <p class="popup-eyebrow">Offre de bienvenue</p>
+      <h3 class="popup-title">Première visite ?<br><em>−10% sur votre séance</em></h3>
+      <p class="popup-desc">Profitez de 10% de réduction sur toutes nos formules pour votre première venue. Valable jusqu'à la fin du mois.</p>
+      <div class="popup-code-wrap">
+        <span class="popup-code">EDEN10</span>
+        <button class="popup-copy" onclick="copyCode(this)">Copier</button>
+      </div>
+      <button class="popup-cta" onclick="window.location.href='reservation.html'">Réserver avec ce code</button>
+      <button class="popup-skip" onclick="closePopup()">Non merci, continuer sans réduction</button>
+      <p class="popup-expire">Offre expire dans <span id="popup-countdown">09:59</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- Custom cursor -->
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
+
+<!-- Ticker -->
+<!-- Nav -->
+
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-img">
+    <img src="images/Acceuil.png" alt="EDEN Accueil">
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-vignette"></div>
+  <div id="particles"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Récupération · Détente · Équilibre</p>
+    <div class="hero-title-row">
+      <div class="hero-title-line"></div>
+      <h1 class="hero-h1">EDEN</h1>
+      <div class="hero-title-line right"></div>
+    </div>
+    <p class="hero-sub">L'art de prendre soin de soi</p>
+    <div class="hero-sep">
+      <div class="hero-sep-line"></div>
+      <div class="hero-sep-dot"></div>
+      <div class="hero-sep-line r"></div>
+    </div>
+    <p class="hero-desc">Un sanctuaire unique dédié au bien-être intégral. Bains nordiques, saunas, hammam, pressothérapie — une expérience sensorielle complète pensée pour régénérer corps et esprit.</p>
+    <div class="hero-btns">
+      <a href="#spaces" class="btn-gold">Découvrir EDEN</a>
+      <a href="#tarifs" class="btn-outline">Nos offres</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Descendre</span>
+    <div class="scroll-bar"></div>
+  </div>
+</section>
+
+<!-- Trust / Awards bar -->
+<div class="trust-bar">
+  <div class="trust-item"><span class="trust-icon">✦</span><span class="trust-text">Ouvert 7j/7 · 8h – 22h</span></div>
+  <div class="trust-sep"></div>
+  <div class="trust-item"><span class="trust-icon">◈</span><span class="trust-text">9 espaces premium</span></div>
+  <div class="trust-sep"></div>
+  <div class="trust-item"><span class="trust-icon">◉</span><span class="trust-text">Réservation en 2 min</span></div>
+  <div class="trust-sep"></div>
+  <div class="trust-item"><span class="trust-icon">❧</span><span class="trust-text">Peignoir & serviette inclus</span></div>
+  <div class="trust-sep"></div>
+  <div class="trust-item"><span class="trust-icon">✧</span><span class="trust-text">Parking gratuit</span></div>
+</div>
+
+<div class="sep"></div>
+
+<!-- Vision -->
+<section style="background:var(--dark)">
+  <div class="vision">
+    <div class="vision-body">
+      <span class="vision-label rv">Notre Vision</span>
+      <h2 class="h2 rv d1">Un lieu où le<br><em>temps s'arrête</em></h2>
+      <p class="rv d2">EDEN n'est pas simplement un spa. C'est une expérience totale, un rituel pensé du sol au plafond pour vous reconnecter à l'essentiel.</p>
+      <p class="rv d2">Chaque espace a été conçu pour éveiller les sens, libérer les tensions et restaurer l'équilibre profond que le quotidien nous vole.</p>
+      <div class="pillars rv d3">
+        <div class="pillar"><span class="pn">01</span><span class="pt">Récupération Active</span><span class="pa">→</span></div>
+        <div class="pillar"><span class="pn">02</span><span class="pt">Détente Profonde</span><span class="pa">→</span></div>
+        <div class="pillar"><span class="pn">03</span><span class="pt">Équilibre Intérieur</span><span class="pa">→</span></div>
+      </div>
+    </div>
+    <div class="vision-img-wrap rv d2">
+      <div class="vision-img-inner">
+        <img src="images/bienetre.png" alt="Espace bien-être">
+      </div>
+      <div class="vision-img-caption">
+        <p>Ouvert 7j/7</p>
+        <span>8h00 – 22h00</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- Experiences -->
+<section class="exp-section" id="experiences">
+  <div class="exp-top rv">
+    <div>
+      <span class="vision-label">Ce qui vous attend</span>
+      <h2 class="h2">Nos <em>Expériences</em></h2>
+    </div>
+    <a href="reservation.html" class="btn-outline">Réserver une expérience →</a>
+  </div>
+  <div class="exp-grid rv d1">
+    <!-- Ligne 1 : 3 cartes égales -->
+    <div class="exp-row r3">
+      <div class="exp-card" onclick="window.location.href='reservation.html'">
+        <img src="images/bain_nordique.png" alt="Bain Nordique">
+        <div class="exp-info">
+          <span class="exp-tag">Thermothérapie</span>
+          <h3 class="exp-name">Bain Nordique</h3>
+          <p class="exp-peek">Plongez dans nos bains chauds extérieurs sous les étoiles.</p>
+        </div>
+        <div class="exp-btn">↗</div>
+      </div>
+      <div class="exp-card" onclick="window.location.href='reservation.html'">
+        <img src="images/bienetre.png" alt="Bien-Être">
+        <div class="exp-info">
+          <span class="exp-tag">Bien-Être</span>
+          <h3 class="exp-name">Espace Bien-Être</h3>
+          <p class="exp-peek">Sauna, hammam et espaces de récupération dans un cadre d'exception.</p>
+        </div>
+        <div class="exp-btn">↗</div>
+      </div>
+      <div class="exp-card" onclick="window.location.href='reservation.html'">
+        <img src="images/presiotherapie.png" alt="Pressothérapie">
+        <div class="exp-info">
+          <span class="exp-tag">Récupération</span>
+          <h3 class="exp-name">Pressothérapie</h3>
+          <p class="exp-peek">Un espace intime pensé pour une récupération profonde.</p>
+        </div>
+        <div class="exp-btn">↗</div>
+      </div>
+    </div>
+    <!-- Ligne 2 : 2 cartes égales -->
+    <div class="exp-row r2">
+      <div class="exp-card" onclick="openModal()">
+        <img src="images/chambre4.png" alt="Salle de Repos">
+        <div class="exp-info">
+          <span class="exp-tag">Détente</span>
+          <h3 class="exp-name">Salle de Repos</h3>
+          <p class="exp-peek">Relaxation profonde dans une ambiance tamisée et sereine.</p>
+        </div>
+        <div class="exp-btn">↗</div>
+      </div>
+      <div class="exp-card" onclick="openModal()">
+        <img src="images/bar.png" alt="Fuel Bar">
+        <div class="exp-info">
+          <span class="exp-tag">Saveurs</span>
+          <h3 class="exp-name">Fuel Bar</h3>
+          <p class="exp-peek">Jus pressés, infusions premium et shots d'énergie.</p>
+        </div>
+        <div class="exp-btn">↗</div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Spaces -->
+<section class="spaces-section" id="spaces">
+  <div style="max-width:1400px;margin:0 auto">
+    <span class="vision-label rv">Explorer</span>
+    <h2 class="h2 rv d1">Nos <em>Espaces</em></h2>
+  </div>
+  <div class="spaces-row rv d2">
+    <div class="space-card">
+      <img src="images/chambre1.png" alt="Suite Solo">
+      <div class="space-overlay">
+        <span class="space-tag">Intimité</span>
+        <span class="space-name">Suite Solo</span>
+      </div>
+    </div>
+    <div class="space-card">
+      <img src="images/chambre4.png" alt="Suite Collective">
+      <div class="space-overlay">
+        <span class="space-tag">Groupe</span>
+        <span class="space-name">Suite Collective</span>
+      </div>
+    </div>
+    <div class="space-card">
+      <img src="images/bienetre.png" alt="Bien-Être">
+      <div class="space-overlay">
+        <span class="space-tag">Récupération</span>
+        <span class="space-name">Espace Bien-Être</span>
+      </div>
+    </div>
+    <div class="space-card">
+      <img src="images/Acceuil.png" alt="Accueil & Lounge">
+      <div class="space-overlay">
+        <span class="space-tag">Premium</span>
+        <span class="space-name">Accueil & Lounge</span>
+      </div>
+    </div>
+    <div class="space-card">
+      <img src="images/bar.png" alt="Fuel Bar">
+      <div class="space-overlay">
+        <span class="space-tag">Saveurs</span>
+        <span class="space-name">Fuel Bar</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+.wrap{
+  background:#060908;
+  padding:64px 48px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:48px;
+  font-family:'Jost',sans-serif;
+}
+.eyebrow{
+  font-size:9px;letter-spacing:6px;text-transform:uppercase;
+  color:#5a5a48;font-family:'Jost',sans-serif;font-weight:300;
+}
+/* ── STATS SECTION ── */
+.stats-section{
+  background:#060908;
+  position:relative;
+  overflow:hidden;
+}
+.stats-section::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 50%, rgba(196,160,78,.04) 0%, transparent 70%);
+  pointer-events:none;
+}
+.stats-top{
+  text-align:center;
+  padding:80px 80px 60px;
+  border-bottom:1px solid rgba(196,160,78,.1);
+}
+.stats-eyebrow{
+  font-size:9px;letter-spacing:6px;text-transform:uppercase;
+  color:#c4a04e;margin-bottom:20px;display:block;
+  font-family:'Jost',sans-serif;font-weight:300;
+}
+.stats-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(36px,5vw,64px);
+  font-weight:300;color:#f4efe5;
+  letter-spacing:4px;line-height:1.1;
+}
+.stats-title em{font-style:italic;color:#c4a04e;}
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  border-bottom:1px solid rgba(196,160,78,.1);
+}
+.stat-item{
+  padding:72px 40px;
+  text-align:center;
+  border-right:1px solid rgba(196,160,78,.08);
+  position:relative;
+  transition:background .4s;
+}
+.stat-item:last-child{border-right:none;}
+.stat-item:hover{background:rgba(196,160,78,.03);}
+.stat-item::after{
+  content:'';position:absolute;bottom:0;left:10%;right:10%;
+  height:1px;background:rgba(196,160,78,0);
+  transition:background .4s;
+}
+.stat-item:hover::after{background:rgba(196,160,78,.4);}
+.stat-number{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(72px,9vw,120px);
+  font-weight:300;color:#c4a04e;
+  line-height:.9;display:block;
+  letter-spacing:-2px;
+}
+.stat-suffix{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(32px,4vw,52px);
+  color:#8a7038;font-style:italic;
+}
+.stat-label{
+  font-size:9px;letter-spacing:4px;text-transform:uppercase;
+  color:#c4a04e;margin-top:20px;display:block;
+  font-family:'Jost',sans-serif;font-weight:300;line-height:2;
+  padding-top:16px;
+  border-top:1px solid rgba(196,160,78,.3);
+  width:80%;margin-left:auto;margin-right:auto;
+}
+.stats-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:28px 80px;
+}
+.stats-quote{
+  font-family:'Jost',sans-serif;
+  font-size:9px;font-style:normal;font-weight:300;
+  color:#c4a04e;letter-spacing:4px;text-transform:uppercase;
+  line-height:2;
+}
+.stats-live{
+  display:flex;align-items:center;gap:8px;
+  font-size:8px;letter-spacing:3px;text-transform:uppercase;
+  color:#4caf50;font-family:'Jost',sans-serif;font-weight:300;
+}
+.stats-live-dot{
+  width:7px;height:7px;border-radius:50%;background:#4caf50;
+  animation:statpulse 2s infinite;
+}
+@keyframes statpulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(76,175,80,.4)}
+  50%{box-shadow:0 0 0 8px rgba(76,175,80,0)}
+}
+
+/* =========================================================
+   MENU EDEN FIX — ISOLÉ, VISIBLE, NON CASSÉ PAR L'ANCIEN CSS
+   ========================================================= */
+.eden-menu{
+  position:fixed !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  height:84px !important;
+  z-index:999999 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 52px !important;
+  background:
+    linear-gradient(180deg,rgba(6,9,8,.985),rgba(6,9,8,.92)) !important;
+  border-bottom:1px solid rgba(196,160,78,.12) !important;
+  box-shadow:0 18px 55px rgba(0,0,0,.42) !important;
+  backdrop-filter:blur(18px) !important;
+  -webkit-backdrop-filter:blur(18px) !important;
+}
+
+.eden-menu::before{
+  content:"" !important;
+  position:absolute !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.42),transparent) !important;
+  pointer-events:none !important;
+}
+
+.eden-menu *{
+  box-sizing:border-box !important;
+}
+
+.eden-menu-inner{
+  width:100% !important;
+  max-width:1820px !important;
+  display:grid !important;
+  grid-template-columns:230px 1fr 230px !important;
+  align-items:center !important;
+  gap:32px !important;
+}
+
+.eden-logo{
+  justify-self:start !important;
+  color:#c4a04e !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:26px !important;
+  font-weight:200 !important;
+  letter-spacing:15px !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  text-shadow:0 0 18px rgba(196,160,78,.18) !important;
+  line-height:1 !important;
+}
+
+.eden-links{
+  justify-self:center !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:48px !important;
+  padding:0 !important;
+  margin:0 !important;
+  list-style:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+.eden-links > li{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+.eden-links > li > a{
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:16px 0 !important;
+  color:rgba(244,239,229,.68) !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:10px !important;
+  font-weight:300 !important;
+  letter-spacing:6px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  transition:.3s ease !important;
+}
+
+.eden-links > li > a::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:calc(100% + 34px) !important;
+  max-width:155px !important;
+  height:46px !important;
+  transform:translate(-50%,-50%) !important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.020),rgba(255,255,255,.006)),
+    radial-gradient(circle at 50% 0%,rgba(196,160,78,.09),transparent 58%),
+    linear-gradient(180deg,rgba(14,17,14,.96),rgba(7,9,8,.94)) !important;
+  border:1px solid rgba(196,160,78,.12) !important;
+  box-shadow:0 12px 26px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.025) !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  z-index:-1 !important;
+  transition:.28s ease !important;
+}
+
+.eden-links > li > a::after{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  bottom:6px !important;
+  width:78px !important;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.68),transparent) !important;
+  transform:translateX(-50%) scaleX(0) !important;
+  transform-origin:center !important;
+  box-shadow:0 0 10px rgba(196,160,78,.20) !important;
+  transition:.28s ease !important;
+}
+
+.eden-links > li > a:hover,
+.eden-links > li > a.active,
+.eden-dropdown:hover > a{
+  color:#dbbf78 !important;
+}
+
+.eden-links > li > a:hover::before,
+.eden-links > li > a.active::before,
+.eden-dropdown:hover > a::before{
+  opacity:1 !important;
+}
+
+.eden-links > li > a:hover::after,
+.eden-links > li > a.active::after,
+.eden-dropdown:hover > a::after{
+  transform:translateX(-50%) scaleX(1) !important;
+}
+
+.eden-reserve{
+  justify-self:end !important;
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:48px !important;
+  padding:0 36px !important;
+  color:#060908 !important;
+  background:linear-gradient(135deg,#c4a04e,#dbbf78) !important;
+  border:1px solid rgba(196,160,78,.75) !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:10px !important;
+  font-weight:400 !important;
+  letter-spacing:4px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  overflow:hidden !important;
+  box-shadow:0 0 24px rgba(196,160,78,.16),0 14px 34px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.18) !important;
+  transition:.3s ease !important;
+}
+
+.eden-reserve::before{
+  content:"" !important;
+  position:absolute !important;
+  top:-90% !important;
+  left:-80% !important;
+  width:70% !important;
+  height:260% !important;
+  transform:rotate(24deg) !important;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent) !important;
+  opacity:0 !important;
+  transition:.75s cubic-bezier(.22,1,.36,1) !important;
+}
+
+.eden-reserve:hover{
+  transform:translateY(-2px) !important;
+}
+
+.eden-reserve:hover::before{
+  left:120% !important;
+  opacity:1 !important;
+}
+
+/* Sous-menu Fuel Bar */
+.eden-dropdown{
+  position:relative !important;
+  z-index:1000000 !important;
+}
+
+.eden-dropdown::before{
+  content:"" !important;
+  position:absolute !important;
+  left:-42px !important;
+  right:-42px !important;
+  top:100% !important;
+  height:32px !important;
+  background:transparent !important;
+}
+
+.eden-submenu{
+  position:absolute !important;
+  top:calc(100% + 18px) !important;
+  left:50% !important;
+  width:430px !important;
+  padding:12px !important;
+  transform:translateX(-50%) translateY(10px) !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.10),transparent 34%),
+    linear-gradient(180deg,rgba(12,15,12,.98),rgba(7,9,8,.98)) !important;
+  border:1px solid rgba(196,160,78,.18) !important;
+  box-shadow:0 30px 85px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.035) !important;
+  transition:.35s cubic-bezier(.22,1,.36,1) !important;
+  z-index:1000001 !important;
+}
+
+.eden-submenu::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:-7px !important;
+  width:12px !important;
+  height:12px !important;
+  transform:translateX(-50%) rotate(45deg) !important;
+  background:#0c0f0c !important;
+  border-left:1px solid rgba(196,160,78,.18) !important;
+  border-top:1px solid rgba(196,160,78,.18) !important;
+}
+
+.eden-dropdown:hover .eden-submenu,
+.eden-dropdown:focus-within .eden-submenu{
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  transform:translateX(-50%) translateY(0) !important;
+}
+
+.eden-submenu a{
+  display:grid !important;
+  grid-template-columns:42px 1fr !important;
+  column-gap:14px !important;
+  row-gap:3px !important;
+  padding:14px 16px !important;
+  text-align:left !important;
+  text-decoration:none !important;
+  border:1px solid transparent !important;
+  background:rgba(255,255,255,.010) !important;
+  transition:.3s ease !important;
+}
+
+.eden-submenu a:not(:last-child){
+  margin-bottom:6px !important;
+}
+
+.eden-submenu a span{
+  grid-row:1 / 3 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:34px !important;
+  height:34px !important;
+  border:1px solid rgba(196,160,78,.20) !important;
+  color:#c4a04e !important;
+  font-family:'Cormorant Garamond',Georgia,serif !important;
+  font-size:16px !important;
+}
+
+.eden-submenu a strong{
+  color:#f4efe5 !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:10px !important;
+  letter-spacing:3px !important;
+  text-transform:uppercase !important;
+  font-weight:300 !important;
+}
+
+.eden-submenu a small{
+  color:#7a7a68 !important;
+  font-size:11px !important;
+  text-transform:none !important;
+}
+
+.eden-submenu a:hover{
+  background:radial-gradient(circle at top right,rgba(196,160,78,.09),transparent 34%),rgba(196,160,78,.035) !important;
+  border-color:rgba(196,160,78,.18) !important;
+}
+
+.eden-submenu a:hover span{
+  background:#c4a04e !important;
+  color:#060908 !important;
+}
+
+/* Bouton mobile */
+.eden-burger{
+  display:none !important;
+  justify-self:end !important;
+  width:44px !important;
+  height:44px !important;
+  border:1px solid rgba(196,160,78,.25) !important;
+  background:rgba(196,160,78,.035) !important;
+  align-items:center !important;
+  justify-content:center !important;
+  cursor:pointer !important;
+}
+
+.eden-burger span,
+.eden-burger span::before,
+.eden-burger span::after{
+  display:block !important;
+  width:18px !important;
+  height:1px !important;
+  background:#c4a04e !important;
+  position:relative !important;
+}
+
+.eden-burger span::before,
+.eden-burger span::after{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+}
+
+.eden-burger span::before{top:-6px !important;}
+.eden-burger span::after{top:6px !important;}
+
+/* Décale le hero sous le menu */
+.hero{
+  padding-top:174px !important;
+}
+
+/* Enlève les carrés derrière les infos */
+.trust-bar .trust-item,
+.trust-bar .feature-item,
+.trust-bar .small-card,
+.trust-bar .badge,
+.trust-bar .pill,
+.trust-bar .info-pill,
+.trust-bar .top-pill{
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  min-height:auto !important;
+  border-radius:0 !important;
+}
+
+.trust-bar .trust-item::before,
+.trust-bar .trust-item::after{
+  display:none !important;
+}
+
+@media(max-width:1200px){
+  .eden-menu-inner{
+    grid-template-columns:170px 1fr 190px !important;
+  }
+
+  .eden-links{
+    gap:28px !important;
+  }
+
+  .eden-links > li > a{
+    letter-spacing:4px !important;
+  }
+}
+
+@media(max-width:1050px){
+  .eden-menu{
+    height:auto !important;
+    padding:14px 22px !important;
+  }
+
+  .eden-menu-inner{
+    grid-template-columns:1fr auto !important;
+  }
+
+  .eden-burger{
+    display:flex !important;
+  }
+
+  .eden-links{
+    grid-column:1 / -1 !important;
+    width:100% !important;
+    display:none !important;
+    flex-direction:column !important;
+    gap:8px !important;
+    margin-top:12px !important;
+  }
+
+  .eden-menu.open .eden-links{
+    display:flex !important;
+  }
+
+  .eden-links > li,
+  .eden-links > li > a{
+    width:100% !important;
+  }
+
+  .eden-links > li > a{
+    padding:14px 16px !important;
+    border:1px solid rgba(196,160,78,.12) !important;
+    background:rgba(255,255,255,.012) !important;
+  }
+
+  .eden-reserve{
+    display:none !important;
+  }
+
+  .eden-submenu{
+    position:static !important;
+    width:100% !important;
+    transform:none !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+    margin:8px 0 0 !important;
+    box-shadow:none !important;
+  }
+
+  .eden-submenu::before{
+    display:none !important;
+  }
+
+  .hero{
+    padding-top:138px !important;
+  }
+}
+
+</style>
+
+<!-- Stats section -->
+<section class="stats-section rv">
+  <div class="stats-top">
+    <span class="stats-eyebrow">EDEN en chiffres</span>
+    <h2 class="stats-title">Une expérience qui<br><em>parle d'elle-même</em></h2>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-item rv">
+      <span class="stat-number" id="s1">0</span>
+      <span class="stat-suffix">+</span>
+      <span class="stat-label">Séances<br>vécues</span>
+    </div>
+    <div class="stat-item rv d1">
+      <span class="stat-number" id="s2">0</span>
+      <span class="stat-suffix">%</span>
+      <span class="stat-label">Clients<br>satisfaits</span>
+    </div>
+    <div class="stat-item rv d2">
+      <span class="stat-number" id="s3">0</span>
+      <span class="stat-suffix">j/7</span>
+      <span class="stat-label">Jours<br>d'ouverture</span>
+    </div>
+    <div class="stat-item rv d3">
+      <span class="stat-number" id="s4">0</span>
+      <span class="stat-suffix">+</span>
+      <span class="stat-label">Espaces<br>premium</span>
+    </div>
+  </div>
+  <div class="stats-bottom">
+    <p class="stats-quote">
+      Depuis notre ouverture, EDEN accueille chaque visiteur dans un sanctuaire pensé pour régénérer corps et esprit.
+    </p>
+    <div class="stats-live">
+      <div class="stats-live-dot"></div>
+      Mis à jour en temps réel
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  function animStat(id, target, dur, sep){
+    const el=document.getElementById(id);
+    if(!el)return;
+    const start=performance.now();
+    const ease=t=>1-Math.pow(1-t,3);
+    function tick(now){
+      const t=Math.min((now-start)/dur,1);
+      const val=Math.round(ease(t)*target);
+      el.textContent=sep?val.toLocaleString('fr-FR'):val;
+      if(t<1)requestAnimationFrame(tick);
+      else el.textContent=sep?target.toLocaleString('fr-FR'):target;
+    }
+    requestAnimationFrame(tick);
+  }
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        animStat('s1',2847,2400,true);
+        animStat('s2',98,1800,false);
+        animStat('s3',7,1200,false);
+        animStat('s4',9,1400,false);
+        io.disconnect();
+      }
+    });
+  },{threshold:0.3});
+  const section=document.querySelector('.stats-section');
+  if(section)io.observe(section);
+})();
+</script>
+
+
+<!-- Fuel Bar -->
+<div class="fuelbar">
+  <div class="fuelbar-left rv">
+    <span class="vision-label">Nourrir le corps</span>
+    <h2 class="h2" style="margin-bottom:28px">Le <em>Fuel Bar</em><br>d'EDEN</h2>
+    <p style="font-size:14px;color:var(--light);line-height:2.3;max-width:440px;margin-bottom:44px">Jus pressés à froid, infusions de plantes, shots d'énergie, smoothies detox — notre bar bien-être est une pause gustative pensée pour prolonger les bienfaits de votre session.</p>
+    <a href="#tarifs" class="btn-outline" style="display:inline-flex">Inclus dans tous les forfaits</a>
+  </div>
+  <div class="fuelbar-right">
+    <img src="images/bar.png" alt="Fuel Bar EDEN">
+  </div>
+</div>
+
+<!-- Gallery -->
+<section class="gallery-section">
+  <div class="gallery-header">
+    <span class="vision-label rv">Aperçu</span>
+    <h2 class="h2 rv d1">L'univers <em>EDEN</em></h2>
+  </div>
+  <div class="gallery-grid rv d2" id="gallery">
+    <div class="g" onclick="openLb(this)"><img src="images/espace_bien_etre.png" alt="Espace Bien-Être"><div class="g-label">Espace Bien-Être</div></div>
+    <div class="g" onclick="openLb(this)"><img src="images/chambre4.png" alt="Suite Collective"><div class="g-label">Suite Collective</div></div>
+    <div class="g" onclick="openLb(this)"><img src="images/bain_nordique.png" alt="Bain Nordique"><div class="g-label">Bain Nordique</div></div>
+    <div class="g" onclick="openLb(this)"><img src="images/Acceuil.png" alt="Accueil & Lounge"><div class="g-label">Accueil & Lounge</div></div>
+    <div class="g" onclick="openLb(this)"><img src="images/bar.png" alt="Fuel Bar"><div class="g-label">Fuel Bar</div></div>
+    <div class="g" onclick="openLb(this)"><img src="images/chambre1.png" alt="Suite Solo"><div class="g-label">Suite Solo</div></div>
+    <div class="g" onclick="openLb(this)"><img src="images/bienetre.png" alt="Bien-Être"><div class="g-label">Bien-Être</div></div>
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lb" id="lb" onclick="closeLb()">
+  <button class="lb-close" onclick="closeLb()">×</button>
+  <img id="lb-img" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="">
+  <div class="lb-caption" id="lb-cap"></div>
+</div>
+
+<div class="sep-thick"></div>
+
+<!-- Tarifs -->
+<section class="tarifs-section" id="tarifs">
+  <div class="tarifs-top rv">
+    <span class="vision-label" style="display:block;text-align:center">Nos Offres</span>
+    <h2 class="h2" style="text-align:center">Choisissez votre <em>Expérience</em></h2>
+    <p class="tarifs-note">Peignoir, serviette et accès au bar inclus dans toutes les formules complètes</p>
+  </div>
+  <div class="pricing-grid rv d1">
+    <div class="pc">
+      <p class="pc-name">Sérénité</p>
+      <p class="pc-dur">par personne · 2 heures</p>
+      <div class="pc-price">49€</div>
+      <p class="pc-unit">par personne</p>
+      <ul class="pc-list">
+        <li>Bain nordique</li>
+        <li>Bain froid</li>
+        <li>Accès Sauna</li>
+        <li>Espace détente</li>
+        <li>Peignoir & serviette</li>
+        <li>1 boisson au bar</li>
+      </ul>
+      <a href="#" class="pc-cta outline" onclick="openModal('Sérénité — 49€');return false;">Réserver cette offre</a>
+    </div>
+    <div class="pc hot">
+      <div class="pc-badge">Le Plus Choisi</div>
+      <p class="pc-name">Équilibre</p>
+      <p class="pc-dur">par personne · 3h30</p>
+      <div class="pc-price">79€</div>
+      <p class="pc-unit">par personne</p>
+      <ul class="pc-list">
+        <li>Bain nordique & froid</li>
+        <li>Sauna + Hammam</li>
+        <li>Pressothérapie 45min</li>
+        <li>Chambre de relaxation</li>
+        <li>Fauteuil massant 20min</li>
+        <li>Bar en accès libre</li>
+        <li>Peignoir & serviette</li>
+      </ul>
+      <a href="#" class="pc-cta solid" onclick="openModal('Équilibre — 79€');return false;">Réserver cette offre</a>
+    </div>
+    <div class="pc">
+      <p class="pc-name">Immersion</p>
+      <p class="pc-dur">par personne · journée</p>
+      <div class="pc-price">119€</div>
+      <p class="pc-unit">par personne</p>
+      <ul class="pc-list">
+        <li>Accès illimité tous espaces</li>
+        <li>Pressothérapie 1h</li>
+        <li>Massages fauteuil illimité</li>
+        <li>Pièce de sommeil</li>
+        <li>Repas léger inclus</li>
+        <li>Bar en accès illimité</li>
+        <li>Suite privée (option)</li>
+      </ul>
+      <a href="#" class="pc-cta outline" onclick="openModal('Immersion — 119€');return false;">Réserver cette offre</a>
+    </div>
+  </div>
+</section>
+
+<!-- À la carte -->
+<section class="carte-section">
+  <div class="carte-header rv">
+    <span class="vision-label" style="display:block;text-align:center">À la carte</span>
+    <h2 class="h2" style="text-align:center;font-size:clamp(28px,3vw,48px)">Entrées <em>Uniques</em></h2>
+    <p style="font-size:11px;color:var(--muted);margin-top:12px;letter-spacing:2px;text-align:center">Pour un moment ciblé, sans compromis sur le luxe</p>
+  </div>
+  <div class="carte-grid rv d1">
+    <div class="cc">
+      <span class="cc-icon">◈</span>
+      <span class="cc-tag">Thermothérapie</span>
+      <h4 class="cc-name">Sauna & Bain Froid</h4>
+      <p class="cc-desc">La combinaison parfaite pour libérer les tensions et revitaliser le corps.</p>
+      <ul class="cc-inc"><li>Accès Sauna</li><li>Bain froid</li><li>1 boisson offerte</li></ul>
+      <div class="cc-price"><span class="cc-amount">29.99€</span><span class="cc-per">· 1h30</span></div>
+      <a href="#" class="cc-link" onclick="openModal('Sauna & Bain Froid — 29.99€');return false;">Réserver <span>→</span></a>
+    </div>
+    <div class="cc">
+      <span class="cc-icon">❄</span>
+      <span class="cc-tag">Cryothérapie</span>
+      <h4 class="cc-name">Bain Froid</h4>
+      <p class="cc-desc">L'immersion froide qui réveille, régénère et booste votre énergie en un instant.</p>
+      <ul class="cc-inc"><li>Bain froid</li><li>1 boisson offerte</li></ul>
+      <div class="cc-price"><span class="cc-amount">22€</span><span class="cc-per">· 45 min</span></div>
+      <a href="#" class="cc-link" onclick="openModal('Bain Froid — 22€');return false;">Réserver <span>→</span></a>
+    </div>
+    <div class="cc">
+      <span class="cc-icon">♨</span>
+      <span class="cc-tag">Bain Nordique</span>
+      <h4 class="cc-name">Bain Nordique</h4>
+      <p class="cc-desc">Un instant suspendu dans la chaleur de l'eau — avec tout le confort EDEN.</p>
+      <ul class="cc-inc"><li>Bain nordique</li><li>Boisson offerte</li><li>Peignoir & claquettes</li><li>Accès bar</li></ul>
+      <div class="cc-price" style="gap:16px;flex-wrap:wrap">
+        <span class="cc-amount">39.99€</span><span class="cc-per">Journée</span>
+        <span style="color:var(--muted)"> / </span>
+        <span class="cc-amount">49.99€</span><span class="cc-per">Soirée</span>
+      </div>
+      <a href="#" class="cc-link" onclick="openModal('Bain Nordique');return false;">Réserver <span>→</span></a>
+    </div>
+    <div class="cc">
+      <span class="cc-icon">◉</span>
+      <span class="cc-tag">Récupération</span>
+      <h4 class="cc-name">Pressothérapie</h4>
+      <p class="cc-desc">Drainante, régénérante — une séance qui transforme vos jambes lourdes en légèreté pure.</p>
+      <ul class="cc-inc"><li>Séance pressothérapie</li><li>Boisson incluse</li><li>Salle de repos</li></ul>
+      <div class="cc-price"><span class="cc-amount">24.99€</span><span class="cc-per">· ~45 min</span></div>
+      <a href="#" class="cc-link" onclick="openModal('Pressothérapie — 24.99€');return false;">Réserver <span>→</span></a>
+    </div>
+    <div class="cc">
+      <span class="cc-icon">◎</span>
+      <span class="cc-tag">Massage</span>
+      <h4 class="cc-name">Siège de Massage</h4>
+      <p class="cc-desc">Une pause express pour relâcher les épaules, le dos et l'esprit — boisson comprise.</p>
+      <ul class="cc-inc"><li>Siège massage premium</li><li>Boisson incluse</li></ul>
+      <div class="cc-price"><span class="cc-amount">12€</span><span class="cc-per">· ~20 min</span></div>
+      <a href="#" class="cc-link" onclick="openModal('Siège de Massage — 12€');return false;">Réserver <span>→</span></a>
+    </div>
+    <div class="cc special">
+      <span class="cc-icon">✦</span>
+      <span class="cc-tag">Sur Mesure</span>
+      <h4 class="cc-name">Expérience Personnalisée</h4>
+      <p class="cc-desc">Composez votre parenthèse idéale avec nos conseillers — chaque détail sera pensé pour vous.</p>
+      <ul class="cc-inc"><li>Accueil personnalisé</li><li>Parcours sur mesure</li><li>À définir ensemble</li></ul>
+      <div class="cc-price"><span class="cc-amount" style="font-size:28px">Sur devis</span></div>
+      <a href="mailto:contact@eden-wellness.fr" class="cc-link">Nous contacter <span>→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonial slider -->
+<section class="testi">
+  <div class="testi-stars">
+    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+  </div>
+  <div class="testi-slider rv">
+    <div class="testi-slide active">
+      <blockquote class="testi-q">« EDEN a complètement changé ma façon de récupérer. Le parcours est parfaitement pensé — après une session, je me sens comme régénéré de l'intérieur. »</blockquote>
+      <p class="testi-a">— Thomas R., membre depuis l'ouverture</p>
+    </div>
+    <div class="testi-slide">
+      <blockquote class="testi-q">« Le bain nordique sous les étoiles, le hammam à la vapeur, le bar avec ses jus frais… EDEN c'est une parenthèse de luxe qu'on ne veut plus quitter. »</blockquote>
+      <p class="testi-a">— Sophie M., venue en couple</p>
+    </div>
+    <div class="testi-slide">
+      <blockquote class="testi-q">« J'ai offert EDEN à ma mère pour son anniversaire. Elle m'a dit que c'était le plus beau cadeau de sa vie. Le personnel est aux petits soins. »</blockquote>
+      <p class="testi-a">— Julien K., carte cadeau</p>
+    </div>
+  </div>
+  <div class="testi-nav rv d1">
+    <div class="testi-dot on" onclick="goTesti(0)"></div>
+    <div class="testi-dot" onclick="goTesti(1)"></div>
+    <div class="testi-dot" onclick="goTesti(2)"></div>
+  </div>
+</section>
+
+<!-- CTA Contact -->
+<section class="cta" id="contact">
+  <span class="vision-label rv" style="display:block;text-align:center">Votre Prochaine Session</span>
+  <h2 class="h2 rv d1" style="text-align:center">Offrez-vous une<br><em>parenthèse d'exception</em></h2>
+  <p class="cta-sub rv d2">Réservez votre séance en ligne ou contactez-nous pour un accompagnement personnalisé. EDEN ouvre 7j/7 de 8h à 22h.</p>
+  <div class="cta-btns rv d3">
+    <a href="tel:+33100000000" class="btn-gold">Appeler — 01 00 00 00 00</a>
+    <a href="#" class="btn-outline" onclick="openModal();return false;">Réserver en ligne</a>
+  </div>
+  <p class="cta-extra rv d4">Ou écrivez-nous directement à <a href="mailto:contact@eden-wellness.fr">contact@eden-wellness.fr</a></p>
+</section>
+
+<!-- Footer -->
+
+<!-- ══ SECTION ÉQUIPE ORGANIGRAMME ══ -->
+<section style="padding:140px 60px;background:linear-gradient(180deg,#0a0f07 0%,#060908 60%,#0a0f07 100%);position:relative;overflow:hidden;">
+
+  <!-- Fond décoratif -->
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(196,160,78,.04) 0%,transparent 70%);pointer-events:none"></div>
+  <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.15),transparent)"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.15),transparent)"></div>
+
+  <div style="max-width:1000px;margin:0 auto;position:relative">
+
+    <!-- HEADER -->
+    <div style="text-align:center;margin-bottom:100px">
+      <div style="display:inline-flex;align-items:center;gap:14px;margin-bottom:28px">
+        <div style="width:40px;height:1px;background:rgba(196,160,78,.4)"></div>
+        <span style="font-size:8px;letter-spacing:6px;text-transform:uppercase;color:#c4a04e">Notre organisation</span>
+        <div style="width:40px;height:1px;background:rgba(196,160,78,.4)"></div>
+      </div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(42px,5vw,68px);font-weight:300;color:#f4efe5;line-height:1;margin-bottom:24px;letter-spacing:2px">L'équipe <em style="font-style:italic;color:#dbbf78">EDEN</em></h2>
+      <p style="font-size:12px;color:#5a5a4a;line-height:2.2;max-width:460px;margin:0 auto;letter-spacing:.5px">Une équipe soudée, experte et passionnée, au service de votre bien-être chaque jour.</p>
+    </div>
+
+    <!-- SVG ORGANIGRAMME -->
+    <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+
+      <!-- ═══ NIVEAU 1 : Fondateur ═══ -->
+      <div style="position:relative;z-index:2">
+        <div class="org-card org-top" style="
+          padding:40px 56px;
+          background:linear-gradient(145deg,rgba(196,160,78,.13) 0%,rgba(196,160,78,.05) 100%);
+          border:1px solid rgba(196,160,78,.45);
+          min-width:300px;
+          text-align:center;
+          position:relative;
+          transition:all .4s;
+          cursor:default;
+          box-shadow:0 0 60px rgba(196,160,78,.06), inset 0 1px 0 rgba(196,160,78,.2);
+        "
+        onmouseover="this.style.boxShadow='0 0 80px rgba(196,160,78,.14), inset 0 1px 0 rgba(196,160,78,.3)';this.style.borderColor='rgba(196,160,78,.7)'"
+        onmouseout="this.style.boxShadow='0 0 60px rgba(196,160,78,.06), inset 0 1px 0 rgba(196,160,78,.2)';this.style.borderColor='rgba(196,160,78,.45)'">
+          <!-- Ligne top dorée -->
+          <div style="position:absolute;top:0;left:20%;right:20%;height:2px;background:linear-gradient(90deg,transparent,#c4a04e,transparent)"></div>
+          <!-- Coins décoratifs -->
+          <div style="position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid #c4a04e;border-left:2px solid #c4a04e"></div>
+          <div style="position:absolute;top:-1px;right:-1px;width:16px;height:16px;border-top:2px solid #c4a04e;border-right:2px solid #c4a04e"></div>
+          <div style="position:absolute;bottom:-1px;left:-1px;width:16px;height:16px;border-bottom:2px solid #c4a04e;border-left:2px solid #c4a04e"></div>
+          <div style="position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid #c4a04e;border-right:2px solid #c4a04e"></div>
+          <!-- Avatar -->
+          <div style="position:relative;width:80px;height:80px;margin:0 auto 22px">
+            <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(196,160,78,.22),rgba(196,160,78,.06));border:1px solid rgba(196,160,78,.5);display:flex;align-items:center;justify-content:center">
+              <span style="font-family:'Cormorant Garamond',serif;font-size:32px;color:#c4a04e;font-weight:300">J</span>
+            </div>
+            <div style="position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(196,160,78,.15)"></div>
+            <div style="position:absolute;inset:-12px;border-radius:50%;border:1px solid rgba(196,160,78,.06)"></div>
+          </div>
+          <div style="width:28px;height:1px;background:rgba(196,160,78,.3);margin:0 auto 14px"></div>
+          <span style="font-size:7px;letter-spacing:5px;text-transform:uppercase;color:#c4a04e;display:block;margin-bottom:10px">Fondateur</span>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:#f4efe5;letter-spacing:2px">M. Jacob</h3>
+          <p style="font-size:10px;color:#5a5a4a;margin-top:10px;line-height:1.8;letter-spacing:.3px">Vision & Direction stratégique</p>
+        </div>
+      </div>
+
+      <!-- Connecteur N1→N2 -->
+      <div style="width:1px;height:52px;background:linear-gradient(180deg,rgba(196,160,78,.5),rgba(196,160,78,.2));position:relative;z-index:1">
+        <div style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;background:#060908;border:1px solid rgba(196,160,78,.4)"></div>
+      </div>
+
+      <!-- ═══ NIVEAU 2 : Directrice Générale ═══ -->
+      <div style="position:relative;z-index:2">
+        <div style="
+          padding:32px 48px;
+          background:rgba(196,160,78,.045);
+          border:1px solid rgba(196,160,78,.22);
+          min-width:272px;
+          text-align:center;
+          position:relative;
+          transition:all .4s;
+          cursor:default;
+          box-shadow:0 0 40px rgba(196,160,78,.04);
+        "
+        onmouseover="this.style.borderColor='rgba(196,160,78,.5)';this.style.boxShadow='0 0 60px rgba(196,160,78,.1)'"
+        onmouseout="this.style.borderColor='rgba(196,160,78,.22)';this.style.boxShadow='0 0 40px rgba(196,160,78,.04)'">
+          <div style="position:absolute;top:0;left:30%;right:30%;height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.5),transparent)"></div>
+          <div style="width:66px;height:66px;border-radius:50%;background:rgba(196,160,78,.08);border:1px solid rgba(196,160,78,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;position:relative">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#c4a04e;font-weight:300">J</span>
+            <div style="position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(196,160,78,.1)"></div>
+          </div>
+          <span style="font-size:7px;letter-spacing:4px;text-transform:uppercase;color:#c4a04e;display:block;margin-bottom:8px">Directrice Générale</span>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#f4efe5;letter-spacing:1.5px">Mme Jacob</h3>
+          <p style="font-size:10px;color:#5a5a4a;margin-top:8px;line-height:1.8;letter-spacing:.3px">Opérations & Management</p>
+        </div>
+      </div>
+
+      <!-- Connecteur N2→N3 : Ligne verticale + horizontale -->
+      <div style="position:relative;width:500px;z-index:1">
+        <!-- Ligne verticale du milieu -->
+        <div style="position:absolute;left:50%;transform:translateX(-50%);top:0;width:1px;height:44px;background:linear-gradient(180deg,rgba(196,160,78,.3),rgba(196,160,78,.15))"></div>
+        <!-- Ligne horizontale -->
+        <div style="position:absolute;left:18%;right:18%;top:44px;height:1px;background:rgba(196,160,78,.18)"></div>
+        <!-- Branche gauche vers le bas -->
+        <div style="position:absolute;left:18%;top:44px;width:1px;height:36px;background:linear-gradient(180deg,rgba(196,160,78,.18),rgba(196,160,78,.1))">
+          <div style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:#060908;border:1px solid rgba(196,160,78,.3)"></div>
+        </div>
+        <!-- Branche droite vers le bas -->
+        <div style="position:absolute;right:18%;top:44px;width:1px;height:36px;background:linear-gradient(180deg,rgba(196,160,78,.18),rgba(196,160,78,.1))">
+          <div style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:#060908;border:1px solid rgba(196,160,78,.3)"></div>
+        </div>
+        <div style="height:85px"></div>
+      </div>
+
+      <!-- ═══ NIVEAU 3 : Mme Viennot + Simon ═══ -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;width:500px;position:relative;z-index:2">
+
+        <!-- Mme Viennot -->
+        <div style="
+          padding:28px 24px;
+          background:rgba(196,160,78,.02);
+          border:1px solid rgba(196,160,78,.1);
+          text-align:center;
+          position:relative;
+          transition:all .4s;
+          cursor:default;
+        "
+        onmouseover="this.style.borderColor='rgba(196,160,78,.35)';this.style.background='rgba(196,160,78,.04)'"
+        onmouseout="this.style.borderColor='rgba(196,160,78,.1)';this.style.background='rgba(196,160,78,.02)'">
+          <div style="position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.3),transparent)"></div>
+          <div style="width:56px;height:56px;border-radius:50%;background:rgba(196,160,78,.06);border:1px solid rgba(196,160,78,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#c4a04e;font-weight:300">V</span>
+          </div>
+          <span style="font-size:6px;letter-spacing:3px;text-transform:uppercase;color:#c4a04e;display:block;margin-bottom:3px">Assistante de Gestion</span>
+          <span style="font-size:6px;letter-spacing:2px;text-transform:uppercase;color:rgba(196,160,78,.5);display:block;margin-bottom:10px">Accueil Client</span>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:#f4efe5;letter-spacing:1px">Mme Viennot</h3>
+          <div style="width:20px;height:1px;background:rgba(196,160,78,.25);margin:10px auto 0"></div>
+        </div>
+
+        <!-- Simon -->
+        <div style="
+          padding:28px 24px;
+          background:rgba(196,160,78,.02);
+          border:1px solid rgba(196,160,78,.1);
+          text-align:center;
+          position:relative;
+          transition:all .4s;
+          cursor:default;
+        "
+        onmouseover="this.style.borderColor='rgba(196,160,78,.35)';this.style.background='rgba(196,160,78,.04)'"
+        onmouseout="this.style.borderColor='rgba(196,160,78,.1)';this.style.background='rgba(196,160,78,.02)'">
+          <div style="position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.3),transparent)"></div>
+          <div style="width:56px;height:56px;border-radius:50%;background:rgba(196,160,78,.06);border:1px solid rgba(196,160,78,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#c4a04e;font-weight:300">S</span>
+          </div>
+          <span style="font-size:6px;letter-spacing:3px;text-transform:uppercase;color:#c4a04e;display:block;margin-bottom:3px">Designer Audiovisuel</span>
+          <span style="font-size:6px;letter-spacing:2px;text-transform:uppercase;color:rgba(196,160,78,.5);display:block;margin-bottom:10px">Marketing</span>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:#f4efe5;letter-spacing:1px">Simon</h3>
+          <div style="width:20px;height:1px;background:rgba(196,160,78,.25);margin:10px auto 0"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- CITATION -->
+    <div style="text-align:center;margin-top:80px;padding-top:52px;border-top:1px solid rgba(196,160,78,.07)">
+      <span style="font-size:22px;color:rgba(196,160,78,.2);font-family:'Cormorant Garamond',serif;display:block;margin-bottom:18px">"</span>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:#8a8a7a;line-height:2;max-width:620px;margin:0 auto">Nous avons créé EDEN pour offrir un lieu où l'on prend soin de soi, sans compromis sur la qualité ni sur l'attention portée à chacun.</p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:24px">
+        <div style="width:30px;height:1px;background:rgba(196,160,78,.3)"></div>
+        <span style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#c4a04e">M. & Mme Jacob · Fondateurs</span>
+        <div style="width:30px;height:1px;background:rgba(196,160,78,.3)"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ SECTION CARTE CADEAU ══ -->
+<section style="padding:120px 80px;background:var(--dark3,#111608);border-top:1px solid rgba(196,160,78,.08);border-bottom:1px solid rgba(196,160,78,.08);">
+  <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center">
+    <div>
+      <span style="font-size:9px;letter-spacing:5px;text-transform:uppercase;color:#c4a04e;display:block;margin-bottom:20px">Offrir le bien-être</span>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4vw,58px);font-weight:300;line-height:1.1;color:#f4efe5;margin-bottom:20px">Offrez une <em style="font-style:italic;color:#dbbf78">carte cadeau</em> EDEN</h2>
+      <div style="height:1px;background:linear-gradient(90deg,rgba(196,160,78,.4),transparent);margin-bottom:24px;width:80px"></div>
+      <p style="font-size:13px;color:#7a7a68;line-height:2.2;margin-bottom:28px">Offrez une expérience inoubliable à ceux que vous aimez. Nos cartes cadeaux sont disponibles pour tous nos soins et formules, valables 12 mois.</p>
+      <ul style="list-style:none;margin-bottom:36px">
+        <li style="font-size:12px;color:#b8b4a4;padding:10px 0;border-bottom:1px solid rgba(196,160,78,.07);display:flex;align-items:center;gap:12px"><span style="color:#c4a04e;font-size:10px">◈</span> Valable sur toutes les formules EDEN</li>
+        <li style="font-size:12px;color:#b8b4a4;padding:10px 0;border-bottom:1px solid rgba(196,160,78,.07);display:flex;align-items:center;gap:12px"><span style="color:#c4a04e;font-size:10px">◈</span> Disponible en version numérique ou physique</li>
+        <li style="font-size:12px;color:#b8b4a4;padding:10px 0;border-bottom:1px solid rgba(196,160,78,.07);display:flex;align-items:center;gap:12px"><span style="color:#c4a04e;font-size:10px">◈</span> Valable 12 mois à compter de l'achat</li>
+        <li style="font-size:12px;color:#b8b4a4;padding:10px 0;display:flex;align-items:center;gap:12px"><span style="color:#c4a04e;font-size:10px">◈</span> Montant libre ou formule au choix</li>
+      </ul>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <a href="mailto:contact@eden-wellness.fr?subject=Carte cadeau EDEN" style="background:#c4a04e;color:#060908;padding:15px 36px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;font-weight:400;transition:all .3s;display:inline-flex;align-items:center;gap:8px" onmouseover="this.style.background='#dbbf78'" onmouseout="this.style.background='#c4a04e'">Commander une carte cadeau →</a>
+        <a href="tel:+33100000000" style="border:1px solid rgba(196,160,78,.35);color:#f2e8d0;padding:15px 36px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;font-weight:300;transition:all .3s;display:inline-flex;align-items:center;gap:8px" onmouseover="this.style.borderColor='#c4a04e';this.style.color='#c4a04e'" onmouseout="this.style.borderColor='rgba(196,160,78,.35)';this.style.color='#f2e8d0'">Appeler — 01 00 00 00 00</a>
+      </div>
+    </div>
+    <div style="position:relative">
+      <div style="background:linear-gradient(135deg,rgba(196,160,78,.12),rgba(196,160,78,.04));border:1px solid rgba(196,160,78,.2);padding:48px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:-20px;right:-20px;font-family:'Cormorant Garamond',serif;font-size:160px;color:rgba(196,160,78,.04);line-height:1;pointer-events:none">♡</div>
+        <p style="font-size:8px;letter-spacing:4px;text-transform:uppercase;color:#c4a04e;margin-bottom:20px">Carte Cadeau</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:42px;letter-spacing:12px;color:#f4efe5;margin-bottom:6px">EDEN</p>
+        <p style="font-size:10px;color:#7a7a68;letter-spacing:3px;margin-bottom:28px">BIEN-ÊTRE & RÉCUPÉRATION</p>
+        <div style="height:1px;background:linear-gradient(90deg,rgba(196,160,78,.4),transparent);margin-bottom:24px"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end">
+          <div>
+            <p style="font-size:8px;letter-spacing:2px;color:#7a7a68;text-transform:uppercase;margin-bottom:4px">Valeur</p>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:36px;color:#c4a04e">Sur mesure</p>
+          </div>
+          <div style="text-align:right">
+            <p style="font-size:8px;letter-spacing:2px;color:#7a7a68;text-transform:uppercase;margin-bottom:4px">Validité</p>
+            <p style="font-size:13px;color:#b8b4a4">12 mois</p>
+          </div>
+        </div>
+        <div style="margin-top:24px;padding:12px;background:rgba(196,160,78,.06);border:1px solid rgba(196,160,78,.12)">
+          <p style="font-size:9px;color:#7a7a68;letter-spacing:1px;font-style:italic;text-align:center">"Un cadeau qui fait du bien, vraiment."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div>
+      <span class="f-logo">EDEN</span>
+      <p class="f-about">Un sanctuaire dédié à votre bien-être intégral. Ouvert 7 jours sur 7, de 8h à 22h.</p>
+      <span class="f-tagline">Récupération · Détente · Équilibre</span>
+    </div>
+    <div class="f-col">
+      <h5>Espaces</h5>
+      <ul>
+        <li><a href="#experiences">Bain Nordique</a></li>
+        <li><a href="#experiences">Sauna & Hammam</a></li>
+        <li><a href="#experiences">Pressothérapie</a></li>
+        <li><a href="#experiences">Salles de Détente</a></li>
+        <li><a href="#experiences">Fuel Bar</a></li>
+      </ul>
+    </div>
+    <div class="f-col">
+      <h5>Infos</h5>
+      <ul>
+        <li><a href="#tarifs">Tarifs</a></li>
+        <li><a href="#" onclick="openModal();return false;">Réservation</a></li>
+        <li><a href="mailto:contact@eden-wellness.fr">Carte Cadeau</a></li>
+        <li><a href="#">Notre Histoire</a></li>
+        <li><a href="#">Presse</a></li>
+      </ul>
+    </div>
+    <div class="f-col">
+      <h5>Contact</h5>
+      <ul>
+        <li><a href="#">12 Rue du Bien-Être</a></li>
+        <li><a href="tel:+33100000000">01 00 00 00 00</a></li>
+        <li><a href="mailto:contact@eden-wellness.fr">contact@eden-wellness.fr</a></li>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">Facebook</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 EDEN Wellness. Tous droits réservés.</span>
+    <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center"><a href="mentions-legales.html">Mentions légales</a>
+      <a href="#">Confidentialité</a>
+      <a href="#">CGV</a> <a href="admin.html" style="opacity:.15;font-size:8px;letter-spacing:2px;color:inherit;text-transform:uppercase;transition:opacity .4s" onmouseover="this.style.opacity='.5'" onmouseout="this.style.opacity='.15'">·</a></div>
+  </div></footer>
+
+<!-- Hours badge -->
+<div class="hours" id="hours">
+  <div class="hours-dot"></div>
+  <div class="hours-txt">Ouvert · <strong>8h – 22h · 7j/7</strong></div>
+</div>
+
+<!-- Reservation Modal -->
+<div class="modal-bg" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <h3>Réserver votre séance</h3>
+    <p>Remplissez ce formulaire et notre équipe vous confirmera dans les 2h.</p>
+    <div class="form-row">
+      <div class="form-field">
+        <label>Prénom</label>
+        <input type="text" placeholder="Marie">
+      </div>
+      <div class="form-field">
+        <label>Nom</label>
+        <input type="text" placeholder="Dupont">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>Email</label>
+        <input type="email" placeholder="marie@email.fr">
+      </div>
+      <div class="form-field">
+        <label>Téléphone</label>
+        <input type="tel" placeholder="06 00 00 00 00">
+      </div>
+    </div>
+    <div class="form-field">
+      <label>Expérience souhaitée</label>
+      <select id="modal-offer">
+        <option>Sérénité — 49€ · 2h</option>
+        <option>Équilibre — 79€ · 3h30</option>
+        <option>Immersion — 119€ · Journée</option>
+        <option>Sauna & Bain Froid — 29.99€</option>
+        <option>Bain Froid — 22€</option>
+        <option>Bain Nordique — dès 39.99€</option>
+        <option>Pressothérapie — 24.99€</option>
+        <option>Siège de Massage — 12€</option>
+        <option>Expérience sur mesure</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>Date & heure souhaitées</label>
+        <div class="cal-wrap" id="calWrap">
+          <button type="button" class="cal-trigger" id="calTrigger" onclick="toggleCal()">
+            <span id="calDisplay">Choisir une date</span>
+            <span class="cal-icon">◈</span>
+          </button>
+          <div class="cal-panel" id="calPanel">
+            <div class="cal-header">
+              <button class="cal-nav" onclick="calNav(-1)">‹</button>
+              <span class="cal-month" id="calMonthLabel"></span>
+              <button class="cal-nav" onclick="calNav(1)">›</button>
+            </div>
+            <div class="cal-days-header">
+              <span class="cal-day-name">Lu</span>
+              <span class="cal-day-name">Ma</span>
+              <span class="cal-day-name">Me</span>
+              <span class="cal-day-name">Je</span>
+              <span class="cal-day-name">Ve</span>
+              <span class="cal-day-name">Sa</span>
+              <span class="cal-day-name">Di</span>
+            </div>
+            <div class="cal-days" id="calDays"></div>
+            <div class="cal-time-section" id="calTimeSection" style="display:none">
+              <span class="cal-time-label">Créneau horaire</span>
+              <div class="cal-slots" id="calSlots"></div>
+            </div>
+            <button class="cal-confirm" id="calConfirm" onclick="confirmCal()">Confirmer ce créneau</button>
+          </div>
+        </div>
+        <input type="hidden" id="calValue">
+      </div>
+      <div class="form-field">
+        <label>Nombre de personnes</label>
+        <select>
+          <option>1 personne</option>
+          <option>2 personnes</option>
+          <option>3 personnes</option>
+          <option>4 personnes</option>
+          <option>+ de 4 personnes</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-field">
+      <label>Message (optionnel)</label>
+      <textarea placeholder="Précisions, demandes particulières…"></textarea>
+    </div>
+    <button class="form-submit" onclick="submitForm()">Confirmer ma réservation</button>
+    <p class="form-note">Réponse garantie sous 2h · 7j/7 de 8h à 22h<br>01 00 00 00 00 · contact@eden-wellness.fr</p>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   PAGE LOADER
+══════════════════════════════════════════ */
+(function(){
+  const loader=document.getElementById('loader');
+  const pct=document.getElementById('lpct');
+  let p=0;
+  const iv=setInterval(()=>{
+    p+=Math.random()*18+4;
+    if(p>=100){p=100;clearInterval(iv);}
+    pct.textContent=Math.floor(p)+'%';
+  },120);
+  window.addEventListener('load',()=>{
+    setTimeout(()=>{
+      loader.classList.add('done');
+      document.body.style.overflow='';
+      // show popup after loader fades
+      setTimeout(showPopup, 8000);
+    },2200);
+  });
+  document.body.style.overflow='hidden';
+})();
+
+/* ══════════════════════════════════════════
+   PROMO POPUP
+══════════════════════════════════════════ */
+let popupShown=false;
+function showPopup(){
+  if(popupShown||sessionStorage.getItem('eden_popup'))return;
+  popupShown=true;
+  document.getElementById('popup-bg').classList.add('show');
+  document.body.style.overflow='hidden';
+  startCountdown();
+}
+function closePopup(){
+  document.getElementById('popup-bg').classList.remove('show');
+  document.body.style.overflow='';
+  sessionStorage.setItem('eden_popup','1');
+}
+function copyCode(btn){
+  navigator.clipboard.writeText('EDEN10').catch(()=>{});
+  btn.textContent='Copié !';
+  btn.style.background='var(--gold)';
+  btn.style.color='var(--dark)';
+  setTimeout(()=>{btn.textContent='Copier';btn.style.background='';btn.style.color='';},2000);
+}
+function startCountdown(){
+  let total=9*60+59;
+  const el=document.getElementById('popup-countdown');
+  const iv=setInterval(()=>{
+    if(total<=0){clearInterval(iv);el.textContent='Expirée';return;}
+    total--;
+    const m=Math.floor(total/60),s=total%60;
+    el.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  },1000);
+}
+
+/* ══════════════════════════════════════════
+   CALENDAR
+══════════════════════════════════════════ */
+const MONTHS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const SLOTS=['08:00','09:30','11:00','12:30','14:00','15:30','17:00','18:30','20:00'];
+const FULL_SLOTS=['09:30','14:00','18:30']; // simulate some full slots
+let calDate=new Date(), calSel=null, calSlot=null;
+calDate.setDate(1);
+
+function renderCal(){
+  const y=calDate.getFullYear(),m=calDate.getMonth();
+  document.getElementById('calMonthLabel').textContent=MONTHS[m]+' '+y;
+  const grid=document.getElementById('calDays');
+  grid.innerHTML='';
+  const first=new Date(y,m,1).getDay(); // 0=Sun
+  const adjust=first===0?6:first-1; // Mon start
+  const days=new Date(y,m+1,0).getDate();
+  const today=new Date();
+  // empty cells
+  for(let i=0;i<adjust;i++){
+    const e=document.createElement('button');
+    e.className='cal-day empty';e.disabled=true;
+    grid.appendChild(e);
+  }
+  for(let d=1;d<=days;d++){
+    const btn=document.createElement('button');
+    btn.className='cal-day';
+    btn.textContent=d;
+    const thisDate=new Date(y,m,d);
+    const isPast=thisDate<new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    if(isPast){btn.classList.add('disabled');btn.disabled=true;}
+    else{
+      const isToday=d===today.getDate()&&m===today.getMonth()&&y===today.getFullYear();
+      if(isToday)btn.classList.add('today');
+      if(calSel&&calSel.getDate()===d&&calSel.getMonth()===m&&calSel.getFullYear()===y)
+        btn.classList.add('selected');
+      btn.onclick=()=>selectDay(new Date(y,m,d));
+    }
+    grid.appendChild(btn);
+  }
+}
+
+function selectDay(date){
+  calSel=date;calSlot=null;
+  renderCal();
+  // show time slots
+  const ts=document.getElementById('calTimeSection');
+  ts.style.display='block';
+  const sc=document.getElementById('calSlots');
+  sc.innerHTML='';
+  SLOTS.forEach(s=>{
+    const btn=document.createElement('button');
+    btn.className='cal-slot';
+    btn.textContent=s;
+    const isFull=FULL_SLOTS.includes(s);
+    if(isFull){btn.classList.add('full');btn.disabled=true;btn.title='Complet';}
+    else btn.onclick=()=>selectSlot(s,btn);
+    sc.appendChild(btn);
+  });
+  document.getElementById('calConfirm').classList.remove('ready');
+}
+
+function selectSlot(s,btn){
+  calSlot=s;
+  document.querySelectorAll('.cal-slot').forEach(b=>b.classList.remove('sel-slot'));
+  btn.classList.add('sel-slot');
+  document.getElementById('calConfirm').classList.add('ready');
+}
+
+function confirmCal(){
+  if(!calSel||!calSlot)return;
+  const d=calSel.getDate(),m=calSel.getMonth()+1,y=calSel.getFullYear();
+  const str=`${d<10?'0':''}${d}/${m<10?'0':''}${m}/${y} à ${calSlot}`;
+  document.getElementById('calValue').value=str;
+  const trig=document.getElementById('calTrigger');
+  document.getElementById('calDisplay').textContent=str;
+  trig.classList.add('filled');
+  closeCal();
+}
+
+function toggleCal(){
+  const p=document.getElementById('calPanel');
+  if(p.classList.contains('open')){closeCal();}
+  else{
+    renderCal();
+    p.classList.add('open');
+    // close on outside click
+    setTimeout(()=>document.addEventListener('click',calOutside),10);
+  }
+}
+
+function closeCal(){
+  document.getElementById('calPanel').classList.remove('open');
+  document.removeEventListener('click',calOutside);
+}
+
+function calOutside(e){
+  if(!document.getElementById('calWrap').contains(e.target))closeCal();
+}
+
+function calNav(dir){
+  calDate.setMonth(calDate.getMonth()+dir);
+  calSel=null;calSlot=null;
+  document.getElementById('calTimeSection').style.display='none';
+  document.getElementById('calConfirm').classList.remove('ready');
+  renderCal();
+}
+
+/* ══════════════════════════════════════════
+   PARTICLES
+══════════════════════════════════════════ */
+(function(){
+  const c=document.getElementById('particles');
+  if(!c)return;
+  for(let i=0;i<28;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    const size=Math.random()*2+1;
+    p.style.cssText=`left:${Math.random()*100}%;top:${40+Math.random()*50}%;width:${size}px;height:${size}px;animation-duration:${6+Math.random()*10}s;animation-delay:${Math.random()*8}s;`;
+    c.appendChild(p);
+  }
+})();
+
+/* ══════════════════════════════════════════
+   TESTIMONIAL SLIDER
+══════════════════════════════════════════ */
+let testiIdx=0;
+const slides=document.querySelectorAll('.testi-slide');
+const tdots=document.querySelectorAll('.testi-dot');
+function goTesti(n){
+  slides[testiIdx].classList.remove('active');
+  tdots[testiIdx].classList.remove('on');
+  testiIdx=n;
+  slides[testiIdx].classList.add('active');
+  tdots[testiIdx].classList.add('on');
+}
+setInterval(()=>goTesti((testiIdx+1)%slides.length),5000);
+
+/* ══════════════════════════════════════════
+   CURSOR
+══════════════════════════════════════════ */
+const dot=document.getElementById('cur-dot'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+document.addEventListener('mousedown',()=>document.body.classList.add('clicking'));
+document.addEventListener('mouseup',()=>document.body.classList.remove('clicking'));
+(function loop(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.querySelectorAll('a,button,.exp-card,.space-card,.g,.pc,.cc,.stat').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+});
+
+/* ══════════════════════════════════════════
+   NAV SCROLL
+══════════════════════════════════════════ */
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('solid',window.scrollY>60);
+});
+
+/* ══════════════════════════════════════════
+   REVEAL ON SCROLL
+══════════════════════════════════════════ */
+const io=new IntersectionObserver(entries=>entries.forEach(e=>{
+  if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}
+}),{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+/* ══════════════════════════════════════════
+   HOURS BADGE
+══════════════════════════════════════════ */
+setTimeout(()=>document.getElementById('hours').classList.add('show'),3500);
+
+/* ══════════════════════════════════════════
+   LIGHTBOX
+══════════════════════════════════════════ */
+function openLb(el){
+  const img=el.querySelector('img'),cap=el.querySelector('.g-label');
+  document.getElementById('lb-img').src=img.src;
+  document.getElementById('lb-img').alt=img.alt;
+  document.getElementById('lb-cap').textContent=cap?cap.textContent:'';
+  document.getElementById('lb').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLb(){document.getElementById('lb').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLb();closeModal();closePopup();}});
+
+/* ══════════════════════════════════════════
+   RESERVATION MODAL
+══════════════════════════════════════════ */
+function openModal(offer){
+  const m=document.getElementById('modal');
+  m.classList.add('open');
+  document.body.style.overflow='hidden';
+  if(offer){
+    const sel=document.getElementById('modal-offer');
+    for(let i=0;i<sel.options.length;i++){
+      if(sel.options[i].text.toLowerCase().includes(offer.toLowerCase().split('—')[0].trim())){
+        sel.selectedIndex=i;break;
+      }
+    }
+  }
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow='';
+  closeCal();
+}
+function submitForm(){
+  const btn=document.querySelector('.form-submit');
+  btn.textContent='Envoi en cours…';
+  btn.disabled=true;
+  setTimeout(()=>{
+    btn.textContent='✓ Réservation confirmée !';
+    btn.style.background='#3a6a30';
+    setTimeout(()=>{
+      closeModal();
+      btn.textContent='Confirmer ma réservation';
+      btn.style.background='';
+      btn.disabled=false;
+    },2000);
+  },1400);
+}
+</script>
+
+<script>
+const edenBurger = document.querySelector(".eden-burger");
+const edenMenu = document.querySelector(".eden-menu");
+
+if(edenBurger && edenMenu){
+  edenBurger.addEventListener("click",()=>{
+    edenMenu.classList.toggle("open");
+  });
+}
+</script>
+
+
+<!-- ══ COOKIE BANNER ══ -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9990;background:rgba(6,9,8,.97);border-top:1px solid rgba(196,160,78,.2);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px;backdrop-filter:blur(12px);">
+  <div style="flex:1">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.9;max-width:680px">🍪 Nous utilisons des cookies pour améliorer votre expérience et analyser notre trafic. En continuant, vous acceptez notre <a href="rgpd.html" style="color:#c4a04e;text-decoration:underline">politique de confidentialité</a>.</p>
+  </div>
+  <div style="display:flex;gap:10px;flex-shrink:0">
+    <button onclick="refuseCookies()" style="background:none;border:1px solid rgba(196,160,78,.25);color:#7a7a68;padding:9px 20px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s">Refuser</button>
+    <button onclick="acceptCookies()" style="background:#c4a04e;color:#060908;border:none;padding:9px 24px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-weight:400;transition:all .3s">Accepter</button>
+  </div>
+</div>
+
+<!-- ══ CHATBOT FLOTTANT ══ -->
+<div id="chatbot-btn" onclick="toggleChat()" style="position:fixed;bottom:28px;right:28px;z-index:9980;width:52px;height:52px;background:linear-gradient(135deg,#c4a04e,#dbbf78);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 32px rgba(196,160,78,.35);transition:transform .3s;font-size:20px;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">💬</div>
+<div id="chatbot-panel" style="display:none;position:fixed;bottom:92px;right:28px;z-index:9980;width:320px;background:#0c110a;border:1px solid rgba(196,160,78,.2);box-shadow:0 20px 60px rgba(0,0,0,.6);">
+  <div style="padding:16px 20px;background:linear-gradient(135deg,rgba(196,160,78,.15),rgba(196,160,78,.05));border-bottom:1px solid rgba(196,160,78,.12);display:flex;align-items:center;justify-content:space-between">
+    <div><p style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#f4efe5">EDEN · Assistance</p><p style="font-size:9px;color:#7a7a68;letter-spacing:1px">Réponse en moins de 2h · 7j/7</p></div>
+    <button onclick="toggleChat()" style="background:none;border:none;color:#7a7a68;font-size:18px;cursor:pointer">×</button>
+  </div>
+  <div style="padding:16px 20px">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.8;margin-bottom:14px">Bonjour ! Comment puis-je vous aider ?</p>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <a href="reservation.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#c4a04e;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Réserver une séance</a>
+      <a href="faq.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Consulter la FAQ</a>
+      <a href="tel:+33100000000" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Appeler le 01 00 00 00 00</a>
+      <a href="mailto:contact@eden-wellness.fr" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Envoyer un email</a>
+    </div>
+    <p style="font-size:9px;color:#7a7a68;margin-top:14px;text-align:center">Ouvert 7j/7 · 8h–22h</p>
+  </div>
+</div>
+
+<script>
+// Cookie banner
+(function(){
+  if(!localStorage.getItem('eden_cookies')){
+    var b=document.getElementById('cookie-banner');
+    if(b){b.style.display='flex';setTimeout(function(){b.style.display='flex';},100);}
+  }
+})();
+function acceptCookies(){localStorage.setItem('eden_cookies','accepted');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function refuseCookies(){localStorage.setItem('eden_cookies','refused');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function toggleChat(){var p=document.getElementById('chatbot-panel');if(p)p.style.display=p.style.display==='none'?'block':'none';}
+</script>
+
+</body>
+</html>

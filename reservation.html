@@ -1,0 +1,2470 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Réservation — EDEN Bien-Être</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@100;200;300;400&display=swap" rel="stylesheet">
+
+<!-- ╔══════════════════════════════════════════════╗
+     ║  INSTRUCTIONS DE CONFIGURATION (À LIRE)     ║
+     ╠══════════════════════════════════════════════╣
+     ║  1. Créez un compte GRATUIT sur supabase.com ║
+     ║  2. Créez un projet → copiez l'URL + la clé ║
+     ║     anon (Settings → API)                   ║
+     ║  3. Exécutez le SQL en bas de ce fichier     ║
+     ║  4. Remplacez SUPABASE_URL et SUPABASE_KEY   ║
+     ║  5. Créez un compte sur formspree.io         ║
+     ║  6. Remplacez FORMSPREE_ID par votre ID      ║
+     ╚══════════════════════════════════════════════╝ -->
+
+<style>
+:root{
+  --gold:#c4a04e;--gold-light:#dbbf78;--gold-pale:#f2e8d0;
+  --dark:#060908;--dark2:#0c110a;--dark3:#111608;
+  --green-deep:#0f1a0b;--green-rich:#162010;
+  --cream:#f4efe5;--muted:#a0a090;--light:#d0ccc0;
+  --ok:#4caf50;--warn:#f0a030;--err:#e05050;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Jost',system-ui,sans-serif;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--cream);font-family:var(--sans);font-weight:300;overflow-x:hidden;cursor:none;}
+
+/* ── CURSOR ── */
+#cd{position:fixed;width:5px;height:5px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+#cr{position:fixed;width:32px;height:32px;border:1px solid rgba(196,160,78,.4);border-radius:50%;pointer-events:none;z-index:9997;transform:translate(-50%,-50%);transition:width .3s var(--ease),height .3s var(--ease),border-color .3s;}
+body.hov #cr{width:50px;height:50px;border-color:rgba(196,160,78,.65);}
+
+/* ── PROGRESS ── */
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--gold);z-index:9996;}
+
+/* ── TICKER ── */
+.ticker{height:32px;background:var(--gold);overflow:hidden;display:flex;align-items:center;}
+.tick-inner{display:flex;animation:tick 28s linear infinite;white-space:nowrap;}
+@keyframes tick{to{transform:translateX(-50%)}}
+.ti{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--dark);padding:0 30px;font-weight:400;}
+.td{opacity:.3;font-size:13px;color:var(--dark);}
+
+/* ── NAV ── */
+nav{position:fixed;top:32px;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:20px 72px;transition:all .5s var(--ease);}
+nav.solid{background:rgba(6,9,8,.92);backdrop-filter:blur(24px);padding:14px 72px;border-bottom:1px solid rgba(196,160,78,.12);}
+.logo{font-family:var(--serif);font-size:24px;letter-spacing:8px;color:var(--gold);text-decoration:none;font-weight:300;}
+.nav-links{display:flex;gap:44px;list-style:none;}
+.nav-links a{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(244,239,229,.5);text-decoration:none;transition:color .3s;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-5px;left:0;width:0;height:1px;background:var(--gold);transition:width .4s;}
+.nav-links a:hover,.nav-links a.on{color:var(--gold);}
+.nav-links a:hover::after,.nav-links a.on::after{width:100%;}
+.btn-nav{font-size:9px;letter-spacing:3px;text-transform:uppercase;border:1px solid var(--gold);background:var(--gold);color:var(--dark);padding:10px 24px;text-decoration:none;font-weight:400;transition:all .3s;}
+.btn-nav:hover{background:var(--gold-light);}
+
+/* ── HERO ── */
+.hero{position:relative;padding:165px 80px 72px;text-align:center;overflow:hidden;background:var(--dark2);}
+.hero-bg{position:absolute;inset:0;}
+.hero-bg img{width:100%;height:100%;object-fit:cover;filter:brightness(.15) saturate(1.2);}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,9,8,.3),rgba(12,17,10,.98) 100%);}
+.hi{position:relative;z-index:2;}
+.eyebrow{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--gold);margin-bottom:18px;display:block;animation:fu .6s .2s both;}
+.h1{font-family:var(--serif);font-size:clamp(42px,7vw,80px);font-weight:300;letter-spacing:8px;color:var(--cream);animation:fu .8s .4s both;}
+.h1 em{font-style:italic;color:var(--gold-light);}
+.sep{display:flex;align-items:center;gap:14px;justify-content:center;margin:24px auto;animation:fu .6s .6s both;}
+.sl{width:50px;height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.5));}
+.sr{background:linear-gradient(270deg,transparent,rgba(196,160,78,.5));}
+.sd{width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:.7;}
+.hdesc{font-size:13px;color:var(--muted);max-width:480px;margin:0 auto;line-height:2.3;animation:fu .6s .7s both;}
+@keyframes fu{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+/* ── LIVE COUNTER BAR ── */
+.live-bar{
+  background:var(--green-rich);border-bottom:1px solid rgba(196,160,78,.15);
+  display:grid;grid-template-columns:repeat(5,1fr);
+  position:sticky;top:64px;z-index:300;
+}
+.live-cell{
+  display:flex;align-items:center;gap:12px;padding:14px 20px;
+  border-right:1px solid rgba(196,160,78,.08);
+}
+.live-cell:last-child{border-right:none;}
+.ldot{width:8px;height:8px;border-radius:50%;flex-shrink:0;animation:ldp 2.2s infinite;}
+@keyframes ldp{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.3)}55%{box-shadow:0 0 0 7px transparent}}
+.ldot.ok{background:var(--ok);}
+.ldot.warn{background:var(--warn);}
+.ldot.err{background:var(--err);}
+.live-info .ll{font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:#b0ae9e;}
+.live-info .lv{font-family:var(--serif);font-size:19px;color:var(--cream);line-height:1.1;}
+.live-info .lv b{color:var(--gold);}
+.lbadge{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:2px;margin-left:6px;vertical-align:middle;}
+.lbadge.ok{background:rgba(76,175,80,.12);color:var(--ok);}
+.lbadge.warn{background:rgba(240,160,48,.12);color:var(--warn);}
+.lbadge.err{background:rgba(224,80,80,.12);color:var(--err);}
+/* Connection status */
+.conn-status{
+  grid-column:1/-1;padding:6px 20px;display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid rgba(196,160,78,.08);font-size:9px;color:var(--muted);
+  letter-spacing:1px;
+}
+.conn-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);}
+.conn-dot.live{background:var(--ok);animation:ldp 2s infinite;}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:1fr 420px;min-height:80vh;}
+
+/* ══════════════ CALENDAR ══════════════ */
+.cal-side{padding:48px 56px;border-right:1px solid rgba(196,160,78,.1);}
+
+/* Activity filter */
+.act-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:32px;}
+.act-btn{
+  display:flex;align-items:center;gap:7px;padding:9px 14px;
+  border:1px solid rgba(196,160,78,.14);background:none;
+  color:#b0ae9e;font-family:var(--sans);font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;cursor:pointer;transition:all .25s;
+}
+.act-btn:hover{border-color:rgba(196,160,78,.35);color:var(--light);}
+.act-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(196,160,78,.06);}
+.act-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+/* Cal header */
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.cal-month{font-family:var(--serif);font-size:22px;font-weight:300;color:#f4efe5;}
+.cal-navs{display:flex;gap:6px;}
+.cn{width:34px;height:34px;border:1px solid rgba(196,160,78,.2);background:none;color:var(--gold);font-size:15px;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;font-family:var(--sans);}
+.cn:hover{background:var(--gold);color:var(--dark);}
+
+/* Cal grid */
+.wdays{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px;}
+.wd{text-align:center;font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:#b0ae9e;padding:6px 0;}
+.cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cc{
+  height:52px;display:flex;flex-direction:column;align-items:center;
+  justify-content:flex-start;padding:5px 3px 3px;
+  border:1px solid transparent;cursor:pointer;
+  transition:all .2s var(--ease);border-radius:2px;
+  background:rgba(255,255,255,.04);position:relative;
+}
+.cc:hover:not(.past):not(.empty){border-color:rgba(196,160,78,.5);background:rgba(196,160,78,.1);}
+.cc.sel{border-color:var(--gold);background:rgba(196,160,78,.11);}
+.cc.today .cnum{color:var(--gold);font-weight:400;}
+.cc.today::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--gold);}
+.cc.past{opacity:.35;cursor:default;pointer-events:none;}
+.cc.empty{pointer-events:none;background:none;}
+.cnum{font-size:13px;color:#d8d4c8;margin-bottom:3px;line-height:1;font-weight:400;}
+.cc.sel .cnum{color:var(--gold);}
+.cbars{width:100%;display:flex;flex-direction:column;gap:1px;}
+.cbar{height:3px;border-radius:1px;}
+
+/* Loading skeleton */
+.skel{background:linear-gradient(90deg,rgba(196,160,78,.05) 25%,rgba(196,160,78,.12) 50%,rgba(196,160,78,.05) 75%);background-size:200%;animation:skel 1.4s infinite;}
+@keyframes skel{to{background-position:-200%}}
+
+/* Slots */
+.slot-sec{margin-top:28px;border-top:1px solid rgba(196,160,78,.1);padding-top:24px;display:none;}
+.slot-date-lbl{font-family:var(--serif);font-size:17px;color:var(--cream);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.slot-legend{display:flex;gap:12px;}
+.sli{display:flex;align-items:center;gap:4px;font-size:8px;letter-spacing:1px;color:var(--muted);}
+.sld{width:7px;height:7px;border-radius:50%;}
+.slots-list{display:flex;flex-direction:column;gap:5px;}
+.slot{
+  display:grid;grid-template-columns:68px 1fr 110px 36px;
+  align-items:center;gap:10px;padding:11px 14px;
+  border:1px solid rgba(196,160,78,.07);
+  transition:all .25s;position:relative;overflow:hidden;
+}
+.slot::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;}
+.slot.avail::before{background:var(--ok);}
+.slot.limited::before{background:var(--warn);}
+.slot.full{opacity:.4;pointer-events:none;}
+.slot.full::before{background:var(--err);}
+.slot.picked{border-color:var(--gold);background:rgba(196,160,78,.09);}
+.slot.picked::before{background:var(--gold);}
+.slot:not(.full):hover{border-color:rgba(196,160,78,.3);background:rgba(196,160,78,.04);cursor:pointer;}
+.st{font-family:var(--serif);font-size:15px;color:#f4efe5;}
+.sa-name{font-size:11px;color:#d8d4c8;border-left:2px solid;padding-left:7px;}
+.sa-dur{font-size:8px;color:#b0ae9e;letter-spacing:1px;margin-top:2px;}
+.savail{display:flex;flex-direction:column;gap:3px;align-items:flex-end;}
+.sbar{height:3px;border-radius:2px;width:72px;background:rgba(255,255,255,.06);}
+.sfill{height:100%;border-radius:2px;transition:width .5s var(--ease);}
+.stxt{font-size:8px;letter-spacing:1px;}
+.stxt.ok{color:#5ccc60;}
+.stxt.warn{color:#f0b040;}
+.stxt.err{color:var(--err);}
+.spick{
+  width:34px;height:34px;border:1px solid rgba(196,160,78,.22);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gold);font-size:14px;cursor:pointer;
+  transition:all .25s;background:none;font-family:var(--sans);
+}
+.slot:not(.full):hover .spick{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+.slot.picked .spick{background:var(--gold);color:var(--dark);}
+
+/* Realtime pulse on slot update */
+@keyframes flashUpdate{0%{background:rgba(76,175,80,.15)}100%{background:transparent}}
+.slot.updated{animation:flashUpdate .8s ease-out;}
+
+/* Act legend box */
+.act-legend{
+  margin-top:24px;padding:16px;background:rgba(255,255,255,.015);
+  border:1px solid rgba(196,160,78,.06);
+}
+.al-title{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.al-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ali{display:flex;align-items:center;gap:8px;}
+.ali-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.ali-name{font-size:10px;color:var(--light);}
+.ali-cap{font-size:8px;color:var(--muted);margin-left:auto;}
+
+/* ══════════════ FORM ══════════════ */
+.form-side{
+  padding:48px 48px;background:var(--dark2);
+  position:sticky;top:128px;align-self:start;
+  max-height:calc(100vh - 128px);overflow-y:auto;
+}
+.form-side::-webkit-scrollbar{width:3px;}
+.form-side::-webkit-scrollbar-thumb{background:rgba(196,160,78,.15);}
+.ftitle{font-family:var(--serif);font-size:26px;font-weight:300;color:#f4efe5;margin-bottom:4px;}
+.fsub{font-size:11px;color:#a0a090;margin-bottom:28px;line-height:1.8;}
+
+/* Selected preview */
+.sel-prev{
+  background:rgba(196,160,78,.06);border:1px solid rgba(196,160,78,.2);
+  padding:16px;margin-bottom:20px;display:none;
+}
+.sel-prev.show{display:block;}
+.sp-label{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.sp-row{display:flex;justify-content:space-between;align-items:center;}
+.sp-main{font-family:var(--serif);font-size:17px;color:var(--cream);}
+.sp-clr{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;font-family:var(--sans);transition:color .2s;}
+.sp-clr:hover{color:var(--err);}
+.sp-detail{font-size:10px;color:var(--muted);margin-top:4px;}
+
+/* Urgency */
+.urgency{
+  display:none;background:rgba(240,160,48,.07);
+  border:1px solid rgba(240,160,48,.22);padding:9px 14px;
+  margin-bottom:18px;align-items:center;gap:9px;
+}
+.urgency.show{display:flex;}
+.urgency-dot{width:6px;height:6px;border-radius:50%;background:var(--warn);animation:ldp 1.5s infinite;}
+.urgency-txt{font-size:10px;color:var(--warn);letter-spacing:.5px;}
+
+/* Form fields */
+.ff{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.ff label{font-size:8px;letter-spacing:3.5px;text-transform:uppercase;color:#c4a04e;}
+.ff input,.ff select,.ff textarea{
+  background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.14);
+  color:var(--cream);padding:12px 14px;font-family:var(--sans);font-size:12px;
+  font-weight:300;outline:none;transition:border-color .3s;width:100%;
+}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:rgba(196,160,78,.48);}
+.ff input::placeholder{color:var(--muted);}
+.ff select{cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M0 0l4.5 5 4.5-5z' fill='%23c4a04e' opacity='.5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;}
+.ff select option{background:var(--dark2);}
+.ff textarea{resize:vertical;min-height:72px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+.fdiv{height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.12),transparent);margin:18px 0;}
+
+/* Extras */
+.extras{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.ex{border:1px solid rgba(196,160,78,.1);padding:12px;cursor:pointer;transition:all .25s;position:relative;}
+.ex.on{border-color:var(--gold);background:rgba(196,160,78,.06);}
+.ex input{position:absolute;opacity:0;}
+.ex-name{font-size:11px;color:var(--light);margin-bottom:2px;}
+.ex-price{font-family:var(--serif);font-size:15px;color:var(--gold);}
+.ex-chk{position:absolute;top:8px;right:8px;width:14px;height:14px;border:1px solid rgba(196,160,78,.25);display:flex;align-items:center;justify-content:center;font-size:7px;color:var(--gold);opacity:0;transition:opacity .2s;}
+.ex.on .ex-chk{opacity:1;}
+
+/* Price summary */
+.psum{background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.12);padding:16px;margin-bottom:18px;}
+.pr{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(196,160,78,.06);}
+.pr:last-child{border-bottom:none;margin-top:4px;}
+.prl{font-size:10px;color:var(--muted);}
+.prv{font-family:var(--serif);font-size:13px;color:var(--light);}
+.pr-total .prl{font-size:11px;letter-spacing:1px;color:var(--cream);}
+.pr-total .prv{font-size:22px;color:var(--gold);}
+
+/* Submit btn */
+.btn-sub{
+  width:100%;background:var(--gold);color:var(--dark);border:none;
+  padding:15px;font-family:var(--sans);font-size:9px;letter-spacing:3.5px;
+  text-transform:uppercase;font-weight:400;cursor:pointer;
+  transition:all .3s var(--ease);display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.btn-sub:hover:not(:disabled){background:var(--gold-light);}
+.btn-sub:disabled{opacity:.5;cursor:not-allowed;}
+.fnote{font-size:9px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.9;}
+
+/* ── SUCCESS ── */
+.success{display:none;flex-direction:column;align-items:center;text-align:center;padding:40px 10px;}
+.success.show{display:flex;}
+.suc-circle{width:68px;height:68px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--gold);margin-bottom:20px;animation:scl .5s var(--ease);}
+@keyframes scl{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.suc-title{font-family:var(--serif);font-size:26px;font-weight:300;color:var(--cream);margin-bottom:6px;}
+.suc-sub{font-size:12px;color:var(--muted);line-height:2;max-width:300px;}
+.suc-code{font-family:var(--serif);font-size:28px;color:var(--gold);letter-spacing:6px;border:1px solid rgba(196,160,78,.25);padding:14px 28px;margin:18px 0;}
+.btn-reset{background:none;border:1px solid rgba(196,160,78,.3);color:var(--gold);padding:11px 28px;font-family:var(--sans);font-size:9px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;margin-top:8px;transition:all .3s;}
+.btn-reset:hover{background:rgba(196,160,78,.08);}
+
+/* ── FOOTER ── */
+footer{background:var(--dark2);border-top:1px solid rgba(196,160,78,.1);padding:56px 80px 32px;}
+.fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:64px;margin-bottom:48px;}
+.flogo{font-family:var(--serif);font-size:26px;letter-spacing:9px;color:var(--gold);display:block;margin-bottom:14px;}
+.fabout{font-size:12px;color:var(--muted);line-height:2.1;max-width:230px;margin-bottom:16px;}
+.ftag{font-family:var(--serif);font-size:12px;font-style:italic;color:var(--light);}
+.fc h5{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
+.fc ul{list-style:none;}
+.fc li{margin-bottom:10px;}
+.fc a{font-size:12px;color:var(--muted);text-decoration:none;transition:color .25s;}
+.fc a:hover{color:var(--gold-light);}
+.fbot{border-top:1px solid rgba(196,160,78,.08);padding-top:24px;display:flex;justify-content:space-between;font-size:10px;color:var(--muted);}
+.fbot a{color:var(--muted);text-decoration:none;margin-left:18px;transition:color .25s;}
+.fbot a:hover{color:var(--gold);}
+
+/* ── TOAST NOTIFICATION ── */
+#toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);
+  z-index:9000;background:var(--dark2);border:1px solid rgba(196,160,78,.25);
+  padding:12px 24px;font-size:11px;letter-spacing:1px;color:var(--light);
+  transition:transform .4s var(--ease);white-space:nowrap;
+}
+#toast.show{transform:translateX(-50%) translateY(0);}
+#toast.ok-toast{border-color:rgba(76,175,80,.35);color:var(--ok);}
+#toast.err-toast{border-color:rgba(224,80,80,.35);color:var(--err);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1000px){
+  nav{padding:13px 24px;}nav.solid{padding:11px 24px;}
+  .nav-links{display:none;}
+  .hero{padding:140px 24px 64px;}
+  .live-bar{grid-template-columns:repeat(2,1fr);}
+  .layout{grid-template-columns:1fr;}
+  .cal-side{padding:36px 24px;border-right:none;}
+  .form-side{position:static;max-height:none;padding:36px 24px;}
+  .fg{grid-template-columns:1fr 1fr;gap:36px;}
+}
+
+/* =========================================================
+   RÉSERVATION — VERSION PLUS PREMIUM + MENU FINAL
+   ========================================================= */
+
+/* Couleurs plus charbon / gold, moins vert */
+:root{
+  --dark:#050605 !important;
+  --dark2:#080908 !important;
+  --dark3:#0d0e0c !important;
+  --green-deep:#0b0c0a !important;
+  --green-rich:#10110e !important;
+  --muted:#918d7d !important;
+  --light:#d0cab9 !important;
+}
+
+/* Bandeau doré final */
+.ticker{
+  position:fixed !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  width:100% !important;
+  height:34px !important;
+  z-index:1000000 !important;
+  display:flex !important;
+  align-items:center !important;
+  overflow:hidden !important;
+  background:linear-gradient(90deg,#b9903e 0%,#d9b95f 50%,#b9903e 100%) !important;
+  border-bottom:1px solid rgba(6,9,8,.55) !important;
+  box-shadow:0 8px 24px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+.ticker-inner{
+  display:flex !important;
+  align-items:center !important;
+  white-space:nowrap !important;
+  animation:edenTicker 36s linear infinite !important;
+}
+
+@keyframes edenTicker{
+  to{transform:translateX(-50%);}
+}
+
+.ticker-inner span{
+  color:#070908 !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:10px !important;
+  letter-spacing:4px !important;
+  text-transform:uppercase !important;
+  font-weight:400 !important;
+  padding:0 34px !important;
+}
+
+.ticker-inner span.dot{
+  padding:0 !important;
+  opacity:.42 !important;
+  font-size:15px !important;
+}
+
+/* Menu final */
+.eden-menu{
+  position:fixed !important;
+  top:34px !important;
+  left:0 !important;
+  right:0 !important;
+  height:84px !important;
+  z-index:999999 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 52px !important;
+  background:linear-gradient(180deg,rgba(6,9,8,.985),rgba(6,9,8,.92)) !important;
+  border-bottom:1px solid rgba(196,160,78,.12) !important;
+  box-shadow:0 18px 55px rgba(0,0,0,.42) !important;
+  backdrop-filter:blur(18px) !important;
+  -webkit-backdrop-filter:blur(18px) !important;
+}
+
+.eden-menu::before{
+  content:"" !important;
+  position:absolute !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.42),transparent) !important;
+  pointer-events:none !important;
+}
+
+.eden-menu *{box-sizing:border-box !important;}
+
+.eden-menu-inner{
+  width:100% !important;
+  max-width:1820px !important;
+  display:grid !important;
+  grid-template-columns:230px 1fr 230px !important;
+  align-items:center !important;
+  gap:32px !important;
+}
+
+.eden-logo{
+  justify-self:start !important;
+  color:#c4a04e !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:26px !important;
+  font-weight:200 !important;
+  letter-spacing:15px !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  text-shadow:0 0 18px rgba(196,160,78,.18) !important;
+  line-height:1 !important;
+}
+
+.eden-links{
+  justify-self:center !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:40px !important;
+  padding:0 !important;
+  margin:0 !important;
+  list-style:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+.eden-links > li{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+.eden-links > li > a{
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:16px 0 !important;
+  color:rgba(244,239,229,.68) !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:10px !important;
+  font-weight:300 !important;
+  letter-spacing:5px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  transition:.3s ease !important;
+}
+
+.eden-links > li > a::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:calc(100% + 34px) !important;
+  max-width:155px !important;
+  height:46px !important;
+  transform:translate(-50%,-50%) !important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.020),rgba(255,255,255,.006)),
+    radial-gradient(circle at 50% 0%,rgba(196,160,78,.09),transparent 58%),
+    linear-gradient(180deg,rgba(14,17,14,.96),rgba(7,9,8,.94)) !important;
+  border:1px solid rgba(196,160,78,.12) !important;
+  box-shadow:0 12px 26px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.025) !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  z-index:-1 !important;
+  transition:.28s ease !important;
+}
+
+.eden-links > li > a::after{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  bottom:6px !important;
+  width:78px !important;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.68),transparent) !important;
+  transform:translateX(-50%) scaleX(0) !important;
+  transform-origin:center !important;
+  box-shadow:0 0 10px rgba(196,160,78,.20) !important;
+  transition:.28s ease !important;
+}
+
+.eden-links > li > a:hover,
+.eden-links > li > a.active,
+.eden-dropdown:hover > a{
+  color:#dbbf78 !important;
+}
+
+.eden-links > li > a:hover::before,
+.eden-links > li > a.active::before,
+.eden-dropdown:hover > a::before{
+  opacity:1 !important;
+}
+
+.eden-links > li > a:hover::after,
+.eden-links > li > a.active::after,
+.eden-dropdown:hover > a::after{
+  transform:translateX(-50%) scaleX(1) !important;
+}
+
+.eden-reserve{
+  justify-self:end !important;
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:48px !important;
+  padding:0 36px !important;
+  color:#060908 !important;
+  background:linear-gradient(135deg,#c4a04e,#dbbf78) !important;
+  border:1px solid rgba(196,160,78,.75) !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:10px !important;
+  font-weight:400 !important;
+  letter-spacing:4px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  overflow:hidden !important;
+  box-shadow:0 0 24px rgba(196,160,78,.16),0 14px 34px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.18) !important;
+  transition:.3s ease !important;
+}
+
+.eden-reserve::before{
+  content:"" !important;
+  position:absolute !important;
+  top:-90% !important;
+  left:-80% !important;
+  width:70% !important;
+  height:260% !important;
+  transform:rotate(24deg) !important;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent) !important;
+  opacity:0 !important;
+  transition:.75s cubic-bezier(.22,1,.36,1) !important;
+}
+
+.eden-reserve:hover{transform:translateY(-2px) !important;}
+.eden-reserve:hover::before{left:120% !important;opacity:1 !important;}
+
+/* Sous-menu Fuel Bar */
+.eden-dropdown{position:relative !important;z-index:1000000 !important;}
+.eden-dropdown::before{
+  content:"" !important;
+  position:absolute !important;
+  left:-42px !important;
+  right:-42px !important;
+  top:100% !important;
+  height:32px !important;
+  background:transparent !important;
+}
+
+.eden-submenu{
+  position:absolute !important;
+  top:calc(100% + 18px) !important;
+  left:50% !important;
+  width:430px !important;
+  padding:12px !important;
+  transform:translateX(-50%) translateY(10px) !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.10),transparent 34%),
+    linear-gradient(180deg,rgba(12,15,12,.98),rgba(7,9,8,.98)) !important;
+  border:1px solid rgba(196,160,78,.18) !important;
+  box-shadow:0 30px 85px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.035) !important;
+  transition:.35s cubic-bezier(.22,1,.36,1) !important;
+  z-index:1000001 !important;
+}
+
+.eden-submenu::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:-7px !important;
+  width:12px !important;
+  height:12px !important;
+  transform:translateX(-50%) rotate(45deg) !important;
+  background:#0c0f0c !important;
+  border-left:1px solid rgba(196,160,78,.18) !important;
+  border-top:1px solid rgba(196,160,78,.18) !important;
+}
+
+.eden-dropdown:hover .eden-submenu,
+.eden-dropdown:focus-within .eden-submenu{
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  transform:translateX(-50%) translateY(0) !important;
+}
+
+.eden-submenu a{
+  display:grid !important;
+  grid-template-columns:42px 1fr !important;
+  column-gap:14px !important;
+  row-gap:3px !important;
+  padding:14px 16px !important;
+  text-align:left !important;
+  text-decoration:none !important;
+  border:1px solid transparent !important;
+  background:rgba(255,255,255,.010) !important;
+  transition:.3s ease !important;
+}
+
+.eden-submenu a:not(:last-child){margin-bottom:6px !important;}
+.eden-submenu a::before,.eden-submenu a::after{display:none !important;}
+
+.eden-submenu a span{
+  grid-row:1 / 3 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:34px !important;
+  height:34px !important;
+  border:1px solid rgba(196,160,78,.20) !important;
+  color:#c4a04e !important;
+  font-family:var(--serif,'Cormorant Garamond',Georgia,serif) !important;
+  font-size:16px !important;
+}
+
+.eden-submenu a strong{
+  color:#f4efe5 !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:10px !important;
+  letter-spacing:3px !important;
+  text-transform:uppercase !important;
+  font-weight:300 !important;
+}
+
+.eden-submenu a small{
+  color:#7a7a68 !important;
+  font-size:11px !important;
+  text-transform:none !important;
+}
+
+.eden-submenu a:hover{
+  background:radial-gradient(circle at top right,rgba(196,160,78,.09),transparent 34%),rgba(196,160,78,.035) !important;
+  border-color:rgba(196,160,78,.18) !important;
+}
+
+.eden-submenu a:hover span{
+  background:#c4a04e !important;
+  color:#060908 !important;
+}
+
+.eden-burger{
+  display:none !important;
+  justify-self:end !important;
+  width:44px !important;
+  height:44px !important;
+  border:1px solid rgba(196,160,78,.25) !important;
+  background:rgba(196,160,78,.035) !important;
+  align-items:center !important;
+  justify-content:center !important;
+  cursor:pointer !important;
+}
+
+.eden-burger span,
+.eden-burger span::before,
+.eden-burger span::after{
+  display:block !important;
+  width:18px !important;
+  height:1px !important;
+  background:#c4a04e !important;
+  position:relative !important;
+}
+
+.eden-burger span::before,
+.eden-burger span::after{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+}
+.eden-burger span::before{top:-6px !important;}
+.eden-burger span::after{top:6px !important;}
+
+/* Hero plus pro */
+.hero{
+  padding:190px 80px 96px !important;
+  background:
+    radial-gradient(circle at 50% 20%,rgba(196,160,78,.12),transparent 28%),
+    linear-gradient(180deg,#060908 0%,#080908 100%) !important;
+  border-bottom:1px solid rgba(196,160,78,.10) !important;
+}
+
+.hero::after{
+  content:"RÉSERVATION" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:52% !important;
+  transform:translate(-50%,-50%) !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:clamp(88px,14vw,220px) !important;
+  letter-spacing:24px !important;
+  color:rgba(196,160,78,.028) !important;
+  z-index:1 !important;
+  pointer-events:none !important;
+}
+
+.hi{max-width:980px !important;margin:auto !important;}
+.eyebrow{
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  letter-spacing:7px !important;
+}
+.h1{
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-weight:100 !important;
+  text-transform:uppercase !important;
+  letter-spacing:10px !important;
+  line-height:1.12 !important;
+}
+.h1 em{
+  font-style:normal !important;
+  font-weight:100 !important;
+}
+.hdesc{
+  max-width:680px !important;
+  color:rgba(208,204,192,.82) !important;
+}
+
+/* Nouvelles sections */
+.reservation-intro{
+  position:relative;
+  padding:96px 80px 82px;
+  background:
+    radial-gradient(circle at 15% 0%,rgba(196,160,78,.07),transparent 30%),
+    radial-gradient(circle at 85% 0%,rgba(219,191,120,.045),transparent 34%),
+    linear-gradient(180deg,#080908 0%,#050605 100%);
+  border-bottom:1px solid rgba(196,160,78,.10);
+  overflow:hidden;
+}
+
+.reservation-intro::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:0;
+  transform:translateX(-50%);
+  width:min(900px,80vw);
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(196,160,78,.42),transparent);
+}
+
+.reservation-intro-inner{
+  max-width:1320px;
+  margin:auto;
+  text-align:center;
+}
+
+.intro-kicker{
+  color:#c4a04e;
+  font-size:9px;
+  letter-spacing:6px;
+  text-transform:uppercase;
+  margin-bottom:18px;
+}
+
+.reservation-intro h2{
+  font-family:var(--sans,'Jost',system-ui,sans-serif);
+  font-size:clamp(34px,5vw,68px);
+  font-weight:100;
+  letter-spacing:8px;
+  text-transform:uppercase;
+  line-height:1.14;
+  color:#f4efe5;
+}
+
+.reservation-intro h2::after{
+  content:"";
+  display:block;
+  width:260px;
+  height:1px;
+  margin:28px auto 0;
+  background:linear-gradient(90deg,transparent,rgba(196,160,78,.55),transparent);
+}
+
+.reservation-intro > .reservation-intro-inner > p{
+  max-width:760px;
+  margin:28px auto 0;
+  color:#918d7d;
+  line-height:2.2;
+  font-size:13px;
+}
+
+.process-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-top:56px;
+}
+
+.process-card{
+  position:relative;
+  min-height:220px;
+  padding:34px 28px;
+  text-align:left;
+  border:1px solid rgba(196,160,78,.14);
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.075),transparent 34%),
+    linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.006)),
+    #080908;
+  box-shadow:0 22px 58px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.028);
+  overflow:hidden;
+}
+
+.process-card::before{
+  content:"";
+  position:absolute;
+  left:22px;
+  right:22px;
+  top:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(196,160,78,.55),transparent);
+}
+
+.process-card span{
+  display:block;
+  color:rgba(196,160,78,.36);
+  font-family:var(--serif,'Cormorant Garamond',Georgia,serif);
+  font-size:48px;
+  line-height:1;
+  margin-bottom:24px;
+}
+
+.process-card strong{
+  display:block;
+  color:#f4efe5;
+  font-size:12px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  font-weight:300;
+  margin-bottom:14px;
+}
+
+.process-card p{
+  color:#918d7d;
+  font-size:12px;
+  line-height:2;
+}
+
+.reservation-notes{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  background:rgba(196,160,78,.10);
+  border-bottom:1px solid rgba(196,160,78,.10);
+}
+
+.note-card{
+  padding:34px 46px;
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.055),transparent 34%),
+    #080908;
+}
+
+.note-card span{
+  display:block;
+  color:#c4a04e;
+  font-size:8px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+
+.note-card strong{
+  display:block;
+  color:#f4efe5;
+  font-size:17px;
+  font-weight:300;
+  line-height:1.55;
+  margin-bottom:10px;
+}
+
+.note-card p{
+  color:#918d7d;
+  font-size:12px;
+  line-height:2;
+}
+
+/* Barre live plus premium */
+.live-bar{
+  background:#0a0b09 !important;
+  border-top:1px solid rgba(196,160,78,.10) !important;
+  border-bottom:1px solid rgba(196,160,78,.14) !important;
+  top:118px !important;
+  box-shadow:0 18px 50px rgba(0,0,0,.28) !important;
+}
+
+.live-cell{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.018),rgba(255,255,255,.005)) !important;
+  border-right:1px solid rgba(196,160,78,.08) !important;
+}
+
+.conn-status{
+  background:#070807 !important;
+}
+
+/* Layout et cards */
+.layout{
+  background:
+    radial-gradient(circle at 16% 14%,rgba(196,160,78,.045),transparent 28%),
+    linear-gradient(180deg,#060706 0%,#050605 100%) !important;
+}
+
+.cal-side{
+  border-right:1px solid rgba(196,160,78,.12) !important;
+}
+
+.form-side{
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.08),transparent 34%),
+    linear-gradient(180deg,#0b0c0a 0%,#070807 100%) !important;
+  border-left:1px solid rgba(196,160,78,.10) !important;
+}
+
+.act-btn,
+.cn,
+.cc,
+.slot,
+.menu-side,
+.act-legend,
+.sel-prev,
+.urgency,
+.ff input,
+.ff select,
+.ff textarea,
+.ex,
+.psum{
+  border-color:rgba(196,160,78,.15) !important;
+}
+
+.act-btn,
+.cc,
+.slot,
+.ex,
+.psum,
+.act-legend,
+.sel-prev{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.006)),
+    rgba(255,255,255,.010) !important;
+}
+
+.cc:hover:not(.past):not(.empty),
+.slot:not(.full):hover,
+.ex.on,
+.act-btn.on{
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.08),transparent 34%),
+    rgba(196,160,78,.045) !important;
+  border-color:rgba(196,160,78,.32) !important;
+}
+
+.ftitle,
+.cal-month,
+.suc-title{
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-weight:100 !important;
+  text-transform:uppercase !important;
+  letter-spacing:5px !important;
+}
+
+.ftitle::after{
+  content:"";
+  display:block;
+  width:180px;
+  height:1px;
+  margin:18px 0 0;
+  background:linear-gradient(90deg,rgba(196,160,78,.55),transparent);
+}
+
+.btn-sub{
+  min-height:52px !important;
+  background:linear-gradient(135deg,#c4a04e,#dbbf78) !important;
+  box-shadow:0 0 24px rgba(196,160,78,.16),0 14px 34px rgba(0,0,0,.22) !important;
+}
+
+/* Success plus visible */
+.success.show{
+  border:1px solid rgba(196,160,78,.16);
+  background:
+    radial-gradient(circle at top,rgba(196,160,78,.09),transparent 40%),
+    linear-gradient(180deg,rgba(255,255,255,.018),rgba(255,255,255,.006));
+  box-shadow:0 28px 70px rgba(0,0,0,.30);
+}
+
+/* Responsive */
+@media(max-width:1200px){
+  .eden-menu-inner{
+    grid-template-columns:170px 1fr 190px !important;
+  }
+
+  .eden-links{
+    gap:24px !important;
+  }
+
+  .eden-links > li > a{
+    letter-spacing:3.6px !important;
+  }
+
+  .process-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:1050px){
+  .ticker{
+    height:32px !important;
+  }
+
+  .eden-menu{
+    top:32px !important;
+    height:auto !important;
+    padding:14px 22px !important;
+  }
+
+  .eden-menu-inner{
+    grid-template-columns:1fr auto !important;
+  }
+
+  .eden-burger{
+    display:flex !important;
+  }
+
+  .eden-links{
+    grid-column:1 / -1 !important;
+    width:100% !important;
+    display:none !important;
+    flex-direction:column !important;
+    gap:8px !important;
+    margin-top:12px !important;
+  }
+
+  .eden-menu.open .eden-links{
+    display:flex !important;
+  }
+
+  .eden-links > li,
+  .eden-links > li > a{
+    width:100% !important;
+  }
+
+  .eden-links > li > a{
+    padding:14px 16px !important;
+    border:1px solid rgba(196,160,78,.12) !important;
+    background:rgba(255,255,255,.012) !important;
+  }
+
+  .eden-reserve{
+    display:none !important;
+  }
+
+  .eden-submenu{
+    position:static !important;
+    width:100% !important;
+    transform:none !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+    margin:8px 0 0 !important;
+    box-shadow:none !important;
+  }
+
+  .eden-submenu::before{
+    display:none !important;
+  }
+
+  .hero{
+    padding:150px 24px 76px !important;
+  }
+
+  .reservation-intro{
+    padding:76px 24px 64px;
+  }
+
+  .process-grid,
+  .reservation-notes{
+    grid-template-columns:1fr;
+  }
+
+  .note-card{
+    padding:28px 24px;
+  }
+
+  .live-bar{
+    top:auto !important;
+  }
+}
+
+@media(max-width:620px){
+  .reservation-intro h2{
+    letter-spacing:4px;
+  }
+
+  .process-card{
+    min-height:auto;
+  }
+
+  .extras{
+    grid-template-columns:1fr !important;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<div class="ticker">
+  <div class="ticker-inner">
+    <span>Bain Nordique</span><span class="dot">◆</span>
+    <span>Bain Froid</span><span class="dot">◆</span>
+    <span>Sauna & Hammam</span><span class="dot">◆</span>
+    <span>Pressothérapie</span><span class="dot">◆</span>
+    <span>Espace Détente</span><span class="dot">◆</span>
+    <span>Fuel Bar</span><span class="dot">◆</span>
+    <span>Vestiaires Premium</span><span class="dot">◆</span>
+
+    <span>Bain Nordique</span><span class="dot">◆</span>
+    <span>Bain Froid</span><span class="dot">◆</span>
+    <span>Sauna & Hammam</span><span class="dot">◆</span>
+    <span>Pressothérapie</span><span class="dot">◆</span>
+    <span>Espace Détente</span><span class="dot">◆</span>
+    <span>Fuel Bar</span><span class="dot">◆</span>
+    <span>Vestiaires Premium</span><span class="dot">◆</span>
+  </div>
+</div>
+
+
+<nav id="nav" class="eden-menu">
+  <div class="eden-menu-inner">
+    <a href="index.html" class="eden-logo">EDEN</a>
+
+    <button class="eden-burger" type="button" aria-label="Ouvrir le menu">
+      <span></span>
+    </button>
+
+    <ul class="eden-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="index.html#tarifs">Tarifs</a></li>
+
+      <li class="eden-dropdown">
+        <a href="fuel-bar.html">Fuel Bar</a>
+
+        <div class="eden-submenu">
+          <a href="fuel-bar.html"><span>01</span><strong>Accueil Fuel Bar</strong><small>Présentation générale</small></a>
+          <a href="smoothies.html"><span>02</span><strong>Smoothies</strong><small>Créations signature</small></a>
+          <a href="softs.html"><span>03</span><strong>Softs premium</strong><small>Boissons fraîches</small></a>
+          <a href="carte-bar.html#cafes"><span>04</span><strong>Cafés</strong><small>Boissons chaudes</small></a>
+          <a href="carte-bar.html#thes"><span>05</span><strong>Thés & infusions</strong><small>Palais des Thés</small></a>
+        </div>
+      </li>
+
+      <li><a href="faq.html">FAQ</a></li>
+      <li><a href="parrainage.html">Parrainage</a></li>
+      <li><a href="reservation.html" class="active">Réservation</a></li>
+    </ul>
+
+    <a href="reservation.html" class="eden-reserve">Réserver →</a>
+  </div>
+</nav>
+
+
+<!-- ══ CONFIG — MODIFIEZ CES VALEURS ══ -->
+<script>
+// ① Supabase — créez un compte gratuit sur supabase.com
+//   puis copiez votre URL de projet et la clé "anon public"
+const SUPABASE_URL  = 'https://jdcxhejkuttaviiqqonz.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkY3hoZWprdXR0YXZpaXFxb256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzU5NjcsImV4cCI6MjA5MjcxMTk2N30.jKejetk46cKzo7gJGnyRQTCtvzjL0p-6CMkVgLfceZs';
+
+// ② Formspree — créez un formulaire sur formspree.io
+//   et copiez l'ID (ex: xpwzlkjd)
+const FORMSPREE_ID  = 'xaqakoze';
+
+// ③ Capacités par activité (modifiable)
+const CAPS = { bn:2, bf:4, sa:2, pr:6, ma:5 };
+
+// ④ Votre fuseau horaire
+const TZ = 'Europe/Paris';
+</script>
+
+<div id="cd"></div><div id="cr"></div>
+<div id="prog"></div>
+<div id="toast"></div>
+
+<!-- Ticker -->
+<!-- Nav -->
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg"><img src="images/bain_nordique.png" alt="EDEN"></div>
+  <div class="hi">
+    <span class="eyebrow">Espace réservation · Temps réel</span>
+    <h1 class="h1">Choisissez votre<br><em>moment EDEN</em></h1>
+    <div class="sep"><div class="sl"></div><div class="sd"></div><div class="sl sr"></div></div>
+    <p class="hdesc">Les disponibilités sont synchronisées en direct — dès qu'une place est prise, le calendrier s'actualise pour tous.</p>
+  </div>
+</section>
+
+<section class="reservation-intro">
+  <div class="reservation-intro-inner">
+    <div class="intro-kicker">Réservation guidée</div>
+    <h2>Un parcours simple, clair et sécurisé.</h2>
+    <p>
+      Choisissez votre expérience, sélectionnez un créneau disponible, ajoutez vos options premium,
+      puis recevez votre confirmation. Les disponibilités sont pensées pour limiter l’attente,
+      préserver l’intimité des espaces et maintenir un niveau de service haut standing.
+    </p>
+
+    <div class="process-grid">
+      <div class="process-card">
+        <span>01</span>
+        <strong>Choisir l’expérience</strong>
+        <p>Bain nordique, bain froid, sauna, pressothérapie, massage ou formule complète.</p>
+      </div>
+      <div class="process-card">
+        <span>02</span>
+        <strong>Sélectionner le créneau</strong>
+        <p>Les places disponibles sont affichées avec un repère clair : disponible, limité ou complet.</p>
+      </div>
+      <div class="process-card">
+        <span>03</span>
+        <strong>Ajouter vos options</strong>
+        <p>Peignoir, coffret soins, plateau de fruits, prosecco ou champagne à l’arrivée.</p>
+      </div>
+      <div class="process-card">
+        <span>04</span>
+        <strong>Recevoir le récapitulatif</strong>
+        <p>Un code de réservation est généré pour faciliter votre accueil le jour de la venue.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reservation-notes">
+  <div class="note-card">
+    <span>Conseil EDEN</span>
+    <strong>Arrivez 10 à 15 minutes avant votre créneau.</strong>
+    <p>Ce temps permet de vous installer, récupérer vos informations d’accueil et profiter de l’expérience sans précipitation.</p>
+  </div>
+  <div class="note-card">
+    <span>Tenue & confort</span>
+    <strong>Prévoyez maillot, serviette et tenue confortable.</strong>
+    <p>Des options premium peuvent être ajoutées à la réservation pour enrichir votre expérience.</p>
+  </div>
+  <div class="note-card">
+    <span>Disponibilité</span>
+    <strong>Les créneaux limités partent en priorité.</strong>
+    <p>Lorsqu’il reste peu de places, l’interface vous l’indique avant la validation.</p>
+  </div>
+</section>
+
+<!-- Live counter bar -->
+<div class="live-bar" id="liveBar">
+  <div class="conn-status">
+    <div class="conn-dot" id="connDot"></div>
+    <span id="connTxt">Connexion en cours…</span>
+  </div>
+  <div class="live-cell" id="lc-bn">
+    <div class="ldot ok" id="dot-bn"></div>
+    <div class="live-info">
+      <div class="ll">Bain Nordique · Aujourd'hui</div>
+      <div class="lv"><b id="cnt-bn">—</b> / 2 places <span class="lbadge ok" id="bdg-bn">Dispo</span></div>
+    </div>
+  </div>
+  <div class="live-cell" id="lc-bf">
+    <div class="ldot ok" id="dot-bf"></div>
+    <div class="live-info">
+      <div class="ll">Bain Froid · Aujourd'hui</div>
+      <div class="lv"><b id="cnt-bf">—</b> / 4 places <span class="lbadge ok" id="bdg-bf">Dispo</span></div>
+    </div>
+  </div>
+  <div class="live-cell" id="lc-sa">
+    <div class="ldot ok" id="dot-sa"></div>
+    <div class="live-info">
+      <div class="ll">Sauna & Hammam · Aujourd'hui</div>
+      <div class="lv"><b id="cnt-sa">—</b> / 2 places <span class="lbadge ok" id="bdg-sa">Dispo</span></div>
+    </div>
+  </div>
+  <div class="live-cell" id="lc-pr">
+    <div class="ldot ok" id="dot-pr"></div>
+    <div class="live-info">
+      <div class="ll">Pressothérapie · Aujourd'hui</div>
+      <div class="lv"><b id="cnt-pr">—</b> / 6 places <span class="lbadge ok" id="bdg-pr">Dispo</span></div>
+    </div>
+  </div>
+  <div class="live-cell" id="lc-ma">
+    <div class="ldot ok" id="dot-ma"></div>
+    <div class="live-info">
+      <div class="ll">Massage & Détente · Aujourd'hui</div>
+      <div class="lv"><b id="cnt-ma">—</b> / 5 places <span class="lbadge ok" id="bdg-ma">Dispo</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Main layout -->
+<div class="layout">
+
+  <!-- ── CALENDAR ── -->
+  <div class="cal-side">
+
+    <!-- Activity filter -->
+    <div class="act-row">
+      <button class="act-btn on" data-act="all" onclick="setAct('all',this)">✦ Tout</button>
+      <button class="act-btn" data-act="bn"  onclick="setAct('bn',this)"><span class="act-dot" style="background:#5b9bd5"></span>Bain Nordique</button>
+      <button class="act-btn" data-act="bf"  onclick="setAct('bf',this)"><span class="act-dot" style="background:#4fc3f7"></span>Bain Froid</button>
+      <button class="act-btn" data-act="sa"  onclick="setAct('sa',this)"><span class="act-dot" style="background:#e07850"></span>Sauna & Hammam</button>
+      <button class="act-btn" data-act="pr"  onclick="setAct('pr',this)"><span class="act-dot" style="background:#9c7fd5"></span>Pressothérapie</button>
+      <button class="act-btn" data-act="ma"  onclick="setAct('ma',this)"><span class="act-dot" style="background:#7ab87a"></span>Massage</button>
+    </div>
+
+    <!-- Calendar header -->
+    <div class="cal-head">
+      <div class="cal-month" id="calLabel"></div>
+      <div class="cal-navs">
+        <button class="cn" onclick="navM(-1)">‹</button>
+        <button class="cn" onclick="goNow()" style="font-size:9px;letter-spacing:1px">Auj.</button>
+        <button class="cn" onclick="navM(1)">›</button>
+      </div>
+    </div>
+
+    <div class="wdays">
+      <span class="wd">Lun</span><span class="wd">Mar</span><span class="wd">Mer</span>
+      <span class="wd">Jeu</span><span class="wd">Ven</span><span class="wd">Sam</span><span class="wd">Dim</span>
+    </div>
+    <div class="cgrid" id="cgrid"></div>
+
+    <!-- Slots -->
+    <div class="slot-sec" id="slotSec">
+      <div class="slot-date-lbl">
+        <span id="slotLbl"></span>
+        <div class="slot-legend">
+          <div class="sli"><div class="sld" style="background:var(--ok)"></div>Dispo</div>
+          <div class="sli"><div class="sld" style="background:var(--warn)"></div>Limité</div>
+          <div class="sli"><div class="sld" style="background:var(--err)"></div>Complet</div>
+        </div>
+      </div>
+      <div class="slots-list" id="slotsList"></div>
+    </div>
+
+    <!-- Activity legend -->
+    <div class="act-legend">
+      <div class="al-title">Activités & capacités</div>
+      <div class="al-grid">
+        <div class="ali"><div class="ali-dot" style="background:#5b9bd5"></div><span class="ali-name">Bain Nordique</span><span class="ali-cap">2 pl.</span></div>
+        <div class="ali"><div class="ali-dot" style="background:#4fc3f7"></div><span class="ali-name">Bain Froid</span><span class="ali-cap">4 pl.</span></div>
+        <div class="ali"><div class="ali-dot" style="background:#e07850"></div><span class="ali-name">Sauna & Hammam</span><span class="ali-cap">2 pl.</span></div>
+        <div class="ali"><div class="ali-dot" style="background:#9c7fd5"></div><span class="ali-name">Pressothérapie</span><span class="ali-cap">6 pl.</span></div>
+        <div class="ali"><div class="ali-dot" style="background:#7ab87a"></div><span class="ali-name">Massage</span><span class="ali-cap">5 pl.</span></div>
+        <div class="ali"><div class="ali-dot" style="background:var(--gold)"></div><span class="ali-name">Formule complète</span><span class="ali-cap">2 pl.</span></div>
+      </div>
+    </div>
+
+  </div><!-- /cal-side -->
+
+  <!-- ── FORM ── -->
+  <div class="form-side">
+
+    <!-- Selected preview -->
+    <div class="sel-prev" id="selPrev">
+      <div class="sp-label">Créneau sélectionné</div>
+      <div class="sp-row">
+        <div class="sp-main" id="spMain">—</div>
+        <button class="sp-clr" onclick="clearPick()">×</button>
+      </div>
+      <div class="sp-detail" id="spDetail"></div>
+    </div>
+
+    <!-- Urgency -->
+    <div class="urgency" id="urgency">
+      <div class="urgency-dot"></div>
+      <span class="urgency-txt" id="urgencyTxt"></span>
+    </div>
+
+    <!-- Form -->
+    <div id="fwrap">
+      <div class="ftitle">Votre réservation</div>
+      <div class="fsub">Confirmation immédiate par email · Places déduites en temps réel</div>
+
+      <!-- Hidden fields sent to Formspree -->
+      <input type="hidden" id="hDate" name="date">
+      <input type="hidden" id="hTime" name="heure">
+      <input type="hidden" id="hAct"  name="activite">
+      <input type="hidden" id="hSlotId" name="slot_id">
+
+      <div class="frow">
+        <div class="ff"><label>Prénom *</label><input type="text" id="fP" name="prenom" placeholder="Marie" required></div>
+        <div class="ff"><label>Nom *</label><input type="text" id="fN" name="nom" placeholder="Dupont" required></div>
+      </div>
+      <div class="frow">
+        <div class="ff"><label>Email *</label><input type="email" id="fE" name="email" placeholder="marie@email.fr" required></div>
+        <div class="ff"><label>Téléphone</label><input type="tel" id="fT" name="telephone" placeholder="06 00 00 00 00"></div>
+      </div>
+
+      <div class="ff">
+        <label>Formule *</label>
+        <select id="fF" name="formule" onchange="calcPrice()">
+          <option value="">— Choisir —</option>
+          <optgroup label="Formules complètes">
+            <option value="serenite:49:2h">Sérénité — 49€ · 2h</option>
+            <option value="equilibre:79:3h30">Équilibre — 79€ · 3h30</option>
+            <option value="immersion:119:Journée">Immersion — 119€ · Journée</option>
+          </optgroup>
+          <optgroup label="À la carte">
+            <option value="bn:39.99:1h30">Bain Nordique — 39.99€ · Boisson offerte</option>
+            <option value="bf:22:45min">Bain Froid — 22€ · Boisson offerte</option>
+            <option value="sa:29.99:1h30">Sauna & Hammam — 29.99€</option>
+            <option value="pr:24.99:45min">Pressothérapie — 24.99€</option>
+            <option value="ma:12:20min">Massage — 12€</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="frow">
+        <div class="ff">
+          <label>Personnes *</label>
+          <select id="fPers" name="personnes" onchange="calcPrice()">
+            <option value="1">1 personne</option>
+            <option value="2">2 personnes</option>
+            <option value="3">3 personnes</option>
+            <option value="4">4 personnes</option>
+          </select>
+        </div>
+        <div class="ff">
+          <label>Code promo</label>
+          <input type="text" id="fCode" name="code_promo" placeholder="EDEN10" oninput="applyCode(this.value)">
+        </div>
+      </div>
+
+      <div class="fdiv"></div>
+
+      <!-- Extras -->
+      <div class="ff"><label>Options supplémentaires</label></div>
+      <div class="extras" style="grid-template-columns:1fr 1fr;gap:8px;display:grid;margin-bottom:14px;">
+        <label class="ex" id="ex1">
+          <input type="checkbox" name="extra_peignoir" onchange="toggleEx(this.parentElement, 10)">
+          <div class="ex-chk">✓</div>
+          <div class="ex-name">Peignoir premium</div>
+          <div class="ex-price">+10€</div>
+        </label>
+        <label class="ex" id="ex2">
+          <input type="checkbox" name="extra_coffret" onchange="toggleEx(this.parentElement, 15)">
+          <div class="ex-chk">✓</div>
+          <div class="ex-name">Coffret soins</div>
+          <div class="ex-price">+15€</div>
+        </label>
+        <label class="ex" id="ex3">
+          <input type="checkbox" name="extra_the" onchange="toggleEx(this.parentElement, 2.50)">
+          <div class="ex-chk">✓</div>
+          <div class="ex-name">Thé à la carte</div>
+          <div class="ex-price">+2.50€</div>
+        </label>
+        <label class="ex" id="ex4">
+          <input type="checkbox" name="extra_cadeau" onchange="toggleEx(this.parentElement, 25)">
+          <div class="ex-chk">✓</div>
+          <div class="ex-name">Carte cadeau</div>
+          <div class="ex-price">+25€</div>
+        </label>
+      </div>
+
+      <!-- Plateaux fruits -->
+      <div class="ff"><label>🍓 Plateau de fruits healthy</label></div>
+      <div class="extras" style="grid-template-columns:1fr 1fr 1fr;gap:8px;display:grid;margin-bottom:14px;">
+        <label class="ex" id="ex-fruit-s">
+          <input type="checkbox" name="extra_fruit_petit" onchange="toggleExUnique(this.parentElement,'fruit',12)">
+          <div class="ex-chk">✓</div>
+          <div class="ex-name">Petit</div>
+          <div class="ex-name" style="font-size:10px;color:var(--muted);margin-top:2px">1–2 personnes</div>
+          <div class="ex-price">+12€</div>
+        </label>
+        <label class="ex" id="ex-fruit-m">
+          <input type="checkbox" name="extra_fruit_moyen" onchange="toggleExUnique(this.parentElement,'fruit',20)">
+          <div class="ex-chk">✓</div>
+          <div class="ex-name">Moyen</div>
+          <div class="ex-name" style="font-size:10px;color:var(--muted);margin-top:2px">2–4 personnes</div>
+          <div class="ex-price">+20€</div>
+        </label>
+        <label class="ex" id="ex-fruit-l">
+          <input type="checkbox" name="extra_fruit_grand" onchange="toggleExUnique(this.parentElement,'fruit',32)">
+          <div class="ex-chk">✓</div>
+          <div class="ex-name">Grand</div>
+          <div class="ex-name" style="font-size:10px;color:var(--muted);margin-top:2px">4–6 personnes</div>
+          <div class="ex-price">+32€</div>
+        </label>
+      </div>
+
+      <!-- Champagne / Prosecco -->
+      <div class="ff"><label>🥂 Champagne / Prosecco à l'arrivée</label></div>
+      <div class="extras" style="grid-template-columns:1fr 1fr;gap:8px;display:grid;margin-bottom:14px;">
+        <label class="ex" id="ex-prosecco">
+          <input type="checkbox" name="extra_prosecco" onchange="toggleExUnique(this.parentElement,'champ',35)">
+          <div class="ex-chk">✓</div>
+          <div class="ex-name">Prosecco</div>
+          <div class="ex-name" style="font-size:10px;color:var(--muted);margin-top:2px">Bouteille à l'arrivée</div>
+          <div class="ex-price">+35€</div>
+        </label>
+        <label class="ex" id="ex-champagne">
+          <input type="checkbox" name="extra_champagne" onchange="toggleExUnique(this.parentElement,'champ',55)">
+          <div class="ex-chk">✓</div>
+          <div class="ex-name">Champagne</div>
+          <div class="ex-name" style="font-size:10px;color:var(--muted);margin-top:2px">Bouteille à l'arrivée</div>
+          <div class="ex-price">+55€</div>
+        </label>
+      </div>
+
+      <div class="ff">
+        <label>Message</label>
+        <textarea id="fMsg" name="message" placeholder="Précisions, demandes particulières…"></textarea>
+      </div>
+
+      <div class="fdiv"></div>
+
+      <!-- Price summary -->
+      <div class="psum">
+        <div class="pr"><span class="prl">Formule</span><span class="prv" id="pr-f">—</span></div>
+        <div class="pr"><span class="prl">Personnes</span><span class="prv" id="pr-p">1</span></div>
+        <div class="pr"><span class="prl">Options</span><span class="prv" id="pr-e">0€</span></div>
+        <div class="pr" id="pr-disc-row" style="display:none"><span class="prl">Code EDEN10 (−10%)</span><span class="prv" style="color:var(--ok)" id="pr-disc">0€</span></div>
+        <div class="pr pr-total"><span class="prl">Total estimé</span><span class="prv" id="pr-tot">—</span></div>
+      </div>
+
+      <button class="btn-sub" id="submitBtn" onclick="doSubmit()">
+        <span id="btnTxt">Confirmer ma réservation</span><span>→</span>
+      </button>
+      <p class="fnote">Paiement à l'accueil · Annulation gratuite 48h avant<br>
+        <strong style="color:var(--gold)">01 00 00 00 00</strong> · contact@eden-wellness.fr</p>
+    </div>
+
+    <!-- Success -->
+    <div class="success" id="successDiv">
+      <div class="suc-circle">✓</div>
+      <div class="suc-title">Réservation confirmée !</div>
+      <p class="suc-sub">Un email de confirmation vous a été envoyé. Les places ont été déduites en temps réel.</p>
+      <div class="suc-code" id="sucCode">EDEN-000000</div>
+      <p style="font-size:10px;color:var(--muted);margin-bottom:16px">Présentez ce code à l'accueil EDEN.</p>
+      <button class="btn-sub" onclick="downloadPDF()" style="max-width:320px;margin-bottom:10px">
+        ↓ &nbsp; Télécharger mon récapitulatif PDF
+      </button>
+      <button class="btn-reset" onclick="resetAll()">Nouvelle réservation</button>
+    </div>
+
+  </div><!-- /form-side -->
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="fg">
+    <div><span class="flogo">EDEN</span><p class="fabout">Un sanctuaire dédié à votre bien-être. Ouvert 7j/7 de 8h à 22h.</p><span class="ftag">Récupération · Détente · Équilibre</span></div>
+    <div class="fc"><h5>Espaces</h5><ul><li><a href="index.html#experiences">Bain Nordique</a></li><li><a href="index.html#experiences">Sauna & Hammam</a></li><li><a href="index.html#experiences">Pressothérapie</a></li><li><a href="index.html#experiences">Fuel Bar</a></li></ul></div>
+    <div class="fc"><h5>Infos</h5><ul><li><a href="index.html#tarifs">Tarifs</a></li><li><a href="faq.html">FAQ</a></li><li><a href="parrainage.html">Parrainage</a></li><li><a href="mentions-legales.html">Mentions légales</a></li></ul></div>
+    <div class="fc"><h5>Contact</h5><ul><li><a href="#">12 Rue du Bien-Être</a></li><li><a href="tel:+33100000000">01 00 00 00 00</a></li><li><a href="mailto:contact@eden-wellness.fr">contact@eden-wellness.fr</a></li></ul></div>
+  </div>
+  <div class="fbot"><span>© 2025 EDEN Wellness. Tous droits réservés.</span><div><a href="#">Mentions légales</a><a href="#">Confidentialité</a></div></div></footer>
+
+<!-- Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   DONNÉES
+══════════════════════════════════════════════════════════════ */
+const ACTS_DATA = {
+  bn:{ name:'Bain Nordique',   color:'#5b9bd5', dur:'1h30',  price:39.99, note:'🍵 Boisson offerte' },
+  bf:{ name:'Bain Froid',      color:'#4fc3f7', dur:'45min', price:22,    note:'🍵 Boisson offerte' },
+  sa:{ name:'Sauna & Hammam',  color:'#e07850', dur:'1h30',  price:29.99, note:'' },
+  pr:{ name:'Pressothérapie',  color:'#9c7fd5', dur:'45min', price:24.99, note:'' },
+  ma:{ name:'Massage',         color:'#7ab87a', dur:'20min', price:12,    note:'' },
+};
+const TIMES = ['08:00','09:30','11:00','12:30','14:00','15:30','17:00','18:30','20:00'];
+const MO    = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+/* ══════════════════════════════════════════════════════════════
+   SUPABASE INIT
+══════════════════════════════════════════════════════════════ */
+let sb = null;
+let isConnected = false;
+
+function initSupabase(){
+  try {
+    if(SUPABASE_URL.includes('VOTRE-PROJET')) {
+      // Mode démo — pas encore configuré
+      setConnStatus(false, 'Mode démo — configurez Supabase pour le temps réel');
+      loadDemoData();
+      return;
+    }
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    setConnStatus(true, 'Connecté · Disponibilités en temps réel');
+    isConnected = true;
+    loadRealData();
+    subscribeRealtime();
+  } catch(e) {
+    setConnStatus(false, 'Connexion impossible — données simulées');
+    loadDemoData();
+  }
+}
+
+function setConnStatus(ok, msg){
+  document.getElementById('connDot').className = 'conn-dot'+(ok?' live':'');
+  document.getElementById('connTxt').textContent = msg;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   REAL DATA (Supabase)
+══════════════════════════════════════════════════════════════ */
+async function loadRealData(){
+  const today = dateStr(new Date());
+  // Compter les réservations confirmées par activité pour aujourd'hui
+  for(const actKey of Object.keys(ACTS_DATA)){
+    const { count } = await sb
+      .from('reservations')
+      .select('*', { count:'exact', head:true })
+      .eq('activity', actKey)
+      .eq('status', 'confirmed')
+      .gte('slot_datetime', today+'T00:00:00')
+      .lt( 'slot_datetime', today+'T23:59:59');
+    const free = Math.max(0, CAPS[actKey] - (count||0));
+    updateLiveCell(actKey, free, CAPS[actKey]);
+  }
+  // Re-render calendar if a date is selected
+  if(selDate) renderSlots(selDate);
+  renderCal();
+}
+
+async function getSlotCount(date, time, actKey){
+  if(!sb) return getDemoCount(date, time, actKey);
+  const dt = `${date}T${time}:00`;
+  const { count } = await sb
+    .from('reservations')
+    .select('*',{ count:'exact', head:true })
+    .eq('activity', actKey)
+    .eq('slot_datetime', dt)
+    .eq('status','confirmed');
+  return count || 0;
+}
+
+async function getDayUsage(date){
+  if(!sb) return getDemoDayUsage(date);
+  // UNE seule requête pour toute la journée
+  const { data } = await sb
+    .from('reservations')
+    .select('activity')
+    .eq('status','confirmed')
+    .gte('slot_datetime', date+'T00:00:00')
+    .lt( 'slot_datetime', date+'T23:59:59');
+  const result = {};
+  Object.keys(ACTS_DATA).forEach(k => result[k] = 0);
+  if(data) data.forEach(row => { if(result[row.activity] !== undefined) result[row.activity]++; });
+  return result;
+}
+
+/* Realtime subscription — mise à jour instantanée ── */
+function subscribeRealtime(){
+  if(!sb) return;
+  sb.channel('reservations-changes')
+    .on('postgres_changes',{
+      event:'INSERT', schema:'public', table:'reservations'
+    }, payload => {
+      showToast('🔄 Une place vient d\'être réservée', 'ok-toast');
+      loadRealData();
+    })
+    .on('postgres_changes',{
+      event:'UPDATE', schema:'public', table:'reservations'
+    }, payload => {
+      loadRealData();
+    })
+    .subscribe(status => {
+      if(status === 'SUBSCRIBED') setConnStatus(true, 'Temps réel activé · Mise à jour automatique');
+    });
+}
+
+async function insertReservation(data){
+  if(!sb) return { id: 'DEMO-'+Math.random().toString(36).substr(2,6).toUpperCase() };
+  const { data:row, error } = await sb
+    .from('reservations')
+    .insert([{
+      prenom:      data.prenom,
+      nom:         data.nom,
+      email:       data.email,
+      telephone:   data.telephone,
+      formule:     data.formule,
+      activity:    data.activity,
+      slot_datetime: data.slot_datetime,
+      personnes:   data.personnes,
+      extras:      data.extras,
+      message:     data.message,
+      total:       data.total,
+      status:      'confirmed',
+      code:        data.code,
+    }])
+    .select()
+    .single();
+  if(error) throw error;
+  return row;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DEMO DATA (quand Supabase pas configuré)
+══════════════════════════════════════════════════════════════ */
+function sr(seed){ let x=Math.sin(seed)*10000; return x-Math.floor(x); }
+function getDemoCount(date,time,actKey){
+  const s = date.replace(/-/g,'')+(time.replace(':','')|0)+(actKey.charCodeAt(0)*7);
+  return Math.floor(sr(s)*CAPS[actKey]*0.85);
+}
+function getDemoDayUsage(date){
+  const res={};
+  const s = parseInt(date.replace(/-/g,''));
+  let i=1;
+  for(const k of Object.keys(ACTS_DATA)){
+    res[k] = Math.floor(sr(s*(i++))*CAPS[k]*0.85);
+  }
+  return res;
+}
+function loadDemoData(){
+  const demo={bn:6,bf:3,sa:2,pr:4,ma:2};
+  for(const [k,v] of Object.entries(demo)) updateLiveCell(k,v,CAPS[k]);
+  renderCal();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LIVE BAR
+══════════════════════════════════════════════════════════════ */
+function updateLiveCell(k, free, cap){
+  const el = document.getElementById('cnt-'+k);
+  const dot = document.getElementById('dot-'+k);
+  const bdg = document.getElementById('bdg-'+k);
+  if(!el) return;
+  const ratio = free/cap;
+  el.textContent = free;
+  dot.className = 'ldot '+(ratio>0.3?'ok':ratio>0?'warn':'err');
+  bdg.className = 'lbadge '+(ratio>0.3?'ok':ratio>0?'warn':'err');
+  bdg.textContent = ratio>0.3?'Dispo':ratio>0?'Limité':'Complet';
+}
+
+/* ══════════════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════════════ */
+const now = new Date();
+let calY=now.getFullYear(), calM=now.getMonth();
+let selDate=null, pickedSlot=null;
+let curAct='all', extraTotal=0, discount=0;
+let dayUsageCache={};
+
+function dateStr(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function fmtDate(ds){ const p=ds.split('-'); return `${p[2]} ${MO[parseInt(p[1])-1]} ${p[0]}`; }
+
+/* ══════════════════════════════════════════════════════════════
+   CALENDAR
+══════════════════════════════════════════════════════════════ */
+async function renderCal(){
+  document.getElementById('calLabel').textContent = MO[calM]+' '+calY;
+  const grid = document.getElementById('cgrid');
+  grid.innerHTML = '';
+
+  const first = new Date(calY,calM,1).getDay();
+  const days  = new Date(calY,calM+1,0).getDate();
+  const off   = first===0?6:first-1;
+  const todayD = now.getDate(), todayM=now.getMonth(), todayY=now.getFullYear();
+  const actsToShow = curAct==='all'?Object.keys(ACTS_DATA):[curAct];
+
+  // Pre-load usage for whole month (batch)
+  dayUsageCache = {};
+
+  for(let i=0;i<off;i++){ const e=document.createElement('div'); e.className='cc empty'; grid.appendChild(e); }
+
+  for(let d=1;d<=days;d++){
+    const ds = `${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isPast = new Date(calY,calM,d) < new Date(todayY,todayM,todayD);
+    const isToday= d===todayD&&calM===todayM&&calY===todayY;
+    const isSel  = selDate===ds;
+
+    const cell = document.createElement('div');
+    cell.className='cc'+(isPast?' past':'')+(isToday?' today':'')+(isSel?' sel':'');
+
+    const num=document.createElement('div'); num.className='cnum'; num.textContent=d; cell.appendChild(num);
+
+    if(!isPast){
+      // Render skeleton bars first
+      const bars=document.createElement('div'); bars.className='cbars';
+      actsToShow.forEach(k=>{
+        const b=document.createElement('div');
+        b.className='cbar skel';
+        b.style.background='rgba(196,160,78,.06)';
+        bars.appendChild(b);
+      });
+      cell.appendChild(bars);
+      cell.onclick=()=>selectDay(ds);
+
+      // Then load real data async
+      (async(cellEl, barsEl, dStr)=>{
+        const usage = await getDayUsage(dStr);
+        dayUsageCache[dStr]=usage;
+        barsEl.innerHTML='';
+        actsToShow.forEach(k=>{
+          const taken=usage[k]||0;
+          const free=CAPS[k]-taken;
+          const pct=(free/CAPS[k])*100;
+          const col=pct>40?'var(--ok)':pct>10?'var(--warn)':'var(--err)';
+          const b=document.createElement('div');
+          b.className='cbar';
+          b.style.background=`linear-gradient(90deg,${col} ${pct}%,rgba(255,255,255,.05) ${pct}%)`;
+          barsEl.appendChild(b);
+        });
+      })(cell, bars, ds);
+    }
+    grid.appendChild(cell);
+  }
+}
+
+async function selectDay(ds){
+  selDate = ds;
+  renderCal();
+  document.getElementById('slotLbl').textContent = fmtDate(ds);
+  document.getElementById('slotSec').style.display = 'block';
+  document.getElementById('hDate').value = fmtDate(ds);
+  await renderSlots(ds);
+  document.getElementById('slotSec').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+async function getAllSlotCounts(date, actsToShow){
+  // UNE SEULE requête pour toute la journée — au lieu de 45 requêtes séquentielles
+  if(!sb){
+    // Mode démo — tout calculer en local instantanément
+    const result = {};
+    for(const t of TIMES) for(const k of actsToShow) result[`${t}|${k}`] = getDemoCount(date,t,k);
+    return result;
+  }
+  // Une requête Supabase pour tous les créneaux du jour
+  const { data, error } = await sb
+    .from('reservations')
+    .select('activity, slot_datetime')
+    .eq('status','confirmed')
+    .gte('slot_datetime', date+'T00:00:00')
+    .lt( 'slot_datetime', date+'T23:59:59')
+    .in('activity', actsToShow);
+
+  const result = {};
+  // Initialiser tous les créneaux à 0
+  for(const t of TIMES) for(const k of actsToShow) result[`${t}|${k}`] = 0;
+  // Compter les réservations
+  if(data) data.forEach(row => {
+    const time = row.slot_datetime.substring(11,16); // "HH:MM"
+    const key = `${time}|${row.activity}`;
+    if(result[key] !== undefined) result[key]++;
+  });
+  return result;
+}
+
+async function renderSlots(ds){
+  const list = document.getElementById('slotsList');
+  const actsToShow = curAct==='all'?Object.keys(ACTS_DATA):[curAct];
+
+  // Skeleton loading
+  list.innerHTML = TIMES.map(t=>actsToShow.map(k=>`
+    <div class="slot avail" style="opacity:.4">
+      <div class="st">${t}</div>
+      <div class="sa-name skel" style="height:12px;width:120px;background:rgba(196,160,78,.06);border-left:none"></div>
+      <div></div><div></div>
+    </div>`).join('')).join('');
+
+  // UNE SEULE requête pour tout
+  const counts = await getAllSlotCounts(ds, actsToShow);
+
+  list.innerHTML='';
+  for(const t of TIMES){
+    for(const k of actsToShow){
+      const taken = counts[`${t}|${k}`] || 0;
+      const act=ACTS_DATA[k];
+      const free=Math.max(0,CAPS[k]-taken);
+      const ratio=free/CAPS[k];
+      const status=ratio>0.3?'avail':ratio>0?'limited':'full';
+      const isPicked=pickedSlot&&pickedSlot.date===ds&&pickedSlot.time===t&&pickedSlot.act===k;
+      const fillPct=Math.min(100,(taken/CAPS[k])*100);
+      const fcol=ratio>0.3?'var(--ok)':ratio>0?'var(--warn)':'var(--err)';
+      const stxt=ratio>0.3?`${free} libres`:ratio>0?`${free} restante${free>1?'s':''}`:' Complet';
+      const scls=ratio>0.3?'ok':ratio>0?'warn':'err';
+
+      const div=document.createElement('div');
+      div.className=`slot ${isPicked?'picked':status}`;
+      div.id=`slot-${ds}-${t.replace(':','')}-${k}`;
+      div.innerHTML=`
+        <div class="st">${t}</div>
+        <div>
+          <div class="sa-name" style="border-color:${act.color}">${act.name}</div>
+          <div class="sa-dur">${act.dur}${act.note ? ' · <span style="color:var(--gold);font-size:8px">'+act.note+'</span>' : ''}</div>
+        </div>
+        <div class="savail">
+          <div class="sbar"><div class="sfill" style="width:${fillPct}%;background:${fcol}"></div></div>
+          <span class="stxt ${scls}">${stxt}</span>
+        </div>
+        <button class="spick" onclick="pickSlot('${ds}','${t}','${k}',${free})">${isPicked?'✓':'+'}</button>
+      `;
+      if(status!=='full') div.onclick=(e)=>{ if(!e.target.classList.contains('spick')) pickSlot(ds,t,k,free); };
+      list.appendChild(div);
+    }
+  }
+}
+
+function pickSlot(ds,time,actKey,free){
+  pickedSlot={date:ds,time,act:actKey,free};
+  const act=ACTS_DATA[actKey];
+
+  document.getElementById('selPrev').classList.add('show');
+  document.getElementById('spMain').textContent=`${time} · ${act.name}`;
+  document.getElementById('spDetail').textContent=`${fmtDate(ds)} · ${act.dur} · ${act.price}€/pers.${act.note ? ' · '+act.note : ''}`;
+  document.getElementById('hTime').value=time;
+  document.getElementById('hAct').value=act.name;
+  document.getElementById('hSlotId').value=`${ds}T${time}`;
+
+  // Urgency
+  if(free<=2){
+    document.getElementById('urgency').classList.add('show');
+    document.getElementById('urgencyTxt').textContent=`⚠ Plus que ${free} place${free>1?'s':''} disponible${free>1?'s':''} sur ce créneau !`;
+  } else document.getElementById('urgency').classList.remove('show');
+
+  // Auto-select matching formule
+  const sel=document.getElementById('fF');
+  for(let i=0;i<sel.options.length;i++){
+    if(sel.options[i].value.startsWith(actKey+':')){sel.selectedIndex=i;break;}
+  }
+
+  renderSlots(ds);
+  calcPrice();
+  document.getElementById('fwrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function clearPick(){
+  pickedSlot=null;
+  document.getElementById('selPrev').classList.remove('show');
+  document.getElementById('urgency').classList.remove('show');
+  if(selDate) renderSlots(selDate);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NAV
+══════════════════════════════════════════════════════════════ */
+function navM(d){ calM+=d; if(calM>11){calM=0;calY++;} if(calM<0){calM=11;calY--;} renderCal(); }
+function goNow(){ calY=now.getFullYear(); calM=now.getMonth(); renderCal(); }
+function setAct(a,btn){ curAct=a; document.querySelectorAll('.act-btn').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); renderCal(); if(selDate) renderSlots(selDate); }
+
+/* ══════════════════════════════════════════════════════════════
+   PRICE
+══════════════════════════════════════════════════════════════ */
+function calcPrice(){
+  const fv=document.getElementById('fF').value;
+  const pers=parseInt(document.getElementById('fPers').value)||1;
+  const parts=fv?fv.split(':'):[];
+  const base=parts[1]?parseFloat(parts[1]):0;
+  const baseTotal=base*pers;
+  const gross=baseTotal+extraTotal;
+  const discAmt=discount?Math.round(gross*discount*100)/100:0;
+  const total=Math.round((gross-discAmt)*100)/100;
+  document.getElementById('pr-f').textContent=parts[0]?`${parts[0]} (${base}€ × ${pers})`:'—';
+  document.getElementById('pr-p').textContent=`${pers} personne${pers>1?'s':''}`;
+  document.getElementById('pr-e').textContent=extraTotal?`+${extraTotal}€`:'0€';
+  document.getElementById('pr-tot').textContent=total?`${total}€`:'—';
+  if(discAmt){ document.getElementById('pr-disc-row').style.display='flex'; document.getElementById('pr-disc').textContent=`−${discAmt}€`; }
+  else document.getElementById('pr-disc-row').style.display='none';
+}
+function toggleEx(card, p){
+  card.classList.toggle('on');
+  extraTotal = 0;
+  document.querySelectorAll('.ex.on').forEach(c => {
+    extraTotal += parseFloat(c.querySelector('.ex-price').textContent) || 0;
+  });
+  extraTotal = Math.round(extraTotal * 100) / 100;
+  calcPrice();
+}
+
+// Pour les options mutuellement exclusives (plateaux fruits, champagne)
+function toggleExUnique(card, group, price){
+  const wasOn = card.classList.contains('on');
+  // Décocher toutes les options du même groupe
+  document.querySelectorAll(`.ex[id*="${group}"], .ex[id^="ex-fruit"], .ex[id^="ex-prosecco"], .ex[id^="ex-champagne"]`).forEach(c => {
+    if((group === 'fruit' && c.id.startsWith('ex-fruit')) ||
+       (group === 'champ' && (c.id === 'ex-prosecco' || c.id === 'ex-champagne'))){
+      c.classList.remove('on');
+      const cb = c.querySelector('input[type=checkbox]');
+      if(cb) cb.checked = false;
+    }
+  });
+  // Cocher celle cliquée si elle n'était pas déjà cochée
+  if(!wasOn){
+    card.classList.add('on');
+    card.querySelector('input[type=checkbox]').checked = true;
+  }
+  // Recalculer total
+  extraTotal = 0;
+  document.querySelectorAll('.ex.on').forEach(c => {
+    extraTotal += parseInt(c.querySelector('.ex-price').textContent) || 0;
+  });
+  calcPrice();
+}
+function applyCode(v){ discount=v.trim().toUpperCase()==='EDEN10'?0.1:0; calcPrice(); }
+
+/* ══════════════════════════════════════════════════════════════
+   SUBMIT — Supabase + Formspree
+══════════════════════════════════════════════════════════════ */
+async function doSubmit(){
+  const btn=document.getElementById('submitBtn');
+  const prenom=document.getElementById('fP').value.trim();
+  const nom   =document.getElementById('fN').value.trim();
+  const email =document.getElementById('fE').value.trim();
+  const formule=document.getElementById('fF').value;
+
+  if(!prenom||!email||!formule||!pickedSlot){
+    showToast('⚠ Remplissez les champs requis et choisissez un créneau','err-toast');
+    return;
+  }
+
+  btn.disabled=true;
+  document.getElementById('btnTxt').textContent='Réservation en cours…';
+
+  const code='EDEN-'+Math.random().toString(36).substr(2,6).toUpperCase();
+  const parts=formule.split(':');
+  const pers=parseInt(document.getElementById('fPers').value)||1;
+  const gross=(parseFloat(parts[1]||0)*pers)+extraTotal;
+  const total=Math.round(gross*(1-discount)*100)/100;
+
+  try {
+    /* ── 1. Insérer dans Supabase ── */
+    const row = await insertReservation({
+      prenom, nom, email,
+      telephone: document.getElementById('fT').value,
+      formule:   parts[0],
+      activity:  pickedSlot.act,
+      slot_datetime: `${pickedSlot.date}T${pickedSlot.time}:00`,
+      personnes: pers,
+      extras:    extraTotal,
+      message:   document.getElementById('fMsg').value,
+      total, code,
+    });
+
+    /* ── 2. Envoyer à Formspree ── */
+    if(!FORMSPREE_ID.includes('VOTRE')){
+      await fetch(`https://formspree.io/f/${FORMSPREE_ID}`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body: JSON.stringify({
+          prenom, nom, email,
+          telephone: document.getElementById('fT').value,
+          formule: parts[0],
+          activite: ACTS_DATA[pickedSlot.act]?.name,
+          date: fmtDate(pickedSlot.date),
+          heure: pickedSlot.time,
+          personnes: pers,
+          total: total+'€',
+          code_reservation: code,
+          message: document.getElementById('fMsg').value,
+          _subject: `[EDEN] Réservation ${code} — ${parts[0]} le ${fmtDate(pickedSlot.date)} à ${pickedSlot.time}`,
+        })
+      });
+    }
+
+    /* ── 3. Afficher succès ── */
+    document.getElementById('sucCode').textContent=code;
+
+    // Stocker les données pour le PDF
+    const fParts = formule.split(':');
+    const priceRows = [];
+    if(fParts[0]) priceRows.push([`${fParts[0]}`, `${(parseFloat(fParts[1]||0)*pers).toFixed(2)} EUR`]);
+    document.querySelectorAll('.ex.on').forEach(c=>{
+      const name = c.querySelector('.ex-name')?.textContent||'';
+      const price = c.querySelector('.ex-price')?.textContent||'';
+      priceRows.push([name, price]);
+    });
+    if(discount>0) priceRows.push([`Code promo -10%`, `-${Math.round(gross*discount*100)/100} EUR`]);
+    lastReservation = {
+      code,
+      prenom, nom, email,
+      telephone: document.getElementById('fT').value,
+      personnes: pers,
+      dateLabel: pickedSlot ? fmtDate(pickedSlot.date) : '—',
+      heure:     pickedSlot ? pickedSlot.time : '—',
+      activite:  ACTS_DATA[pickedSlot?.act]?.name || fParts[0] || '—',
+      actKey:    pickedSlot?.act || '',
+      duree:     ACTS_DATA[pickedSlot?.act]?.dur || '—',
+      priceRows,
+      total: total+'',
+    };
+
+    document.getElementById('fwrap').style.display='none';
+    document.getElementById('successDiv').classList.add('show');
+    showToast('✓ Réservation confirmée — places mises à jour en temps réel','ok-toast');
+
+  } catch(err){
+    showToast('Erreur — veuillez réessayer ou nous appeler','err-toast');
+    btn.disabled=false;
+    document.getElementById('btnTxt').textContent='Confirmer ma réservation';
+    console.error(err);
+  }
+}
+
+function resetAll(){
+  document.getElementById('fwrap').style.display='block';
+  document.getElementById('successDiv').classList.remove('show');
+  document.getElementById('submitBtn').disabled=false;
+  document.getElementById('btnTxt').textContent='Confirmer ma réservation';
+  clearPick();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PDF RECAP PREMIUM
+══════════════════════════════════════════════════════════════ */
+let lastReservation = {};
+
+async function downloadPDF(){
+  const d = lastReservation;
+  if(!d.code) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4', orientation:'portrait' });
+  const W=210,H=297,ML=18,MR=192,CW=174;
+  const GOLD=[201,168,76],GOLDD=[154,124,56],DARK=[5,8,7],DARK2=[12,18,8];
+  const CREAM=[216,212,196],GREY=[112,112,96],GREY2=[82,82,66],GREY3=[48,48,40];
+  const GREEN=[76,175,80],GREEN2=[46,125,50],GREENBG=[12,30,12],SEP=[22,28,18];
+  const today=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  function bg(){doc.setFillColor(...DARK);doc.rect(0,0,W,H,'F');}
+  function chk(n){if(y+n>H-22){doc.addPage();bg();y=12;}}
+  function sec(num,lbl){
+    chk(16);
+    doc.setFontSize(9.5);doc.setTextColor(...GREY2);doc.setFont('times','italic');doc.text(num,ML,y);
+    doc.setFontSize(7.5);doc.setTextColor(...GOLD);doc.setFont('helvetica','bold');doc.text(lbl,ML+6.5,y);
+    const lw=doc.getTextWidth(lbl);
+    doc.setFillColor(...SEP);doc.rect(ML+6.5+lw+2,y-0.5,MR-ML-6.5-lw-2,0.6,'F');
+    y+=10;
+  }
+  function fld(lbl,val,x,fs){
+    fs=fs||11.5;
+    doc.setFontSize(7);doc.setTextColor(...GREY2);doc.setFont('helvetica','normal');doc.text(lbl.toUpperCase(),x,y);
+    doc.setFontSize(fs);doc.setTextColor(...CREAM);doc.setFont('times','normal');doc.text(String(val||''),x,y+5.5);
+  }
+  const actDescs={
+    bn:'Immersion eau chaude 37-40C - Pergola bioclimatique - Peignoir & serviette fournis - Fuel Bar inclus',
+    bf:'Bain froid 6-10C - Protocole chaud/froid - Boisson offerte incluse',
+    sa:'Sauna finlandais 80-95C et/ou Hammam vapeur 40-45C - Peignoir & serviette fournis',
+    pr:'Pressotherapie drainage lymphatique - 3 lits reclinables - Salle de repos incluse',
+    ma:'Fauteuil de massage zero-gravite full-body - Ambiance tamisee - Boisson incluse',
+  };
+  const extraDescs={
+    'peignoir':'Coton bio, qualite hoteliere','coffret':'Produits de soin selectionnes',
+    'the':'Selection d infusions de plantes','cadeau':'Valable 12 mois sur tous les services',
+    'petit':'Fruits de saison, 1-2 personnes','moyen':'Fruits de saison, 2-4 personnes',
+    'grand':'Fruits de saison, 4-6 personnes','prosecco':'Bouteille servie a l accueil',
+    'champagne':'Bouteille servie a l accueil',
+  };
+  bg();let y=0;
+  // HEADER
+  doc.setFillColor(...DARK);doc.rect(0,0,W,58,'F');
+  doc.setFillColor(14,11,5);doc.setFontSize(90);doc.setFont('times','normal');
+  doc.setTextColor(14,11,5);doc.text('EDEN',MR+6,57,{align:'right'});
+  doc.setFontSize(36);doc.setTextColor(...GOLD);doc.text('EDEN',ML,28);
+  doc.setFontSize(7);doc.setTextColor(...GREY2);doc.setFont('helvetica','normal');
+  doc.text('RECUPERATION   -   DETENTE   -   EQUILIBRE',ML,36);
+  doc.setFontSize(7);doc.setTextColor(...GREY2);doc.text('DOCUMENT',MR,14,{align:'right'});
+  doc.setFontSize(16);doc.setTextColor(...GOLD);doc.setFont('times','italic');
+  doc.text('Recapitulatif de seance',MR,23,{align:'right'});
+  doc.setFontSize(8);doc.setTextColor(...GREY);doc.setFont('helvetica','normal');
+  doc.text((d.code||'EDEN-000000')+'   -   '+today,MR,31,{align:'right'});
+  var oy=46,sz=2.8,cx=W/2;
+  doc.setFillColor(...GOLD);
+  doc.rect(ML,oy,CW*0.43,0.8,'F');doc.rect(MR-CW*0.43,oy,CW*0.43,0.8,'F');
+  doc.triangle(cx,oy-sz,cx+sz,oy,cx,oy+sz,'F');doc.triangle(cx,oy-sz,cx-sz,oy,cx,oy+sz,'F');
+  doc.setFontSize(9);doc.setTextColor(...GREY2);doc.setFont('times','italic');
+  doc.text("Chaque seance EDEN est une invitation a revenir a l'essentiel - le soin du corps, la paix de l'esprit.",W/2,55,{align:'center'});
+  y=58;
+  doc.setFillColor(...GOLD);doc.rect(0,y,W,2.5,'F');y+=2.5;
+  doc.setFillColor(...DARK2);doc.rect(0,y,W,12,'F');
+  doc.setFillColor(...GREENBG);doc.setDrawColor(...GREEN2);doc.setLineWidth(0.6);
+  doc.rect(ML,y+2,76,6,'FD');
+  doc.setFillColor(...GREEN);doc.circle(ML+5,y+5,1.6,'F');
+  doc.setFontSize(7);doc.setTextColor(...GREEN2);doc.setFont('helvetica','bold');
+  doc.text('SEANCE CONFIRMEE - PLACES RESERVEES',ML+9,y+5.7);
+  y+=12;doc.setFillColor(24,30,20);doc.rect(0,y,W,0.5,'F');y+=8;
+  // 01 PROFIL
+  sec('01','VOTRE PROFIL');
+  fld('Nom complet',(d.prenom||'')+' '+(d.nom||''),ML);
+  fld('Email',d.email||'',ML+CW/2,10.5);y+=13;
+  fld('Telephone',d.telephone||'Non renseigne',ML);
+  fld('Invites',(d.personnes||1)+' personne'+((d.personnes||1)>1?'s':''),ML+CW/2);y+=17;
+  // 02 MOMENT
+  sec('02','VOTRE MOMENT');
+  doc.setFillColor(12,16,9);doc.setDrawColor(...GOLDD);doc.setLineWidth(0.5);
+  doc.rect(ML,y,CW,18,'FD');
+  [['DATE',d.dateLabel||''],['HEURE',d.heure||''],['DUREE',d.duree||'']].forEach(function(pair,i){
+    var cx2=ML+i*(CW/3)+4.5;
+    if(i>0){doc.setDrawColor(...GOLDD);doc.setLineWidth(0.3);doc.line(ML+i*(CW/3),y+3,ML+i*(CW/3),y+15);}
+    doc.setFontSize(6.5);doc.setTextColor(...GREY2);doc.setFont('helvetica','normal');doc.text(pair[0],cx2,y+6.5);
+    doc.setFontSize(13);doc.setTextColor(...GOLD);doc.setFont('times','normal');doc.text(String(pair[1]),cx2,y+14);
+  });
+  y+=18+1.5;
+  doc.setFillColor(...DARK2);doc.rect(ML,y,CW,14,'F');
+  doc.setFillColor(...GOLD);doc.rect(ML,y,2,14,'F');
+  doc.setFontSize(13);doc.setTextColor(...GOLD);doc.setFont('times','normal');doc.text(d.activite||'',ML+6,y+6);
+  doc.setFontSize(8.5);doc.setTextColor(...GREY);doc.setFont('times','italic');
+  doc.text(actDescs[d.actKey||'bn']||'',ML+6,y+11.5);
+  y+=14+5;
+  // 03 COMMANDE
+  sec('03','DETAIL DE VOTRE COMMANDE');
+  (d.priceRows||[]).forEach(function(row){
+    var name=row[0],val=row[1];
+    var isDisc=String(val).startsWith('-')||name.toLowerCase().indexOf('promo')>=0;
+    chk(13);
+    var subdesc='';
+    var nl=name.toLowerCase();
+    var ekeys=Object.keys(extraDescs);
+    for(var ki=0;ki<ekeys.length;ki++){if(nl.indexOf(ekeys[ki])>=0){subdesc=extraDescs[ekeys[ki]];break;}}
+    var rh=subdesc?12:8;
+    doc.setFontSize(10.5);doc.setTextColor(...(isDisc?GREEN:CREAM));doc.setFont('helvetica','normal');
+    doc.text(String(name),ML,y);doc.text(String(val),MR,y,{align:'right'});
+    if(subdesc){doc.setFontSize(8.5);doc.setTextColor(...(isDisc?GREEN2:GREY));doc.setFont('times','italic');doc.text(subdesc,ML,y+5);}
+    doc.setFillColor(...SEP);doc.rect(ML,y+rh-1,CW,0.5,'F');y+=rh;
+  });
+  y+=2.5;doc.setFillColor(...GOLD);doc.rect(ML,y,CW,1,'F');y+=7;
+  doc.setFontSize(9);doc.setTextColor(...GREY);doc.setFont('helvetica','normal');doc.text('TOTAL',ML,y);
+  doc.setFontSize(24);doc.setTextColor(...GOLD);doc.setFont('times','normal');
+  doc.text((d.total||0)+' EUR',MR,y,{align:'right'});y+=18;
+  // CODE
+  chk(24);
+  var BOX_H=22,BOX_Y=y;
+  doc.setFillColor(13,18,9);doc.setDrawColor(...GOLDD);doc.setLineWidth(0.7);
+  doc.rect(ML,BOX_Y,CW,BOX_H,'FD');
+  var LY_LABEL=BOX_Y+17.5,LY_LOSAN=BOX_Y+12,LY_CODE=BOX_Y+9.5,LY_PHRASE=BOX_Y+4.5;
+  var PAD=7,dsize=3.8,dx=ML+PAD+dsize;
+  doc.setFontSize(6.5);doc.setTextColor(...GREY2);doc.setFont('helvetica','normal');
+  doc.text('VOTRE CODE DE SEANCE',ML+PAD,LY_LABEL);
+  doc.setFillColor(...GOLDD);
+  doc.triangle(dx,LY_LOSAN-dsize,dx+dsize,LY_LOSAN,dx,LY_LOSAN+dsize,'F');
+  doc.triangle(dx,LY_LOSAN-dsize,dx-dsize,LY_LOSAN,dx,LY_LOSAN+dsize,'F');
+  doc.setFillColor(13,18,9);
+  var si=1.5;
+  doc.triangle(dx,LY_LOSAN-si,dx+si,LY_LOSAN,dx,LY_LOSAN+si,'F');
+  doc.triangle(dx,LY_LOSAN-si,dx-si,LY_LOSAN,dx,LY_LOSAN+si,'F');
+  doc.setFontSize(20);doc.setTextColor(...GOLD);doc.setFont('times','normal');
+  doc.text(d.code||'EDEN-000000',dx+dsize+4,LY_CODE);
+  doc.setFontSize(8);doc.setTextColor(...GREY2);doc.setFont('times','italic');
+  doc.text("Presentez ce code a l'accueil - notre equipe vous attend",ML+PAD,LY_PHRASE);
+  y+=BOX_H+5;
+  // 04 ARRIVEE
+  sec('04','AVANT VOTRE ARRIVEE');
+  var infos=[
+    ["Arrivez 15 min avant votre creneau","Peignoir & serviette fournis a l'accueil"],
+    ["Maillot de bain obligatoire pour les bains","Parking privatif gratuit sur place"],
+    ["Evitez un repas copieux 2h avant","Annulation gratuite jusqu'a 48h avant"],
+  ];
+  var ih2=infos.length*8+4;chk(ih2);
+  doc.setFillColor(12,16,9);doc.rect(ML,y,CW,ih2,'F');
+  infos.forEach(function(pair){
+    doc.setFontSize(10);doc.setTextColor(...GOLD);doc.setFont('helvetica','normal');
+    doc.text('-',ML+4,y+2.5);doc.text('-',ML+CW/2+3,y+2.5);
+    doc.setFontSize(9);doc.setTextColor(...GREY);doc.setFont('helvetica','normal');
+    doc.text(pair[0],ML+9,y+2.5);doc.text(pair[1],ML+CW/2+8,y+2.5);y+=8;
+  });
+  y+=7;chk(15);
+  doc.setFillColor(...GOLD);doc.rect(ML,y,2,13,'F');
+  doc.setFontSize(8.5);doc.setTextColor(...GREY2);doc.setFont('times','italic');
+  doc.text("Le paiement s'effectue a votre arrivee. Ce document confirme votre creneau et vos options.",ML+6,y+5);
+  doc.text("En cas de besoin : 01 00 00 00 00 - contact@eden-wellness.fr",ML+6,y+10);
+  y+=18;chk(10);
+  doc.setFontSize(10);doc.setTextColor(...GREY3);doc.setFont('times','italic');
+  doc.text("Merci de votre confiance - nous avons hate de vous accueillir.",W/2,y,{align:'center'});
+  // FOOTER
+  doc.setFillColor(...GOLD);doc.rect(0,H-20,W,1,'F');
+  doc.setFillColor(...DARK);doc.rect(0,H-19,W,19,'F');
+  doc.setFontSize(14);doc.setTextColor(...GOLD);doc.setFont('times','normal');doc.text('EDEN',ML,H-9);
+  doc.setFontSize(7.5);doc.setTextColor(...GREY2);doc.setFont('helvetica','normal');
+  doc.text('12 Rue du Bien-Etre - 01 00 00 00 00 - contact@eden-wellness.fr - eden-wellness.fr',MR,H-9,{align:'right'});
+  doc.save('EDEN_Reservation_'+d.code+'.pdf');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════════════════ */
+let toastTm;
+function showToast(msg, cls=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='show'+(cls?' '+cls:'');
+  clearTimeout(toastTm);
+  toastTm=setTimeout(()=>t.className='',3500);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CURSOR + SCROLL
+══════════════════════════════════════════════════════════════ */
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px';});
+(function l(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(l);})();
+document.querySelectorAll('a,button,.cc:not(.past):not(.empty),.slot:not(.full),.act-btn,.ex').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hov'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hov'));
+});
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('solid',scrollY>40);
+  document.getElementById('prog').style.width=(scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%';
+});
+
+/* ══════════════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════════════ */
+initSupabase();
+calcPrice();
+document.getElementById('fF').addEventListener('change',calcPrice);
+document.getElementById('fPers').addEventListener('change',calcPrice);
+
+// Auto-select today
+selectDay(dateStr(now));
+
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SQL À EXÉCUTER DANS SUPABASE (Table Editor → SQL Editor)
+     Copiez-collez ce bloc dans Supabase → SQL Editor → Run
+══════════════════════════════════════════════════════════════
+
+create table if not exists public.reservations (
+  id            bigserial primary key,
+  created_at    timestamptz default now(),
+  code          text unique not null,
+  prenom        text,
+  nom           text,
+  email         text,
+  telephone     text,
+  formule       text,
+  activity      text,
+  slot_datetime timestamptz,
+  personnes     int default 1,
+  extras        numeric default 0,
+  total         numeric,
+  message       text,
+  status        text default 'confirmed'
+);
+
+-- Activer le temps réel (Row Level Security désactivé pour simplifier)
+alter table public.reservations enable row level security;
+create policy "Allow all" on public.reservations for all using (true) with check (true);
+
+-- Activer realtime
+alter publication supabase_realtime add table public.reservations;
+
+══════════════════════════════════════════════════════════════ -->
+<!-- jsPDF library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+const edenBurgerReservation = document.querySelector(".eden-burger");
+const edenMenuReservation = document.querySelector(".eden-menu");
+
+if(edenBurgerReservation && edenMenuReservation){
+  edenBurgerReservation.addEventListener("click",()=>{
+    edenMenuReservation.classList.toggle("open");
+  });
+}
+</script>
+
+
+<!-- ══ COOKIE BANNER ══ -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9990;background:rgba(6,9,8,.97);border-top:1px solid rgba(196,160,78,.2);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px;backdrop-filter:blur(12px);">
+  <div style="flex:1">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.9;max-width:680px">🍪 Nous utilisons des cookies pour améliorer votre expérience et analyser notre trafic. En continuant, vous acceptez notre <a href="rgpd.html" style="color:#c4a04e;text-decoration:underline">politique de confidentialité</a>.</p>
+  </div>
+  <div style="display:flex;gap:10px;flex-shrink:0">
+    <button onclick="refuseCookies()" style="background:none;border:1px solid rgba(196,160,78,.25);color:#7a7a68;padding:9px 20px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s">Refuser</button>
+    <button onclick="acceptCookies()" style="background:#c4a04e;color:#060908;border:none;padding:9px 24px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-weight:400;transition:all .3s">Accepter</button>
+  </div>
+</div>
+
+<!-- ══ CHATBOT FLOTTANT ══ -->
+<div id="chatbot-btn" onclick="toggleChat()" style="position:fixed;bottom:28px;right:28px;z-index:9980;width:52px;height:52px;background:linear-gradient(135deg,#c4a04e,#dbbf78);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 32px rgba(196,160,78,.35);transition:transform .3s;font-size:20px;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">💬</div>
+<div id="chatbot-panel" style="display:none;position:fixed;bottom:92px;right:28px;z-index:9980;width:320px;background:#0c110a;border:1px solid rgba(196,160,78,.2);box-shadow:0 20px 60px rgba(0,0,0,.6);">
+  <div style="padding:16px 20px;background:linear-gradient(135deg,rgba(196,160,78,.15),rgba(196,160,78,.05));border-bottom:1px solid rgba(196,160,78,.12);display:flex;align-items:center;justify-content:space-between">
+    <div><p style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#f4efe5">EDEN · Assistance</p><p style="font-size:9px;color:#7a7a68;letter-spacing:1px">Réponse en moins de 2h · 7j/7</p></div>
+    <button onclick="toggleChat()" style="background:none;border:none;color:#7a7a68;font-size:18px;cursor:pointer">×</button>
+  </div>
+  <div style="padding:16px 20px">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.8;margin-bottom:14px">Bonjour ! Comment puis-je vous aider ?</p>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <a href="reservation.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#c4a04e;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Réserver une séance</a>
+      <a href="faq.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Consulter la FAQ</a>
+      <a href="tel:+33100000000" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Appeler le 01 00 00 00 00</a>
+      <a href="mailto:contact@eden-wellness.fr" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Envoyer un email</a>
+    </div>
+    <p style="font-size:9px;color:#7a7a68;margin-top:14px;text-align:center">Ouvert 7j/7 · 8h–22h</p>
+  </div>
+</div>
+
+<script>
+// Cookie banner
+(function(){
+  if(!localStorage.getItem('eden_cookies')){
+    var b=document.getElementById('cookie-banner');
+    if(b){b.style.display='flex';setTimeout(function(){b.style.display='flex';},100);}
+  }
+})();
+function acceptCookies(){localStorage.setItem('eden_cookies','accepted');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function refuseCookies(){localStorage.setItem('eden_cookies','refused');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function toggleChat(){var p=document.getElementById('chatbot-panel');if(p)p.style.display=p.style.display==='none'?'block':'none';}
+</script>
+
+
+<!-- Info Supabase pour admin -->
+<script>
+(function(){
+  var url=localStorage.getItem('eden_sb_url');
+  var key=localStorage.getItem('eden_sb_key');
+  if(!url||!key){
+    console.info('EDEN: Supabase non configuré. Les réservations ne seront pas sauvegardées en base. Configurez via admin.html');
+  }
+})();
+</script>
+
+</body>
+</html>

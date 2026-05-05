@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programme Parrainage — EDEN Bien-Être</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@100;200;300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#c4a04e;--gold-light:#dbbf78;--gold-dim:#8a7038;--gold-pale:#f2e8d0;
+  --dark:#060908;--dark2:#0c110a;--dark3:#111608;
+  --green-deep:#0f1a0b;--green-rich:#162010;
+  --cream:#f4efe5;--muted:#7a7a68;--light:#b8b4a4;
+  --ok:#4caf50;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Jost',system-ui,sans-serif;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--cream);font-family:var(--sans);font-weight:300;overflow-x:hidden;cursor:none;}
+
+#cd{position:fixed;width:5px;height:5px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+#cr{position:fixed;width:32px;height:32px;border:1px solid rgba(196,160,78,.4);border-radius:50%;pointer-events:none;z-index:9997;transform:translate(-50%,-50%);transition:width .3s var(--ease),height .3s var(--ease);}
+body.hov #cr{width:50px;height:50px;border-color:rgba(196,160,78,.65);}
+
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--gold);z-index:9996;}
+
+.ticker{height:32px;background:var(--gold);overflow:hidden;display:flex;align-items:center;}
+.tick-inner{display:flex;animation:tick 32s linear infinite;white-space:nowrap;}
+@keyframes tick{to{transform:translateX(-50%)}}
+.ti{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--dark);padding:0 30px;font-weight:400;}
+.td{opacity:.3;font-size:13px;color:var(--dark);}
+
+nav{position:fixed;top:32px;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:20px 72px;transition:all .5s var(--ease);}
+nav.solid{background:rgba(6,9,8,.92);backdrop-filter:blur(24px);padding:14px 72px;border-bottom:1px solid rgba(196,160,78,.12);}
+.logo{font-family:var(--serif);font-size:24px;letter-spacing:8px;color:var(--gold);text-decoration:none;}
+.nav-links{display:flex;gap:44px;list-style:none;}
+.nav-links a{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(244,239,229,.5);text-decoration:none;transition:color .3s;}
+.nav-links a:hover{color:var(--gold);}
+.btn-nav{font-size:9px;letter-spacing:3px;text-transform:uppercase;border:1px solid var(--gold);background:var(--gold);color:var(--dark);padding:10px 24px;text-decoration:none;font-weight:400;transition:all .3s;}
+
+/* ── HERO ── */
+.hero{
+  position:relative;min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  overflow:hidden;padding:160px 80px 80px;
+}
+.hero-bg{position:absolute;inset:0;}
+.hero-bg img{width:100%;height:100%;object-fit:cover;filter:brightness(.15) saturate(1.3);}
+.hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 50% 50%,transparent 20%,rgba(6,9,8,.7) 100%);}
+.hero-vignette{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,9,8,.5) 0%,transparent 30%,transparent 60%,rgba(6,9,8,1) 100%);z-index:1;}
+.hero-content{position:relative;z-index:2;max-width:800px;}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:10px;
+  border:1px solid rgba(196,160,78,.3);padding:8px 20px;
+  margin-bottom:32px;background:rgba(196,160,78,.06);
+  animation:fu .6s .2s both;
+}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(76,175,80,.4)}50%{box-shadow:0 0 0 6px rgba(76,175,80,0)}}
+.hero-badge-txt{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--ok);}
+.hero-eyebrow{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;display:block;animation:fu .6s .3s both;}
+.hero-h1{font-family:var(--serif);font-size:clamp(48px,8vw,96px);font-weight:300;letter-spacing:6px;color:var(--cream);line-height:.95;animation:fu .9s .5s both;}
+.hero-h1 em{font-style:italic;color:var(--gold-light);display:block;}
+.hero-sep{display:flex;align-items:center;gap:14px;justify-content:center;margin:32px auto;animation:fu .6s .7s both;}
+.sl{width:50px;height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.5));}
+.sr{background:linear-gradient(270deg,transparent,rgba(196,160,78,.5));}
+.sd{width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:.7;}
+.hero-desc{font-size:14px;color:var(--muted);max-width:520px;margin:0 auto;line-height:2.3;animation:fu .6s .8s both;}
+
+/* Reward pill hero */
+.reward-pill{
+  display:inline-flex;align-items:center;gap:16px;
+  border:1px solid rgba(196,160,78,.25);padding:16px 32px;
+  margin-top:40px;background:rgba(196,160,78,.05);
+  animation:fu .6s 1s both;
+}
+.rp-left{text-align:center;}
+.rp-num{font-family:var(--serif);font-size:36px;color:var(--gold);letter-spacing:2px;}
+.rp-lbl{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
+.rp-sep{width:1px;height:40px;background:rgba(196,160,78,.2);}
+.rp-txt{font-size:12px;color:var(--light);text-align:left;line-height:1.9;max-width:200px;}
+
+/* ── COMMENT CA MARCHE ── */
+.how{padding:120px 80px;background:var(--dark2);}
+.section-head{text-align:center;margin-bottom:80px;}
+.section-eyebrow{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:block;}
+.section-title{font-family:var(--serif);font-size:clamp(36px,5vw,60px);font-weight:300;color:var(--cream);letter-spacing:2px;}
+.section-title em{font-style:italic;color:var(--gold-light);}
+
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(196,160,78,.1);}
+.step{
+  background:var(--dark2);padding:48px 36px;position:relative;
+  transition:background .4s;
+}
+.step:hover{background:rgba(196,160,78,.03);}
+.step-num{
+  font-family:var(--serif);font-size:80px;font-weight:300;
+  color:rgba(196,160,78,.08);line-height:1;
+  position:absolute;top:20px;right:24px;
+}
+.step-icon{
+  width:48px;height:48px;border:1px solid rgba(196,160,78,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;margin-bottom:24px;color:var(--gold);
+}
+.step-title{font-family:var(--serif);font-size:20px;font-weight:300;color:var(--cream);margin-bottom:12px;}
+.step-desc{font-size:12px;color:var(--muted);line-height:2;}
+.step-reward{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold);border-bottom:1px solid rgba(196,160,78,.3);padding-bottom:4px;
+}
+
+/* ── RÉCOMPENSES ── */
+.rewards{padding:120px 80px;background:var(--dark);}
+.rewards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1100px;margin:0 auto;}
+.reward-card{
+  border:1px solid rgba(196,160,78,.15);padding:48px 40px;
+  position:relative;overflow:hidden;transition:all .4s var(--ease);
+}
+.reward-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--gold);transform:scaleX(0);transform-origin:left;
+  transition:transform .5s var(--ease);
+}
+.reward-card:hover{border-color:rgba(196,160,78,.35);background:rgba(196,160,78,.03);}
+.reward-card:hover::before{transform:scaleX(1);}
+.reward-card.featured{border-color:rgba(196,160,78,.4);background:rgba(196,160,78,.05);}
+.reward-card.featured::before{transform:scaleX(1);}
+.rc-tag{
+  font-size:8px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:20px;display:block;
+}
+.rc-amount{
+  font-family:var(--serif);font-size:56px;font-weight:300;
+  color:var(--gold);line-height:1;margin-bottom:8px;
+}
+.rc-unit{font-size:18px;color:var(--gold-dim);}
+.rc-title{font-family:var(--serif);font-size:20px;color:var(--cream);margin-bottom:12px;}
+.rc-desc{font-size:12px;color:var(--muted);line-height:2;}
+.rc-badge{
+  position:absolute;top:24px;right:24px;
+  background:var(--gold);color:var(--dark);
+  font-size:8px;letter-spacing:2px;text-transform:uppercase;
+  padding:4px 10px;font-weight:400;
+}
+
+/* ── FORMULAIRE ── */
+.form-section{
+  padding:120px 80px;background:var(--green-deep);
+  position:relative;overflow:hidden;
+}
+.form-section::before{
+  content:'◈';
+  position:absolute;font-family:var(--serif);font-size:400px;
+  color:rgba(196,160,78,.03);right:-80px;top:-80px;line-height:1;
+  pointer-events:none;
+}
+.form-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;max-width:1200px;margin:0 auto;}
+.form-left{}
+.form-left .section-title{text-align:left;margin-bottom:16px;}
+.form-left p{font-size:13px;color:var(--muted);line-height:2.3;margin-bottom:32px;}
+.form-perks{display:flex;flex-direction:column;gap:16px;}
+.perk{display:flex;align-items:flex-start;gap:16px;}
+.perk-icon{color:var(--gold);font-size:14px;flex-shrink:0;margin-top:2px;}
+.perk-txt{font-size:12px;color:var(--light);line-height:1.8;}
+.perk-txt strong{color:var(--cream);font-weight:400;}
+
+.form-card{
+  background:var(--dark2);border:1px solid rgba(196,160,78,.15);
+  padding:48px 40px;
+}
+.form-title{font-family:var(--serif);font-size:26px;color:var(--cream);margin-bottom:6px;}
+.form-sub{font-size:11px;color:var(--muted);margin-bottom:32px;}
+.ff{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.ff label{font-size:8px;letter-spacing:3.5px;text-transform:uppercase;color:var(--gold);}
+.ff input,.ff select{
+  background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.14);
+  color:var(--cream);padding:13px 14px;font-family:var(--sans);font-size:12px;
+  font-weight:300;outline:none;transition:border-color .3s;width:100%;
+}
+.ff input:focus,.ff select:focus{border-color:rgba(196,160,78,.48);}
+.ff input::placeholder{color:var(--muted);}
+.ff select{appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M0 0l4.5 5 4.5-5z' fill='%23c4a04e' opacity='.5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;}
+.ff select option{background:var(--dark2);}
+.btn-gold{
+  width:100%;background:var(--gold);color:var(--dark);border:none;
+  padding:16px;font-family:var(--sans);font-size:9px;letter-spacing:3.5px;
+  text-transform:uppercase;font-weight:400;cursor:pointer;
+  transition:all .3s;display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-top:8px;
+}
+.btn-gold:hover{background:var(--gold-light);}
+
+/* Code parrainage généré */
+.code-reveal{
+  display:none;text-align:center;padding:24px;
+  border:1px solid rgba(196,160,78,.25);background:rgba(196,160,78,.05);
+  margin-top:20px;
+}
+.code-reveal.show{display:block;}
+.cr-label{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.cr-code{font-family:var(--serif);font-size:32px;color:var(--gold);letter-spacing:8px;margin-bottom:8px;}
+.cr-hint{font-size:10px;color:var(--muted);}
+.btn-copy{
+  background:none;border:1px solid rgba(196,160,78,.3);color:var(--gold);
+  padding:8px 20px;font-family:var(--sans);font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;cursor:pointer;margin-top:12px;transition:all .3s;
+}
+.btn-copy:hover{background:rgba(196,160,78,.08);}
+
+/* ── TESTIMONIALS ── */
+.testi-section{padding:120px 80px;background:var(--dark2);}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(196,160,78,.08);max-width:1200px;margin:0 auto;}
+.testi-card{background:var(--dark2);padding:40px 36px;}
+.testi-stars{color:var(--gold);font-size:11px;letter-spacing:3px;margin-bottom:20px;}
+.testi-q{font-family:var(--serif);font-size:16px;font-style:italic;color:var(--cream);line-height:1.8;margin-bottom:20px;}
+.testi-a{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-dim);}
+.testi-reward{
+  margin-top:12px;font-size:10px;color:var(--muted);
+  display:flex;align-items:center;gap:6px;
+}
+.testi-reward-badge{
+  background:rgba(196,160,78,.1);color:var(--gold);
+  font-size:8px;letter-spacing:1px;padding:2px 8px;
+}
+
+/* ── FAQ ── */
+.faq-section{padding:120px 80px;background:var(--dark);}
+.faq-grid{max-width:800px;margin:0 auto;}
+.faq-item{border-bottom:1px solid rgba(196,160,78,.08);}
+.faq-q{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:24px 0;cursor:pointer;background:none;border:none;
+  font-family:var(--sans);text-align:left;width:100%;
+  font-size:14px;color:var(--light);font-weight:300;
+  transition:color .3s;
+}
+.faq-q:hover{color:var(--gold);}
+.faq-icon{color:var(--gold);font-size:18px;transition:transform .3s;}
+.faq-item.open .faq-icon{transform:rotate(45deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s var(--ease),opacity .3s;opacity:0;}
+.faq-item.open .faq-a{max-height:200px;opacity:1;}
+.faq-a p{font-size:12px;color:var(--muted);line-height:2.3;padding-bottom:24px;}
+
+/* ── CTA ── */
+.cta-section{
+  padding:120px 80px;text-align:center;
+  background:var(--green-deep);
+  border-top:1px solid rgba(196,160,78,.1);
+}
+.cta-title{font-family:var(--serif);font-size:clamp(36px,5vw,64px);font-weight:300;color:var(--cream);margin-bottom:16px;}
+.cta-title em{font-style:italic;color:var(--gold-light);}
+.cta-sub{font-size:13px;color:var(--muted);max-width:480px;margin:0 auto 48px;line-height:2.3;}
+.cta-btns{display:flex;gap:16px;justify-content:center;}
+.btn-outline{
+  border:1px solid rgba(196,160,78,.35);color:var(--gold-pale);
+  padding:16px 44px;font-family:var(--sans);font-size:10px;letter-spacing:3px;
+  text-transform:uppercase;text-decoration:none;font-weight:300;transition:all .3s;
+}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+.btn-primary{
+  background:var(--gold);color:var(--dark);border:none;
+  padding:16px 44px;font-family:var(--sans);font-size:10px;letter-spacing:3px;
+  text-transform:uppercase;text-decoration:none;font-weight:400;transition:all .3s;cursor:pointer;
+}
+.btn-primary:hover{background:var(--gold-light);}
+
+/* ── FOOTER ── */
+footer{background:var(--dark2);border-top:1px solid rgba(196,160,78,.1);padding:56px 80px 32px;}
+.fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:64px;margin-bottom:48px;}
+.flogo{font-family:var(--serif);font-size:26px;letter-spacing:9px;color:var(--gold);display:block;margin-bottom:14px;}
+.fabout{font-size:12px;color:var(--muted);line-height:2.1;max-width:230px;margin-bottom:16px;}
+.ftag{font-family:var(--serif);font-size:12px;font-style:italic;color:var(--light);}
+.fc h5{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
+.fc ul{list-style:none;}
+.fc li{margin-bottom:10px;}
+.fc a{font-size:12px;color:var(--muted);text-decoration:none;transition:color .25s;}
+.fc a:hover{color:var(--gold-light);}
+.fbot{border-top:1px solid rgba(196,160,78,.08);padding-top:24px;display:flex;justify-content:space-between;font-size:10px;color:var(--muted);}
+
+/* ── ANIMATIONS ── */
+@keyframes fu{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.rv{opacity:0;transform:translateY(40px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+.rv.in{opacity:1;transform:none;}
+.rv.d1{transition-delay:.1s;}.rv.d2{transition-delay:.2s;}.rv.d3{transition-delay:.3s;}
+
+@media(max-width:900px){
+  nav{padding:13px 24px;}
+  .nav-links{display:none;}
+  .hero{padding:140px 24px 72px;}
+  .how,.rewards,.form-section,.testi-section,.faq-section,.cta-section{padding:80px 24px;}
+  .steps{grid-template-columns:1fr 1fr;}
+  .rewards-grid,.testi-grid{grid-template-columns:1fr;}
+  .form-layout{grid-template-columns:1fr;gap:40px;}
+  .fg{grid-template-columns:1fr 1fr;gap:36px;}
+}
+/* =========================================================
+   MENU EDEN FIX — ISOLÉ, VISIBLE, NON CASSÉ PAR L'ANCIEN CSS
+   ========================================================= */
+.eden-menu{
+  position:fixed !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  height:84px !important;
+  z-index:999999 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 52px !important;
+  background:
+    linear-gradient(180deg,rgba(6,9,8,.985),rgba(6,9,8,.92)) !important;
+  border-bottom:1px solid rgba(196,160,78,.12) !important;
+  box-shadow:0 18px 55px rgba(0,0,0,.42) !important;
+  backdrop-filter:blur(18px) !important;
+  -webkit-backdrop-filter:blur(18px) !important;
+}
+
+.eden-menu::before{
+  content:"" !important;
+  position:absolute !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.42),transparent) !important;
+  pointer-events:none !important;
+}
+
+.eden-menu *{
+  box-sizing:border-box !important;
+}
+
+.eden-menu-inner{
+  width:100% !important;
+  max-width:1820px !important;
+  display:grid !important;
+  grid-template-columns:230px 1fr 230px !important;
+  align-items:center !important;
+  gap:32px !important;
+}
+
+.eden-logo{
+  justify-self:start !important;
+  color:#c4a04e !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:26px !important;
+  font-weight:200 !important;
+  letter-spacing:15px !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  text-shadow:0 0 18px rgba(196,160,78,.18) !important;
+  line-height:1 !important;
+}
+
+.eden-links{
+  justify-self:center !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:48px !important;
+  padding:0 !important;
+  margin:0 !important;
+  list-style:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+.eden-links > li{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+.eden-links > li > a{
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:16px 0 !important;
+  color:rgba(244,239,229,.68) !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:10px !important;
+  font-weight:300 !important;
+  letter-spacing:6px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  transition:.3s ease !important;
+}
+
+.eden-links > li > a::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:calc(100% + 34px) !important;
+  max-width:155px !important;
+  height:46px !important;
+  transform:translate(-50%,-50%) !important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.020),rgba(255,255,255,.006)),
+    radial-gradient(circle at 50% 0%,rgba(196,160,78,.09),transparent 58%),
+    linear-gradient(180deg,rgba(14,17,14,.96),rgba(7,9,8,.94)) !important;
+  border:1px solid rgba(196,160,78,.12) !important;
+  box-shadow:0 12px 26px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.025) !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  z-index:-1 !important;
+  transition:.28s ease !important;
+}
+
+.eden-links > li > a::after{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  bottom:6px !important;
+  width:78px !important;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.68),transparent) !important;
+  transform:translateX(-50%) scaleX(0) !important;
+  transform-origin:center !important;
+  box-shadow:0 0 10px rgba(196,160,78,.20) !important;
+  transition:.28s ease !important;
+}
+
+.eden-links > li > a:hover,
+.eden-links > li > a.active,
+.eden-dropdown:hover > a{
+  color:#dbbf78 !important;
+}
+
+.eden-links > li > a:hover::before,
+.eden-links > li > a.active::before,
+.eden-dropdown:hover > a::before{
+  opacity:1 !important;
+}
+
+.eden-links > li > a:hover::after,
+.eden-links > li > a.active::after,
+.eden-dropdown:hover > a::after{
+  transform:translateX(-50%) scaleX(1) !important;
+}
+
+.eden-reserve{
+  justify-self:end !important;
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:48px !important;
+  padding:0 36px !important;
+  color:#060908 !important;
+  background:linear-gradient(135deg,#c4a04e,#dbbf78) !important;
+  border:1px solid rgba(196,160,78,.75) !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:10px !important;
+  font-weight:400 !important;
+  letter-spacing:4px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  overflow:hidden !important;
+  box-shadow:0 0 24px rgba(196,160,78,.16),0 14px 34px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.18) !important;
+  transition:.3s ease !important;
+}
+
+.eden-reserve::before{
+  content:"" !important;
+  position:absolute !important;
+  top:-90% !important;
+  left:-80% !important;
+  width:70% !important;
+  height:260% !important;
+  transform:rotate(24deg) !important;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent) !important;
+  opacity:0 !important;
+  transition:.75s cubic-bezier(.22,1,.36,1) !important;
+}
+
+.eden-reserve:hover{
+  transform:translateY(-2px) !important;
+}
+
+.eden-reserve:hover::before{
+  left:120% !important;
+  opacity:1 !important;
+}
+
+/* Sous-menu Fuel Bar */
+.eden-dropdown{
+  position:relative !important;
+  z-index:1000000 !important;
+}
+
+.eden-dropdown::before{
+  content:"" !important;
+  position:absolute !important;
+  left:-42px !important;
+  right:-42px !important;
+  top:100% !important;
+  height:32px !important;
+  background:transparent !important;
+}
+
+.eden-submenu{
+  position:absolute !important;
+  top:calc(100% + 18px) !important;
+  left:50% !important;
+  width:430px !important;
+  padding:12px !important;
+  transform:translateX(-50%) translateY(10px) !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.10),transparent 34%),
+    linear-gradient(180deg,rgba(12,15,12,.98),rgba(7,9,8,.98)) !important;
+  border:1px solid rgba(196,160,78,.18) !important;
+  box-shadow:0 30px 85px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.035) !important;
+  transition:.35s cubic-bezier(.22,1,.36,1) !important;
+  z-index:1000001 !important;
+}
+
+.eden-submenu::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:-7px !important;
+  width:12px !important;
+  height:12px !important;
+  transform:translateX(-50%) rotate(45deg) !important;
+  background:#0c0f0c !important;
+  border-left:1px solid rgba(196,160,78,.18) !important;
+  border-top:1px solid rgba(196,160,78,.18) !important;
+}
+
+.eden-dropdown:hover .eden-submenu,
+.eden-dropdown:focus-within .eden-submenu{
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  transform:translateX(-50%) translateY(0) !important;
+}
+
+.eden-submenu a{
+  display:grid !important;
+  grid-template-columns:42px 1fr !important;
+  column-gap:14px !important;
+  row-gap:3px !important;
+  padding:14px 16px !important;
+  text-align:left !important;
+  text-decoration:none !important;
+  border:1px solid transparent !important;
+  background:rgba(255,255,255,.010) !important;
+  transition:.3s ease !important;
+}
+
+.eden-submenu a:not(:last-child){
+  margin-bottom:6px !important;
+}
+
+.eden-submenu a span{
+  grid-row:1 / 3 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:34px !important;
+  height:34px !important;
+  border:1px solid rgba(196,160,78,.20) !important;
+  color:#c4a04e !important;
+  font-family:'Cormorant Garamond',Georgia,serif !important;
+  font-size:16px !important;
+}
+
+.eden-submenu a strong{
+  color:#f4efe5 !important;
+  font-family:'Jost',system-ui,sans-serif !important;
+  font-size:10px !important;
+  letter-spacing:3px !important;
+  text-transform:uppercase !important;
+  font-weight:300 !important;
+}
+
+.eden-submenu a small{
+  color:#7a7a68 !important;
+  font-size:11px !important;
+  text-transform:none !important;
+}
+
+.eden-submenu a:hover{
+  background:radial-gradient(circle at top right,rgba(196,160,78,.09),transparent 34%),rgba(196,160,78,.035) !important;
+  border-color:rgba(196,160,78,.18) !important;
+}
+
+.eden-submenu a:hover span{
+  background:#c4a04e !important;
+  color:#060908 !important;
+}
+
+/* Bouton mobile */
+.eden-burger{
+  display:none !important;
+  justify-self:end !important;
+  width:44px !important;
+  height:44px !important;
+  border:1px solid rgba(196,160,78,.25) !important;
+  background:rgba(196,160,78,.035) !important;
+  align-items:center !important;
+  justify-content:center !important;
+  cursor:pointer !important;
+}
+
+.eden-burger span,
+.eden-burger span::before,
+.eden-burger span::after{
+  display:block !important;
+  width:18px !important;
+  height:1px !important;
+  background:#c4a04e !important;
+  position:relative !important;
+}
+
+.eden-burger span::before,
+.eden-burger span::after{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+}
+
+.eden-burger span::before{top:-6px !important;}
+.eden-burger span::after{top:6px !important;}
+
+/* Décale le hero sous le menu */
+.hero{
+  padding-top:174px !important;
+}
+
+/* Enlève les carrés derrière les infos */
+.trust-bar .trust-item,
+.trust-bar .feature-item,
+.trust-bar .small-card,
+.trust-bar .badge,
+.trust-bar .pill,
+.trust-bar .info-pill,
+.trust-bar .top-pill{
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  min-height:auto !important;
+  border-radius:0 !important;
+}
+
+.trust-bar .trust-item::before,
+.trust-bar .trust-item::after{
+  display:none !important;
+}
+
+@media(max-width:1200px){
+  .eden-menu-inner{
+    grid-template-columns:170px 1fr 190px !important;
+  }
+
+  .eden-links{
+    gap:28px !important;
+  }
+
+  .eden-links > li > a{
+    letter-spacing:4px !important;
+  }
+}
+
+@media(max-width:1050px){
+  .eden-menu{
+    height:auto !important;
+    padding:14px 22px !important;
+  }
+
+  .eden-menu-inner{
+    grid-template-columns:1fr auto !important;
+  }
+
+  .eden-burger{
+    display:flex !important;
+  }
+
+  .eden-links{
+    grid-column:1 / -1 !important;
+    width:100% !important;
+    display:none !important;
+    flex-direction:column !important;
+    gap:8px !important;
+    margin-top:12px !important;
+  }
+
+  .eden-menu.open .eden-links{
+    display:flex !important;
+  }
+
+  .eden-links > li,
+  .eden-links > li > a{
+    width:100% !important;
+  }
+
+  .eden-links > li > a{
+    padding:14px 16px !important;
+    border:1px solid rgba(196,160,78,.12) !important;
+    background:rgba(255,255,255,.012) !important;
+  }
+
+  .eden-reserve{
+    display:none !important;
+  }
+
+  .eden-submenu{
+    position:static !important;
+    width:100% !important;
+    transform:none !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+    margin:8px 0 0 !important;
+    box-shadow:none !important;
+  }
+
+  .eden-submenu::before{
+    display:none !important;
+  }
+
+  .hero{
+    padding-top:138px !important;
+  }
+}
+
+
+
+/* =========================================================
+   BANDEAU DORÉ INFORMATIF — HAUT DE PAGE
+   ========================================================= */
+.ticker{
+  position:fixed !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  width:100% !important;
+  height:34px !important;
+  z-index:1000000 !important;
+  display:flex !important;
+  align-items:center !important;
+  overflow:hidden !important;
+  background:linear-gradient(90deg,#b9903e 0%,#d9b95f 50%,#b9903e 100%) !important;
+  border-bottom:1px solid rgba(6,9,8,.55) !important;
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+.ticker-inner{
+  display:flex !important;
+  align-items:center !important;
+  white-space:nowrap !important;
+  animation:edenTicker 36s linear infinite !important;
+}
+
+@keyframes edenTicker{
+  to{transform:translateX(-50%);}
+}
+
+.ticker-inner span{
+  color:#070908 !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:10px !important;
+  letter-spacing:4px !important;
+  text-transform:uppercase !important;
+  font-weight:400 !important;
+  padding:0 34px !important;
+}
+
+.ticker-inner span.dot{
+  padding:0 !important;
+  opacity:.42 !important;
+  font-size:15px !important;
+}
+
+/* Le menu descend sous le bandeau */
+.eden-menu,
+nav.eden-menu{
+  top:34px !important;
+}
+
+/* Évite que le contenu commence sous le menu */
+body{
+  padding-top:0 !important;
+}
+
+.hero,
+.page-hero,
+.parrainage-hero,
+header{
+  scroll-margin-top:130px;
+}
+
+@media(max-width:1050px){
+  .ticker{
+    height:32px !important;
+  }
+
+  .eden-menu,
+  nav.eden-menu{
+    top:32px !important;
+  }
+
+  .ticker-inner span{
+    font-size:9px !important;
+    letter-spacing:3px !important;
+    padding:0 24px !important;
+  }
+}
+
+
+/* =========================================================
+   PARRAINAGE — POLICE MODERNE + TRAITS PREMIUM + MENU FINAL
+   ========================================================= */
+
+/* Bandeau doré */
+.ticker{
+  position:fixed !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  width:100% !important;
+  height:34px !important;
+  z-index:1000000 !important;
+  display:flex !important;
+  align-items:center !important;
+  overflow:hidden !important;
+  background:linear-gradient(90deg,#b9903e 0%,#d9b95f 50%,#b9903e 100%) !important;
+  border-bottom:1px solid rgba(6,9,8,.55) !important;
+  box-shadow:0 8px 24px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+.ticker-inner{
+  display:flex !important;
+  align-items:center !important;
+  white-space:nowrap !important;
+  animation:edenTicker 36s linear infinite !important;
+}
+
+@keyframes edenTicker{
+  to{transform:translateX(-50%);}
+}
+
+.ticker-inner span{
+  color:#070908 !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:10px !important;
+  letter-spacing:4px !important;
+  text-transform:uppercase !important;
+  font-weight:400 !important;
+  padding:0 34px !important;
+}
+
+.ticker-inner span.dot{
+  padding:0 !important;
+  opacity:.42 !important;
+  font-size:15px !important;
+}
+
+/* Menu final */
+.eden-menu{
+  position:fixed !important;
+  top:34px !important;
+  left:0 !important;
+  right:0 !important;
+  height:84px !important;
+  z-index:999999 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 52px !important;
+  background:linear-gradient(180deg,rgba(6,9,8,.985),rgba(6,9,8,.92)) !important;
+  border-bottom:1px solid rgba(196,160,78,.12) !important;
+  box-shadow:0 18px 55px rgba(0,0,0,.42) !important;
+  backdrop-filter:blur(18px) !important;
+  -webkit-backdrop-filter:blur(18px) !important;
+}
+
+.eden-menu::before{
+  content:"" !important;
+  position:absolute !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.42),transparent) !important;
+  pointer-events:none !important;
+}
+
+.eden-menu *{
+  box-sizing:border-box !important;
+}
+
+.eden-menu-inner{
+  width:100% !important;
+  max-width:1820px !important;
+  display:grid !important;
+  grid-template-columns:230px 1fr 230px !important;
+  align-items:center !important;
+  gap:32px !important;
+}
+
+.eden-logo{
+  justify-self:start !important;
+  color:#c4a04e !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:26px !important;
+  font-weight:200 !important;
+  letter-spacing:15px !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  text-shadow:0 0 18px rgba(196,160,78,.18) !important;
+  line-height:1 !important;
+}
+
+.eden-links{
+  justify-self:center !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:48px !important;
+  padding:0 !important;
+  margin:0 !important;
+  list-style:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+.eden-links > li{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+.eden-links > li > a{
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:16px 0 !important;
+  color:rgba(244,239,229,.68) !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:10px !important;
+  font-weight:300 !important;
+  letter-spacing:6px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  transition:.3s ease !important;
+}
+
+.eden-links > li > a::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:calc(100% + 34px) !important;
+  max-width:155px !important;
+  height:46px !important;
+  transform:translate(-50%,-50%) !important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.020),rgba(255,255,255,.006)),
+    radial-gradient(circle at 50% 0%,rgba(196,160,78,.09),transparent 58%),
+    linear-gradient(180deg,rgba(14,17,14,.96),rgba(7,9,8,.94)) !important;
+  border:1px solid rgba(196,160,78,.12) !important;
+  box-shadow:0 12px 26px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.025) !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  z-index:-1 !important;
+  transition:.28s ease !important;
+}
+
+.eden-links > li > a::after{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  bottom:6px !important;
+  width:78px !important;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(219,191,120,.68),transparent) !important;
+  transform:translateX(-50%) scaleX(0) !important;
+  transform-origin:center !important;
+  box-shadow:0 0 10px rgba(196,160,78,.20) !important;
+  transition:.28s ease !important;
+}
+
+.eden-links > li > a:hover,
+.eden-links > li > a.active,
+.eden-dropdown:hover > a{
+  color:#dbbf78 !important;
+}
+
+.eden-links > li > a:hover::before,
+.eden-links > li > a.active::before,
+.eden-dropdown:hover > a::before{
+  opacity:1 !important;
+}
+
+.eden-links > li > a:hover::after,
+.eden-links > li > a.active::after,
+.eden-dropdown:hover > a::after{
+  transform:translateX(-50%) scaleX(1) !important;
+}
+
+.eden-reserve{
+  justify-self:end !important;
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:48px !important;
+  padding:0 36px !important;
+  color:#060908 !important;
+  background:linear-gradient(135deg,#c4a04e,#dbbf78) !important;
+  border:1px solid rgba(196,160,78,.75) !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:10px !important;
+  font-weight:400 !important;
+  letter-spacing:4px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  overflow:hidden !important;
+  box-shadow:0 0 24px rgba(196,160,78,.16),0 14px 34px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.18) !important;
+  transition:.3s ease !important;
+}
+
+.eden-reserve::before{
+  content:"" !important;
+  position:absolute !important;
+  top:-90% !important;
+  left:-80% !important;
+  width:70% !important;
+  height:260% !important;
+  transform:rotate(24deg) !important;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent) !important;
+  opacity:0 !important;
+  transition:.75s cubic-bezier(.22,1,.36,1) !important;
+}
+
+.eden-reserve:hover{
+  transform:translateY(-2px) !important;
+}
+
+.eden-reserve:hover::before{
+  left:120% !important;
+  opacity:1 !important;
+}
+
+/* Sous-menu Fuel Bar */
+.eden-dropdown{
+  position:relative !important;
+  z-index:1000000 !important;
+}
+
+.eden-dropdown::before{
+  content:"" !important;
+  position:absolute !important;
+  left:-42px !important;
+  right:-42px !important;
+  top:100% !important;
+  height:32px !important;
+  background:transparent !important;
+}
+
+.eden-submenu{
+  position:absolute !important;
+  top:calc(100% + 18px) !important;
+  left:50% !important;
+  width:430px !important;
+  padding:12px !important;
+  transform:translateX(-50%) translateY(10px) !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  background:
+    radial-gradient(circle at top right,rgba(196,160,78,.10),transparent 34%),
+    linear-gradient(180deg,rgba(12,15,12,.98),rgba(7,9,8,.98)) !important;
+  border:1px solid rgba(196,160,78,.18) !important;
+  box-shadow:0 30px 85px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.035) !important;
+  transition:.35s cubic-bezier(.22,1,.36,1) !important;
+  z-index:1000001 !important;
+}
+
+.eden-submenu::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:-7px !important;
+  width:12px !important;
+  height:12px !important;
+  transform:translateX(-50%) rotate(45deg) !important;
+  background:#0c0f0c !important;
+  border-left:1px solid rgba(196,160,78,.18) !important;
+  border-top:1px solid rgba(196,160,78,.18) !important;
+}
+
+.eden-dropdown:hover .eden-submenu,
+.eden-dropdown:focus-within .eden-submenu{
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  transform:translateX(-50%) translateY(0) !important;
+}
+
+.eden-submenu a{
+  display:grid !important;
+  grid-template-columns:42px 1fr !important;
+  column-gap:14px !important;
+  row-gap:3px !important;
+  padding:14px 16px !important;
+  text-align:left !important;
+  text-decoration:none !important;
+  border:1px solid transparent !important;
+  background:rgba(255,255,255,.010) !important;
+  transition:.3s ease !important;
+}
+
+.eden-submenu a:not(:last-child){
+  margin-bottom:6px !important;
+}
+
+.eden-submenu a::before,
+.eden-submenu a::after{
+  display:none !important;
+}
+
+.eden-submenu a span{
+  grid-row:1 / 3 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:34px !important;
+  height:34px !important;
+  border:1px solid rgba(196,160,78,.20) !important;
+  color:#c4a04e !important;
+  font-family:var(--serif,'Cormorant Garamond',Georgia,serif) !important;
+  font-size:16px !important;
+}
+
+.eden-submenu a strong{
+  color:#f4efe5 !important;
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-size:10px !important;
+  letter-spacing:3px !important;
+  text-transform:uppercase !important;
+  font-weight:300 !important;
+}
+
+.eden-submenu a small{
+  color:#7a7a68 !important;
+  font-size:11px !important;
+  text-transform:none !important;
+}
+
+.eden-submenu a:hover{
+  background:radial-gradient(circle at top right,rgba(196,160,78,.09),transparent 34%),rgba(196,160,78,.035) !important;
+  border-color:rgba(196,160,78,.18) !important;
+}
+
+.eden-submenu a:hover span{
+  background:#c4a04e !important;
+  color:#060908 !important;
+}
+
+.eden-burger{
+  display:none !important;
+  justify-self:end !important;
+  width:44px !important;
+  height:44px !important;
+  border:1px solid rgba(196,160,78,.25) !important;
+  background:rgba(196,160,78,.035) !important;
+  align-items:center !important;
+  justify-content:center !important;
+  cursor:pointer !important;
+}
+
+.eden-burger span,
+.eden-burger span::before,
+.eden-burger span::after{
+  display:block !important;
+  width:18px !important;
+  height:1px !important;
+  background:#c4a04e !important;
+  position:relative !important;
+}
+
+.eden-burger span::before,
+.eden-burger span::after{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+}
+
+.eden-burger span::before{top:-6px !important;}
+.eden-burger span::after{top:6px !important;}
+
+/* Style parrainage : police moderne, traits, finition premium */
+body{
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+}
+
+h1,h2,h3,h4,
+.hero-title,
+.section-title,
+.title,
+.big-title,
+.cta-title,
+.referral-title,
+.parrainage-title{
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-weight:100 !important;
+  letter-spacing:clamp(5px,.75vw,12px) !important;
+  text-transform:uppercase !important;
+  line-height:1.12 !important;
+}
+
+h1 em,h2 em,h3 em,
+.hero-title em,
+.section-title em,
+.cta-title em,
+.referral-title em,
+.parrainage-title em{
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-style:normal !important;
+  font-weight:100 !important;
+  color:#dbbf78 !important;
+  letter-spacing:clamp(5px,.75vw,12px) !important;
+}
+
+.eyebrow,
+.section-eyebrow,
+.kicker,
+.badge,
+.label,
+.subtitle,
+.sub-title{
+  font-family:var(--sans,'Jost',system-ui,sans-serif) !important;
+  font-weight:300 !important;
+  letter-spacing:5px !important;
+  text-transform:uppercase !important;
+}
+
+/* Traits premium sous titres / séparateurs */
+.section-title::after,
+.referral-title::after,
+.parrainage-title::after,
+.cta-title::after{
+  content:"" !important;
+  display:block !important;
+  width:min(260px,42vw) !important;
+  height:1px !important;
+  margin:24px auto 0 !important;
+  background:linear-gradient(90deg,transparent,rgba(196,160,78,.55),transparent) !important;
+  box-shadow:0 0 18px rgba(196,160,78,.14) !important;
+}
+
+.hero-title::after,
+.big-title::after{
+  content:"" !important;
+  display:block !important;
+  width:min(320px,44vw) !important;
+  height:1px !important;
+  margin:30px auto 0 !important;
+  background:linear-gradient(90deg,transparent,rgba(196,160,78,.55),transparent) !important;
+  box-shadow:0 0 18px rgba(196,160,78,.14) !important;
+}
+
+/* Cartes / blocs avec traits gold discrets */
+.card,
+.step,
+.referral-card,
+.parrainage-card,
+.offer-card,
+.bonus-card,
+.reward-card,
+.faq-card,
+.info-card,
+.condition-card,
+.program-card{
+  border-color:rgba(196,160,78,.16) !important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.006)),
+    radial-gradient(circle at 84% 8%,rgba(196,160,78,.075),transparent 30%),
+    linear-gradient(180deg,#11120f 0%,#0a0b09 60%,#060706 100%) !important;
+  box-shadow:
+    0 20px 56px rgba(0,0,0,.30),
+    inset 0 1px 0 rgba(255,255,255,.028) !important;
+}
+
+.card::before,
+.step::before,
+.referral-card::before,
+.parrainage-card::before,
+.offer-card::before,
+.bonus-card::before,
+.reward-card::before,
+.info-card::before,
+.condition-card::before,
+.program-card::before{
+  background:
+    linear-gradient(90deg,transparent,rgba(196,160,78,.42),transparent) top/100% 1px no-repeat,
+    linear-gradient(90deg,transparent,rgba(196,160,78,.20),transparent) bottom/100% 1px no-repeat !important;
+}
+
+/* Décalage du haut de page si la section commence sous le menu */
+.hero,
+.page-hero,
+.parrainage-hero,
+header{
+  scroll-margin-top:140px !important;
+}
+
+@media(max-width:1200px){
+  .eden-menu-inner{
+    grid-template-columns:170px 1fr 190px !important;
+  }
+
+  .eden-links{
+    gap:28px !important;
+  }
+
+  .eden-links > li > a{
+    letter-spacing:4px !important;
+  }
+}
+
+@media(max-width:1050px){
+  .ticker{
+    height:32px !important;
+  }
+
+  .eden-menu{
+    top:32px !important;
+    height:auto !important;
+    padding:14px 22px !important;
+  }
+
+  .eden-menu-inner{
+    grid-template-columns:1fr auto !important;
+  }
+
+  .eden-burger{
+    display:flex !important;
+  }
+
+  .eden-links{
+    grid-column:1 / -1 !important;
+    width:100% !important;
+    display:none !important;
+    flex-direction:column !important;
+    gap:8px !important;
+    margin-top:12px !important;
+  }
+
+  .eden-menu.open .eden-links{
+    display:flex !important;
+  }
+
+  .eden-links > li,
+  .eden-links > li > a{
+    width:100% !important;
+  }
+
+  .eden-links > li > a{
+    padding:14px 16px !important;
+    border:1px solid rgba(196,160,78,.12) !important;
+    background:rgba(255,255,255,.012) !important;
+  }
+
+  .eden-reserve{
+    display:none !important;
+  }
+
+  .eden-submenu{
+    position:static !important;
+    width:100% !important;
+    transform:none !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+    margin:8px 0 0 !important;
+    box-shadow:none !important;
+  }
+
+  .eden-submenu::before{
+    display:none !important;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<div class="ticker">
+  <div class="ticker-inner">
+    <span>Bain Nordique</span><span class="dot">◆</span>
+    <span>Bain Froid</span><span class="dot">◆</span>
+    <span>Sauna & Hammam</span><span class="dot">◆</span>
+    <span>Pressothérapie</span><span class="dot">◆</span>
+    <span>Espace Détente</span><span class="dot">◆</span>
+    <span>Fuel Bar</span><span class="dot">◆</span>
+    <span>Vestiaires Premium</span><span class="dot">◆</span>
+
+    <span>Bain Nordique</span><span class="dot">◆</span>
+    <span>Bain Froid</span><span class="dot">◆</span>
+    <span>Sauna & Hammam</span><span class="dot">◆</span>
+    <span>Pressothérapie</span><span class="dot">◆</span>
+    <span>Espace Détente</span><span class="dot">◆</span>
+    <span>Fuel Bar</span><span class="dot">◆</span>
+    <span>Vestiaires Premium</span><span class="dot">◆</span>
+  </div>
+</div>
+
+
+<nav id="nav" class="eden-menu">
+  <div class="eden-menu-inner">
+    <a href="index.html" class="eden-logo">EDEN</a>
+
+    <button class="eden-burger" type="button" aria-label="Ouvrir le menu">
+      <span></span>
+    </button>
+
+    <ul class="eden-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="index.html#tarifs">Tarifs</a></li>
+
+      <li class="eden-dropdown">
+        <a href="fuel-bar.html">Fuel Bar</a>
+
+        <div class="eden-submenu">
+          <a href="fuel-bar.html"><span>01</span><strong>Accueil Fuel Bar</strong><small>Présentation générale</small></a>
+          <a href="smoothies.html"><span>02</span><strong>Smoothies</strong><small>Créations signature</small></a>
+          <a href="softs.html"><span>03</span><strong>Softs premium</strong><small>Boissons fraîches</small></a>
+          <a href="carte-bar.html#cafes"><span>04</span><strong>Cafés</strong><small>Boissons chaudes</small></a>
+          <a href="carte-bar.html#thes"><span>05</span><strong>Thés & infusions</strong><small>Palais des Thés</small></a>
+        </div>
+      </li>
+
+      <li><a href="faq.html">FAQ</a></li>
+      <li><a href="parrainage.html" class="active">Parrainage</a></li>
+    </ul>
+
+    <a href="reservation.html" class="eden-reserve">Réserver →</a>
+  </div>
+</nav>
+
+<div id="cd"></div><div id="cr"></div>
+<div id="prog"></div>
+
+<!-- Ticker -->
+<!-- Nav -->
+
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg">
+    <img src="images/bain_nordique.png" alt="EDEN">
+  </div>
+  <div class="hero-vignette"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      <span class="hero-badge-txt">Programme actif — Sans limite</span>
+    </div>
+    <span class="hero-eyebrow">Programme de parrainage</span>
+    <h1 class="hero-h1">
+      Partagez EDEN,<br>
+      <em>soyez récompensé</em>
+    </h1>
+    <div class="hero-sep"><div class="sl"></div><div class="sd"></div><div class="sl sr"></div></div>
+    <p class="hero-desc">Invitez vos proches à découvrir EDEN. Chaque parrainage réussi vous rapporte 15€ de crédit — et offre 10% de réduction à votre filleul.</p>
+    <div class="reward-pill">
+      <div class="rp-left">
+        <div class="rp-num">15€</div>
+        <div class="rp-lbl">Pour vous</div>
+      </div>
+      <div class="rp-sep"></div>
+      <div class="rp-left">
+        <div class="rp-num">−10%</div>
+        <div class="rp-lbl">Pour eux</div>
+      </div>
+      <div class="rp-sep"></div>
+      <div class="rp-txt">À chaque séance confirmée par votre filleul, vous recevez 15€ de crédit EDEN.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Comment ça marche -->
+<section class="how">
+  <div class="section-head rv">
+    <span class="section-eyebrow">Simple & transparent</span>
+    <h2 class="section-title">Comment ça <em>marche ?</em></h2>
+  </div>
+  <div class="steps">
+    <div class="step rv">
+      <div class="step-num">01</div>
+      <div class="step-icon">◈</div>
+      <h3 class="step-title">Créez votre code</h3>
+      <p class="step-desc">Remplissez le formulaire ci-dessous pour obtenir votre code parrainage personnel unique — en moins de 30 secondes.</p>
+      <span class="step-reward">Votre code unique →</span>
+    </div>
+    <div class="step rv d1">
+      <div class="step-num">02</div>
+      <div class="step-icon">✦</div>
+      <h3 class="step-title">Partagez</h3>
+      <p class="step-desc">Envoyez votre code à vos amis, famille ou collègues. Par message, email, ou réseaux sociaux — à vous de choisir.</p>
+      <span class="step-reward">Par tous les moyens →</span>
+    </div>
+    <div class="step rv d2">
+      <div class="step-num">03</div>
+      <div class="step-icon">❧</div>
+      <h3 class="step-title">Ils réservent</h3>
+      <p class="step-desc">Votre filleul utilise votre code lors de sa réservation sur eden-wellness.fr et bénéficie de −10% sur sa première séance.</p>
+      <span class="step-reward">−10% pour eux →</span>
+    </div>
+    <div class="step rv d3">
+      <div class="step-num">04</div>
+      <div class="step-icon">✧</div>
+      <h3 class="step-title">Vous êtes crédité</h3>
+      <p class="step-desc">Dès la confirmation de leur séance, 15€ de crédit EDEN sont automatiquement ajoutés à votre compte. Cumulables sans limite.</p>
+      <span class="step-reward">15€ sur votre compte →</span>
+    </div>
+  </div>
+</section>
+
+<!-- Récompenses -->
+<section class="rewards">
+  <div class="section-head rv">
+    <span class="section-eyebrow">Vos avantages</span>
+    <h2 class="section-title">Plus vous parrainez,<br><em>plus vous gagnez</em></h2>
+  </div>
+  <div class="rewards-grid">
+    <div class="reward-card rv">
+      <span class="rc-tag">Dès le 1er parrainage</span>
+      <div><span class="rc-amount">15</span><span class="rc-unit">€</span></div>
+      <h3 class="rc-title">Crédit EDEN</h3>
+      <p class="rc-desc">15€ de crédit utilisable sur n'importe quelle formule ou option. Valable 12 mois sur votre compte.</p>
+    </div>
+    <div class="reward-card featured rv d1">
+      <span class="rc-badge">Populaire</span>
+      <span class="rc-tag">À partir de 3 parrainages</span>
+      <div><span class="rc-amount">1</span><span class="rc-unit"> séance offerte</span></div>
+      <h3 class="rc-title">Formule Sérénité</h3>
+      <p class="rc-desc">3 parrainages = 45€ de crédit = 1 formule Sérénité offerte. Profitez d'une séance complète en cadeau de vos recommandations.</p>
+    </div>
+    <div class="reward-card rv d2">
+      <span class="rc-tag">À partir de 5 parrainages</span>
+      <div><span class="rc-amount">VIP</span></div>
+      <h3 class="rc-title">Statut Ambassadeur</h3>
+      <p class="rc-desc">Accès prioritaire aux réservations, invitation aux événements privés EDEN, et 20€ par parrainage au lieu de 15€. Sans limite.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Formulaire -->
+<section class="form-section" id="formulaire">
+  <div class="form-layout">
+    <div class="form-left rv">
+      <span class="section-eyebrow">Rejoindre le programme</span>
+      <h2 class="section-title" style="text-align:left;margin-bottom:16px">Obtenez votre<br><em>code parrainage</em></h2>
+      <p>En 30 secondes, recevez votre code unique à partager avec vos proches. Chaque parrainage confirmé vous rapporte automatiquement 15€ de crédit EDEN.</p>
+      <div class="form-perks">
+        <div class="perk">
+          <span class="perk-icon">✦</span>
+          <div class="perk-txt"><strong>Gratuit et sans engagement</strong> — Rejoignez le programme en quelques secondes, sans abonnement ni conditions cachées.</div>
+        </div>
+        <div class="perk">
+          <span class="perk-icon">◈</span>
+          <div class="perk-txt"><strong>Cumulable sans limite</strong> — Parrainez 1 ami ou 50, chaque parrainage réussi est récompensé au même tarif.</div>
+        </div>
+        <div class="perk">
+          <span class="perk-icon">❧</span>
+          <div class="perk-txt"><strong>Crédit valable 12 mois</strong> — Utilisez votre crédit quand vous voulez, sur toutes les formules et options EDEN.</div>
+        </div>
+        <div class="perk">
+          <span class="perk-icon">✧</span>
+          <div class="perk-txt"><strong>Vos filleuls aussi gagnent</strong> — −10% sur leur première séance grâce à votre code.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card rv d1">
+      <div class="form-title">Votre code parrainage</div>
+      <div class="form-sub">Gratuit · Instantané · Sans engagement</div>
+
+      <div class="ff"><label>Votre prénom *</label><input type="text" id="pPrenom" placeholder="Marie" required></div>
+      <div class="ff"><label>Votre nom *</label><input type="text" id="pNom" placeholder="Dupont" required></div>
+      <div class="ff"><label>Votre email *</label><input type="email" id="pEmail" placeholder="marie@email.fr" required></div>
+      <div class="ff">
+        <label>Vous êtes</label>
+        <select id="pStatut">
+          <option value="client">Déjà client EDEN</option>
+          <option value="nouveau">Nouveau visiteur</option>
+        </select>
+      </div>
+
+      <button class="btn-gold" onclick="genCode()">
+        <span id="btnGenTxt">Générer mon code →</span>
+      </button>
+
+      <div class="code-reveal" id="codeReveal">
+        <div class="cr-label">Votre code parrainage</div>
+        <div class="cr-code" id="genCode">EDEN-XXX</div>
+        <div class="cr-hint">Partagez ce code — vos filleuls bénéficient de −10%</div>
+        <button class="btn-copy" onclick="copyCode()">📋 Copier le code</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Témoignages -->
+<section class="testi-section">
+  <div class="section-head rv">
+    <span class="section-eyebrow">Ils parrainent</span>
+    <h2 class="section-title">Ce qu'ils <em>disent</em></h2>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card rv">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-q">« J'ai partagé mon code à 4 amis en une semaine. Trois ont réservé — ça m'a fait 45€ de crédit que j'ai utilisé pour une formule Équilibre. »</p>
+      <span class="testi-a">— Camille D., Ambassadrice EDEN</span>
+      <div class="testi-reward"><span class="testi-reward-badge">45€ gagnés</span>3 parrainages</div>
+    </div>
+    <div class="testi-card rv d1">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-q">« Mon code est dans ma bio Instagram depuis 2 mois. Je reçois régulièrement des notifications de crédit — sans rien faire. »</p>
+      <span class="testi-a">— Thomas R., membre depuis l'ouverture</span>
+      <div class="testi-reward"><span class="testi-reward-badge">120€ gagnés</span>8 parrainages</div>
+    </div>
+    <div class="testi-card rv d2">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-q">« Ma collègue m'a donné son code, j'ai eu −10% sur ma première séance. Depuis je suis venue 4 fois et j'ai aussi mon propre code à partager. »</p>
+      <span class="testi-a">— Sophie M., filleule devenue marraine</span>
+      <div class="testi-reward"><span class="testi-reward-badge">30€ gagnés</span>2 parrainages</div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+  <div class="section-head rv">
+    <span class="section-eyebrow">Questions fréquentes</span>
+    <h2 class="section-title">Tout ce que vous<br><em>souhaitez savoir</em></h2>
+  </div>
+  <div class="faq-grid rv">
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Le crédit expire-t-il ?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a"><p>Votre crédit EDEN est valable 12 mois à partir de la date d'attribution. Vous pouvez l'utiliser en une ou plusieurs fois sur toutes nos formules et options.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Y a-t-il une limite de parrainages ?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a"><p>Aucune limite ! Vous pouvez parrainer autant de personnes que vous le souhaitez. Chaque parrainage confirmé vous rapporte 15€ — ou 20€ si vous êtes Ambassadeur.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Mon filleul doit-il être un nouveau client ?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a"><p>Oui, le code parrainage est valable uniquement pour la première séance d'un nouveau client. Les réductions ne s'appliquent pas aux clients existants.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Comment utiliser mon crédit ?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a"><p>Mentionnez votre crédit lors de votre réservation ou à l'accueil. Notre équipe l'applique directement sur votre commande.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Comment devenir Ambassadeur ?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a"><p>Le statut Ambassadeur est attribué automatiquement dès votre 5ème parrainage confirmé. Vous recevrez alors une invitation personnalisée par email.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Puis-je cumuler avec d'autres offres ?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a"><p>Le crédit parrainage est cumulable avec les options à la carte et les extras. Il ne se cumule pas avec d'autres codes promo ou réductions exceptionnelles.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-title rv">Prêt à partager<br><em>l'expérience EDEN ?</em></h2>
+  <p class="cta-sub rv d1">Rejoignez le programme maintenant et commencez à accumuler du crédit dès votre premier parrainage.</p>
+  <div class="cta-btns rv d2">
+    <a href="#formulaire" class="btn-primary">Obtenir mon code parrainage</a>
+    <a href="reservation.html" class="btn-outline">Réserver une séance</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="fg">
+    <div><span class="flogo">EDEN</span><p class="fabout">Un sanctuaire dédié à votre bien-être. Ouvert 7j/7 de 8h à 22h.</p><span class="ftag">Récupération · Détente · Équilibre</span></div>
+    <div class="fc"><h5>Espaces</h5><ul><li><a href="/#experiences">Bain Nordique</a></li><li><a href="/#experiences">Sauna & Hammam</a></li><li><a href="/#experiences">Pressothérapie</a></li><li><a href="/#experiences">Fuel Bar</a></li></ul></div>
+    <div class="fc"><h5>Infos</h5><ul><li><a href="/#tarifs">Tarifs</a></li><li><a href="faq.html">FAQ</a></li>
+    <li><a href="parrainage.html" style="color:var(--gold)">Parrainage</a></li><li><a href="#">Carte Cadeau</a></li><li><a href="parrainage.html" style="color:var(--gold-light)">Parrainage</a></li></ul></div>
+    <div class="fc"><h5>Contact</h5><ul><li><a href="#">12 Rue du Bien-Être</a></li><li><a href="tel:+33100000000">01 00 00 00 00</a></li><li><a href="mailto:contact@eden-wellness.fr">contact@eden-wellness.fr</a></li></ul></div>
+  </div>
+  <div class="fbot"><span>© 2025 EDEN Wellness. Tous droits réservés.</span><div><a href="#">Mentions légales</a><a href="#">Confidentialité</a></div></div></footer>
+
+<script>
+/* Cursor */
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px';});
+(function l(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(l);})();
+document.querySelectorAll('a,button,.reward-card,.step,.testi-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hov'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hov'));
+});
+
+/* Scroll */
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('solid',scrollY>40);
+  document.getElementById('prog').style.width=(scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%';
+});
+
+/* Reveal */
+const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}}),{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+/* Générer code parrainage */
+function genCode(){
+  const prenom=document.getElementById('pPrenom').value.trim();
+  const email=document.getElementById('pEmail').value.trim();
+  if(!prenom||!email){
+    const btn=document.querySelector('.btn-gold');
+    btn.style.background='#c05030';
+    setTimeout(()=>btn.style.background='',1500);
+    return;
+  }
+  const btn=document.getElementById('btnGenTxt');
+  btn.textContent='Génération en cours…';
+  setTimeout(()=>{
+    const code='EDEN-'+prenom.toUpperCase().slice(0,3)+Math.floor(Math.random()*900+100);
+    document.getElementById('genCode').textContent=code;
+    document.getElementById('codeReveal').classList.add('show');
+    btn.textContent='Code généré ✓';
+  },800);
+}
+
+/* Copier code */
+function copyCode(){
+  const code=document.getElementById('genCode').textContent;
+  navigator.clipboard.writeText(code).catch(()=>{});
+  const btn=document.querySelector('.btn-copy');
+  btn.textContent='✓ Copié !';
+  btn.style.background='rgba(196,160,78,.15)';
+  setTimeout(()=>{btn.textContent='📋 Copier le code';btn.style.background='';},2000);
+}
+
+/* FAQ */
+function toggleFaq(btn){
+  const item=btn.closest('.faq-item');
+  const open=item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i=>{
+    i.classList.remove('open');
+    i.querySelector('.faq-icon').textContent='+';
+  });
+  if(!open){item.classList.add('open');btn.querySelector('.faq-icon').textContent='+';}
+}
+</script>
+<script>
+const edenBurger = document.querySelector(".eden-burger");
+const edenMenu = document.querySelector(".eden-menu");
+
+if(edenBurger && edenMenu){
+  edenBurger.addEventListener("click",()=>{
+    edenMenu.classList.toggle("open");
+  });
+}
+</script>
+
+<script>
+const edenBurgerParrainage = document.querySelector(".eden-burger");
+const edenMenuParrainage = document.querySelector(".eden-menu");
+
+if(edenBurgerParrainage && edenMenuParrainage){
+  edenBurgerParrainage.addEventListener("click",()=>{
+    edenMenuParrainage.classList.toggle("open");
+  });
+}
+</script>
+
+
+<!-- ══ COOKIE BANNER ══ -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9990;background:rgba(6,9,8,.97);border-top:1px solid rgba(196,160,78,.2);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px;backdrop-filter:blur(12px);">
+  <div style="flex:1">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.9;max-width:680px">🍪 Nous utilisons des cookies pour améliorer votre expérience et analyser notre trafic. En continuant, vous acceptez notre <a href="rgpd.html" style="color:#c4a04e;text-decoration:underline">politique de confidentialité</a>.</p>
+  </div>
+  <div style="display:flex;gap:10px;flex-shrink:0">
+    <button onclick="refuseCookies()" style="background:none;border:1px solid rgba(196,160,78,.25);color:#7a7a68;padding:9px 20px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s">Refuser</button>
+    <button onclick="acceptCookies()" style="background:#c4a04e;color:#060908;border:none;padding:9px 24px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-weight:400;transition:all .3s">Accepter</button>
+  </div>
+</div>
+
+<!-- ══ CHATBOT FLOTTANT ══ -->
+<div id="chatbot-btn" onclick="toggleChat()" style="position:fixed;bottom:28px;right:28px;z-index:9980;width:52px;height:52px;background:linear-gradient(135deg,#c4a04e,#dbbf78);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 32px rgba(196,160,78,.35);transition:transform .3s;font-size:20px;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">💬</div>
+<div id="chatbot-panel" style="display:none;position:fixed;bottom:92px;right:28px;z-index:9980;width:320px;background:#0c110a;border:1px solid rgba(196,160,78,.2);box-shadow:0 20px 60px rgba(0,0,0,.6);">
+  <div style="padding:16px 20px;background:linear-gradient(135deg,rgba(196,160,78,.15),rgba(196,160,78,.05));border-bottom:1px solid rgba(196,160,78,.12);display:flex;align-items:center;justify-content:space-between">
+    <div><p style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#f4efe5">EDEN · Assistance</p><p style="font-size:9px;color:#7a7a68;letter-spacing:1px">Réponse en moins de 2h · 7j/7</p></div>
+    <button onclick="toggleChat()" style="background:none;border:none;color:#7a7a68;font-size:18px;cursor:pointer">×</button>
+  </div>
+  <div style="padding:16px 20px">
+    <p style="font-size:11px;color:#b8b4a4;line-height:1.8;margin-bottom:14px">Bonjour ! Comment puis-je vous aider ?</p>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <a href="reservation.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#c4a04e;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Réserver une séance</a>
+      <a href="faq.html" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Consulter la FAQ</a>
+      <a href="tel:+33100000000" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Appeler le 01 00 00 00 00</a>
+      <a href="mailto:contact@eden-wellness.fr" style="display:block;padding:10px 14px;border:1px solid rgba(196,160,78,.15);color:#b8b4a4;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(196,160,78,.06)'" onmouseout="this.style.background='none'">→ Envoyer un email</a>
+    </div>
+    <p style="font-size:9px;color:#7a7a68;margin-top:14px;text-align:center">Ouvert 7j/7 · 8h–22h</p>
+  </div>
+</div>
+
+<script>
+// Cookie banner
+(function(){
+  if(!localStorage.getItem('eden_cookies')){
+    var b=document.getElementById('cookie-banner');
+    if(b){b.style.display='flex';setTimeout(function(){b.style.display='flex';},100);}
+  }
+})();
+function acceptCookies(){localStorage.setItem('eden_cookies','accepted');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function refuseCookies(){localStorage.setItem('eden_cookies','refused');var b=document.getElementById('cookie-banner');if(b)b.style.display='none';}
+function toggleChat(){var p=document.getElementById('chatbot-panel');if(p)p.style.display=p.style.display==='none'?'block':'none';}
+</script>
+
+</body>
+</html>

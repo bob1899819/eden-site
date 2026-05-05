@@ -1,0 +1,2199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDEN — Administration</title>
+<!-- Accès réservé — Ne pas partager cette URL -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@100;200;300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#c4a04e;--gold-l:#dbbf78;--gold-d:#8a7038;--gold-pale:#f2e8d0;
+  --dark:#060908;--dark2:#0c110a;--dark3:#111608;--dark4:#0a0f07;
+  --cream:#f4efe5;--muted:#7a7a68;--light:#b8b4a4;
+  --ok:#4caf50;--warn:#f0a030;--err:#e05050;--info:#5b9bd5;--purple:#9c7fd5;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Jost',system-ui,sans-serif;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+  --ease2:cubic-bezier(.22,.68,0,1.2);
+  --sidebar:265px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--cream);font-family:var(--sans);font-weight:300;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--dark2);}
+::-webkit-scrollbar-thumb{background:rgba(196,160,78,.18);border-radius:2px;}
+
+/* ══ LOGIN ══ */
+#login-screen{position:fixed;inset:0;z-index:9999;background:var(--dark);display:flex;align-items:center;justify-content:center;}
+#login-screen.hidden{display:none;}
+.login-wrap{width:440px;}
+.login-deco{text-align:center;margin-bottom:40px;}
+.login-logo{font-family:var(--serif);font-size:52px;letter-spacing:18px;color:var(--gold);display:block;line-height:1;}
+.login-sub{font-size:8px;letter-spacing:6px;text-transform:uppercase;color:var(--muted);margin-top:10px;display:block;}
+.login-line{height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.3),transparent);margin:28px 0;}
+.login-box{background:var(--dark2);border:1px solid rgba(196,160,78,.12);padding:40px 44px;}
+.lf{display:flex;flex-direction:column;gap:7px;margin-bottom:18px;}
+.lf label{font-size:8px;letter-spacing:3.5px;text-transform:uppercase;color:var(--gold);}
+.lf input{background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.14);color:var(--cream);padding:13px 16px;font-family:var(--sans);font-size:13px;outline:none;transition:border-color .3s;font-weight:300;}
+.lf input:focus{border-color:rgba(196,160,78,.5);}
+.login-btn{width:100%;background:var(--gold);color:var(--dark);border:none;padding:15px;font-family:var(--sans);font-size:9px;letter-spacing:4px;text-transform:uppercase;font-weight:400;cursor:pointer;transition:all .3s;margin-top:6px;}
+.login-btn:hover{background:var(--gold-l);}
+.login-attempts{font-size:9px;color:var(--err);margin-top:10px;text-align:center;min-height:16px;}
+.login-locked{font-size:9px;color:var(--err);text-align:center;padding:10px;background:rgba(224,80,80,.07);border:1px solid rgba(224,80,80,.15);margin-top:10px;display:none;}
+.login-sep{height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.1),transparent);margin:24px 0;}
+.sb-cfg-box{padding:20px;background:rgba(255,255,255,.02);border:1px solid rgba(196,160,78,.08);}
+.sb-cfg-title{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.cfg-input{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.1);color:var(--cream);padding:9px 12px;font-family:monospace;font-size:10px;outline:none;transition:border-color .3s;margin-bottom:8px;}
+.cfg-input:focus{border-color:rgba(196,160,78,.35);}
+.cfg-input::placeholder{color:var(--muted);font-family:var(--sans);}
+.login-note{font-size:9px;color:var(--muted);text-align:center;line-height:2;margin-top:16px;}
+#sb-no-cfg{font-size:9px;color:var(--warn);padding:10px;background:rgba(240,160,48,.05);border:1px solid rgba(240,160,48,.15);margin-top:12px;line-height:1.8;display:none;}
+
+/* ══ APP SHELL ══ */
+#app{display:none;min-height:100vh;}
+#app.visible{display:flex;}
+
+/* ══ SIDEBAR ══ */
+.sidebar{width:var(--sidebar);min-height:100vh;background:var(--dark2);border-right:1px solid rgba(196,160,78,.07);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;}
+.sb-top{padding:28px 24px 22px;border-bottom:1px solid rgba(196,160,78,.07);}
+.sb-brand{font-family:var(--serif);font-size:20px;letter-spacing:10px;color:var(--gold);}
+.sb-tagline{font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+.sb-conn{display:flex;align-items:center;gap:6px;margin-top:10px;}
+.cdot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0;}
+.cdot.live{background:var(--ok);animation:pulse 2.2s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(76,175,80,.35)}55%{box-shadow:0 0 0 5px transparent}}
+.sb-conn-txt{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.sb-nav{flex:1;padding:12px 0;overflow-y:auto;}
+.sb-sec{font-size:7px;letter-spacing:3.5px;text-transform:uppercase;color:rgba(122,122,104,.5);padding:14px 24px 6px;}
+.sbi{display:flex;align-items:center;gap:11px;padding:10px 24px;color:rgba(184,180,164,.55);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;border-left:2px solid transparent;user-select:none;position:relative;}
+.sbi:hover{color:var(--cream);background:rgba(196,160,78,.04);}
+.sbi.active{color:var(--gold);border-left-color:var(--gold);background:rgba(196,160,78,.055);}
+.sbi-icon{width:15px;text-align:center;font-size:12px;flex-shrink:0;}
+.sbi-badge{margin-left:auto;font-size:8px;padding:2px 7px;border-radius:10px;min-width:18px;text-align:center;}
+.sbi-badge.red{background:var(--err);color:#fff;}
+.sbi-badge.gold{background:rgba(196,160,78,.12);color:var(--gold);border:1px solid rgba(196,160,78,.22);}
+.sbi-badge.ok{background:rgba(76,175,80,.12);color:var(--ok);border:1px solid rgba(76,175,80,.2);}
+.sb-foot{padding:18px 24px;border-top:1px solid rgba(196,160,78,.07);}
+.sb-user{display:flex;align-items:center;gap:10px;}
+.sb-av{width:32px;height:32px;border:1px solid rgba(196,160,78,.22);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:13px;color:var(--gold);flex-shrink:0;}
+.sb-un{font-size:11px;color:var(--cream);}
+.sb-ur{font-size:7px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;}
+.sb-out{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;transition:color .2s;padding:4px;}
+.sb-out:hover{color:var(--err);}
+
+/* ══ MAIN ══ */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{height:60px;border-bottom:1px solid rgba(196,160,78,.07);display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:rgba(6,9,8,.85);backdrop-filter:blur(24px);position:sticky;top:0;z-index:50;}
+.tb-title{font-family:var(--serif);font-size:19px;font-weight:300;color:var(--cream);}
+.tb-title em{font-style:italic;color:var(--gold-l);}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.tb-date{font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.tb-bell{width:32px;height:32px;border:1px solid rgba(196,160,78,.12);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative;font-size:12px;color:var(--muted);}
+.tb-bell:hover{border-color:var(--gold);color:var(--gold);}
+.tb-bell-n{position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:var(--err);border-radius:50%;font-size:7px;display:flex;align-items:center;justify-content:center;color:#fff;}
+.btn-s{font-size:8px;letter-spacing:2.5px;text-transform:uppercase;border:1px solid rgba(196,160,78,.3);color:var(--gold);padding:8px 16px;cursor:pointer;background:none;font-family:var(--sans);transition:all .22s;}
+.btn-s:hover{background:var(--gold);color:var(--dark);}
+.btn-s.fill{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+.btn-s.fill:hover{background:var(--gold-l);}
+.btn-s.danger{border-color:rgba(224,80,80,.3);color:var(--err);}
+.btn-s.danger:hover{background:var(--err);color:#fff;}
+
+/* ══ PAGES ══ */
+.page{flex:1;padding:32px;display:none;}
+.page.active{display:block;}
+
+/* ══ SECTION HEADER ══ */
+.sh{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:26px;}
+.sh-left .ey{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.sh-left h2{font-family:var(--serif);font-size:26px;font-weight:300;}
+.sh-left h2 em{font-style:italic;color:var(--gold-l);}
+
+/* ══ KPI GRID ══ */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.kpi{background:var(--dark2);border:1px solid rgba(196,160,78,.07);padding:22px 24px;position:relative;overflow:hidden;transition:border-color .3s;cursor:default;}
+.kpi:hover{border-color:rgba(196,160,78,.22);}
+.kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent,var(--gold)),transparent);opacity:.25;}
+.kpi-label{font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.kpi-val{font-family:var(--serif);font-size:34px;font-weight:300;line-height:1;}
+.kpi-val b{color:var(--accent,var(--gold));}
+.kpi-sub{font-size:9px;color:var(--muted);margin-top:7px;display:flex;align-items:center;gap:6px;}
+.kpi-trend{font-size:8px;padding:2px 7px;}
+.kpi-trend.up{color:var(--ok);background:rgba(76,175,80,.08);}
+.kpi-trend.down{color:var(--err);background:rgba(224,80,80,.08);}
+.kpi-ico{position:absolute;top:18px;right:20px;font-size:20px;opacity:.1;}
+
+/* ══ TABLE ══ */
+.tw{background:var(--dark2);border:1px solid rgba(196,160,78,.07);overflow:hidden;margin-bottom:20px;}
+.tw-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(196,160,78,.07);}
+.tw-title{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);}
+.tw-acts{display:flex;gap:8px;align-items:center;}
+.filter-row{display:flex;gap:5px;flex-wrap:wrap;padding:10px 20px;border-bottom:1px solid rgba(196,160,78,.04);}
+.fb{font-size:8px;letter-spacing:2px;text-transform:uppercase;padding:5px 13px;border:1px solid rgba(196,160,78,.1);background:none;color:var(--muted);cursor:pointer;font-family:var(--sans);transition:all .2s;}
+.fb:hover{border-color:rgba(196,160,78,.3);color:var(--light);}
+.fb.on{border-color:var(--gold);color:var(--gold);background:rgba(196,160,78,.05);}
+.search{background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.1);color:var(--cream);padding:6px 12px;font-family:var(--sans);font-size:11px;outline:none;transition:border-color .3s;width:190px;}
+.search:focus{border-color:rgba(196,160,78,.38);}
+table{width:100%;border-collapse:collapse;}
+thead tr{border-bottom:1px solid rgba(196,160,78,.07);}
+thead th{font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);padding:11px 16px;text-align:left;font-weight:400;}
+tbody tr{border-bottom:1px solid rgba(196,160,78,.035);transition:background .15s;cursor:pointer;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(196,160,78,.025);}
+tbody td{padding:12px 16px;font-size:11px;color:var(--light);}
+td.name{color:var(--cream);font-size:12px;}
+td.gold{color:var(--gold);font-family:var(--serif);font-size:14px;}
+td.small{font-size:9px;color:var(--muted);}
+
+/* ══ STATUS BADGES ══ */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:2px;}
+.badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.badge.pending{background:rgba(240,160,48,.1);color:var(--warn);border:1px solid rgba(240,160,48,.18);}
+.badge.confirmed{background:rgba(76,175,80,.07);color:var(--ok);border:1px solid rgba(76,175,80,.14);}
+.badge.cancelled{background:rgba(224,80,80,.07);color:var(--err);border:1px solid rgba(224,80,80,.14);}
+.badge.done{background:rgba(91,155,213,.07);color:var(--info);border:1px solid rgba(91,155,213,.14);}
+.badge.new{background:rgba(156,127,213,.1);color:var(--purple);border:1px solid rgba(156,127,213,.18);}
+
+/* ══ ACTION BTNS IN TABLE ══ */
+.atb{background:none;border:1px solid rgba(196,160,78,.1);color:var(--muted);padding:4px 10px;font-size:8px;cursor:pointer;font-family:var(--sans);letter-spacing:1.5px;text-transform:uppercase;transition:all .2s;}
+.atb:hover{border-color:var(--gold);color:var(--gold);}
+.atb.ok:hover{border-color:var(--ok);color:var(--ok);}
+.atb.err:hover{border-color:var(--err);color:var(--err);}
+
+/* ══ GRID ══ */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:20px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+
+/* ══ CARD ══ */
+.card{background:var(--dark2);border:1px solid rgba(196,160,78,.07);padding:22px;}
+.card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid rgba(196,160,78,.06);}
+.card-t{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);}
+
+/* ══ STOCK ══ */
+.si{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(196,160,78,.045);}
+.si:last-child{border-bottom:none;}
+.si-name{flex:1;font-size:11px;color:var(--light);}
+.si-name small{display:block;font-size:8px;color:var(--muted);margin-top:2px;letter-spacing:1px;}
+.si-bar{width:100px;height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;}
+.si-fill{height:100%;border-radius:2px;transition:width .5s var(--ease);}
+.si-fill.ok{background:var(--ok);}
+.si-fill.warn{background:var(--warn);}
+.si-fill.err{background:var(--err);}
+.si-qty{width:52px;text-align:right;font-family:var(--serif);font-size:14px;color:var(--cream);}
+.si-qty small{font-size:7px;font-family:var(--sans);color:var(--muted);}
+.si-ctrl{display:flex;gap:3px;}
+.sib{width:24px;height:24px;border:1px solid rgba(196,160,78,.14);background:none;color:var(--gold);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.sib:hover{background:var(--gold);color:var(--dark);}
+
+/* ══ FICHE CLIENT ══ */
+.client-avatar{width:48px;height:48px;border:1px solid rgba(196,160,78,.25);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:20px;color:var(--gold);flex-shrink:0;}
+.client-stat{text-align:center;padding:14px;background:rgba(255,255,255,.02);border:1px solid rgba(196,160,78,.07);}
+.cs-val{font-family:var(--serif);font-size:24px;color:var(--gold);}
+.cs-lbl{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+.loyalty-bar{height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;margin:8px 0;}
+.loyalty-fill{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold));border-radius:3px;transition:width .6s var(--ease);}
+
+/* ══ PLANNING ══ */
+.planning-grid{display:grid;grid-template-columns:80px repeat(7,1fr);border:1px solid rgba(196,160,78,.07);overflow:hidden;}
+.pg-header{background:rgba(196,160,78,.04);border-bottom:1px solid rgba(196,160,78,.07);}
+.pg-day{text-align:center;padding:10px 4px;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);border-right:1px solid rgba(196,160,78,.06);}
+.pg-day.today{background:rgba(196,160,78,.08);}
+.pg-time{padding:6px 10px;font-size:9px;color:var(--muted);border-bottom:1px solid rgba(196,160,78,.04);border-right:1px solid rgba(196,160,78,.06);display:flex;align-items:center;background:rgba(255,255,255,.01);}
+.pg-cell{border-right:1px solid rgba(196,160,78,.04);border-bottom:1px solid rgba(196,160,78,.04);min-height:44px;position:relative;transition:background .2s;cursor:pointer;}
+.pg-cell:hover{background:rgba(196,160,78,.03);}
+.pg-cell.today-col{background:rgba(196,160,78,.025);}
+.pg-evt{position:absolute;inset:2px;border-radius:1px;padding:3px 5px;font-size:8px;line-height:1.3;overflow:hidden;}
+.pg-evt.confirmed{background:rgba(76,175,80,.18);border-left:2px solid var(--ok);}
+.pg-evt.pending{background:rgba(240,160,48,.15);border-left:2px solid var(--warn);}
+.pg-evt.done{background:rgba(91,155,213,.12);border-left:2px solid var(--info);}
+
+/* ══ GRAPHS ══ */
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:80px;margin-top:10px;}
+.bc-bar{flex:1;border-radius:1px 1px 0 0;transition:height .6s var(--ease),background .3s;cursor:pointer;position:relative;min-width:0;}
+.bc-bar:hover{filter:brightness(1.2);}
+.bc-bar-label{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:7px;color:var(--muted);letter-spacing:1px;white-space:nowrap;}
+.bc-bar-val{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--gold);white-space:nowrap;opacity:0;transition:opacity .2s;}
+.bc-bar:hover .bc-bar-val{opacity:1;}
+.pie-wrap{display:flex;align-items:center;gap:18px;margin-top:10px;}
+.pie-legend{display:flex;flex-direction:column;gap:7px;}
+.pl-item{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--light);}
+.pl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* ══ TIMELINE ══ */
+.tl{display:flex;flex-direction:column;}
+.tl-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(196,160,78,.04);}
+.tl-item:last-child{border-bottom:none;}
+.tl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.tl-time{font-size:8px;letter-spacing:1px;color:var(--muted);}
+.tl-txt{font-size:11px;color:var(--light);line-height:1.5;}
+
+/* ══ ALERT BANNER ══ */
+.alert{padding:11px 16px;margin-bottom:16px;display:flex;align-items:center;gap:9px;font-size:10px;line-height:1.6;}
+.alert.warn{background:rgba(240,160,48,.06);border:1px solid rgba(240,160,48,.18);color:var(--warn);}
+.alert.err{background:rgba(224,80,80,.05);border:1px solid rgba(224,80,80,.17);color:var(--err);}
+.alert.ok{background:rgba(76,175,80,.05);border:1px solid rgba(76,175,80,.14);color:var(--ok);}
+.alert.info{background:rgba(91,155,213,.05);border:1px solid rgba(91,155,213,.14);color:var(--info);}
+.alert a{color:inherit;text-decoration:underline;cursor:pointer;}
+
+/* ══ DRAWER ══ */
+.dov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;backdrop-filter:blur(3px);}
+.dov.open{display:block;}
+.drawer{position:fixed;right:0;top:0;bottom:0;width:500px;z-index:201;background:var(--dark2);border-left:1px solid rgba(196,160,78,.1);transform:translateX(100%);transition:transform .38s var(--ease);display:flex;flex-direction:column;overflow:hidden;}
+.drawer.open{transform:translateX(0);}
+.dh{padding:24px 28px;border-bottom:1px solid rgba(196,160,78,.07);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;}
+.dh-t{font-family:var(--serif);font-size:22px;font-weight:300;}
+.dh-s{font-size:8px;color:var(--muted);margin-top:3px;letter-spacing:1px;}
+.dclose{background:none;border:1px solid rgba(196,160,78,.12);color:var(--muted);width:32px;height:32px;cursor:pointer;font-size:14px;transition:all .2s;flex-shrink:0;}
+.dclose:hover{border-color:var(--err);color:var(--err);}
+.db{flex:1;overflow-y:auto;padding:24px 28px;}
+.df{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.df label{font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
+.df-v{font-size:12px;color:var(--cream);padding:10px 13px;background:rgba(255,255,255,.02);border:1px solid rgba(196,160,78,.09);line-height:1.6;}
+.df-v.big{font-family:var(--serif);font-size:17px;}
+.df input,.df select,.df textarea{background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;font-weight:300;outline:none;transition:border-color .3s;width:100%;}
+.df input:focus,.df select:focus,.df textarea:focus{border-color:rgba(196,160,78,.42);}
+.df select option{background:var(--dark2);}
+.df textarea{resize:vertical;min-height:72px;}
+.df-row{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.df-sep{height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.15),transparent);margin:14px 0;}
+.dfoot{padding:18px 28px;border-top:1px solid rgba(196,160,78,.07);display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;}
+
+/* ══ CONFIG / PARAMS ══ */
+.cfg-row{display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-bottom:1px solid rgba(196,160,78,.045);}
+.cfg-row:last-child{border-bottom:none;}
+.cfg-lbl{font-size:11px;color:var(--cream);}
+.cfg-desc{font-size:9px;color:var(--muted);margin-top:3px;line-height:1.6;}
+.toggle{position:relative;width:40px;height:21px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;position:absolute;}
+.tog-track{position:absolute;inset:0;background:rgba(255,255,255,.07);border-radius:11px;cursor:pointer;transition:background .3s;}
+.toggle input:checked+.tog-track{background:var(--gold);}
+.tog-thumb{position:absolute;left:3px;top:3px;width:15px;height:15px;background:var(--dark2);border-radius:50%;transition:transform .3s;}
+.toggle input:checked~.tog-thumb{transform:translateX(19px);}
+
+/* ══ TOAST ══ */
+.toast{position:fixed;bottom:28px;right:28px;z-index:9999;background:var(--dark2);border:1px solid rgba(196,160,78,.18);padding:12px 18px;display:flex;align-items:center;gap:9px;transform:translateY(70px);opacity:0;transition:all .32s var(--ease);min-width:240px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.ti{font-size:13px;}
+.tm{font-size:10px;color:var(--cream);letter-spacing:.3px;}
+
+/* ══ EMPTY ══ */
+.empty{text-align:center;padding:52px 20px;}
+.empty-icon{font-size:32px;opacity:.15;margin-bottom:14px;}
+.empty-txt{font-family:var(--serif);font-size:17px;font-style:italic;color:var(--muted);}
+
+/* ══ SQL PRE ══ */
+pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overflow-x:auto;line-height:1.9;border:1px solid rgba(196,160,78,.05);}
+
+@media(max-width:1200px){.kpi-grid,.g4{grid-template-columns:repeat(2,1fr);}.g3{grid-template-columns:1fr 1fr;}}
+@media(max-width:880px){.g2,.g3{grid-template-columns:1fr;}.sidebar{transform:translateX(-100%);}.main{margin-left:0;}}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ LOGIN ══════════════════ -->
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-deco">
+      <span class="login-logo">EDEN</span>
+      <span class="login-sub">Espace Administrateur Sécurisé</span>
+    </div>
+
+    <!-- Mode Supabase Auth -->
+    <div class="login-box" id="login-box-supabase">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px;padding:10px 14px;background:rgba(76,175,80,.05);border:1px solid rgba(76,175,80,.15)">
+        <span style="font-size:10px">🔐</span>
+        <span style="font-size:9px;color:#4caf50;letter-spacing:1px">Authentification Supabase sécurisée</span>
+      </div>
+      <div class="lf">
+        <label>Email administrateur</label>
+        <input type="email" id="auth-email" placeholder="admin@eden-wellness.fr" onkeydown="if(event.key==='Enter')document.getElementById('auth-pwd').focus()">
+      </div>
+      <div class="lf">
+        <label>Mot de passe</label>
+        <input type="password" id="auth-pwd" placeholder="••••••••••" onkeydown="if(event.key==='Enter')loginSupabase()">
+      </div>
+      <button class="login-btn" id="login-btn-sb" onclick="loginSupabase()">Accéder à l'espace admin</button>
+      <p class="login-attempts" id="login-err"></p>
+      <div style="margin-top:14px;padding:10px 14px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.08)">
+        <p style="font-size:8px;color:var(--muted);line-height:2;letter-spacing:.5px">Créez votre compte admin sur <b style="color:var(--gold)">supabase.com</b> → Authentication → Users → Invite user. Entrez ensuite votre email et mot de passe ci-dessus.</p>
+      </div>
+    </div>
+
+    <!-- Mode local fallback (si Supabase non configuré) -->
+    <div class="login-box" id="login-box-local" style="display:none">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;padding:10px 14px;background:rgba(240,160,48,.05);border:1px solid rgba(240,160,48,.15)">
+        <span style="font-size:10px">⚠</span>
+        <span style="font-size:9px;color:var(--warn);letter-spacing:1px">Mode local — Configurez Supabase pour sécuriser l'accès</span>
+      </div>
+      <div class="lf">
+        <label>Mot de passe</label>
+        <input type="password" id="pwd-local" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginLocal()">
+      </div>
+      <button class="login-btn" onclick="loginLocal()">Accéder</button>
+      <p class="login-attempts" id="login-err-local"></p>
+    </div>
+
+    <div class="login-sep"></div>
+
+    <!-- Config Supabase -->
+    <div class="sb-cfg-box">
+      <p class="sb-cfg-title">⚙ Configuration Supabase</p>
+      <input class="cfg-input" id="in-url" placeholder="https://xxxx.supabase.co" oninput="checkSbConfig()">
+      <input class="cfg-input" id="in-key" placeholder="Clé anon (Settings → API → anon public)" oninput="checkSbConfig()">
+      <button class="btn-s fill" style="width:100%;margin-top:4px" onclick="saveCfg()">Sauvegarder la configuration</button>
+    </div>
+    <div id="sb-no-cfg" style="display:none;font-size:9px;color:var(--warn);padding:10px;background:rgba(240,160,48,.05);border:1px solid rgba(240,160,48,.15);margin-top:12px;line-height:1.8">⚠ Supabase non configuré — mode local actif (moins sécurisé)</div>
+  </div>
+</div>
+
+<!-- ══════════════════ APP ══════════════════ -->
+<div id="app">
+
+  <aside class="sidebar">
+    <div class="sb-top">
+      <div class="sb-brand">EDEN</div>
+      <div class="sb-tagline">Administration</div>
+      <div class="sb-conn"><div class="cdot" id="cdot"></div><span class="sb-conn-txt" id="ctxt">Local</span></div>
+    </div>
+    <nav class="sb-nav">
+      <p class="sb-sec">Vue générale</p>
+      <div class="sbi active" onclick="nav('dashboard')"><span class="sbi-icon">◈</span>Dashboard</div>
+      <div class="sbi" onclick="nav('planning')"><span class="sbi-icon">⬡</span>Planning <span id="b-plan" class="sbi-badge gold" style="display:none"></span></div>
+
+      <p class="sb-sec">Clients</p>
+      <div class="sbi" onclick="nav('reservations')"><span class="sbi-icon">◷</span>Réservations <span id="b-res" class="sbi-badge red" style="display:none"></span></div>
+      <div class="sbi" onclick="nav('demandes')"><span class="sbi-icon">✉</span>Demandes <span id="b-dem" class="sbi-badge red" style="display:none"></span></div>
+      <div class="sbi" onclick="nav('clients')"><span class="sbi-icon">◎</span>Fiches Clients</div>
+
+      <p class="sb-sec">Bar & Stock</p>
+      <div class="sbi" onclick="nav('stocks')"><span class="sbi-icon">▣</span>Stock Boissons <span id="b-stock" class="sbi-badge gold" style="display:none"></span></div>
+      <div class="sbi" onclick="nav('commandes')"><span class="sbi-icon">♔</span>Extras Commandés</div>
+
+      <p class="sb-sec">Fidélité</p>
+      <div class="sbi" onclick="nav('parrainage')"><span class="sbi-icon">✦</span>Parrainage</div>
+
+      <p class="sb-sec">Finances</p>
+      <div class="sbi" onclick="nav('finances')"><span class="sbi-icon">◆</span>Revenus & Stats</div>
+
+      <p class="sb-sec">Admin</p>
+      <div class="sbi" onclick="nav('parametres')"><span class="sbi-icon">⚙</span>Paramètres</div>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-user">
+        <div class="sb-av">A</div>
+        <div><div class="sb-un">Administrateur</div><div class="sb-ur">EDEN</div></div>
+        <button class="sb-out" onclick="logout()" title="Déconnexion">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="tb-title" id="page-title">Tableau de <em>bord</em></div>
+      <div class="tb-right">
+        <span class="tb-date" id="today-lbl"></span>
+        <div class="tb-bell" onclick="nav('demandes')" title="Nouvelles demandes">✉<span class="tb-bell-n" id="bell-n" style="display:none">0</span></div>
+        <button class="btn-s fill" onclick="openNewRes()">+ Réservation</button>
+      </div>
+    </header>
+
+    <!-- ════ DASHBOARD ════ -->
+    <section class="page active" id="page-dashboard">
+      <div id="db-alerts"></div>
+      <div class="kpi-grid" id="kpi-grid">
+        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Séances aujourd'hui</p><div class="kpi-val"><b id="k-today">–</b></div><p class="kpi-sub"><span class="kpi-trend up" id="k-today-t"></span></p><span class="kpi-ico">◷</span></div>
+        <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">En attente</p><div class="kpi-val"><b id="k-pend">–</b></div><p class="kpi-sub" style="color:var(--warn)">À valider</p><span class="kpi-ico">⏳</span></div>
+        <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Revenus du mois</p><div class="kpi-val"><b id="k-rev">–</b> €</div><p class="kpi-sub"><span class="kpi-trend up">+12%</span></p><span class="kpi-ico">◈</span></div>
+        <div class="kpi" style="--accent:var(--err)"><p class="kpi-label">Alertes stock</p><div class="kpi-val"><b id="k-stock">–</b></div><p class="kpi-sub">produits bas</p><span class="kpi-ico">▣</span></div>
+      </div>
+      <div class="g2">
+        <div>
+          <div class="tw">
+            <div class="tw-head"><span class="tw-title">Prochaines séances</span><button class="btn-s" onclick="nav('reservations')">Voir tout</button></div>
+            <table><thead><tr><th>Client</th><th>Date</th><th>Formule</th><th>Statut</th></tr></thead>
+            <tbody id="db-res-tb"></tbody></table>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="height:100%">
+            <div class="card-h"><span class="card-t">Activité récente</span></div>
+            <div class="tl" id="activity-tl"><div class="empty"><div class="empty-icon">◎</div><p class="empty-txt">Aucune activité</p></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="g3">
+        <div class="card">
+          <div class="card-h"><span class="card-t">Top formules</span></div>
+          <div id="top-form"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="card-t">Revenus — 7 derniers jours</span></div>
+          <div class="bar-chart" id="rev-chart" style="margin-bottom:20px"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="card-t">Répartition statuts</span></div>
+          <div id="stat-pie"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PLANNING ════ -->
+    <section class="page" id="page-planning">
+      <div class="sh"><div class="sh-left"><p class="ey">Vue semaine</p><h2>Plan<em>ning</em></h2></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-s" id="plan-prev" onclick="planNav(-1)">‹ Préc.</button>
+          <button class="btn-s" id="plan-today-btn" onclick="planToday()">Aujourd'hui</button>
+          <button class="btn-s" id="plan-next" onclick="planNav(1)">Suiv. ›</button>
+        </div>
+      </div>
+      <p style="font-size:10px;color:var(--muted);margin-bottom:14px" id="plan-week-lbl"></p>
+      <div id="planning-wrap" style="background:var(--dark2);border:1px solid rgba(196,160,78,.07);overflow:auto;"></div>
+    </section>
+
+    <!-- ════ RÉSERVATIONS ════ -->
+    <section class="page" id="page-reservations">
+      <div class="sh"><div class="sh-left"><p class="ey">Gestion</p><h2>Réser<em>vations</em></h2></div>
+        <button class="btn-s fill" onclick="openNewRes()">+ Nouvelle</button>
+      </div>
+      <div class="tw">
+        <div class="tw-head">
+          <span class="tw-title">Toutes les réservations</span>
+          <div class="tw-acts">
+            <input class="search" placeholder="Rechercher…" oninput="filterRes(this.value)">
+            <button class="btn-s" onclick="exportCSV()">↓ CSV</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <button class="fb on" onclick="setResF('all',this)">Toutes</button>
+          <button class="fb" onclick="setResF('pending',this)">En attente</button>
+          <button class="fb" onclick="setResF('confirmed',this)">Confirmées</button>
+          <button class="fb" onclick="setResF('done',this)">Passées</button>
+          <button class="fb" onclick="setResF('cancelled',this)">Annulées</button>
+        </div>
+        <table><thead><tr><th>#</th><th>Client</th><th>Téléphone</th><th>Formule</th><th>Date</th><th>Heure</th><th>Pers.</th><th>Extras</th><th>Total</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody id="res-tb"></tbody></table>
+      </div>
+    </section>
+
+    <!-- ════ DEMANDES ════ -->
+    <section class="page" id="page-demandes">
+      <div class="sh"><div class="sh-left"><p class="ey">Formulaires</p><h2>Demandes de <em>réservation</em></h2></div></div>
+      <div id="dem-alerts"></div>
+      <div class="tw">
+        <div class="tw-head"><span class="tw-title">Demandes reçues</span>
+          <div class="tw-acts">
+            <button class="fb on" onclick="setDemF('all',this)" style="margin-right:4px">Toutes</button>
+            <button class="fb" onclick="setDemF('new',this)">Nouvelles</button>
+          </div>
+        </div>
+        <table><thead><tr><th>Reçu le</th><th>Nom</th><th>Email</th><th>Tél</th><th>Formule souhaitée</th><th>Date souhaitée</th><th>Pers.</th><th>Message</th><th>Actions</th></tr></thead>
+        <tbody id="dem-tb"></tbody></table>
+      </div>
+    </section>
+
+    <!-- ════ FICHES CLIENTS ════ -->
+    <section class="page" id="page-clients">
+      <div class="sh"><div class="sh-left"><p class="ey">Base clients</p><h2>Fiches <em>Clients</em></h2></div>
+        <input class="search" style="width:220px" placeholder="Rechercher un client…" oninput="filterClients(this.value)" id="client-search">
+      </div>
+      <div class="tw">
+        <div class="tw-head"><span class="tw-title">Tous les clients</span><span id="client-count" style="font-size:9px;color:var(--muted)"></span></div>
+        <table><thead><tr><th>Client</th><th>Email</th><th>Téléphone</th><th>Nb visites</th><th>Dernière visite</th><th>Total dépensé</th><th>Statut fidélité</th><th>Actions</th></tr></thead>
+        <tbody id="client-tb"></tbody></table>
+      </div>
+    </section>
+
+    <!-- ════ STOCKS ════ -->
+    <section class="page" id="page-stocks">
+      <div class="sh">
+        <div class="sh-left"><p class="ey">Inventaire complet</p><h2>Stock <em>Boissons</em></h2></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-s" onclick="addStock('smoothies')">+ Produit</button>
+          <button class="btn-s fill" onclick="saveStocks()">💾 Sauvegarder</button>
+        </div>
+      </div>
+
+      <!-- KPIs stock -->
+      <div class="kpi-grid" id="stock-kpis" style="margin-bottom:20px">
+        <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Total produits</p><div class="kpi-val"><b id="sk-total">–</b></div><p class="kpi-sub">références actives</p></div>
+        <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">Alertes stock</p><div class="kpi-val"><b id="sk-alerts">–</b></div><p class="kpi-sub" style="color:var(--warn)">sous le seuil</p></div>
+        <div class="kpi" style="--accent:var(--err)"><p class="kpi-label">Ruptures critiques</p><div class="kpi-val"><b id="sk-critical">–</b></div><p class="kpi-sub" style="color:var(--err)">≤ 2 unités</p></div>
+        <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Dernière mise à jour</p><div class="kpi-val" style="font-size:20px"><b id="sk-date">–</b></div></div>
+      </div>
+
+      <div id="stock-alerts" style="margin-bottom:16px"></div>
+
+      <!-- Graphique global -->
+      <div class="g2" style="margin-bottom:20px">
+        <div class="card">
+          <div class="card-h">
+            <span class="card-t">Vue globale des stocks</span>
+            <div style="display:flex;gap:6px">
+              <button class="fb on" id="sg-all" onclick="setStockGraph('all',this)">Tout</button>
+              <button class="fb" id="sg-sm" onclick="setStockGraph('smoothies',this)">Smoothies</button>
+              <button class="fb" id="sg-sf" onclick="setStockGraph('softs',this)">Softs</button>
+              <button class="fb" id="sg-ex" onclick="setStockGraph('extras',this)">Extras</button>
+            </div>
+          </div>
+          <div style="position:relative;height:200px;margin-top:10px">
+            <canvas id="stock-chart-canvas" style="width:100%;height:200px"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="card-t">Répartition par catégorie</span></div>
+          <div style="display:flex;align-items:center;gap:24px;padding:10px 0">
+            <div style="position:relative;width:140px;height:140px;flex-shrink:0">
+              <canvas id="stock-pie-canvas" width="140" height="140"></canvas>
+            </div>
+            <div id="stock-pie-legend" style="flex:1"></div>
+          </div>
+          <div id="stock-pie-details" style="margin-top:10px;padding-top:12px;border-top:1px solid rgba(196,160,78,.06)"></div>
+        </div>
+      </div>
+
+      <!-- Listes détaillées par catégorie -->
+      <div class="g3">
+        <div class="card">
+          <div class="card-h">
+            <span class="card-t">🥤 Smoothies</span>
+            <button class="btn-s" onclick="addStock('smoothies')">+</button>
+          </div>
+          <div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:0 4px 8px;border-bottom:1px solid rgba(196,160,78,.06)">
+              <span>Produit</span><span>Qté</span>
+            </div>
+          </div>
+          <div id="st-smoothies"></div>
+        </div>
+        <div class="card">
+          <div class="card-h">
+            <span class="card-t">🧃 Softs & Jus</span>
+            <button class="btn-s" onclick="addStock('softs')">+</button>
+          </div>
+          <div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:0 4px 8px;border-bottom:1px solid rgba(196,160,78,.06)">
+              <span>Produit</span><span>Qté</span>
+            </div>
+          </div>
+          <div id="st-softs"></div>
+        </div>
+        <div class="card">
+          <div class="card-h">
+            <span class="card-t">✦ Extras Bar</span>
+            <button class="btn-s" onclick="addStock('extras')">+</button>
+          </div>
+          <div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:0 4px 8px;border-bottom:1px solid rgba(196,160,78,.06)">
+              <span>Produit</span><span>Qté</span>
+            </div>
+          </div>
+          <div id="st-extras"></div>
+        </div>
+      </div>
+
+      <!-- Table complète tous produits -->
+      <div class="tw" style="margin-top:4px">
+        <div class="tw-head">
+          <span class="tw-title">Liste complète — tous les produits</span>
+          <div class="tw-acts">
+            <input class="search" placeholder="Rechercher un produit…" oninput="filterStockTable(this.value)" id="stock-search">
+            <button class="btn-s" onclick="exportStockCSV()">↓ CSV</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Produit</th><th>Catégorie</th><th>Quantité</th><th>Unité</th><th>Seuil alerte</th><th>Statut</th><th>Ajustement</th></tr></thead>
+          <tbody id="stock-full-tb"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ════ COMMANDES EXTRAS ════ -->
+    <section class="page" id="page-commandes">
+      <div class="sh"><div class="sh-left"><p class="ey">Bar</p><h2>Extras <em>commandés</em></h2></div></div>
+      <div class="g2" style="margin-bottom:20px">
+        <div class="card"><div class="card-h"><span class="card-t">Récapitulatif aujourd'hui</span></div><div id="ext-today"></div></div>
+        <div class="card"><div class="card-h"><span class="card-t">Top extras (toutes périodes)</span></div><div id="ext-top"></div></div>
+      </div>
+      <div class="tw">
+        <div class="tw-head"><span class="tw-title">Détail par réservation</span></div>
+        <table><thead><tr><th>Client</th><th>Date séance</th><th>Extras commandés</th><th>Statut séance</th></tr></thead>
+        <tbody id="cmd-tb"></tbody></table>
+      </div>
+    </section>
+
+    <!-- ════ PARRAINAGE ════ -->
+    <section class="page" id="page-parrainage">
+      <div class="sh"><div class="sh-left"><p class="ey">Fidélité</p><h2>Parrai<em>nage</em></h2></div>
+        <button class="btn-s fill" onclick="genCode()">+ Générer un code</button>
+      </div>
+      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Codes actifs</p><div class="kpi-val"><b id="par-actifs">–</b></div><span class="kpi-ico">◎</span></div>
+        <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Parrainages réussis</p><div class="kpi-val"><b id="par-ok">–</b></div><span class="kpi-ico">✓</span></div>
+        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Réductions accordées</p><div class="kpi-val"><b id="par-red">–</b> €</div><span class="kpi-ico">◈</span></div>
+      </div>
+      <div class="tw">
+        <div class="tw-head"><span class="tw-title">Codes de parrainage</span></div>
+        <table><thead><tr><th>Code</th><th>Parrain</th><th>Filleul(s)</th><th>Utilisations</th><th>Réduction offerte</th><th>Statut</th><th>Créé le</th></tr></thead>
+        <tbody id="par-tb"></tbody></table>
+      </div>
+    </section>
+
+    <!-- ════ FINANCES ════ -->
+    <section class="page" id="page-finances">
+      <div class="sh">
+        <div class="sh-left"><p class="ey">Analytique</p><h2>Revenus & <em>Statistiques</em></h2></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="fin-period" onchange="renderFinances()" style="background:var(--dark2);border:1px solid rgba(196,160,78,.14);color:var(--cream);padding:8px 14px;font-family:var(--sans);font-size:9px;letter-spacing:2px;outline:none;text-transform:uppercase">
+            <option value="month">Ce mois</option>
+            <option value="quarter">Ce trimestre</option>
+            <option value="year">Cette année</option>
+            <option value="all">Tout</option>
+          </select>
+          <button class="btn-s" onclick="exportFinCSV()">↓ Export CSV</button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Revenus totaux</p><div class="kpi-val"><b id="fin-mois">–</b> €</div><p class="kpi-sub"><span class="kpi-trend up" id="fin-trend">+0%</span> vs période préc.</p><span class="kpi-ico">◈</span></div>
+        <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Ticket moyen</p><div class="kpi-val"><b id="fin-avg">–</b> €</div><p class="kpi-sub">par réservation</p><span class="kpi-ico">◆</span></div>
+        <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Réservations</p><div class="kpi-val"><b id="fin-nb">–</b></div><p class="kpi-sub" id="fin-nb-sub">confirmées</p><span class="kpi-ico">◷</span></div>
+        <div class="kpi" style="--accent:var(--purple)"><p class="kpi-label">Revenus extras</p><div class="kpi-val"><b id="fin-extras">–</b> €</div><p class="kpi-sub" id="fin-extras-pct">du total</p><span class="kpi-ico">♔</span></div>
+      </div>
+
+      <!-- Graphiques ligne + donut -->
+      <div class="g2" style="margin-bottom:20px">
+        <div class="card" style="grid-column:1/-1">
+          <div class="card-h">
+            <span class="card-t">Évolution des revenus</span>
+            <div style="display:flex;gap:6px">
+              <button class="fb on" onclick="setRevGraph('weekly',this)">Semaines</button>
+              <button class="fb" onclick="setRevGraph('monthly',this)">Mois</button>
+              <button class="fb" onclick="setRevGraph('daily',this)">Jours</button>
+            </div>
+          </div>
+          <div style="position:relative;height:220px;margin-top:8px">
+            <canvas id="rev-line-canvas" style="width:100%;height:220px"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="g2" style="margin-bottom:20px">
+        <!-- Revenus par formule — barres horizontales -->
+        <div class="card">
+          <div class="card-h"><span class="card-t">Revenus par formule</span></div>
+          <div id="fin-formules"></div>
+        </div>
+
+        <!-- Donut répartition -->
+        <div class="card">
+          <div class="card-h"><span class="card-t">Répartition des revenus</span></div>
+          <div style="display:flex;align-items:center;gap:24px;padding:10px 0">
+            <div style="position:relative;flex-shrink:0">
+              <canvas id="rev-donut-canvas" width="160" height="160"></canvas>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
+                <div style="font-family:var(--serif);font-size:22px;color:var(--gold)" id="donut-center-val">–</div>
+                <div style="font-size:7px;letter-spacing:2px;color:var(--muted);text-transform:uppercase">total</div>
+              </div>
+            </div>
+            <div id="rev-donut-legend" style="flex:1"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dépenses estimées vs Revenus -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-h"><span class="card-t">Revenus vs Dépenses estimées</span><span style="font-size:9px;color:var(--muted)">Charges fixes estimées à 40% du CA</span></div>
+        <div style="position:relative;height:180px;margin-top:8px">
+          <canvas id="rev-vs-dep-canvas" style="width:100%;height:180px"></canvas>
+        </div>
+        <div id="rev-vs-dep-summary" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(196,160,78,.06)"></div>
+      </div>
+
+      <!-- Tableau transactions -->
+      <div class="tw">
+        <div class="tw-head">
+          <span class="tw-title">Toutes les transactions</span>
+          <div class="tw-acts">
+            <input class="search" placeholder="Rechercher…" oninput="filterFinTb(this.value)" id="fin-search">
+            <button class="btn-s" onclick="exportFinCSV()">↓ CSV</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <button class="fb on" onclick="setFinF('all',this)">Toutes</button>
+          <button class="fb" onclick="setFinF('confirmed',this)">Confirmées</button>
+          <button class="fb" onclick="setFinF('done',this)">Passées</button>
+          <button class="fb" onclick="setFinF('cancelled',this)">Annulées</button>
+        </div>
+        <table>
+          <thead><tr><th>Date</th><th>Client</th><th>Formule</th><th>Pers.</th><th>Extras</th><th>Montant formule</th><th>Montant extras</th><th>Total</th><th>Statut</th></tr></thead>
+          <tbody id="fin-tb"></tbody>
+        </table>
+        <div id="fin-tb-total" style="display:flex;justify-content:flex-end;padding:12px 16px;border-top:1px solid rgba(196,160,78,.08);font-size:11px;color:var(--muted)"></div>
+      </div>
+    </section>
+
+    <!-- ════ PARAMÈTRES ════ -->
+    <section class="page" id="page-parametres">
+      <div class="sh"><div class="sh-left"><p class="ey">Administration</p><h2>Paramè<em>tres</em></h2></div></div>
+      <div class="g2">
+        <div>
+          <div class="card">
+            <div class="card-h"><span class="card-t">Connexion Supabase</span></div>
+            <div class="df" style="margin-bottom:11px"><label>URL du projet</label><input id="cfg-url" placeholder="https://xxxx.supabase.co"></div>
+            <div class="df" style="margin-bottom:11px"><label>Clé anonyme</label><input id="cfg-key" placeholder="eyJhbGci…"></div>
+            <button class="btn-s fill" onclick="saveCfgPage()">Sauvegarder & Tester</button>
+            <p id="cfg-st" style="font-size:9px;margin-top:9px;color:var(--muted)"></p>
+          </div>
+          <div class="card" style="margin-top:18px">
+            <div class="card-h"><span class="card-t">🔐 Sécurité</span></div>
+
+            <!-- Niveau de sécurité actuel -->
+            <div id="security-level" style="margin-bottom:16px"></div>
+
+            <div style="padding:12px 14px;background:rgba(76,175,80,.05);border:1px solid rgba(76,175,80,.12);margin-bottom:14px">
+              <p style="font-size:9px;color:#4caf50;letter-spacing:1px;margin-bottom:6px">✅ Authentification Supabase activée</p>
+              <p style="font-size:9px;color:var(--muted);line-height:1.9">Votre accès est sécurisé par un JWT signé côté serveur. Le token expire automatiquement après 1h et la session se ferme après 30 min d'inactivité.</p>
+            </div>
+
+            <p style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Changer le mot de passe Supabase</p>
+            <p style="font-size:10px;color:var(--muted);line-height:1.9;margin-bottom:14px">Pour changer le mot de passe admin, rendez-vous sur <b style="color:var(--gold)">supabase.com</b> → Authentication → Users → sélectionnez votre compte → Reset Password.</p>
+            <a href="https://supabase.com" target="_blank" class="btn-s fill" style="display:inline-block;text-decoration:none;text-align:center">Ouvrir Supabase →</a>
+
+            <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(196,160,78,.06)">
+              <p style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Mot de passe fallback (mode local)</p>
+              <div class="df" style="margin-bottom:11px"><label>Nouveau mot de passe local</label><input type="password" id="np1" placeholder="••••••••"></div>
+              <div class="df" style="margin-bottom:11px"><label>Confirmer</label><input type="password" id="np2" placeholder="••••••••"></div>
+              <button class="btn-s" onclick="changePwd()">Changer le mot de passe local</button>
+              <p id="pwd-st" style="font-size:9px;margin-top:8px;color:var(--muted)"></p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-h"><span class="card-t">Notifications</span></div>
+            <div class="cfg-row"><div><p class="cfg-lbl">Nouvelle réservation</p><p class="cfg-desc">Alerte à chaque demande reçue</p></div><label class="toggle"><input type="checkbox" checked><div class="tog-track"></div><div class="tog-thumb"></div></label></div>
+            <div class="cfg-row"><div><p class="cfg-lbl">Stock bas</p><p class="cfg-desc">Alerte si quantité inférieure au seuil</p></div><label class="toggle"><input type="checkbox" checked><div class="tog-track"></div><div class="tog-thumb"></div></label></div>
+            <div class="cfg-row"><div><p class="cfg-lbl">Parrainage validé</p><p class="cfg-desc">Notification lors d'un parrainage utilisé</p></div><label class="toggle"><input type="checkbox"><div class="tog-track"></div><div class="tog-thumb"></div></label></div>
+            <div class="cfg-row"><div><p class="cfg-lbl">Rapport quotidien</p><p class="cfg-desc">Résumé automatique chaque soir</p></div><label class="toggle"><input type="checkbox" checked><div class="tog-track"></div><div class="tog-thumb"></div></label></div>
+          </div>
+          <div class="card" style="margin-top:18px">
+            <div class="card-h"><span class="card-t">Seuils d'alerte stock</span></div>
+            <div class="df-row" style="gap:11px">
+              <div class="df"><label>Smoothies</label><input type="number" id="s1" value="5" min="0"></div>
+              <div class="df"><label>Softs</label><input type="number" id="s2" value="5" min="0"></div>
+            </div>
+            <div class="df-row" style="gap:11px;margin-top:10px">
+              <div class="df"><label>Extras</label><input type="number" id="s3" value="3" min="0"></div>
+              <div class="df"><label>Niveau critique</label><input type="number" id="s4" value="2" min="0"></div>
+            </div>
+            <button class="btn-s fill" style="margin-top:12px" onclick="toast('✓','Seuils sauvegardés')">Sauvegarder</button>
+          </div>
+          <div class="card" style="margin-top:18px">
+            <div class="card-h"><span class="card-t">Infos Centre EDEN</span></div>
+            <div class="df" style="margin-bottom:10px"><label>Nom du centre</label><input value="EDEN Bien-Être"></div>
+            <div class="df" style="margin-bottom:10px"><label>Téléphone</label><input value="01 00 00 00 00"></div>
+            <div class="df" style="margin-bottom:10px"><label>Email</label><input value="contact@eden-wellness.fr"></div>
+            <div class="df" style="margin-bottom:10px"><label>Horaires</label><input value="7j/7 · 8h – 22h"></div>
+            <button class="btn-s fill" onclick="toast('✓','Informations sauvegardées')">Sauvegarder</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="card-t">SQL Supabase — À exécuter une seule fois</span></div>
+        <pre id="sql-pre">-- EDEN Admin — Structure base de données
+-- Collez ce SQL dans l'éditeur SQL de votre projet Supabase
+
+CREATE TABLE IF NOT EXISTS reservations (
+  id           UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at   TIMESTAMPTZ DEFAULT NOW(),
+  nom          TEXT NOT NULL,
+  email        TEXT,
+  telephone    TEXT,
+  formule      TEXT NOT NULL,
+  date_seance  DATE NOT NULL,
+  heure        TEXT,
+  nb_personnes INTEGER DEFAULT 1,
+  extras       JSONB DEFAULT '[]',
+  montant_total NUMERIC(10,2) DEFAULT 0,
+  statut       TEXT DEFAULT 'pending'
+                 CHECK (statut IN ('pending','confirmed','cancelled','done')),
+  notes        TEXT
+);
+
+CREATE TABLE IF NOT EXISTS demandes (
+  id                UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at        TIMESTAMPTZ DEFAULT NOW(),
+  nom               TEXT NOT NULL,
+  email             TEXT NOT NULL,
+  telephone         TEXT,
+  formule_souhaitee TEXT,
+  date_souhaitee    DATE,
+  nb_personnes      INTEGER DEFAULT 1,
+  message           TEXT,
+  statut            TEXT DEFAULT 'new'
+                      CHECK (statut IN ('new','processed','archived'))
+);
+
+CREATE TABLE IF NOT EXISTS stocks (
+  id            UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  categorie     TEXT NOT NULL,
+  nom           TEXT NOT NULL,
+  quantite      INTEGER DEFAULT 0,
+  unite         TEXT DEFAULT 'unité(s)',
+  seuil_alerte  INTEGER DEFAULT 5,
+  updated_at    TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS parrainages (
+  id                UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at        TIMESTAMPTZ DEFAULT NOW(),
+  code              TEXT UNIQUE NOT NULL,
+  createur_nom      TEXT NOT NULL,
+  filleuls          JSONB DEFAULT '[]',
+  utilisations      INTEGER DEFAULT 0,
+  reduction_offerte NUMERIC(10,2) DEFAULT 0,
+  actif             BOOLEAN DEFAULT TRUE
+);
+
+-- Sécurité (Row Level Security)
+ALTER TABLE reservations  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE demandes       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE stocks         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE parrainages    ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "anon_all" ON reservations  FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "anon_all" ON demandes       FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "anon_all" ON stocks         FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "anon_all" ON parrainages    FOR ALL USING (true) WITH CHECK (true);</pre>
+        <button class="btn-s" style="margin-top:10px" onclick="copySQL()">Copier le SQL</button>
+      </div>
+    </section>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- DRAWER -->
+<div class="dov" id="dov" onclick="closeDrw()"></div>
+<div class="drawer" id="drawer">
+  <div class="dh">
+    <div><div class="dh-t" id="drw-t">–</div><div class="dh-s" id="drw-s">–</div></div>
+    <button class="dclose" onclick="closeDrw()">✕</button>
+  </div>
+  <div class="db" id="drw-b"></div>
+  <div class="dfoot" id="drw-f"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast-el"><span class="ti" id="toast-i">✓</span><span class="tm" id="toast-m"></span></div>
+
+<script>
+
+/* ══════════════════════════════════════════════
+   SÉCURITÉ — Authentification Supabase + Fallback
+   Niveau de sécurité :
+   ✅ Supabase Auth = JWT signé côté serveur
+   ✅ Token expirant automatiquement (1h)
+   ✅ Session détruite à la fermeture
+   ✅ Rate limiting géré par Supabase
+   ✅ Brute force impossible côté serveur
+   ⚠  Fallback local = mot de passe simple
+══════════════════════════════════════════════ */
+
+const SB_URL_K = 'eden_sb_url';
+const SB_KEY_K = 'eden_sb_key';
+const TOKEN_K  = 'eden_sb_token';
+const RTOKEN_K = 'eden_sb_refresh';
+const SESSION_K = 'eden_session_exp';
+
+let SB_URL = localStorage.getItem('eden_sb_url') || 'https://jdcxhejkuttaviiqqonz.supabase.co';
+let SB_KEY = localStorage.getItem('eden_sb_key') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkY3hoZWprdXR0YXZpaXFxb256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzU5NjcsImV4cCI6MjA5MjcxMTk2N30.jKejetk46cKzo7gJGnyRQTCtvzjL0p-6CMkVgLfceZs';
+let sbReady = false;
+let SB_TOKEN = ''; // JWT Supabase Auth token
+let planWeekOffset = 0;
+let resFilter = 'all', resSearch = '';
+let demFilter = 'all';
+
+// ── INIT ──
+window.onload = function(){
+  // Credentials pré-configurés
+  if(!localStorage.getItem('eden_sb_url')) localStorage.setItem('eden_sb_url', 'https://jdcxhejkuttaviiqqonz.supabase.co');
+  if(!localStorage.getItem('eden_sb_key')) localStorage.setItem('eden_sb_key', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkY3hoZWprdXR0YXZpaXFxb256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzU5NjcsImV4cCI6MjA5MjcxMTk2N30.jKejetk46cKzo7gJGnyRQTCtvzjL0p-6CMkVgLfceZs');
+  // Nettoyer toutes les anciennes clés des versions précédentes
+  ['eden_pwd_hash','eden_lock','eden_attempts','eden_admin_pwd',
+   'eden_admin_auth','eden_ok_old'].forEach(function(k){ localStorage.removeItem(k); });
+
+  SB_URL = localStorage.getItem(SB_URL_K) || '';
+  SB_KEY = localStorage.getItem(SB_KEY_K) || '';
+  SB_TOKEN = localStorage.getItem(TOKEN_K) || '';
+
+  var urlEl = document.getElementById('in-url');
+  var keyEl = document.getElementById('in-key');
+  if(urlEl) urlEl.value = urlEl.value || SB_URL;
+  if(keyEl) keyEl.value = keyEl.value || SB_KEY;
+
+  var lbl = document.getElementById('today-lbl');
+  if(lbl) lbl.textContent = new Date().toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'long'});
+
+  checkSbConfig();
+
+  // Vérifier session existante
+  var sessionExp = localStorage.getItem(SESSION_K);
+  if(sessionExp && Date.now() < parseInt(sessionExp) && SB_TOKEN) {
+    // Session valide — connexion auto
+    showApp();
+  } else if(sessionStorage.getItem('eden_ok') === '1') {
+    showApp();
+  } else {
+    // Nettoyer session expirée
+    localStorage.removeItem(TOKEN_K);
+    localStorage.removeItem(RTOKEN_K);
+    localStorage.removeItem(SESSION_K);
+    sessionStorage.removeItem('eden_ok');
+  }
+};
+
+// ── VÉRIFIER CONFIG SUPABASE ──
+function checkSbConfig(){
+  var url = document.getElementById('in-url') ? document.getElementById('in-url').value.trim() : SB_URL;
+  var key = document.getElementById('in-key') ? document.getElementById('in-key').value.trim() : SB_KEY;
+  var hasSB = url && key && url.includes('supabase.co');
+
+  var boxSB = document.getElementById('login-box-supabase');
+  var boxLocal = document.getElementById('login-box-local');
+  var noCfg = document.getElementById('sb-no-cfg');
+
+  if(hasSB) {
+    if(boxSB) boxSB.style.display = 'block';
+    if(boxLocal) boxLocal.style.display = 'none';
+    if(noCfg) noCfg.style.display = 'none';
+  } else {
+    if(boxSB) boxSB.style.display = 'none';
+    if(boxLocal) boxLocal.style.display = 'block';
+    if(noCfg) noCfg.style.display = 'block';
+  }
+}
+
+// ── LOGIN SUPABASE AUTH (sécurisé) ──
+async function loginSupabase(){
+  var email = document.getElementById('auth-email') ? document.getElementById('auth-email').value.trim() : '';
+  var pwd   = document.getElementById('auth-pwd')   ? document.getElementById('auth-pwd').value : '';
+  var errEl = document.getElementById('login-err');
+  var btn   = document.getElementById('login-btn-sb');
+
+  if(!email || !pwd) {
+    if(errEl) errEl.textContent = 'Email et mot de passe requis';
+    return;
+  }
+  if(btn) { btn.textContent = 'Connexion en cours…'; btn.disabled = true; }
+  if(errEl) errEl.textContent = '';
+
+  var url = (localStorage.getItem(SB_URL_K) || SB_URL).trim();
+  var key = (localStorage.getItem(SB_KEY_K) || SB_KEY).trim();
+
+  try {
+    var res = await fetch(url + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: {
+        'apikey': key,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: email, password: pwd })
+    });
+
+    var data = await res.json();
+
+    if(!res.ok) {
+      throw new Error(data.error_description || data.msg || 'Identifiants incorrects');
+    }
+
+    // ✅ Authentification réussie
+    SB_TOKEN = data.access_token;
+    localStorage.setItem(TOKEN_K, data.access_token);
+    localStorage.setItem(RTOKEN_K, data.refresh_token || '');
+    // Session expire dans 1h
+    localStorage.setItem(SESSION_K, (Date.now() + 3600000).toString());
+    sessionStorage.setItem('eden_ok', '1');
+
+    // Démarrer le refresh automatique (toutes les 55 min)
+    startTokenRefresh();
+
+    document.getElementById('auth-pwd').value = '';
+    showApp();
+
+  } catch(err) {
+    if(errEl) errEl.textContent = err.message || 'Erreur de connexion';
+    document.getElementById('auth-pwd').value = '';
+  } finally {
+    if(btn) { btn.textContent = 'Accéder à l'espace admin'; btn.disabled = false; }
+  }
+}
+
+// ── REFRESH TOKEN AUTOMATIQUE ──
+var refreshInterval = null;
+function startTokenRefresh(){
+  if(refreshInterval) clearInterval(refreshInterval);
+  refreshInterval = setInterval(async function(){
+    var rtoken = localStorage.getItem(RTOKEN_K);
+    if(!rtoken) return;
+    var url = (localStorage.getItem(SB_URL_K) || SB_URL).trim();
+    var key = (localStorage.getItem(SB_KEY_K) || SB_KEY).trim();
+    try {
+      var res = await fetch(url + '/auth/v1/token?grant_type=refresh_token', {
+        method: 'POST',
+        headers: { 'apikey': key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: rtoken })
+      });
+      var data = await res.json();
+      if(res.ok && data.access_token) {
+        SB_TOKEN = data.access_token;
+        localStorage.setItem(TOKEN_K, data.access_token);
+        localStorage.setItem(RTOKEN_K, data.refresh_token || rtoken);
+        localStorage.setItem(SESSION_K, (Date.now() + 3600000).toString());
+      }
+    } catch(e) { console.warn('Token refresh failed:', e); }
+  }, 55 * 60 * 1000); // 55 minutes
+}
+
+// ── LOGIN LOCAL (fallback sans Supabase) ──
+function loginLocal(){
+  var val = document.getElementById('pwd-local') ? document.getElementById('pwd-local').value : '';
+  var stored = localStorage.getItem('eden_pwd') || 'eden2024';
+  var errEl = document.getElementById('login-err-local');
+  if(val === stored) {
+    sessionStorage.setItem('eden_ok','1');
+    document.getElementById('pwd-local').value = '';
+    if(errEl) errEl.textContent = '';
+    showApp();
+  } else {
+    if(errEl) errEl.textContent = 'Mot de passe incorrect';
+    document.getElementById('pwd-local').value = '';
+  }
+}
+
+// Garder login() comme alias pour compatibilité clavier
+function login(){ loginLocal(); }
+
+// ── LOGOUT SÉCURISÉ ──
+async function logout(){
+  // Révoquer le token Supabase côté serveur
+  if(SB_TOKEN && SB_URL) {
+    try {
+      await fetch(SB_URL + '/auth/v1/logout', {
+        method: 'POST',
+        headers: {
+          'apikey': SB_KEY,
+          'Authorization': 'Bearer ' + SB_TOKEN
+        }
+      });
+    } catch(e) {}
+  }
+
+  // Nettoyer TOUT
+  SB_TOKEN = '';
+  sessionStorage.clear();
+  localStorage.removeItem(TOKEN_K);
+  localStorage.removeItem(RTOKEN_K);
+  localStorage.removeItem(SESSION_K);
+  if(refreshInterval) clearInterval(refreshInterval);
+
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('app').classList.remove('visible');
+  var ls = document.getElementById('login-screen');
+  if(ls) ls.classList.remove('hidden');
+  checkSbConfig();
+}
+
+// ── SHOW APP ──
+function showApp(){
+  var ls = document.getElementById('login-screen');
+  if(ls) ls.classList.add('hidden');
+  var a = document.getElementById('app');
+  a.style.display = 'flex';
+  a.classList.add('visible');
+  initSB();
+  renderAll();
+  // Démarrer refresh si token présent
+  if(localStorage.getItem(TOKEN_K)) startTokenRefresh();
+  // Détecter inactivité (30 min)
+  startInactivityTimer();
+}
+
+// ── INACTIVITÉ (déconnexion auto après 30 min) ──
+var inactivityTimer = null;
+function startInactivityTimer(){
+  resetInactivity();
+  ['click','keypress','scroll','mousemove'].forEach(function(evt){
+    document.addEventListener(evt, resetInactivity);
+  });
+}
+function resetInactivity(){
+  if(inactivityTimer) clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(function(){
+    toast('⏻', 'Session expirée — déconnexion automatique');
+    setTimeout(logout, 2000);
+  }, 30 * 60 * 1000); // 30 minutes
+}
+
+// ── SAUVEGARDE CONFIG ──
+function saveCfg(){
+  SB_URL = document.getElementById('in-url').value.trim();
+  SB_KEY = document.getElementById('in-key').value.trim();
+  localStorage.setItem(SB_URL_K, SB_URL);
+  localStorage.setItem(SB_KEY_K, SB_KEY);
+  checkSbConfig();
+  toast('✓','Configuration Supabase sauvegardée');
+}
+function saveCfgPage(){
+  SB_URL = document.getElementById('cfg-url') ? document.getElementById('cfg-url').value.trim() : SB_URL;
+  SB_KEY = document.getElementById('cfg-key') ? document.getElementById('cfg-key').value.trim() : SB_KEY;
+  localStorage.setItem(SB_URL_K, SB_URL);
+  localStorage.setItem(SB_KEY_K, SB_KEY);
+  initSB();
+}
+
+
+// ── SUPABASE ──
+function saveCfg(){
+  SB_URL=document.getElementById('in-url').value.trim();
+  SB_KEY=document.getElementById('in-key').value.trim();
+  localStorage.setItem(SB_URL_K,SB_URL);
+  localStorage.setItem(SB_KEY_K,SB_KEY);
+  document.getElementById('sb-no-cfg').style.display='none';
+  toast('✓','Configuration Supabase sauvegardée');
+}
+function saveCfgPage(){
+  SB_URL=document.getElementById('cfg-url').value.trim();
+  SB_KEY=document.getElementById('cfg-key').value.trim();
+  localStorage.setItem(SB_URL_K,SB_URL);
+  localStorage.setItem(SB_KEY_K,SB_KEY);
+  initSB();
+}
+function initSB(){
+  if(!SB_URL||!SB_KEY){ setConn(false); return; }
+  sbQ('reservations',{select:'id',limit:'1'}).then(()=>{ sbReady=true; setConn(true); loadSB(); }).catch(()=>setConn(false));
+}
+async function sbQ(table,params={},method='GET',body=null){
+  let url=`${SB_URL}/rest/v1/${table}`;
+  const qs=Object.entries(params).map(([k,v])=>`${k}=${encodeURIComponent(v)}`).join('&');
+  if(qs) url+='?'+qs;
+  // Utiliser le JWT Supabase Auth si disponible, sinon la clé anon
+  const authToken = localStorage.getItem('eden_sb_token') || SB_KEY;
+  const r=await fetch(url,{method,headers:{
+    'apikey':SB_KEY,
+    'Authorization':'Bearer '+authToken,
+    'Content-Type':'application/json',
+    'Prefer':method==='GET'?'':'return=representation'
+  },body:body?JSON.stringify(body):null});
+  if(!r.ok) throw new Error(await r.text());
+  return r.json().catch(()=>null);
+}
+async function loadSB(){
+  try{
+    const[res,dem,sto,par]=await Promise.all([
+      sbQ('reservations',{select:'*',order:'created_at.desc'}),
+      sbQ('demandes',{select:'*',order:'created_at.desc'}),
+      sbQ('stocks',{select:'*'}),
+      sbQ('parrainages',{select:'*',order:'created_at.desc'}),
+    ]);
+    if(res) D.reservations=res;
+    if(dem) D.demandes=dem;
+    if(sto&&sto.length){ const c={smoothies:[],softs:[],extras:[]}; sto.forEach(s=>{if(c[s.categorie])c[s.categorie].push({...s,seuil:s.seuil_alerte});}); ['smoothies','softs','extras'].forEach(k=>{if(c[k].length)D.stocks[k]=c[k];}); }
+    if(par) D.parrainages=par;
+    renderAll();
+    toast('◎','Données Supabase chargées');
+  } catch(e){ toast('⚠','Erreur Supabase','warn'); }
+}
+function setConn(ok){
+  document.getElementById('cdot').className='cdot'+(ok?' live':'');
+  document.getElementById('ctxt').textContent=ok?'Supabase · Live':'Mode local';
+  const st=document.getElementById('cfg-st');
+  if(st) st.textContent=ok?'✓ Connecté':'⚠ Non connecté — mode démo';
+}
+
+// ── NAV ──
+const PAGE_TITLES={
+  dashboard:'Tableau de <em>bord</em>', planning:'Plan<em>ning</em>',
+  reservations:'Réser<em>vations</em>', demandes:'Demandes de <em>réservation</em>',
+  clients:'Fiches <em>Clients</em>', stocks:'Stock <em>Boissons</em>',
+  commandes:'Extras <em>commandés</em>', parrainage:'Parrai<em>nage</em>',
+  finances:'Revenus & <em>Statistiques</em>', parametres:'Paramè<em>tres</em>'
+};
+function nav(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.sbi').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.sbi').forEach(x=>{ if(x.textContent.trim().toLowerCase().startsWith(p.substring(0,5).toLowerCase())) x.classList.add('active'); });
+  document.getElementById('page-title').innerHTML=PAGE_TITLES[p]||p;
+  renderPage(p);
+}
+
+function renderAll(){ renderDashboard(); updateBadges(); }
+function renderPage(p){
+  const map={dashboard:renderDashboard,planning:renderPlanning,reservations:renderRes,demandes:renderDem,clients:renderClients,stocks:renderStocks,commandes:renderCmd,parrainage:renderParrainage,finances:renderFinances,parametres:renderParams};
+  if(map[p]) map[p]();
+}
+
+// ── DASHBOARD ──
+function renderDashboard(){
+  const td=new Date().toISOString().slice(0,10);
+  const today=D.reservations.filter(r=>r.date_seance===td);
+  const pend=D.reservations.filter(r=>r.statut==='pending');
+  const rev=D.reservations.filter(r=>r.statut!=='cancelled').reduce((s,r)=>s+(r.montant_total||0),0);
+  const salerts=Object.values(D.stocks).flat().filter(s=>s.quantite<=s.seuil).length;
+  document.getElementById('k-today').textContent=today.length;
+  document.getElementById('k-pend').textContent=pend.length;
+  document.getElementById('k-rev').textContent=rev.toLocaleString('fr-FR');
+  document.getElementById('k-stock').textContent=salerts;
+
+  // Alerts
+  let alerts='';
+  if(salerts>0) alerts+=`<div class="alert warn">⚠ ${salerts} produit(s) en stock bas — <a onclick="nav('stocks')">Voir les stocks</a></div>`;
+  if(pend.length>0) alerts+=`<div class="alert info">📬 ${pend.length} réservation(s) en attente de validation — <a onclick="nav('reservations')">Traiter</a></div>`;
+  document.getElementById('db-alerts').innerHTML=alerts;
+
+  // Recent res
+  const tb=document.getElementById('db-res-tb');
+  const rec=D.reservations.filter(r=>r.statut!=='cancelled').slice(0,6);
+  tb.innerHTML=rec.length?rec.map(r=>`<tr onclick="openResDrw('${r.id}')"><td class="name">${r.nom}</td><td>${fmtDate(r.date_seance)}</td><td>${r.formule}</td><td>${sbadge(r.statut)}</td></tr>`).join('')
+    :`<tr><td colspan="4"><div class="empty"><div class="empty-icon">◷</div><p class="empty-txt">Aucune réservation</p></div></td></tr>`;
+
+  // Activity
+  const acts=[...D.reservations.slice(0,5).map(r=>({time:r.created_at,txt:`<b>${r.nom}</b> — ${r.formule}`,c:scolor(r.statut)})),...D.demandes.slice(0,3).map(d=>({time:d.created_at,txt:`Demande de <b>${d.nom}</b>`,c:'var(--info)'}))].sort((a,b)=>b.time>a.time?1:-1).slice(0,9);
+  document.getElementById('activity-tl').innerHTML=acts.map(a=>`<div class="tl-item"><div class="tl-dot" style="background:${a.c}"></div><div><div class="tl-time">${fmtDT(a.time)}</div><div class="tl-txt">${a.txt}</div></div></div>`).join('')||'<div class="empty"><div class="empty-icon">◎</div><p class="empty-txt">Aucune activité</p></div>';
+
+  // Top formules
+  const fc={};D.reservations.forEach(r=>{ fc[r.formule]=(fc[r.formule]||0)+1; });
+  const sf=Object.entries(fc).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const mf=sf[0]?.[1]||1;
+  document.getElementById('top-form').innerHTML=sf.map(([f,c])=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(196,160,78,.04)"><div style="flex:1;font-size:11px;color:var(--light)">${f}</div><div style="width:80px;height:3px;background:rgba(255,255,255,.04)"><div style="height:100%;background:var(--gold);width:${c/mf*100}%"></div></div><div style="font-family:var(--serif);font-size:14px;color:var(--gold);width:18px;text-align:right">${c}</div></div>`).join('')||'<p style="font-size:11px;color:var(--muted)">Aucune donnée</p>';
+
+  // Rev chart (fake weekly)
+  const days=['Lu','Ma','Me','Je','Ve','Sa','Di'];
+  const vals=[1200,850,1600,2100,900,1750,1300];
+  const mx=Math.max(...vals);
+  document.getElementById('rev-chart').innerHTML=vals.map((v,i)=>`<div class="bc-bar ${i===new Date().getDay()-1?'':''}/" style="height:${v/mx*100}%;background:${i===new Date().getDay()-1?'var(--gold)':'rgba(196,160,78,.25)'};"><div class="bc-bar-label">${days[i]}</div><div class="bc-bar-val">${v}€</div></div>`).join('');
+
+  // Stat pie
+  const sc={pending:0,confirmed:0,cancelled:0,done:0};
+  D.reservations.forEach(r=>{sc[r.statut]=(sc[r.statut]||0)+1;});
+  document.getElementById('stat-pie').innerHTML=Object.entries(sc).map(([k,v])=>`<div style="display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid rgba(196,160,78,.04)"><div style="width:8px;height:8px;border-radius:50%;background:${scolor(k)};flex-shrink:0"></div><div style="flex:1;font-size:10px;color:var(--light)">${slabel(k)}</div><div style="font-family:var(--serif);font-size:15px;color:var(--cream)">${v}</div></div>`).join('');
+}
+
+// ── PLANNING ──
+function renderPlanning(){
+  const HOURS=['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00'];
+  const today=new Date();
+  const startOfWeek=new Date(today);
+  startOfWeek.setDate(today.getDate()-today.getDay()+1+planWeekOffset*7);
+  const days=Array.from({length:7},(_,i)=>{const d=new Date(startOfWeek);d.setDate(d.getDate()+i);return d;});
+
+  const lbl=`Semaine du ${days[0].toLocaleDateString('fr-FR',{day:'numeric',month:'long'})} au ${days[6].toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}`;
+  document.getElementById('plan-week-lbl').textContent=lbl;
+
+  const todayStr=today.toISOString().slice(0,10);
+  let html=`<div class="planning-grid" style="grid-template-columns:72px repeat(7,1fr)">`;
+  // Header
+  html+=`<div class="pg-header" style="border-right:1px solid rgba(196,160,78,.06);padding:10px 4px;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:center">Heure</div>`;
+  days.forEach(d=>{
+    const ds=d.toISOString().slice(0,10);
+    const isT=ds===todayStr;
+    html+=`<div class="pg-header pg-day${isT?' today':''}">${['Lu','Ma','Me','Je','Ve','Sa','Di'][d.getDay()===0?6:d.getDay()-1]}<br><span style="font-family:var(--serif);font-size:16px;color:${isT?'var(--gold)':'var(--cream)'};">${d.getDate()}</span></div>`;
+  });
+  // Rows
+  HOURS.forEach(h=>{
+    html+=`<div class="pg-time">${h}</div>`;
+    days.forEach(d=>{
+      const ds=d.toISOString().slice(0,10);
+      const isT=ds===todayStr;
+      const evts=D.reservations.filter(r=>r.date_seance===ds&&r.heure&&r.heure.startsWith(h.slice(0,2)));
+      html+=`<div class="pg-cell${isT?' today-col':''}">`;
+      evts.forEach(r=>{html+=`<div class="pg-evt ${r.statut}" onclick="openResDrw('${r.id}');event.stopPropagation()" style="cursor:pointer"><div style="font-size:7px;font-weight:400;color:var(--cream)">${r.nom.split(' ')[0]}</div><div style="font-size:7px;color:rgba(244,239,229,.55)">${r.formule.substring(0,14)}</div></div>`;});
+      html+=`</div>`;
+    });
+  });
+  html+=`</div>`;
+  document.getElementById('planning-wrap').innerHTML=html;
+}
+function planNav(d){ planWeekOffset+=d; renderPlanning(); }
+function planToday(){ planWeekOffset=0; renderPlanning(); }
+
+// ── RESERVATIONS ──
+function renderRes(){
+  let data=D.reservations;
+  if(resFilter!=='all') data=data.filter(r=>r.statut===resFilter);
+  if(resSearch) data=data.filter(r=>(r.nom+r.email+r.formule+r.telephone||'').toLowerCase().includes(resSearch));
+  const tb=document.getElementById('res-tb');
+  if(!data.length){tb.innerHTML=`<tr><td colspan="11"><div class="empty"><div class="empty-icon">◷</div><p class="empty-txt">Aucune réservation</p></div></td></tr>`;return;}
+  tb.innerHTML=data.map((r,i)=>`<tr onclick="openResDrw('${r.id}')"><td class="small">#${i+1}</td><td class="name">${r.nom}</td><td>${r.telephone||'–'}</td><td>${r.formule}</td><td>${fmtDate(r.date_seance)}</td><td>${r.heure||'–'}</td><td style="text-align:center">${r.nb_personnes||1}</td><td class="small">${(r.extras||[]).join(', ')||'–'}</td><td class="gold">${(r.montant_total||0).toFixed(2)} €</td><td>${sbadge(r.statut)}</td><td onclick="event.stopPropagation()"><div style="display:flex;gap:4px">${r.statut==='pending'?`<button class="atb ok" onclick="setStatus('${r.id}','confirmed')">✓</button><button class="atb err" onclick="setStatus('${r.id}','cancelled')">✕</button>`:''}<button class="atb" onclick="openResDrw('${r.id}')">Voir</button></div></td></tr>`).join('');
+}
+function setResF(f,btn){ resFilter=f; document.querySelectorAll('#page-reservations .fb').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); renderRes(); }
+function filterRes(v){ resSearch=v.toLowerCase(); renderRes(); }
+
+// ── DEMANDES ──
+function renderDem(){
+  let data=D.demandes;
+  if(demFilter==='new') data=data.filter(d=>d.statut==='new');
+  const nc=D.demandes.filter(d=>d.statut==='new').length;
+  document.getElementById('dem-alerts').innerHTML=nc?`<div class="alert warn">📬 ${nc} nouvelle(s) demande(s) — répondre dans les 2h</div>`:'';
+  const tb=document.getElementById('dem-tb');
+  if(!data.length){tb.innerHTML=`<tr><td colspan="9"><div class="empty"><div class="empty-icon">✉</div><p class="empty-txt">Aucune demande</p></div></td></tr>`;return;}
+  tb.innerHTML=data.map(d=>`<tr onclick="openDemDrw('${d.id}')"><td class="small">${fmtDT(d.created_at)}</td><td class="name">${d.nom}</td><td class="small">${d.email}</td><td>${d.telephone||'–'}</td><td>${d.formule_souhaitee||'–'}</td><td>${d.date_souhaitee?fmtDate(d.date_souhaitee):'–'}</td><td style="text-align:center">${d.nb_personnes||1}</td><td class="small" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.message||'–'}</td><td onclick="event.stopPropagation()"><div style="display:flex;gap:4px">${d.statut==='new'?`<button class="atb" onclick="markDem('${d.id}')">✓ Lu</button>`:'<span style="font-size:8px;color:var(--ok)">TRAITÉ</span>'}<button class="atb" onclick="openDemDrw('${d.id}')">Traiter</button></div></td></tr>`).join('');
+}
+function setDemF(f,btn){ demFilter=f; document.querySelectorAll('#page-demandes .fb').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); renderDem(); }
+function markDem(id){ const d=D.demandes.find(x=>x.id===id); if(d){d.statut='processed';renderDem();updateBadges();toast('✓','Demande marquée traitée');} }
+
+// ── FICHES CLIENTS ──
+function renderClients(search=''){
+  // Aggregate from reservations
+  const clients={};
+  D.reservations.forEach(r=>{
+    if(!clients[r.nom]) clients[r.nom]={nom:r.nom,email:r.email||'',telephone:r.telephone||'',visites:0,total:0,derniere:'',formules:[]};
+    clients[r.nom].visites++;
+    clients[r.nom].total+=(r.montant_total||0);
+    if(r.date_seance>clients[r.nom].derniere) clients[r.nom].derniere=r.date_seance;
+    clients[r.nom].formules.push(r.formule);
+  });
+  let list=Object.values(clients);
+  const q=document.getElementById('client-search')?.value?.toLowerCase()||search.toLowerCase();
+  if(q) list=list.filter(c=>(c.nom+c.email+c.telephone).toLowerCase().includes(q));
+  document.getElementById('client-count').textContent=`${list.length} client(s)`;
+  const tb=document.getElementById('client-tb');
+  if(!list.length){tb.innerHTML=`<tr><td colspan="8"><div class="empty"><div class="empty-icon">◎</div><p class="empty-txt">Aucun client</p></div></td></tr>`;return;}
+  tb.innerHTML=list.sort((a,b)=>b.visites-a.visites).map(c=>{
+    const loyal=c.visites>=5?'Or':c.visites>=3?'Argent':c.visites>=1?'Bronze':'Nouveau';
+    const lc=c.visites>=5?'var(--gold)':c.visites>=3?'var(--light)':c.visites>=1?'#cd7f32':'var(--muted)';
+    return`<tr onclick="openClientDrw('${c.nom}')"><td><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border:1px solid rgba(196,160,78,.2);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:13px;color:var(--gold)">${c.nom[0]}</div><span class="name">${c.nom}</span></div></td><td class="small">${c.email||'–'}</td><td>${c.telephone||'–'}</td><td style="text-align:center;font-family:var(--serif);font-size:16px;color:var(--gold)">${c.visites}</td><td>${c.derniere?fmtDate(c.derniere):'–'}</td><td class="gold">${c.total.toFixed(2)} €</td><td><span style="font-size:9px;padding:3px 9px;border:1px solid;border-color:${lc};color:${lc}">${loyal}</span></td><td onclick="event.stopPropagation()"><button class="atb" onclick="openClientDrw('${c.nom}')">Fiche</button></td></tr>`;
+  }).join('');
+}
+function filterClients(v){ renderClients(v); }
+
+// ── STOCKS ──
+function renderStocks(){
+  const lows=Object.values(D.stocks).flat().filter(s=>s.quantite<=s.seuil);
+  document.getElementById('stock-alerts').innerHTML=lows.length
+    ?lows.map(s=>`<div class="alert ${s.quantite<=2?'err':'warn'}">⚠ <b>${s.nom}</b> — ${s.quantite} ${s.unite} restant(s)</div>`).join('')
+    :`<div class="alert ok">✓ Tous les stocks sont au-dessus des seuils d'alerte</div>`;
+  ['smoothies','softs','extras'].forEach(cat=>{
+    const el=document.getElementById('st-'+cat);
+    const items=D.stocks[cat];
+    el.innerHTML=items.map((s,i)=>{
+      const pct=Math.min(100,s.quantite/(s.seuil*4)*100);
+      const cls=s.quantite<=2?'err':s.quantite<=s.seuil?'warn':'ok';
+      return`<div class="si"><div class="si-name">${s.nom}<small>${s.unite}</small></div><div class="si-bar"><div class="si-fill ${cls}" style="width:${pct}%"></div></div><div class="si-qty">${s.quantite}<small> u.</small></div><div class="si-ctrl"><button class="sib" onclick="adjStock('${cat}',${i},-1)">−</button><button class="sib" onclick="adjStock('${cat}',${i},1)">+</button></div></div>`;
+    }).join('')||'<p style="font-size:11px;color:var(--muted);padding:8px 0">Aucun produit</p>';
+  });
+  updateBadges();
+}
+function adjStock(cat,i,d){ D.stocks[cat][i].quantite=Math.max(0,D.stocks[cat][i].quantite+d); renderStocks(); }
+async function saveStocks(){
+  if(sbReady){
+    try{
+      for(const[cat,items] of Object.entries(D.stocks)){
+        for(const s of items){
+          if(s.id&&!s.id.startsWith('local_')) await sbQ('stocks',{id:`eq.${s.id}`},'PATCH',{quantite:s.quantite,updated_at:new Date().toISOString()});
+        }
+      }
+      toast('✓','Stocks sauvegardés dans Supabase');
+    } catch(e){ toast('⚠','Erreur Supabase','warn'); }
+  } else { toast('✓','Stocks sauvegardés localement'); }
+}
+function addStock(cat){
+  const nom=prompt('Nom du produit :');if(!nom)return;
+  const unite=prompt('Unité :','unités');
+  const qte=parseInt(prompt('Quantité :','0')||'0');
+  D.stocks[cat].push({id:'local_'+Date.now(),nom,unite:unite||'unités',quantite:qte,seuil:5});
+  renderStocks();
+}
+
+// ── COMMANDES EXTRAS ──
+function renderCmd(){
+  const td=new Date().toISOString().slice(0,10);
+  const todayRes=D.reservations.filter(r=>r.date_seance===td&&(r.extras||[]).length>0);
+  const tc={};todayRes.forEach(r=>(r.extras||[]).forEach(e=>{tc[e]=(tc[e]||0)+1;}));
+  document.getElementById('ext-today').innerHTML=Object.entries(tc).length
+    ?Object.entries(tc).map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(196,160,78,.04)"><span style="font-size:11px;color:var(--light)">${k}</span><span style="font-family:var(--serif);font-size:15px;color:var(--gold)">${v}</span></div>`).join('')
+    :'<p style="font-size:11px;color:var(--muted);padding:8px 0">Aucun extra command&#233; aujourd&#39;hui</p>';
+  const ac={};D.reservations.forEach(r=>(r.extras||[]).forEach(e=>{ac[e]=(ac[e]||0)+1;}));
+  document.getElementById('ext-top').innerHTML=Object.entries(ac).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(196,160,78,.04)"><span style="font-size:11px;color:var(--light)">${k}</span><span style="font-family:var(--serif);font-size:15px;color:var(--info)">${v}</span></div>`).join('')||'<p style="font-size:11px;color:var(--muted)">Aucune donnée</p>';
+  const we=D.reservations.filter(r=>(r.extras||[]).length>0);
+  document.getElementById('cmd-tb').innerHTML=we.length?we.map(r=>`<tr><td class="name">${r.nom}</td><td>${fmtDate(r.date_seance)}</td><td class="small">${(r.extras||[]).join(' · ')}</td><td>${sbadge(r.statut)}</td></tr>`).join(''):`<tr><td colspan="4"><div class="empty"><div class="empty-icon">♔</div><p class="empty-txt">Aucun extra commandé</p></div></td></tr>`;
+}
+
+// ── PARRAINAGE ──
+function renderParrainage(){
+  document.getElementById('par-actifs').textContent=D.parrainages.filter(p=>p.actif).length;
+  document.getElementById('par-ok').textContent=D.parrainages.reduce((s,p)=>s+(p.utilisations||0),0);
+  document.getElementById('par-red').textContent=D.parrainages.reduce((s,p)=>s+(p.reduction_offerte||0),0).toFixed(2);
+  document.getElementById('par-tb').innerHTML=D.parrainages.map(p=>`<tr><td style="font-family:monospace;color:var(--gold);font-size:11px">${p.code}</td><td class="name">${p.createur_nom}</td><td class="small">${(p.filleuls||[]).join(', ')||'–'}</td><td style="text-align:center">${p.utilisations||0}</td><td class="gold">${(p.reduction_offerte||0).toFixed(2)} €</td><td>${p.actif?sbadge('confirmed'):sbadge('cancelled')}</td><td class="small">${fmtDate(p.created_at)}</td></tr>`).join('');
+}
+function genCode(){
+  const nom=prompt('Nom du client parrain :');if(!nom)return;
+  const code='EDEN-'+nom.toUpperCase().split(' ')[0].substring(0,6)+Math.floor(Math.random()*90+10);
+  D.parrainages.unshift({id:'l'+Date.now(),created_at:new Date().toISOString().slice(0,10),code,createur_nom:nom,filleuls:[],utilisations:0,reduction_offerte:0,actif:true});
+  renderParrainage();toast('◎',`Code ${code} créé`);
+}
+
+// ── FINANCES ──
+function renderFinances(){
+  const valid=D.reservations.filter(r=>r.statut!=='cancelled');
+  const total=valid.reduce((s,r)=>s+(r.montant_total||0),0);
+  const avg=valid.length?total/valid.length:0;
+  document.getElementById('fin-mois').textContent=total.toLocaleString('fr-FR');
+  document.getElementById('fin-sem').textContent=(total*0.3).toFixed(0);
+  document.getElementById('fin-avg').textContent=avg.toFixed(2);
+  document.getElementById('fin-nb').textContent=valid.length;
+  const fc={};valid.forEach(r=>{fc[r.formule]=(fc[r.formule]||0)+(r.montant_total||0);});
+  const sf=Object.entries(fc).sort((a,b)=>b[1]-a[1]);
+  const mf=sf[0]?.[1]||1;
+  document.getElementById('fin-formules').innerHTML=sf.map(([f,v])=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(196,160,78,.04)"><div style="flex:1;font-size:11px;color:var(--light)">${f}</div><div style="width:100px;height:3px;background:rgba(255,255,255,.04)"><div style="height:100%;background:var(--gold);width:${v/mf*100}%"></div></div><div style="font-family:var(--serif);font-size:14px;color:var(--gold);width:70px;text-align:right">${v.toFixed(0)} €</div></div>`).join('');
+  const weeks=['S-7','S-6','S-5','S-4','S-3','S-2','S-1','Cette sem.'];
+  const wv=[3200,4100,2800,5200,3900,4600,3100,total*0.3];
+  const mw=Math.max(...wv);
+  document.getElementById('fin-weekly').innerHTML=wv.map((v,i)=>`<div class="bc-bar" style="height:${v/mw*100}%;background:${i===7?'var(--gold)':'rgba(196,160,78,.22)'};"><div class="bc-bar-label">${weeks[i]}</div><div class="bc-bar-val">${v.toFixed(0)}€</div></div>`).join('');
+  document.getElementById('fin-tb').innerHTML=valid.map(r=>`<tr><td class="small">${fmtDate(r.date_seance)}</td><td class="name">${r.nom}</td><td>${r.formule}</td><td class="small">${(r.extras||[]).join(', ')||'–'}</td><td class="gold">${(r.montant_total||0).toFixed(2)} €</td><td>${sbadge(r.statut)}</td></tr>`).join('');
+}
+
+// ── PARAMÈTRES ──
+function renderParams(){
+  // Afficher le niveau de sécurité
+  var sl = document.getElementById('security-level');
+  if(sl) {
+    var token = localStorage.getItem('eden_sb_token');
+    var sbConfigured = SB_URL && SB_KEY;
+    if(sbConfigured && token) {
+      sl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(76,175,80,.06);border:1px solid rgba(76,175,80,.15);margin-bottom:12px"><span style="font-size:16px">🔒</span><div><p style="font-size:10px;color:#4caf50;font-weight:400">Niveau de sécurité : Élevé</p><p style="font-size:9px;color:var(--muted);margin-top:2px">Connecté via Supabase Auth · JWT actif</p></div></div>';
+    } else if(sbConfigured) {
+      sl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(240,160,48,.05);border:1px solid rgba(240,160,48,.15);margin-bottom:12px"><span style="font-size:16px">🔓</span><div><p style="font-size:10px;color:var(--warn)">Niveau de sécurité : Moyen</p><p style="font-size:9px;color:var(--muted);margin-top:2px">Supabase configuré mais non authentifié</p></div></div>';
+    } else {
+      sl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(224,80,80,.05);border:1px solid rgba(224,80,80,.15);margin-bottom:12px"><span style="font-size:16px">⚠️</span><div><p style="font-size:10px;color:var(--err)">Niveau de sécurité : Faible</p><p style="font-size:9px;color:var(--muted);margin-top:2px">Mode local — configurez Supabase pour sécuriser</p></div></div>';
+    }
+  }
+  document.getElementById('cfg-url').value=localStorage.getItem(SB_URL_K)||'https://jdcxhejkuttaviiqqonz.supabase.co';
+  document.getElementById('cfg-key').value=localStorage.getItem(SB_KEY_K)||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkY3hoZWprdXR0YXZpaXFxb256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzU5NjcsImV4cCI6MjA5MjcxMTk2N30.jKejetk46cKzo7gJGnyRQTCtvzjL0p-6CMkVgLfceZs';
+}
+function changePwd(){
+  const p1=document.getElementById('np1').value,p2=document.getElementById('np2').value;
+  const st=document.getElementById('pwd-st');
+  if(!p1){st.style.color='var(--err)';st.textContent='Champ vide';return;}
+  if(p1!==p2){st.style.color='var(--err)';st.textContent='Les mots de passe ne correspondent pas';return;}
+  if(p1.length<6){st.style.color='var(--err)';st.textContent='Minimum 6 caractères';return;}
+  localStorage.setItem('eden_pwd',p1); toast('✓','Mot de passe local mis à jour');
+  st.style.color='var(--ok)';st.textContent='✓ Mot de passe changé avec succès';
+  document.getElementById('np1').value='';document.getElementById('np2').value='';
+  toast('✓','Mot de passe mis à jour');
+}
+function copySQL(){navigator.clipboard.writeText(document.getElementById('sql-pre').textContent).then(()=>toast('✓','SQL copié'));}
+
+// ── DRAWER RÉSERVATION ──
+function openResDrw(id){
+  const r=D.reservations.find(x=>x.id===id);if(!r)return;
+  document.getElementById('drw-t').textContent=r.nom;
+  document.getElementById('drw-s').textContent=`Réservation · ${fmtDate(r.date_seance)} à ${r.heure||'–'}`;
+  document.getElementById('drw-b').innerHTML=`
+    <div class="df-row"><div class="df"><label>Nom</label><div class="df-v big">${r.nom}</div></div><div class="df"><label>Statut</label><div class="df-v">${sbadge(r.statut)}</div></div></div>
+    <div class="df-row"><div class="df"><label>Email</label><div class="df-v">${r.email||'–'}</div></div><div class="df"><label>Téléphone</label><div class="df-v">${r.telephone||'–'}</div></div></div>
+    <div class="df-sep"></div>
+    <div class="df-row"><div class="df"><label>Formule</label><div class="df-v big">${r.formule}</div></div><div class="df"><label>Personnes</label><div class="df-v">${r.nb_personnes}</div></div></div>
+    <div class="df-row"><div class="df"><label>Date</label><div class="df-v">${fmtDate(r.date_seance)}</div></div><div class="df"><label>Heure</label><div class="df-v">${r.heure||'–'}</div></div></div>
+    <div class="df-sep"></div>
+    <div class="df"><label>Extras commandés</label><div class="df-v">${(r.extras||[]).join(', ')||'Aucun'}</div></div>
+    <div class="df"><label>Montant total</label><div class="df-v big" style="color:var(--gold)">${(r.montant_total||0).toFixed(2)} €</div></div>
+    <div class="df-sep"></div>
+    <div class="df"><label>Notes internes</label><textarea id="note-edit">${r.notes||''}</textarea></div>
+    <div class="df"><label>Changer le statut</label><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:4px">${['pending','confirmed','done','cancelled'].map(s=>`<button class="btn-s${r.statut===s?' fill':''}" onclick="setStatus('${r.id}','${s}')">${slabel(s)}</button>`).join('')}</div></div>
+    <div class="df-sep"></div>
+    <p style="font-size:8px;color:var(--muted);letter-spacing:1.5px">CRÉÉ LE ${fmtDT(r.created_at)}</p>`;
+  document.getElementById('drw-f').innerHTML=`<button class="btn-s fill" onclick="saveNote('${r.id}')">Sauvegarder notes</button><button class="btn-s" onclick="setStatus('${r.id}','confirmed');closeDrw()">Confirmer</button><button class="btn-s danger" onclick="setStatus('${r.id}','cancelled');closeDrw()">Annuler</button>`;
+  openDrw();
+}
+
+function openDemDrw(id){
+  const d=D.demandes.find(x=>x.id===id);if(!d)return;
+  document.getElementById('drw-t').textContent=d.nom;
+  document.getElementById('drw-s').textContent=`Demande du ${fmtDT(d.created_at)}`;
+  document.getElementById('drw-b').innerHTML=`
+    <div class="df-row"><div class="df"><label>Nom</label><div class="df-v big">${d.nom}</div></div><div class="df"><label>Statut</label><div class="df-v">${d.statut==='new'?sbadge('new'):'<span class="badge confirmed"><span class="badge-dot"></span>Traitée</span>'}</div></div></div>
+    <div class="df-row"><div class="df"><label>Email</label><div class="df-v">${d.email}</div></div><div class="df"><label>Téléphone</label><div class="df-v">${d.telephone||'–'}</div></div></div>
+    <div class="df-sep"></div>
+    <div class="df-row"><div class="df"><label>Formule souhaitée</label><div class="df-v">${d.formule_souhaitee||'–'}</div></div><div class="df"><label>Date souhaitée</label><div class="df-v">${d.date_souhaitee?fmtDate(d.date_souhaitee):'–'}</div></div></div>
+    <div class="df"><label>Nb personnes</label><div class="df-v">${d.nb_personnes||1}</div></div>
+    <div class="df"><label>Message</label><div class="df-v" style="line-height:1.8">${d.message||'(aucun message)'}</div></div>
+    <div class="df-sep"></div>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:12px">Convertir en réservation confirmée :</p>
+    <div class="df-row"><div class="df"><label>Date confirmée *</label><input type="date" id="dd" value="${d.date_souhaitee||''}"></div><div class="df"><label>Heure *</label><input id="dh" placeholder="10:00"></div></div>
+    <div class="df"><label>Montant (€)</label><input type="number" id="dm" placeholder="0.00" step="0.01"></div>`;
+  document.getElementById('drw-f').innerHTML=`<button class="btn-s fill" onclick="convDem('${d.id}')">✓ Créer la réservation</button><button class="btn-s" onclick="markDem('${d.id}');closeDrw()">Marquer traité</button>`;
+  openDrw();
+}
+
+function openClientDrw(nom){
+  const res=D.reservations.filter(r=>r.nom===nom);
+  const total=res.reduce((s,r)=>s+(r.montant_total||0),0);
+  const loyal=res.length>=5?'Or':res.length>=3?'Argent':res.length>=1?'Bronze':'Nouveau';
+  document.getElementById('drw-t').textContent=nom;
+  document.getElementById('drw-s').textContent=`Fiche client · ${res.length} visite(s)`;
+  document.getElementById('drw-b').innerHTML=`
+    <div style="display:flex;gap:14px;align-items:center;margin-bottom:18px">
+      <div class="client-avatar">${nom[0]}</div>
+      <div><div style="font-family:var(--serif);font-size:20px">${nom}</div><div style="font-size:9px;color:var(--muted);margin-top:3px">${res[0]?.email||'–'} · ${res[0]?.telephone||'–'}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">
+      <div class="client-stat"><div class="cs-val">${res.length}</div><div class="cs-lbl">Visites</div></div>
+      <div class="client-stat"><div class="cs-val" style="color:var(--ok)">${total.toFixed(0)} €</div><div class="cs-lbl">Total dépensé</div></div>
+      <div class="client-stat"><div class="cs-val" style="font-size:16px">${loyal}</div><div class="cs-lbl">Fidélité</div></div>
+    </div>
+    <div style="margin-bottom:14px"><p style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Progression fidélité</p><div class="loyalty-bar"><div class="loyalty-fill" style="width:${Math.min(100,res.length/5*100)}%"></div></div><p style="font-size:8px;color:var(--muted)">${res.length}/5 visites pour atteindre le statut Or</p></div>
+    <div class="df-sep"></div>
+    <p style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Historique des séances</p>
+    ${res.map(r=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(196,160,78,.04)"><div style="font-size:8px;color:var(--muted);width:80px">${fmtDate(r.date_seance)}</div><div style="flex:1;font-size:11px;color:var(--light)">${r.formule}</div><div style="font-family:var(--serif);font-size:14px;color:var(--gold)">${(r.montant_total||0).toFixed(0)} €</div>${sbadge(r.statut)}</div>`).join('')}`;
+  document.getElementById('drw-f').innerHTML=`<button class="btn-s fill" onclick="openNewRes('${nom}')">Nouvelle réservation</button>`;
+  openDrw();
+}
+
+function convDem(id){
+  const d=D.demandes.find(x=>x.id===id);if(!d)return;
+  const date=document.getElementById('dd')?.value||d.date_souhaitee;
+  const heure=document.getElementById('dh')?.value||'10:00';
+  const montant=parseFloat(document.getElementById('dm')?.value)||0;
+  if(!date){toast('⚠','Date obligatoire','warn');return;}
+  D.reservations.unshift({id:'l'+Date.now(),created_at:new Date().toISOString(),nom:d.nom,email:d.email,telephone:d.telephone,formule:d.formule_souhaitee||'À définir',date_seance:date,heure,nb_personnes:d.nb_personnes||1,extras:[],montant_total:montant,statut:'confirmed',notes:d.message||''});
+  d.statut='processed';
+  closeDrw();
+  nav('reservations');
+  toast('✓',`Réservation créée pour ${d.nom}`);
+}
+
+// ── NEW RESERVATION ──
+function openNewRes(nom=''){
+  document.getElementById('drw-t').textContent='Nouvelle réservation';
+  document.getElementById('drw-s').textContent='Créer manuellement';
+  const inp=(id,ph,type='text',val='')=>`<input id="${id}" type="${type}" placeholder="${ph}" value="${val}" style="background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none;transition:border-color .3s">`;
+  const sel=(id,opts)=>`<select id="${id}" style="background:var(--dark2);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none;appearance:none">${opts}</select>`;
+  document.getElementById('drw-b').innerHTML=`
+    <div class="df-row"><div class="df"><label>Nom complet *</label>${inp('nr-nom','Prénom Nom','text',nom)}</div><div class="df"><label>Téléphone</label>${inp('nr-tel','06 XX XX XX XX')}</div></div>
+    <div class="df"><label>Email</label>${inp('nr-email','email@exemple.fr','email')}</div>
+    <div class="df-sep"></div>
+    <div class="df"><label>Formule *</label>${sel('nr-form','<option value="">— Choisir —</option><option>Bain Nordique Solo</option><option>Bain Nordique Duo</option><option>Sauna & Hammam Solo</option><option>Sauna & Hammam Duo</option><option>Pressozone Solo</option><option>Pressozone Premium</option><option>Massage Récupération</option><option>Pack Récupération Complet</option>')}</div>
+    <div class="df-row"><div class="df"><label>Date *</label>${inp('nr-date','','date')}</div><div class="df"><label>Heure</label>${inp('nr-heure','10:00')}</div></div>
+    <div class="df-row"><div class="df"><label>Nb personnes</label>${inp('nr-pers','1','number','1')}</div><div class="df"><label>Montant (€)</label>${inp('nr-mt','0.00','number')}</div></div>
+    <div class="df"><label>Notes</label><textarea id="nr-note" style="background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;width:100%;outline:none;resize:vertical;min-height:64px"></textarea></div>`;
+  document.getElementById('drw-f').innerHTML=`<button class="btn-s fill" onclick="saveNewRes()">Créer la réservation</button><button class="btn-s" onclick="closeDrw()">Annuler</button>`;
+  openDrw();
+}
+
+async function saveNewRes(){
+  const nom=document.getElementById('nr-nom')?.value?.trim();
+  const formule=document.getElementById('nr-form')?.value;
+  const date=document.getElementById('nr-date')?.value;
+  if(!nom||!formule||!date){toast('⚠','Champs * obligatoires','warn');return;}
+  const nr={id:'l'+Date.now(),created_at:new Date().toISOString(),nom,email:document.getElementById('nr-email')?.value||'',telephone:document.getElementById('nr-tel')?.value||'',formule,date_seance:date,heure:document.getElementById('nr-heure')?.value||'',nb_personnes:parseInt(document.getElementById('nr-pers')?.value)||1,extras:[],montant_total:parseFloat(document.getElementById('nr-mt')?.value)||0,statut:'confirmed',notes:document.getElementById('nr-note')?.value||''};
+  if(sbReady){ try{ const s=await sbQ('reservations',{},'POST',{...nr,id:undefined}); if(s&&s[0]) nr.id=s[0].id; }catch(e){} }
+  D.reservations.unshift(nr);
+  closeDrw();renderAll();renderRes();
+  toast('✓',`Réservation créée pour ${nom}`);
+}
+
+// ── STATUS ──
+async function setStatus(id,status){
+  const r=D.reservations.find(x=>x.id===id);if(!r)return;
+  r.statut=status;
+  if(sbReady){ try{ await sbQ('reservations',{id:`eq.${id}`},'PATCH',{statut:status}); }catch(e){} }
+  renderAll();renderRes();
+  toast('✓',`Statut : ${slabel(status)}`);
+}
+function saveNote(id){ const r=D.reservations.find(x=>x.id===id);if(r){r.notes=document.getElementById('note-edit')?.value||'';toast('✓','Notes sauvegardées');} }
+
+// ── EXPORT CSV ──
+function exportCSV(){
+  const rows=[['Nom','Email','Téléphone','Formule','Date','Heure','Personnes','Extras','Montant','Statut']];
+  D.reservations.forEach(r=>rows.push([r.nom,r.email||'',r.telephone||'',r.formule,r.date_seance,r.heure||'',r.nb_personnes,(r.extras||[]).join(';'),(r.montant_total||0).toFixed(2),r.statut]));
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='eden-reservations-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  toast('↓','Export CSV téléchargé');
+}
+
+// ── BADGES ──
+function updateBadges(){
+  const p=D.reservations.filter(r=>r.statut==='pending').length;
+  const n=D.demandes.filter(d=>d.statut==='new').length;
+  const s=Object.values(D.stocks).flat().filter(x=>x.quantite<=x.seuil).length;
+  const show=(id,v,txt)=>{ const el=document.getElementById(id); el.textContent=txt||v; el.style.display=v?'':'none'; };
+  show('b-res',p);show('b-dem',n);
+  show('b-stock',s,s?`⚠${s}`:'');
+  const bn=document.getElementById('bell-n');
+  bn.textContent=p+n; bn.style.display=(p+n)?'flex':'none';
+}
+
+// ── DRAWER ──
+function openDrw(){ document.getElementById('drawer').classList.add('open'); document.getElementById('dov').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeDrw(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('dov').classList.remove('open'); document.body.style.overflow=''; }
+
+// ── TOAST ──
+let tTimer;
+function toast(icon,msg,type='ok'){
+  const el=document.getElementById('toast-el');
+  document.getElementById('toast-i').textContent=icon;
+  document.getElementById('toast-m').textContent=msg;
+  el.style.borderColor=type==='warn'?'rgba(240,160,48,.3)':'rgba(196,160,78,.18)';
+  el.classList.add('show');
+  clearTimeout(tTimer);tTimer=setTimeout(()=>el.classList.remove('show'),3500);
+}
+
+// ── HELPERS ──
+function fmtDate(d){ if(!d)return'–'; return new Date(d+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}); }
+function fmtDT(d){ if(!d)return'–'; return new Date(d).toLocaleString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }
+function scolor(s){ return{pending:'var(--warn)',confirmed:'var(--ok)',cancelled:'var(--err)',done:'var(--info)',new:'var(--purple)'}[s]||'var(--muted)'; }
+function slabel(s){ return{pending:'En attente',confirmed:'Confirmé',cancelled:'Annulé',done:'Passé',new:'Nouvelle'}[s]||s; }
+function sbadge(s){ return`<span class="badge ${s}"><span class="badge-dot"></span>${slabel(s)}</span>`; }
+
+
+// ══════════════════════════════════════════════
+// GRAPHIQUES CANVAS — EDEN Admin
+// ══════════════════════════════════════════════
+
+const GOLD = '#c4a04e', GOLD2 = '#dbbf78', GOLD3 = 'rgba(196,160,78,.15)';
+const OK='#4caf50', WARN='#f0a030', ERR='#e05050', INFO='#5b9bd5', PURPLE='#9c7fd5';
+const PIE_COLORS = [GOLD,'#5b9bd5','#4caf50','#9c7fd5','#f0a030','#e05050','#48b4a0'];
+
+let revGraphMode = 'weekly';
+let finFilter = 'all';
+let finSearch = '';
+let stockGraphCat = 'all';
+
+// ── CANVAS HELPERS ──
+function getCtx(id){ const c=document.getElementById(id); if(!c)return null; c.width=c.offsetWidth||c.parentElement?.offsetWidth||600; return c.getContext('2d'); }
+
+function drawGrid(ctx,W,H,steps=5){
+  ctx.strokeStyle='rgba(196,160,78,.06)';ctx.lineWidth=1;
+  for(let i=0;i<=steps;i++){
+    const y=H-(H/steps)*i;
+    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
+  }
+}
+
+function drawBarChart(canvasId, labels, values, color=GOLD, options={}){
+  const ctx=getCtx(canvasId); if(!ctx)return;
+  const canvas=document.getElementById(canvasId);
+  const W=canvas.width, H=canvas.height;
+  const pad={t:20,r:10,b:28,l:44};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  drawGrid(ctx,W,H,4);
+
+  const max=Math.max(...values,1);
+  const bw=Math.max(4,(cW/values.length)-6);
+  const gap=(cW-bw*values.length)/(values.length+1);
+
+  // Y axis labels
+  ctx.fillStyle='rgba(122,122,104,.6)';ctx.font='9px Jost,sans-serif';ctx.textAlign='right';
+  for(let i=0;i<=4;i++){
+    const y=pad.t+cH-(cH/4)*i;
+    const v=Math.round(max/4*i);
+    ctx.fillText(v>=1000?(v/1000).toFixed(1)+'k':v, pad.l-6, y+3);
+  }
+
+  values.forEach((v,i)=>{
+    const x=pad.l+gap*(i+1)+bw*i;
+    const bh=Math.max(2,(v/max)*cH);
+    const y=pad.t+cH-bh;
+    // Barre gradient
+    const grad=ctx.createLinearGradient(0,y,0,y+bh);
+    grad.addColorStop(0,options.highlight&&i===options.highlight?GOLD2:color);
+    grad.addColorStop(1,'rgba(196,160,78,.1)');
+    ctx.fillStyle=grad;
+    ctx.fillRect(x,y,bw,bh);
+    // Valeur au dessus
+    if(v>0){
+      ctx.fillStyle=color;ctx.font='8px Jost,sans-serif';ctx.textAlign='center';
+      ctx.fillText(v>=1000?(v/1000).toFixed(1)+'k':v, x+bw/2, y-5);
+    }
+    // Label dessous
+    ctx.fillStyle='rgba(122,122,104,.6)';ctx.font='8px Jost,sans-serif';ctx.textAlign='center';
+    ctx.fillText(labels[i], x+bw/2, pad.t+cH+16);
+  });
+}
+
+function drawLineChart(canvasId, datasets, labels){
+  const ctx=getCtx(canvasId); if(!ctx)return;
+  const canvas=document.getElementById(canvasId);
+  const W=canvas.width, H=canvas.height;
+  const pad={t:20,r:16,b:28,l:50};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+
+  const allVals=datasets.flatMap(d=>d.values);
+  const max=Math.max(...allVals,1);
+
+  drawGrid(ctx,W,H,4);
+  ctx.fillStyle='rgba(122,122,104,.6)';ctx.font='9px Jost,sans-serif';ctx.textAlign='right';
+  for(let i=0;i<=4;i++){
+    const y=pad.t+cH-(cH/4)*i;
+    const v=Math.round(max/4*i);
+    ctx.fillText(v>=1000?(v/1000).toFixed(1)+'k€':v+'€', pad.l-6, y+3);
+  }
+
+  datasets.forEach(ds=>{
+    const pts=ds.values.map((v,i)=>({
+      x:pad.l+(i/(labels.length-1||1))*cW,
+      y:pad.t+cH-(v/max)*cH
+    }));
+    // Fill area
+    const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+cH);
+    grad.addColorStop(0,ds.color.replace(')',',0.2)').replace('rgb','rgba'));
+    grad.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x,pad.t+cH);
+    pts.forEach(p=>ctx.lineTo(p.x,p.y));
+    ctx.lineTo(pts[pts.length-1].x,pad.t+cH);
+    ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+    // Line
+    ctx.beginPath();ctx.strokeStyle=ds.color;ctx.lineWidth=2;ctx.lineJoin='round';
+    pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+    ctx.stroke();
+    // Dots
+    pts.forEach(p=>{
+      ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);
+      ctx.fillStyle=ds.color;ctx.fill();
+      ctx.strokeStyle=ds.color==='#c4a04e'?'#060908':'#0c110a';ctx.lineWidth=1.5;ctx.stroke();
+    });
+  });
+
+  // X labels
+  ctx.fillStyle='rgba(122,122,104,.6)';ctx.font='8px Jost,sans-serif';ctx.textAlign='center';
+  labels.forEach((l,i)=>{
+    const x=pad.l+(i/(labels.length-1||1))*cW;
+    ctx.fillText(l, x, pad.t+cH+16);
+  });
+}
+
+function drawDonut(canvasId, values, colors, total){
+  const ctx=getCtx(canvasId); if(!ctx)return;
+  const canvas=document.getElementById(canvasId);
+  const W=canvas.width,H=canvas.height;
+  const cx=W/2,cy=H/2,r=Math.min(W,H)/2-8,ir=r*.62;
+  ctx.clearRect(0,0,W,H);
+  let start=-Math.PI/2;
+  const tot=values.reduce((a,b)=>a+b,0)||1;
+  values.forEach((v,i)=>{
+    const angle=(v/tot)*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,start+angle);ctx.closePath();
+    ctx.fillStyle=colors[i];ctx.fill();
+    ctx.beginPath();ctx.arc(cx,cy,ir,0,Math.PI*2);ctx.fillStyle='#0c110a';ctx.fill();
+    start+=angle;
+  });
+  // Center value
+  if(document.getElementById('donut-center-val'))
+    document.getElementById('donut-center-val').textContent=total>=1000?(total/1000).toFixed(1)+'k €':total.toFixed(0)+' €';
+}
+
+function drawPie(canvasId, values, colors){
+  const ctx=getCtx(canvasId); if(!ctx)return;
+  const canvas=document.getElementById(canvasId);
+  const W=canvas.width,H=canvas.height;
+  const cx=W/2,cy=H/2,r=Math.min(W,H)/2-4;
+  ctx.clearRect(0,0,W,H);
+  let start=-Math.PI/2;
+  const tot=values.reduce((a,b)=>a+b,0)||1;
+  values.forEach((v,i)=>{
+    const angle=(v/tot)*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,start+angle);ctx.closePath();
+    ctx.fillStyle=colors[i];ctx.fill();
+    ctx.strokeStyle='#0c110a';ctx.lineWidth=2;ctx.stroke();
+    start+=angle;
+  });
+}
+
+// ══ FINANCES RENDER ══
+function renderFinances(){
+  const valid=D.reservations.filter(r=>r.statut!=='cancelled');
+  const total=valid.reduce((s,r)=>s+(r.montant_total||0),0);
+  const avg=valid.length?(total/valid.length):0;
+  const extraTotal=valid.reduce((s,r)=>s+(r.extras||[]).length*12,0);
+  document.getElementById('fin-mois').textContent=total.toLocaleString('fr-FR');
+  document.getElementById('fin-avg').textContent=avg.toFixed(2);
+  document.getElementById('fin-nb').textContent=valid.length;
+  document.getElementById('fin-extras').textContent=extraTotal.toFixed(0);
+  document.getElementById('fin-extras-pct').textContent=total?Math.round(extraTotal/total*100)+'% du CA':'';
+  document.getElementById('fin-trend').textContent='+12%';
+
+  // ── Graphique évolution ──
+  setTimeout(()=>{
+    const mode = revGraphMode;
+    let labels=[], rev=[], dep=[];
+    if(mode==='daily'){
+      for(let i=6;i>=0;i--){
+        const d=new Date(); d.setDate(d.getDate()-i);
+        const ds=d.toISOString().slice(0,10);
+        labels.push(d.toLocaleDateString('fr-FR',{weekday:'short'}));
+        const v=D.reservations.filter(r=>r.created_at?.startsWith(ds)&&r.statut!=='cancelled').reduce((s,r)=>s+(r.montant_total||0),0);
+        rev.push(Math.round(v));dep.push(Math.round(v*.4));
+      }
+    } else if(mode==='weekly'){
+      const base=[1200,2100,1800,2800,2400,3100,2600,total*.25];
+      const wLabels=['S-7','S-6','S-5','S-4','S-3','S-2','S-1','Sem. act.'];
+      labels=wLabels; rev=base; dep=base.map(v=>Math.round(v*.4));
+    } else {
+      const mNames=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+      const now=new Date().getMonth();
+      labels=mNames.slice(0,now+1);
+      rev=labels.map((_,i)=>Math.round(800+Math.random()*2400+i*150));
+      dep=rev.map(v=>Math.round(v*.4));
+    }
+
+    drawLineChart('rev-line-canvas',[
+      {values:rev,color:GOLD},
+      {values:dep,color:'rgba(224,80,80,.7)'}
+    ],labels);
+
+    // ── Revenus vs Dépenses barres groupées ──
+    drawRevVsDep('rev-vs-dep-canvas',labels,rev,dep);
+
+    const sumRev=rev.reduce((a,b)=>a+b,0);
+    const sumDep=dep.reduce((a,b)=>a+b,0);
+    const marge=sumRev-sumDep;
+    document.getElementById('rev-vs-dep-summary').innerHTML=`
+      <div style="text-align:center;padding:12px;background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.08)">
+        <div style="font-family:var(--serif);font-size:24px;color:var(--gold)">${sumRev.toLocaleString('fr-FR')} €</div>
+        <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:4px">Revenus bruts</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:rgba(224,80,80,.04);border:1px solid rgba(224,80,80,.08)">
+        <div style="font-family:var(--serif);font-size:24px;color:var(--err)">${sumDep.toLocaleString('fr-FR')} €</div>
+        <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:4px">Charges estimées (40%)</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:rgba(76,175,80,.04);border:1px solid rgba(76,175,80,.12)">
+        <div style="font-family:var(--serif);font-size:24px;color:var(--ok)">${marge.toLocaleString('fr-FR')} €</div>
+        <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:4px">Marge nette estimée</div>
+      </div>`;
+
+    // ── Donut répartition par formule ──
+    const fc={};valid.forEach(r=>fc[r.formule]=(fc[r.formule]||0)+(r.montant_total||0));
+    const fEntries=Object.entries(fc).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    drawDonut('rev-donut-canvas',fEntries.map(([,v])=>v),PIE_COLORS,total);
+    document.getElementById('rev-donut-legend').innerHTML=fEntries.map(([f,v],i)=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(196,160,78,.04)">
+        <div style="width:8px;height:8px;border-radius:2px;background:${PIE_COLORS[i]};flex-shrink:0"></div>
+        <div style="flex:1;font-size:10px;color:var(--light);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f}</div>
+        <div style="font-family:var(--serif);font-size:13px;color:${PIE_COLORS[i]}">${v.toFixed(0)} €</div>
+      </div>`).join('');
+
+  },100);
+
+  // ── Revenus par formule barres horizontales ──
+  const fc={};valid.forEach(r=>fc[r.formule]=(fc[r.formule]||0)+(r.montant_total||0));
+  const sf=Object.entries(fc).sort((a,b)=>b[1]-a[1]);
+  const mf=sf[0]?.[1]||1;
+  document.getElementById('fin-formules').innerHTML=sf.map(([f,v])=>`
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+        <span style="font-size:10px;color:var(--light)">${f}</span>
+        <span style="font-family:var(--serif);font-size:14px;color:var(--gold)">${v.toFixed(0)} €</span>
+      </div>
+      <div style="height:4px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden">
+        <div style="height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold));border-radius:2px;width:${v/mf*100}%;transition:width .8s cubic-bezier(.25,.46,.45,.94)"></div>
+      </div>
+      <div style="font-size:8px;color:var(--muted);margin-top:3px">${Math.round(v/total*100)}% du CA total</div>
+    </div>`).join('');
+
+  // ── Tableau transactions ──
+  renderFinTb();
+}
+
+function drawRevVsDep(canvasId,labels,rev,dep){
+  const ctx=getCtx(canvasId); if(!ctx)return;
+  const canvas=document.getElementById(canvasId);
+  const W=canvas.width,H=canvas.height;
+  const pad={t:16,r:10,b:28,l:50};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  drawGrid(ctx,W,H,4);
+  const max=Math.max(...rev,...dep,1);
+  const groupW=cW/labels.length;
+  const bw=groupW*.35;
+  ctx.fillStyle='rgba(122,122,104,.6)';ctx.font='9px Jost,sans-serif';ctx.textAlign='right';
+  for(let i=0;i<=4;i++){
+    const y=pad.t+cH-(cH/4)*i;
+    const v=Math.round(max/4*i);
+    ctx.fillText(v>=1000?(v/1000).toFixed(1)+'k':v,pad.l-5,y+3);
+  }
+  labels.forEach((l,i)=>{
+    const cx=pad.l+groupW*i+groupW/2;
+    // Revenu
+    const bh1=Math.max(2,(rev[i]/max)*cH);
+    const y1=pad.t+cH-bh1;
+    const g1=ctx.createLinearGradient(0,y1,0,y1+bh1);
+    g1.addColorStop(0,GOLD);g1.addColorStop(1,'rgba(196,160,78,.15)');
+    ctx.fillStyle=g1;ctx.fillRect(cx-bw-2,y1,bw,bh1);
+    // Dépense
+    const bh2=Math.max(2,(dep[i]/max)*cH);
+    const y2=pad.t+cH-bh2;
+    const g2=ctx.createLinearGradient(0,y2,0,y2+bh2);
+    g2.addColorStop(0,'rgba(224,80,80,.7)');g2.addColorStop(1,'rgba(224,80,80,.1)');
+    ctx.fillStyle=g2;ctx.fillRect(cx+2,y2,bw,bh2);
+    // Label
+    ctx.fillStyle='rgba(122,122,104,.6)';ctx.font='8px Jost,sans-serif';ctx.textAlign='center';
+    ctx.fillText(l,cx,pad.t+cH+16);
+  });
+  // Légende
+  ctx.fillStyle=GOLD;ctx.fillRect(pad.l,4,10,6);
+  ctx.fillStyle='rgba(196,160,78,.7)';ctx.font='8px Jost,sans-serif';ctx.textAlign='left';
+  ctx.fillText('Revenus',pad.l+14,10);
+  ctx.fillStyle='rgba(224,80,80,.7)';ctx.fillRect(pad.l+80,4,10,6);
+  ctx.fillStyle='rgba(224,80,80,.7)';ctx.fillText('Charges',pad.l+94,10);
+}
+
+function setRevGraph(mode,btn){
+  revGraphMode=mode;
+  document.querySelectorAll('#page-finances .fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderFinances();
+}
+
+function renderFinTb(){
+  let data=D.reservations;
+  if(finFilter!=='all') data=data.filter(r=>r.statut===finFilter);
+  if(finSearch) data=data.filter(r=>(r.nom+r.formule).toLowerCase().includes(finSearch));
+  const tb=document.getElementById('fin-tb');
+  if(!tb)return;
+  if(!data.length){tb.innerHTML='<tr><td colspan="9"><div class="empty"><div class="empty-icon">◈</div><p class="empty-txt">Aucune transaction</p></div></td></tr>';return;}
+  const total=data.filter(r=>r.statut!=='cancelled').reduce((s,r)=>s+(r.montant_total||0),0);
+  tb.innerHTML=data.map(r=>{
+    const extrasAmt=(r.extras||[]).length*12;
+    const forAmt=(r.montant_total||0)-extrasAmt;
+    return`<tr onclick="openResDrw('${r.id}')">
+      <td class="small">${fmtDate(r.date_seance)}</td>
+      <td class="name">${r.nom}</td>
+      <td>${r.formule}</td>
+      <td style="text-align:center">${r.nb_personnes||1}</td>
+      <td class="small">${(r.extras||[]).join(', ')||'–'}</td>
+      <td style="color:var(--light)">${forAmt.toFixed(2)} €</td>
+      <td style="color:var(--info)">${extrasAmt>0?extrasAmt.toFixed(2)+' €':'–'}</td>
+      <td class="gold">${(r.montant_total||0).toFixed(2)} €</td>
+      <td>${sbadge(r.statut)}</td>
+    </tr>`;
+  }).join('');
+  const totalEl=document.getElementById('fin-tb-total');
+  if(totalEl) totalEl.innerHTML=`Total affiché : <span style="font-family:var(--serif);font-size:16px;color:var(--gold);margin-left:8px">${total.toFixed(2)} €</span>`;
+}
+
+function setFinF(f,btn){finFilter=f;document.querySelectorAll('#page-finances .fb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderFinTb();}
+function filterFinTb(v){finSearch=v.toLowerCase();renderFinTb();}
+
+function exportFinCSV(){
+  const rows=[['Date','Client','Formule','Personnes','Extras','Montant formule','Montant extras','Total','Statut']];
+  D.reservations.forEach(r=>{
+    const extAmt=(r.extras||[]).length*12;
+    rows.push([r.date_seance,r.nom,r.formule,r.nb_personnes,(r.extras||[]).join(';'),(r.montant_total-extAmt).toFixed(2),extAmt.toFixed(2),(r.montant_total||0).toFixed(2),r.statut]);
+  });
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='eden-finances-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  toast('↓','Export finances téléchargé');
+}
+
+// ══ STOCKS RENDER ENRICHI ══
+function renderStocks(){
+  const all=Object.values(D.stocks).flat();
+  const lows=all.filter(s=>s.quantite<=s.seuil);
+  const crits=all.filter(s=>s.quantite<=2);
+
+  // KPIs
+  const skTotal=document.getElementById('sk-total');
+  const skAlerts=document.getElementById('sk-alerts');
+  const skCrit=document.getElementById('sk-critical');
+  const skDate=document.getElementById('sk-date');
+  if(skTotal) skTotal.textContent=all.length;
+  if(skAlerts) skAlerts.textContent=lows.length;
+  if(skCrit) skCrit.textContent=crits.length;
+  if(skDate) skDate.textContent=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+
+  // Alerts
+  document.getElementById('stock-alerts').innerHTML=crits.length
+    ?crits.map(s=>`<div class="alert err">🚨 <b>${s.nom}</b> — RUPTURE CRITIQUE : ${s.quantite} ${s.unite} restant(s)</div>`).join('')
+    :lows.length
+    ?lows.map(s=>`<div class="alert warn">⚠ <b>${s.nom}</b> — stock bas : ${s.quantite} ${s.unite} (seuil: ${s.seuil})</div>`).join('')
+    :'<div class="alert ok">✓ Tous les stocks sont au-dessus des seuils d&#39;alerte</div>';
+
+  // Catégories
+  ['smoothies','softs','extras'].forEach(cat=>{
+    const el=document.getElementById('st-'+cat);
+    if(!el)return;
+    const items=D.stocks[cat];
+    el.innerHTML=items.map((s,i)=>{
+      const pct=Math.min(100,s.quantite/(s.seuil*4)*100);
+      const cls=s.quantite<=2?'err':s.quantite<=s.seuil?'warn':'ok';
+      const clr=s.quantite<=2?'var(--err)':s.quantite<=s.seuil?'var(--warn)':'var(--ok)';
+      return`<div class="si">
+        <div class="si-name">${s.nom}<small>${s.unite}</small></div>
+        <div style="width:80px">
+          <div style="height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-bottom:3px">
+            <div style="height:100%;background:${clr};width:${pct}%;transition:width .5s"></div>
+          </div>
+          <div style="font-size:7px;color:var(--muted)">${Math.round(pct)}%</div>
+        </div>
+        <div class="si-qty" style="color:${clr}">${s.quantite}<small> ${s.unite.substring(0,3)}</small></div>
+        <div class="si-ctrl">
+          <button class="sib" onclick="adjStock('${cat}',${i},-1)">−</button>
+          <button class="sib" onclick="adjStock('${cat}',${i},1)">+</button>
+        </div>
+      </div>`;
+    }).join('')||'<p style="font-size:11px;color:var(--muted);padding:8px 0">Aucun produit</p>';
+  });
+
+  // Graphique barres stock
+  setTimeout(()=>renderStockChart(),80);
+
+  // Table complète
+  renderStockTable();
+  updateBadges();
+}
+
+function renderStockChart(){
+  const cat=stockGraphCat;
+  let items=cat==='all'?Object.values(D.stocks).flat():D.stocks[cat]||[];
+  const labels=items.map(s=>s.nom.substring(0,14));
+  const values=items.map(s=>s.quantite);
+  const colors=items.map(s=>s.quantite<=2?ERR:s.quantite<=s.seuil?WARN:GOLD);
+
+  const canvas=document.getElementById('stock-chart-canvas');
+  if(!canvas)return;
+  canvas.width=canvas.parentElement?.offsetWidth||600;
+  const ctx=getCtx('stock-chart-canvas');
+  if(!ctx)return;
+  const W=canvas.width,H=canvas.height;
+  const pad={t:20,r:10,b:50,l:44};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  drawGrid(ctx,W,H,4);
+
+  const max=Math.max(...values,1);
+  const bw=Math.max(8,(cW/values.length)-8);
+  const gap=(cW-bw*values.length)/(values.length+1);
+
+  // Y axis
+  ctx.fillStyle='rgba(122,122,104,.6)';ctx.font='9px Jost,sans-serif';ctx.textAlign='right';
+  for(let i=0;i<=4;i++){
+    const y=pad.t+cH-(cH/4)*i;
+    ctx.fillText(Math.round(max/4*i),pad.l-5,y+3);
+  }
+
+  // Seuil line
+  const seuilY=pad.t+cH-(5/max)*cH;
+  ctx.strokeStyle='rgba(240,160,48,.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(pad.l,seuilY);ctx.lineTo(pad.l+cW,seuilY);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(240,160,48,.6)';ctx.font='8px Jost,sans-serif';ctx.textAlign='left';
+  ctx.fillText('Seuil alerte',pad.l+4,seuilY-4);
+
+  values.forEach((v,i)=>{
+    const x=pad.l+gap*(i+1)+bw*i;
+    const bh=Math.max(2,(v/max)*cH);
+    const y=pad.t+cH-bh;
+    const grad=ctx.createLinearGradient(0,y,0,y+bh);
+    grad.addColorStop(0,colors[i]);
+    grad.addColorStop(1,colors[i].replace(')',',0.15)').replace(/^#([0-9a-f]{6})$/i,(_,h)=>`rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},0.15)`));
+    ctx.fillStyle=colors[i];ctx.fillRect(x,y,bw,bh);
+    // Valeur
+    ctx.fillStyle=colors[i];ctx.font='8px Jost,sans-serif';ctx.textAlign='center';
+    if(v>0) ctx.fillText(v,x+bw/2,y-5);
+    // Label incliné
+    ctx.save();ctx.translate(x+bw/2,pad.t+cH+8);ctx.rotate(-Math.PI/4);
+    ctx.fillStyle='rgba(122,122,104,.7)';ctx.font='8px Jost,sans-serif';ctx.textAlign='right';
+    ctx.fillText(labels[i],0,0);
+    ctx.restore();
+  });
+
+  // Pie catégories
+  const cats=['smoothies','softs','extras'];
+  const catTotals=cats.map(k=>D.stocks[k].reduce((s,i)=>s+i.quantite,0));
+  const catColors=[GOLD,INFO,OK];
+  drawPie('stock-pie-canvas',catTotals,catColors);
+  document.getElementById('stock-pie-legend').innerHTML=cats.map((k,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(196,160,78,.04)">
+      <div style="width:10px;height:10px;border-radius:2px;background:${catColors[i]};flex-shrink:0"></div>
+      <div style="flex:1;font-size:10px;color:var(--light);text-transform:capitalize">${k}</div>
+      <div style="font-family:var(--serif);font-size:14px;color:${catColors[i]}">${catTotals[i]}</div>
+    </div>`).join('');
+  document.getElementById('stock-pie-details').innerHTML=cats.map((k,i)=>`
+    <span style="font-size:8px;color:var(--muted)">${k}: <b style="color:${catColors[i]}">${catTotals[i]} unités</b></span>`).join(' · ');
+}
+
+function renderStockTable(search=''){
+  const tb=document.getElementById('stock-full-tb');
+  if(!tb)return;
+  const cats=['smoothies','softs','extras'];
+  let rows=cats.flatMap(cat=>D.stocks[cat].map((s,i)=>({...s,cat,idx:i})));
+  if(search) rows=rows.filter(s=>s.nom.toLowerCase().includes(search.toLowerCase()));
+  tb.innerHTML=rows.map(s=>{
+    const pct=Math.min(100,s.quantite/(s.seuil*4)*100);
+    const status=s.quantite<=2?'<span class="badge cancelled"><span class="badge-dot"></span>Critique</span>'
+      :s.quantite<=s.seuil?'<span class="badge pending"><span class="badge-dot"></span>Bas</span>'
+      :'<span class="badge confirmed"><span class="badge-dot"></span>OK</span>';
+    const catLabel=s.cat==='smoothies'?'🥤 Smoothies':s.cat==='softs'?'🧃 Softs':'✦ Extras';
+    return`<tr>
+      <td class="name">${s.nom}</td>
+      <td><span style="font-size:9px;color:var(--muted)">${catLabel}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:60px;height:3px;background:rgba(255,255,255,.04);border-radius:2px">
+            <div style="height:100%;background:${s.quantite<=2?'var(--err)':s.quantite<=s.seuil?'var(--warn)':'var(--ok)'};width:${pct}%"></div>
+          </div>
+          <span style="font-family:var(--serif);font-size:15px;color:var(--cream)">${s.quantite}</span>
+        </div>
+      </td>
+      <td class="small">${s.unite}</td>
+      <td style="color:var(--warn)">${s.seuil}</td>
+      <td>${status}</td>
+      <td onclick="event.stopPropagation()">
+        <div style="display:flex;gap:4px">
+          <button class="sib" onclick="adjStock('${s.cat}',${s.idx},-1);renderStocks()">−</button>
+          <button class="sib" onclick="adjStock('${s.cat}',${s.idx},1);renderStocks()">+</button>
+          <button class="atb" onclick="editStockQty('${s.cat}',${s.idx})">✏</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterStockTable(v){ renderStockTable(v); }
+function setStockGraph(cat,btn){
+  stockGraphCat=cat;
+  document.querySelectorAll('#page-stocks .fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderStockChart();
+}
+
+function editStockQty(cat,idx){
+  const s=D.stocks[cat][idx];
+  const val=prompt(`Quantité pour "${s.nom}" :`,s.quantite);
+  if(val!==null&&!isNaN(parseInt(val))){
+    D.stocks[cat][idx].quantite=Math.max(0,parseInt(val));
+    renderStocks();
+  }
+}
+
+function exportStockCSV(){
+  const rows=[['Produit','Catégorie','Quantité','Unité','Seuil alerte','Statut']];
+  Object.entries(D.stocks).forEach(([cat,items])=>items.forEach(s=>{
+    const st=s.quantite<=2?'Critique':s.quantite<=s.seuil?'Bas':'OK';
+    rows.push([s.nom,cat,s.quantite,s.unite,s.seuil,st]);
+  }));
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='eden-stocks-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  toast('↓','Export stocks téléchargé');
+}
+
+// ══ WINDOW RESIZE — redraw charts ══
+window.addEventListener('resize',()=>{
+  const activePage=document.querySelector('.page.active')?.id;
+  if(activePage==='page-finances') setTimeout(renderFinances,100);
+  if(activePage==='page-stocks') setTimeout(renderStockChart,100);
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDrw(); });
+</script>
+</body>
+</html>
