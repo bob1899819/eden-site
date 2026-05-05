@@ -909,7 +909,7 @@ const TOKEN_K  = 'eden_sb_token';
 const RTOKEN_K = 'eden_sb_refresh';
 const SESSION_K = 'eden_session_exp';
 
-let SB_URL = localStorage.getItem('eden_sb_url') || 'https://jdcxhejkuttaviqqonz.supabase.co';
+let SB_URL = localStorage.getItem('eden_sb_url') || 'https://jdcxhejkuttaviiqqonz.supabase.co';
 let SB_KEY = localStorage.getItem('eden_sb_key') || 'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A';
 let sbReady = false;
 let SB_TOKEN = ''; // JWT Supabase Auth token
@@ -920,7 +920,7 @@ let demFilter = 'all';
 // ── INIT ──
 window.onload = function(){
   // Credentials pré-configurés
-  localStorage.setItem('eden_sb_url', 'https://jdcxhejkuttaviqqonz.supabase.co');
+  localStorage.setItem('eden_sb_url', 'https://jdcxhejkuttaviiqqonz.supabase.co');
   localStorage.setItem('eden_sb_key', 'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A');
   // Nettoyer toutes les anciennes clés des versions précédentes
   ['eden_pwd_hash','eden_lock','eden_attempts','eden_admin_pwd',
@@ -1472,7 +1472,7 @@ function renderParams(){
       sl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(224,80,80,.05);border:1px solid rgba(224,80,80,.15);margin-bottom:12px"><span style="font-size:16px">⚠️</span><div><p style="font-size:10px;color:var(--err)">Niveau de sécurité : Faible</p><p style="font-size:9px;color:var(--muted);margin-top:2px">Mode local — configurez Supabase pour sécuriser</p></div></div>';
     }
   }
-  document.getElementById('cfg-url').value=localStorage.getItem(SB_URL_K)||'https://jdcxhejkuttaviqqonz.supabase.co';
+  document.getElementById('cfg-url').value=localStorage.getItem(SB_URL_K)||'https://jdcxhejkuttaviiqqonz.supabase.co';
   document.getElementById('cfg-key').value=localStorage.getItem(SB_KEY_K)||'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A';
 }
 function changePwd(){
