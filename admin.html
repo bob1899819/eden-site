@@ -1028,7 +1028,7 @@ async function loginSupabase(){
     if(errEl) errEl.textContent = err.message || 'Erreur de connexion';
     document.getElementById('auth-pwd').value = '';
   } finally {
-    if(btn) { btn.textContent = 'Accéder à l'espace admin'; btn.disabled = false; }
+    if(btn) { btn.textContent = "Accéder à l'espace admin"; btn.disabled = false; }
   }
 }
 
