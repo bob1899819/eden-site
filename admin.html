@@ -909,8 +909,8 @@ const TOKEN_K  = 'eden_sb_token';
 const RTOKEN_K = 'eden_sb_refresh';
 const SESSION_K = 'eden_session_exp';
 
-let SB_URL = localStorage.getItem('eden_sb_url') || 'https://jdcxhejkuttaviiqqonz.supabase.co';
-let SB_KEY = localStorage.getItem('eden_sb_key') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkY3hoZWprdXR0YXZpaXFxb256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzU5NjcsImV4cCI6MjA5MjcxMTk2N30.jKejetk46cKzo7gJGnyRQTCtvzjL0p-6CMkVgLfceZs';
+let SB_URL = localStorage.getItem('eden_sb_url') || 'https://jdcxhejkuttaviqqonz.supabase.co';
+let SB_KEY = localStorage.getItem('eden_sb_key') || 'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A';
 let sbReady = false;
 let SB_TOKEN = ''; // JWT Supabase Auth token
 let planWeekOffset = 0;
@@ -920,8 +920,8 @@ let demFilter = 'all';
 // ── INIT ──
 window.onload = function(){
   // Credentials pré-configurés
-  if(!localStorage.getItem('eden_sb_url')) localStorage.setItem('eden_sb_url', 'https://jdcxhejkuttaviiqqonz.supabase.co');
-  if(!localStorage.getItem('eden_sb_key')) localStorage.setItem('eden_sb_key', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkY3hoZWprdXR0YXZpaXFxb256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzU5NjcsImV4cCI6MjA5MjcxMTk2N30.jKejetk46cKzo7gJGnyRQTCtvzjL0p-6CMkVgLfceZs');
+  if(!localStorage.getItem('eden_sb_url')) localStorage.setItem('eden_sb_url', 'https://jdcxhejkuttaviqqonz.supabase.co');
+  if(!localStorage.getItem('eden_sb_key')) localStorage.setItem('eden_sb_key', 'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A');
   // Nettoyer toutes les anciennes clés des versions précédentes
   ['eden_pwd_hash','eden_lock','eden_attempts','eden_admin_pwd',
    'eden_admin_auth','eden_ok_old'].forEach(function(k){ localStorage.removeItem(k); });
@@ -1075,7 +1075,7 @@ function loginLocal(){
 }
 
 // Garder login() comme alias pour compatibilité clavier
-function login(){ loginLocal(); }
+function login(){ loginSupabase(); }
 
 // ── LOGOUT SÉCURISÉ ──
 async function logout(){
@@ -1472,8 +1472,8 @@ function renderParams(){
       sl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(224,80,80,.05);border:1px solid rgba(224,80,80,.15);margin-bottom:12px"><span style="font-size:16px">⚠️</span><div><p style="font-size:10px;color:var(--err)">Niveau de sécurité : Faible</p><p style="font-size:9px;color:var(--muted);margin-top:2px">Mode local — configurez Supabase pour sécuriser</p></div></div>';
     }
   }
-  document.getElementById('cfg-url').value=localStorage.getItem(SB_URL_K)||'https://jdcxhejkuttaviiqqonz.supabase.co';
-  document.getElementById('cfg-key').value=localStorage.getItem(SB_KEY_K)||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkY3hoZWprdXR0YXZpaXFxb256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzU5NjcsImV4cCI6MjA5MjcxMTk2N30.jKejetk46cKzo7gJGnyRQTCtvzjL0p-6CMkVgLfceZs';
+  document.getElementById('cfg-url').value=localStorage.getItem(SB_URL_K)||'https://jdcxhejkuttaviqqonz.supabase.co';
+  document.getElementById('cfg-key').value=localStorage.getItem(SB_KEY_K)||'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A';
 }
 function changePwd(){
   const p1=document.getElementById('np1').value,p2=document.getElementById('np2').value;
