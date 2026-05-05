@@ -917,6 +917,17 @@ let planWeekOffset = 0;
 let resFilter = 'all', resSearch = '';
 let demFilter = 'all';
 
+const D = {
+  reservations: [],
+  demandes: [],
+  stocks: {
+    smoothies: [],
+    softs: [],
+    extras: []
+  },
+  parrainages: []
+};
+
 // ── INIT ──
 window.onload = function(){
   // Credentials pré-configurés
