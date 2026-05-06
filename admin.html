@@ -544,6 +544,37 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 .mat-card-cat-tag.soin{background:rgba(156,127,213,.1);color:var(--purple);border:1px solid rgba(156,127,213,.18);}
 .mat-card-cat-tag.equipement{background:rgba(196,160,78,.1);color:var(--gold);border:1px solid rgba(196,160,78,.18);}
 
+
+
+/* Ajustements stock boissons — onglets + champs quantité premium */
+.stock-cat-tabs{
+  display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px;
+  background:var(--dark2);border:1px solid rgba(196,160,78,.08);padding:8px;
+}
+.stock-cat-tab{
+  background:transparent;border:1px solid rgba(196,160,78,.12);color:var(--muted);
+  font-family:var(--sans);font-size:8px;letter-spacing:2.4px;text-transform:uppercase;
+  padding:8px 14px;cursor:pointer;transition:all .22s;min-height:32px;
+}
+.stock-cat-tab:hover{border-color:rgba(196,160,78,.35);color:var(--light);background:rgba(196,160,78,.035);}
+.stock-cat-tab.on{border-color:var(--gold);color:var(--gold);background:rgba(196,160,78,.07);}
+.stock-list-grid{grid-template-columns:1fr!important;}
+.stock-list-grid .card{max-width:none;}
+.stock-qty-input{
+  width:72px;height:26px;background:rgba(255,255,255,.025)!important;
+  border:1px solid rgba(196,160,78,.18)!important;color:var(--gold)!important;
+  font-family:var(--serif);font-size:15px;text-align:center;outline:none;
+  padding:2px 7px;box-shadow:none!important;border-radius:0;
+}
+.stock-qty-input:focus{border-color:var(--gold)!important;background:rgba(196,160,78,.06)!important;}
+.stock-cat-select{
+  background:rgba(255,255,255,.025);border:1px solid rgba(196,160,78,.14);color:var(--gold);
+  font-family:var(--sans);font-size:9px;letter-spacing:1px;padding:5px 8px;outline:none;
+}
+.stock-cat-select option{background:var(--dark2);color:var(--cream);}
+.si .stock-qty-input{margin-left:auto;}
+@media(max-width:1100px){.stock-list-grid{grid-template-columns:1fr!important;}.stock-cat-tab{flex:1 1 160px;}}
+
 /* Tableau récap */
 .mat-table{width:100%;border-collapse:collapse;font-size:11px;}
 .mat-table thead th{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:9px 7px;text-align:left;font-weight:400;background:rgba(196,160,78,.025);border-bottom:1px solid rgba(196,160,78,.07);white-space:nowrap;}
@@ -814,6 +845,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
               <button class="fb" id="sg-sm" onclick="setStockGraph('smoothies',this)">Smoothies</button>
               <button class="fb" id="sg-sf" onclick="setStockGraph('softs',this)">Softs</button>
               <button class="fb" id="sg-ex" onclick="setStockGraph('extras',this)">Extras</button>
+              <button class="fb" id="sg-ac" onclick="setStockGraph('accessoires',this)">Accessoires</button>
             </div>
           </div>
           <div style="position:relative;height:200px;margin-top:10px">
@@ -832,8 +864,16 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
         </div>
       </div>
 
-      <!-- Listes détaillées par catégorie -->
-      <div class="g3">
+      <!-- Menu catégories stock boissons -->
+      <div class="stock-cat-tabs" id="stock-cat-tabs">
+        <button class="stock-cat-tab on" data-stock-tab="softs" onclick="setStockListCat('softs',this)">🧃 Softs & Jus</button>
+        <button class="stock-cat-tab" data-stock-tab="smoothies" onclick="setStockListCat('smoothies',this)">🥤 Smoothies</button>
+        <button class="stock-cat-tab" data-stock-tab="extras" onclick="setStockListCat('extras',this)">✦ Extras Bar</button>
+        <button class="stock-cat-tab" data-stock-tab="accessoires" onclick="setStockListCat('accessoires',this)">🛠 Accessoires</button>
+      </div>
+
+      <!-- Liste détaillée par catégorie sélectionnée -->
+      <div class="g4 stock-list-grid">
         <div class="card">
           <div class="card-h">
             <span class="card-t">🥤 Smoothies</span>
@@ -870,6 +910,18 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
           </div>
           <div id="st-extras"></div>
         </div>
+        <div class="card">
+          <div class="card-h">
+            <span class="card-t">🛠 Accessoires</span>
+            <button class="btn-s" onclick="addStock('accessoires')">+</button>
+          </div>
+          <div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:0 4px 8px;border-bottom:1px solid rgba(196,160,78,.06)">
+              <span>Produit</span><span>Qté</span>
+            </div>
+          </div>
+          <div id="st-accessoires"></div>
+        </div>
       </div>
 
       <!-- Table complète tous produits -->
@@ -882,7 +934,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
           </div>
         </div>
         <table>
-          <thead><tr><th>Produit</th><th>Catégorie</th><th>Accessoire</th><th>Quantité</th><th>Unité</th><th>Seuil alerte</th><th>Statut</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Produit</th><th>Catégorie / Accessoire</th><th>Quantité précise</th><th>Unité</th><th>Seuil alerte</th><th>Statut</th><th>Ajustement</th></tr></thead>
           <tbody id="stock-full-tb"></tbody>
         </table>
       </div>
@@ -1665,46 +1717,437 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
     <!-- ════ MATÉRIEL & RÉAPPRO ════ -->
     <section class="page" id="page-materiel">
       <div class="sh">
-        <div class="sh-left">
-          <p class="ey">Inventaire global</p>
-          <h2>Stocks <em>Matériel</em></h2>
-          <p style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1px">Suivi simple : stock total, cassé/HS, disponible réel, seuil minimum, quantité à reprendre et suppression définitive.</p>
-        </div>
+        <div class="sh-left"><p class="ey">Stock & approvisionnement</p><h2>Matériel <em>& Réappro</em></h2><p style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1px">Stock, conso/client, prévision rupture, recommandations de commande.</p></div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           <button class="btn-s" onclick="addMatItem()">+ Article</button>
-          <button class="btn-s" onclick="exportMatCSV()">↓ CSV</button>
-          <button class="btn-s fill" onclick="saveMateriel();toast('✓','Inventaire sauvegardé')">💾 Sauvegarder</button>
+          <button class="btn-s fill" onclick="openMatOrder()">⊟ Générer commande</button>
+          <button class="btn-s" onclick="exportMatCSV()">↓ Export CSV</button>
           <button class="btn-s danger" onclick="resetMateriel()">↺ Réinitialiser</button>
         </div>
       </div>
 
-      <div class="kpi-grid" style="margin-bottom:20px">
-        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Articles suivis</p><div class="kpi-val"><b id="mat-k-total">–</b></div><p class="kpi-sub">tous stocks confondus</p></div>
-        <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">À reprendre</p><div class="kpi-val"><b id="mat-k-reappro">–</b></div><p class="kpi-sub" id="mat-k-reappro-sub">articles sous seuil</p></div>
-        <div class="kpi" style="--accent:var(--err)"><p class="kpi-label">Cassé / HS</p><div class="kpi-val"><b id="mat-k-hs">–</b></div><p class="kpi-sub">unités indisponibles</p></div>
-        <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Coût réappro estimé</p><div class="kpi-val"><b id="mat-k-cost">–</b></div><p class="kpi-sub">si retour au stock cible</p></div>
+      <!-- Slider clients/semaine -->
+      <div class="card mat-slider-card" style="margin-bottom:20px">
+        <div class="card-h">
+          <span class="card-t">Simulation — clients par semaine</span>
+          <span style="font-size:9px;color:var(--muted)">Toutes les projections se mettent à jour en direct</span>
+        </div>
+        <div class="mat-slider-wrap">
+          <div class="mat-slider-vals">
+            <div class="mat-slider-display">
+              <span class="mat-slider-num" id="mat-client-num">50</span>
+              <span class="mat-slider-unit">clients / semaine</span>
+            </div>
+            <div class="mat-slider-side">
+              <div class="mat-mini"><p class="mat-mini-lbl">Par jour (sur 7j)</p><p class="mat-mini-val"><b id="mat-client-day">–</b> /j</p></div>
+              <div class="mat-mini"><p class="mat-mini-lbl">Par mois (×4,33)</p><p class="mat-mini-val"><b id="mat-client-month">–</b> /m</p></div>
+              <div class="mat-mini"><p class="mat-mini-lbl">Par an</p><p class="mat-mini-val"><b id="mat-client-year">–</b> /an</p></div>
+            </div>
+          </div>
+          <input type="range" id="mat-slider" class="mat-slider" min="10" max="250" step="5" value="50" oninput="setMatClients(this.value)">
+          <div class="mat-presets">
+            <button class="fb" onclick="setMatClients(20,this)">20</button>
+            <button class="fb" onclick="setMatClients(40,this)">40</button>
+            <button class="fb on" onclick="setMatClients(50,this)">50</button>
+            <button class="fb" onclick="setMatClients(65,this)">65</button>
+            <button class="fb" onclick="setMatClients(80,this)">80</button>
+            <button class="fb" onclick="setMatClients(100,this)">100</button>
+            <button class="fb" onclick="setMatClients(150,this)">150</button>
+            <button class="fb" onclick="setMatClients(200,this)">200</button>
+          </div>
+          <div class="mat-extra">
+            <div class="mat-p"><label>Jours d'ouverture / sem</label><input type="number" id="mat-days" class="mat-input" min="1" max="7" step="0.5" value="7" oninput="setMatParam('days',this.value)"></div>
+            <div class="mat-p"><label>Seuil couverture (jours)</label><input type="number" id="mat-cov" class="mat-input" min="1" step="1" value="7" oninput="setMatParam('seuilCouverture',this.value)"></div>
+            <div class="mat-p"><label>Marge sécurité (%)</label><input type="number" id="mat-safety" class="mat-input" min="0" step="5" value="20" oninput="setMatParam('safety',this.value)"></div>
+            <div class="mat-p"><label>Couverture commande visée (jours)</label><input type="number" id="mat-target" class="mat-input" min="7" step="1" value="30" oninput="setMatParam('targetDays',this.value)"></div>
+          </div>
+        </div>
       </div>
 
+      <!-- KPIs globaux -->
+      <div class="kpi-grid">
+        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Valeur totale stock</p><div class="kpi-val"><b id="mat-k-val">–</b> €</div><p class="kpi-sub" id="mat-k-val-sub">– articles référencés</p><span class="kpi-ico">▣</span></div>
+        <div class="kpi" style="--accent:var(--err)"><p class="kpi-label">Articles en alerte</p><div class="kpi-val"><b id="mat-k-alert">–</b></div><p class="kpi-sub" id="mat-k-alert-sub">à recommander</p><span class="kpi-ico">⚠</span></div>
+        <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Coût matériel / client</p><div class="kpi-val"><b id="mat-k-cost-cli">–</b> €</div><p class="kpi-sub">tous postes confondus</p><span class="kpi-ico">◯</span></div>
+        <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Coût matériel / semaine</p><div class="kpi-val"><b id="mat-k-cost-sem">–</b> €</div><p class="kpi-sub" id="mat-k-cost-sem-sub">à ce volume</p><span class="kpi-ico">◷</span></div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi" style="--accent:var(--gold-l)"><p class="kpi-label">Coût mensuel projeté</p><div class="kpi-val"><b id="mat-k-cost-mois">–</b> €</div><p class="kpi-sub">conso × 4,33</p><span class="kpi-ico">◬</span></div>
+        <div class="kpi" style="--accent:var(--gold-l)"><p class="kpi-label">Coût annuel projeté</p><div class="kpi-val"><b id="mat-k-cost-an">–</b> €</div><p class="kpi-sub">×12 mois</p><span class="kpi-ico">◈</span></div>
+        <div class="kpi" style="--accent:var(--purple)"><p class="kpi-label">Prochaine rupture</p><div class="kpi-val"><b id="mat-k-rupt">–</b></div><p class="kpi-sub" id="mat-k-rupt-sub">–</p><span class="kpi-ico">⏳</span></div>
+        <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">À commander (estimation)</p><div class="kpi-val"><b id="mat-k-cmd">–</b> €</div><p class="kpi-sub" id="mat-k-cmd-sub">– articles</p><span class="kpi-ico">⊟</span></div>
+      </div>
+
+      <!-- Filtres -->
+      <div class="card" style="margin-bottom:18px;padding:14px 18px">
+        <div class="filter-row" style="padding:0;border:none;align-items:center">
+          <button class="fb on" onclick="setMatFilter('all',this)">Tout</button>
+          <button class="fb" onclick="setMatFilter('linge',this)">Linge & textile</button>
+          <button class="fb" onclick="setMatFilter('hygiene',this)">Hygiène & consommable</button>
+          <button class="fb" onclick="setMatFilter('soin',this)">Produits soin</button>
+          <button class="fb" onclick="setMatFilter('equipement',this)">Équipement durable</button>
+          <button class="fb" onclick="setMatFilter('alert',this)" style="margin-left:auto;border-color:rgba(224,80,80,.3);color:var(--err)">⚠ Alertes uniquement</button>
+        </div>
+      </div>
+
+      <!-- Cartes par article -->
+      <div class="mat-grid" id="mat-grid"></div>
+
+      <!-- Tableau récap complet -->
       <div class="tw">
         <div class="tw-head">
-          <span class="tw-title">Stock global — matériel, informatique, sanitaire / linges</span>
-          <div class="tw-acts"><input class="search" placeholder="Rechercher…" oninput="filterMatTb(this.value)" id="mat-search"></div>
-        </div>
-        <div class="filter-row">
-          <button class="fb on" onclick="setMatFilter('all',this)">Tout</button>
-          <button class="fb" onclick="setMatFilter('materiel',this)">Matériel</button>
-          <button class="fb" onclick="setMatFilter('informatique',this)">Informatique</button>
-          <button class="fb" onclick="setMatFilter('sanitaire_linge',this)">Sanitaire / Linges</button>
-          <button class="fb" onclick="setMatFilter('accessoire',this)">Accessoires</button>
-          <button class="fb" onclick="setMatFilter('alerte',this)">À reprendre</button>
-          <button class="fb" onclick="setMatFilter('hs',this)">Cassé / HS</button>
+          <span class="tw-title">Vue tableau — récap complet</span>
+          <div class="tw-acts">
+            <input class="search" placeholder="Rechercher…" oninput="filterMatTb(this.value)" id="mat-search">
+            <button class="btn-s" onclick="exportMatCSV()">↓ CSV</button>
+          </div>
         </div>
         <div style="overflow-x:auto">
           <table class="mat-table">
-            <thead><tr><th>Article</th><th>Famille</th><th>Accessoire</th><th>Stock total</th><th>Cassé / HS</th><th>Disponible</th><th>Unité</th><th>Stock min</th><th>Stock cible</th><th>À reprendre</th><th>Prix u.</th><th>Coût réappro</th><th>État</th><th>Fournisseur</th><th>Lien</th><th>Commentaire</th><th>Actions</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Article</th>
+                <th>Cat.</th>
+                <th>Stock</th>
+                <th>Unité</th>
+                <th>Coût u.</th>
+                <th>Valeur</th>
+                <th>Conso/client</th>
+                <th>Conso/sem</th>
+                <th>Couverture</th>
+                <th>Stock min</th>
+                <th>Délai liv.</th>
+                <th>Date rupture</th>
+                <th>À cmd</th>
+                <th>Coût cmd</th>
+                <th>Fournisseur</th>
+                <th>Statut</th>
+                <th>Commentaire</th>
+                <th></th>
+              </tr>
+            </thead>
             <tbody id="mat-tb"></tbody>
+            <tfoot id="mat-tfoot"></tfoot>
           </table>
         </div>
+      </div>
+
+      <!-- Drawer commande -->
+      <div class="mat-order-overlay" id="mat-order-overlay" onclick="if(event.target===this)closeMatOrder()" style="display:none">
+        <div class="mat-order-drawer">
+          <div class="mat-order-h">
+            <div>
+              <p class="ey" style="color:var(--gold)">Recommandation</p>
+              <h3 style="font-family:var(--serif);font-size:22px;font-weight:300;margin-top:4px">Bon de <em style="color:var(--gold-l);font-style:italic">commande</em></h3>
+            </div>
+            <button class="btn-s" onclick="closeMatOrder()">✕ Fermer</button>
+          </div>
+          <div id="mat-order-body" style="margin-top:18px"></div>
+          <div class="mat-order-foot">
+            <button class="btn-s" onclick="copyMatOrder()">⎘ Copier le texte</button>
+            <button class="btn-s fill" onclick="exportMatOrderCSV()">↓ Export CSV</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ════ SUIVI DES CHARGES ════ -->
+    <section class="page" id="page-charges">
+      <div class="sh">
+        <div class="sh-left"><p class="ey">Pilotage financier</p><h2>Suivi des <em>charges</em></h2><p style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1px">Charges fixes, annuelles, variables, exceptionnelles · 12 mois et fluctuations.</p></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <select id="ch-year" class="ch-select" onchange="setChYear(this.value)"></select>
+          <button class="btn-s" onclick="copyChFromPrev()" title="Copier les valeurs de l'année précédente">⎘ Copier N-1</button>
+          <button class="btn-s" onclick="exportChCSV()">↓ Export CSV</button>
+          <button class="btn-s danger" onclick="resetCharges()">↺ Réinitialiser</button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Total charges année</p><div class="kpi-val"><b id="ch-k-total">–</b> €</div><p class="kpi-sub" id="ch-k-total-sub"></p><span class="kpi-ico">◈</span></div>
+        <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Moyenne mensuelle</p><div class="kpi-val"><b id="ch-k-moy">–</b> €</div><p class="kpi-sub">sur 12 mois</p><span class="kpi-ico">◷</span></div>
+        <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">Mois le plus lourd</p><div class="kpi-val"><b id="ch-k-max">–</b> €</div><p class="kpi-sub" id="ch-k-max-sub">–</p><span class="kpi-ico">▲</span></div>
+        <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Mois le plus léger</p><div class="kpi-val"><b id="ch-k-min">–</b> €</div><p class="kpi-sub" id="ch-k-min-sub">–</p><span class="kpi-ico">▽</span></div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi" style="--accent:var(--gold-l)"><p class="kpi-label">Charges fixes / mois</p><div class="kpi-val"><b id="ch-k-fix">–</b> €</div><p class="kpi-sub" id="ch-k-fix-pct">– % du total</p><span class="kpi-ico">▣</span></div>
+        <div class="kpi" style="--accent:var(--purple)"><p class="kpi-label">Charges variables / an</p><div class="kpi-val"><b id="ch-k-var">–</b> €</div><p class="kpi-sub" id="ch-k-var-pct">– % du total</p><span class="kpi-ico">◬</span></div>
+        <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Charges annuelles</p><div class="kpi-val"><b id="ch-k-an">–</b> €</div><p class="kpi-sub" id="ch-k-an-pct">– % du total</p><span class="kpi-ico">◯</span></div>
+        <div class="kpi" style="--accent:var(--err)"><p class="kpi-label">Charges exceptionnelles</p><div class="kpi-val"><b id="ch-k-exc">–</b> €</div><p class="kpi-sub" id="ch-k-exc-pct">– % du total</p><span class="kpi-ico">✦</span></div>
+      </div>
+
+      <!-- Paramètres utiles -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-h"><span class="card-t">Paramètres & objectifs</span><span style="font-size:9px;color:var(--muted)">Modifiables, sauvegardés localement</span></div>
+        <div class="ch-params">
+          <div class="ch-p"><label>Budget annuel cible (€)</label><input type="number" class="ch-input" id="ch-p-budget" min="0" step="100" oninput="setChParam('budget',this.value)"></div>
+          <div class="ch-p"><label>CA annuel prévu (€)</label><input type="number" class="ch-input" id="ch-p-ca" min="0" step="100" oninput="setChParam('caAnnuel',this.value)"></div>
+          <div class="ch-p"><label>Seuil alerte mensuel (€)</label><input type="number" class="ch-input" id="ch-p-alerte" min="0" step="100" oninput="setChParam('seuilAlerte',this.value)"></div>
+          <div class="ch-p"><label>Inflation annuelle (%)</label><input type="number" class="ch-input" id="ch-p-infla" min="0" step="0.1" oninput="setChParam('inflation',this.value)"></div>
+          <div class="ch-p"><label>TVA récupérable (%)</label><input type="number" class="ch-input" id="ch-p-tva" min="0" max="100" step="0.5" oninput="setChParam('tva',this.value)"></div>
+          <div class="ch-p"><label>Provision sécurité (mois)</label><input type="number" class="ch-input" id="ch-p-prov" min="0" step="0.5" oninput="setChParam('provision',this.value)"></div>
+        </div>
+        <div class="ch-params-out">
+          <div class="ch-mini"><p class="ch-mini-lbl">Écart vs budget</p><p class="ch-mini-val" id="ch-out-ecart-wrap"><b id="ch-out-ecart">–</b> €</p></div>
+          <div class="ch-mini"><p class="ch-mini-lbl">Ratio charges / CA</p><p class="ch-mini-val" id="ch-out-ratio-wrap"><b id="ch-out-ratio">–</b> %</p></div>
+          <div class="ch-mini"><p class="ch-mini-lbl">Trésorerie prudente</p><p class="ch-mini-val"><b id="ch-out-tresor">–</b> €</p></div>
+          <div class="ch-mini"><p class="ch-mini-lbl">Projection N+1 (avec inflation)</p><p class="ch-mini-val"><b id="ch-out-proj">–</b> €</p></div>
+          <div class="ch-mini"><p class="ch-mini-lbl">TVA récupérable estimée</p><p class="ch-mini-val"><b id="ch-out-tva">–</b> €</p></div>
+          <div class="ch-mini"><p class="ch-mini-lbl">Charges nettes après TVA</p><p class="ch-mini-val"><b id="ch-out-net">–</b> €</p></div>
+        </div>
+      </div>
+
+      <!-- Graphique évolution mensuelle -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-h">
+          <span class="card-t">Évolution mensuelle des charges</span>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="ch-legend"><span class="ch-dot" style="background:var(--gold)"></span>Total</span>
+            <span class="ch-legend"><span class="ch-dot" style="background:var(--gold-d)"></span>N-1</span>
+            <span class="ch-legend"><span class="ch-dot" style="background:var(--info)"></span>Budget cible</span>
+          </div>
+        </div>
+        <div style="position:relative;height:240px;margin-top:8px">
+          <canvas id="ch-line-canvas" style="width:100%;height:240px"></canvas>
+        </div>
+      </div>
+
+      <!-- Comparaison N vs N-1 -->
+      <div class="g2" style="margin-bottom:20px">
+        <div class="card">
+          <div class="card-h"><span class="card-t">Comparaison N vs N-1</span></div>
+          <div id="ch-compare"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="card-t">Top catégories de dépense</span></div>
+          <div id="ch-top"></div>
+        </div>
+      </div>
+
+      <!-- Tableau 12 mois éditable -->
+      <div class="tw" style="margin-bottom:20px">
+        <div class="tw-head">
+          <span class="tw-title">Tableau mensuel éditable — <span id="ch-table-year">–</span></span>
+          <div class="tw-acts">
+            <button class="btn-s" onclick="addChCat()">+ Catégorie</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <button class="fb on" onclick="setChFilter('all',this)">Toutes</button>
+          <button class="fb" onclick="setChFilter('fixe',this)">Fixes</button>
+          <button class="fb" onclick="setChFilter('variable',this)">Variables</button>
+          <button class="fb" onclick="setChFilter('annuelle',this)">Annuelles</button>
+          <button class="fb" onclick="setChFilter('exceptionnelle',this)">Exceptionnelles</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="ch-table" id="ch-table">
+            <thead id="ch-thead"></thead>
+            <tbody id="ch-tbody"></tbody>
+            <tfoot id="ch-tfoot"></tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Donut + barres répartition -->
+      <div class="g2">
+        <div class="card">
+          <div class="card-h"><span class="card-t">Répartition par type</span></div>
+          <div style="display:flex;align-items:center;gap:24px;padding:10px 0">
+            <div style="position:relative;flex-shrink:0">
+              <canvas id="ch-donut-canvas" width="160" height="160"></canvas>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
+                <div style="font-family:var(--serif);font-size:18px;color:var(--gold)" id="ch-donut-center">–</div>
+                <div style="font-size:7px;letter-spacing:2px;color:var(--muted);text-transform:uppercase">total / an</div>
+              </div>
+            </div>
+            <div id="ch-donut-legend" style="flex:1"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="card-t">Charges par mois — barres</span></div>
+          <div id="ch-month-bars"></div>
+        </div>
+      </div>
+    </section>
+    <!-- ════ SIMULATION REMPLISSAGE ════ -->
+    <section class="page" id="page-simulation">
+      <div class="sh">
+        <div class="sh-left"><p class="ey">Pilotage</p><h2>Simulation de <em>remplissage</em></h2><p style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1px">Projection du chiffre d'affaires, des coûts et de la marge par espace.</p></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="btn-s" onclick="applySimScenario('prudent')">Scénario prudent</button>
+          <button class="btn-s" onclick="applySimScenario('realiste')">Scénario réaliste</button>
+          <button class="btn-s" onclick="applySimScenario('fort')">Scénario fort</button>
+          <button class="btn-s danger" onclick="resetSimulation()">↺ Réinitialiser</button>
+        </div>
+      </div>
+
+      <!-- KPIs globaux -->
+      <div class="kpi-grid">
+        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">CA total / jour</p><div class="kpi-val"><b id="sim-k-ca-jour">–</b> €</div><p class="kpi-sub">tous espaces</p><span class="kpi-ico">◷</span></div>
+        <div class="kpi" style="--accent:var(--gold-l)"><p class="kpi-label">CA total / semaine</p><div class="kpi-val"><b id="sim-k-ca-sem">–</b> €</div><p class="kpi-sub">7 jours d'activité</p><span class="kpi-ico">◈</span></div>
+        <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Marge / jour</p><div class="kpi-val"><b id="sim-k-mg-jour">–</b> €</div><p class="kpi-sub" id="sim-k-mg-jour-sub">après coût variable</p><span class="kpi-ico">◆</span></div>
+        <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Marge / semaine</p><div class="kpi-val"><b id="sim-k-mg-sem">–</b> €</div><p class="kpi-sub" id="sim-k-mg-sem-sub">après coût variable</p><span class="kpi-ico">◆</span></div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Remplissage moyen / jour</p><div class="kpi-val"><b id="sim-k-rem-jour">–</b><span style="font-size:18px;color:var(--gold-l)"> %</span></div><p class="kpi-sub">capacités combinées</p><span class="kpi-ico">◉</span></div>
+        <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Remplissage moyen / semaine</p><div class="kpi-val"><b id="sim-k-rem-sem">–</b><span style="font-size:18px;color:var(--gold-l)"> %</span></div><p class="kpi-sub">capacités combinées</p><span class="kpi-ico">◉</span></div>
+        <div class="kpi" style="--accent:var(--purple)"><p class="kpi-label">CA mensuel estimé</p><div class="kpi-val"><b id="sim-k-ca-mois">–</b> €</div><p class="kpi-sub">CA semaine × 4,33</p><span class="kpi-ico">◬</span></div>
+        <div class="kpi" style="--accent:var(--purple)"><p class="kpi-label">Marge mensuelle estimée</p><div class="kpi-val"><b id="sim-k-mg-mois">–</b> €</div><p class="kpi-sub">avant charges fixes</p><span class="kpi-ico">◬</span></div>
+      </div>
+
+      <!-- Cartes par espace -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-h"><span class="card-t">Espaces — réservations & marges</span><span style="font-size:9px;color:var(--muted)">Modifie en temps réel · valeurs sauvegardées localement</span></div>
+        <div class="sim-grid" id="sim-grid"></div>
+      </div>
+
+      <!-- Objectif mensuel & annuel + Charges fixes -->
+      <div class="g2">
+        <div class="card">
+          <div class="card-h"><span class="card-t">Objectif mensuel & annuel estimé</span></div>
+          <div class="sim-mini-grid">
+            <div class="sim-mini"><p class="sim-mini-lbl">CA mensuel</p><p class="sim-mini-val"><b id="sim-obj-ca-mois">–</b> €</p></div>
+            <div class="sim-mini"><p class="sim-mini-lbl">Marge mensuelle</p><p class="sim-mini-val"><b id="sim-obj-mg-mois">–</b> €</p></div>
+            <div class="sim-mini"><p class="sim-mini-lbl">CA annuel</p><p class="sim-mini-val"><b id="sim-obj-ca-an">–</b> €</p></div>
+            <div class="sim-mini"><p class="sim-mini-lbl">Marge annuelle</p><p class="sim-mini-val"><b id="sim-obj-mg-an">–</b> €</p></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><span class="card-t">Charges fixes mensuelles</span><span style="font-size:9px;color:var(--muted)">Modifiable</span></div>
+          <div class="sim-fees" id="sim-fees"></div>
+          <div class="sim-fees-foot">
+            <div class="sim-mini"><p class="sim-mini-lbl">Total charges fixes / mois</p><p class="sim-mini-val"><b id="sim-fees-total">–</b> €</p></div>
+            <div class="sim-mini" id="sim-benef-wrap"><p class="sim-mini-lbl">Bénéfice mensuel estimé</p><p class="sim-mini-val"><b id="sim-benef">–</b> €</p></div>
+            <div class="sim-mini"><p class="sim-mini-lbl">Seuil CA / jour à atteindre</p><p class="sim-mini-val"><b id="sim-seuil-ca">–</b> €</p></div>
+            <div class="sim-mini"><p class="sim-mini-lbl">Seuil marge / jour à atteindre</p><p class="sim-mini-val"><b id="sim-seuil-mg">–</b> €</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tableau détail -->
+      <div class="tw">
+        <div class="tw-head"><span class="tw-title">Détail par espace</span></div>
+        <table>
+          <thead><tr>
+            <th>Espace</th>
+            <th>Résa / jour</th>
+            <th>CA / jour</th>
+            <th>Marge / jour</th>
+            <th>Résa / semaine</th>
+            <th>CA / semaine</th>
+            <th>Marge / semaine</th>
+            <th>Remplissage sem.</th>
+            <th>Marge %</th>
+          </tr></thead>
+          <tbody id="sim-table-tb"></tbody>
+        </table>
+      </div>
+
+      <!-- Graphiques -->
+      <div class="g2">
+        <div class="card">
+          <div class="card-h"><span class="card-t">CA semaine par espace</span></div>
+          <div class="sim-bars" id="sim-bars-ca"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="card-t">Marge semaine par espace</span></div>
+          <div class="sim-bars" id="sim-bars-mg"></div>
+        </div>
+      </div>
+    </section>
+    <!-- ════ FINANCES ════ -->
+    <section class="page" id="page-finances">
+      <div class="sh">
+        <div class="sh-left"><p class="ey">Analytique</p><h2>Revenus & <em>Statistiques</em></h2></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="fin-period" onchange="renderFinances()" style="background:var(--dark2);border:1px solid rgba(196,160,78,.14);color:var(--cream);padding:8px 14px;font-family:var(--sans);font-size:9px;letter-spacing:2px;outline:none;text-transform:uppercase">
+            <option value="month">Ce mois</option>
+            <option value="quarter">Ce trimestre</option>
+            <option value="year">Cette année</option>
+            <option value="all">Tout</option>
+          </select>
+          <button class="btn-s" onclick="exportFinCSV()">↓ Export CSV</button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Revenus totaux</p><div class="kpi-val"><b id="fin-mois">–</b> €</div><p class="kpi-sub"><span class="kpi-trend up" id="fin-trend">+0%</span> vs période préc.</p><span class="kpi-ico">◈</span></div>
+        <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Ticket moyen</p><div class="kpi-val"><b id="fin-avg">–</b> €</div><p class="kpi-sub">par réservation</p><span class="kpi-ico">◆</span></div>
+        <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Réservations</p><div class="kpi-val"><b id="fin-nb">–</b></div><p class="kpi-sub" id="fin-nb-sub">confirmées</p><span class="kpi-ico">◷</span></div>
+        <div class="kpi" style="--accent:var(--purple)"><p class="kpi-label">Revenus extras</p><div class="kpi-val"><b id="fin-extras">–</b> €</div><p class="kpi-sub" id="fin-extras-pct">du total</p><span class="kpi-ico">♔</span></div>
+      </div>
+
+      <!-- Graphiques ligne + donut -->
+      <div class="g2" style="margin-bottom:20px">
+        <div class="card" style="grid-column:1/-1">
+          <div class="card-h">
+            <span class="card-t">Évolution des revenus</span>
+            <div style="display:flex;gap:6px">
+              <button class="fb on" onclick="setRevGraph('weekly',this)">Semaines</button>
+              <button class="fb" onclick="setRevGraph('monthly',this)">Mois</button>
+              <button class="fb" onclick="setRevGraph('daily',this)">Jours</button>
+            </div>
+          </div>
+          <div style="position:relative;height:220px;margin-top:8px">
+            <canvas id="rev-line-canvas" style="width:100%;height:220px"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="g2" style="margin-bottom:20px">
+        <!-- Revenus par formule — barres horizontales -->
+        <div class="card">
+          <div class="card-h"><span class="card-t">Revenus par formule</span></div>
+          <div id="fin-formules"></div>
+        </div>
+
+        <!-- Donut répartition -->
+        <div class="card">
+          <div class="card-h"><span class="card-t">Répartition des revenus</span></div>
+          <div style="display:flex;align-items:center;gap:24px;padding:10px 0">
+            <div style="position:relative;flex-shrink:0">
+              <canvas id="rev-donut-canvas" width="160" height="160"></canvas>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
+                <div style="font-family:var(--serif);font-size:22px;color:var(--gold)" id="donut-center-val">–</div>
+                <div style="font-size:7px;letter-spacing:2px;color:var(--muted);text-transform:uppercase">total</div>
+              </div>
+            </div>
+            <div id="rev-donut-legend" style="flex:1"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dépenses estimées vs Revenus -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-h"><span class="card-t">Revenus vs Dépenses estimées</span><span style="font-size:9px;color:var(--muted)">Charges fixes estimées à 40% du CA</span></div>
+        <div style="position:relative;height:180px;margin-top:8px">
+          <canvas id="rev-vs-dep-canvas" style="width:100%;height:180px"></canvas>
+        </div>
+        <div id="rev-vs-dep-summary" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(196,160,78,.06)"></div>
+      </div>
+
+      <!-- Tableau transactions -->
+      <div class="tw">
+        <div class="tw-head">
+          <span class="tw-title">Toutes les transactions</span>
+          <div class="tw-acts">
+            <input class="search" placeholder="Rechercher…" oninput="filterFinTb(this.value)" id="fin-search">
+            <button class="btn-s" onclick="exportFinCSV()">↓ CSV</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <button class="fb on" onclick="setFinF('all',this)">Toutes</button>
+          <button class="fb" onclick="setFinF('confirmed',this)">Confirmées</button>
+          <button class="fb" onclick="setFinF('done',this)">Passées</button>
+          <button class="fb" onclick="setFinF('cancelled',this)">Annulées</button>
+        </div>
+        <table>
+          <thead><tr><th>Date</th><th>Client</th><th>Formule</th><th>Pers.</th><th>Extras</th><th>Montant formule</th><th>Montant extras</th><th>Total</th><th>Statut</th></tr></thead>
+          <tbody id="fin-tb"></tbody>
+        </table>
+        <div id="fin-tb-total" style="display:flex;justify-content:flex-end;padding:12px 16px;border-top:1px solid rgba(196,160,78,.08);font-size:11px;color:var(--muted)"></div>
       </div>
     </section>
 
@@ -1895,7 +2338,8 @@ const D = {
   stocks: {
     smoothies: [],
     softs: [],
-    extras: []
+    extras: [],
+    accessoires: []
   },
   parrainages: [],
   fidelite: []
@@ -2192,7 +2636,14 @@ async function loadSB(){
 ]);
     if(res) D.reservations=res;
     if(dem) D.demandes=dem;
-    if(Array.isArray(sto)){ const c={smoothies:[],softs:[],extras:[]}; sto.forEach(s=>{ if(c[s.categorie]) c[s.categorie].push({...s,seuil:s.seuil_alerte,accessoire:!!s.accessoire}); }); D.stocks=c; cacheStocks(); }
+    if(sto && sto.length){
+      const c={smoothies:[],softs:[],extras:[],accessoires:[]};
+      sto.forEach(s=>{
+        const cat=c[s.categorie] ? s.categorie : 'extras';
+        c[cat].push({...s,seuil:s.seuil_alerte ?? s.seuil ?? 5});
+      });
+      ['smoothies','softs','extras','accessoires'].forEach(k=>{ D.stocks[k]=c[k] || []; });
+    }
     if(par) D.parrainages=par;
     if(fid) D.fidelite=fid;
     renderAll();
@@ -2384,69 +2835,41 @@ function renderClients(search=''){
 function filterClients(v){ renderClients(v); }
 
 // ── STOCKS ──
-function stockNorm(s){
-  s.quantite = Number(s.quantite ?? 0) || 0;
-  s.seuil = Number(s.seuil ?? s.seuil_alerte ?? 5) || 0;
-  s.unite = s.unite || 'unités';
-  s.accessoire = !!s.accessoire;
-  return s;
+function renderStocks(){
+  const lows=Object.values(D.stocks).flat().filter(s=>s.quantite<=s.seuil);
+  document.getElementById('stock-alerts').innerHTML=lows.length
+    ?lows.map(s=>`<div class="alert ${s.quantite<=2?'err':'warn'}">⚠ <b>${s.nom}</b> — ${s.quantite} ${s.unite} restant(s)</div>`).join('')
+    :`<div class="alert ok">✓ Tous les stocks sont au-dessus des seuils d'alerte</div>`;
+  ['smoothies','softs','extras'].forEach(cat=>{
+    const el=document.getElementById('st-'+cat);
+    const items=D.stocks[cat];
+    el.innerHTML=items.map((s,i)=>{
+      const pct=Math.min(100,s.quantite/(s.seuil*4)*100);
+      const cls=s.quantite<=2?'err':s.quantite<=s.seuil?'warn':'ok';
+      return`<div class="si"><div class="si-name">${s.nom}<small>${s.unite}</small></div><div class="si-bar"><div class="si-fill ${cls}" style="width:${pct}%"></div></div><div class="si-qty">${s.quantite}<small> u.</small></div><div class="si-ctrl"><button class="sib" onclick="adjStock('${cat}',${i},-1)">−</button><button class="sib" onclick="adjStock('${cat}',${i},1)">+</button></div></div>`;
+    }).join('')||'<p style="font-size:11px;color:var(--muted);padding:8px 0">Aucun produit</p>';
+  });
+  updateBadges();
 }
-function cacheStocks(){ try{ localStorage.setItem('eden_stocks_cache', JSON.stringify(D.stocks)); }catch(e){} }
-async function persistStockItem(item){
-  cacheStocks();
-  if(!sbReady || !item) return;
-  try{
-    if(item.id && !String(item.id).startsWith('local_')){
-      await sbQ('stocks',{id:`eq.${item.id}`},'PATCH',{nom:item.nom,categorie:item.categorie || item.cat || undefined,quantite:Number(item.quantite||0),unite:item.unite||'unités',seuil_alerte:Number(item.seuil||item.seuil_alerte||5),accessoire:!!item.accessoire,updated_at:new Date().toISOString()});
-    }
-  }catch(e){ console.warn('persist stock err',e); toast('⚠','Stock modifié en local — vérifie la colonne accessoire Supabase','warn'); }
-}
-async function adjStock(cat,i,d){
-  const item=D.stocks?.[cat]?.[i]; if(!item) return;
-  item.quantite=Math.max(0,Number(item.quantite||0)+d);
-  renderStocks();
-  await persistStockItem(item);
-}
+function adjStock(cat,i,d){ D.stocks[cat][i].quantite=Math.max(0,D.stocks[cat][i].quantite+d); renderStocks(); }
 async function saveStocks(){
-  cacheStocks();
   if(sbReady){
     try{
       for(const[cat,items] of Object.entries(D.stocks)){
         for(const s of items){
-          s.categorie=cat;
-          if(s.id&&!String(s.id).startsWith('local_')) await sbQ('stocks',{id:`eq.${s.id}`},'PATCH',{nom:s.nom,categorie:cat,quantite:Number(s.quantite||0),unite:s.unite||'unités',seuil_alerte:Number(s.seuil||5),accessoire:!!s.accessoire,updated_at:new Date().toISOString()});
+          if(s.id&&!s.id.startsWith('local_')) await sbQ('stocks',{id:`eq.${s.id}`},'PATCH',{quantite:s.quantite,categorie:cat,nom:s.nom,unite:s.unite,seuil_alerte:s.seuil??s.seuil_alerte??5});
         }
       }
       toast('✓','Stocks sauvegardés dans Supabase');
-    } catch(e){ console.warn(e); toast('⚠','Erreur Supabase : vérifie la colonne accessoire','warn'); }
+    } catch(e){ toast('⚠','Erreur Supabase','warn'); }
   } else { toast('✓','Stocks sauvegardés localement'); }
 }
-async function addStock(cat){
-  const nom=prompt('Nom du produit :'); if(!nom) return;
-  const unite=prompt('Unité :','unités') || 'unités';
-  const qte=parseInt(prompt('Quantité :','0')||'0',10) || 0;
-  const seuil=parseInt(prompt('Seuil alerte :','5')||'5',10) || 5;
-  const accessoire=confirm('Est-ce un accessoire ?\nOK = Oui / Annuler = Non');
-  const item={id:'local_'+Date.now(),nom:nom.trim(),categorie:cat,unite,quantite:qte,seuil,accessoire};
-  D.stocks[cat].push(item);
-  renderStocks(); cacheStocks();
-  if(sbReady){
-    try{ const r=await sbQ('stocks',{},'POST',{nom:item.nom,categorie:cat,quantite:item.quantite,unite:item.unite,seuil_alerte:item.seuil,accessoire:item.accessoire}); if(Array.isArray(r)&&r[0]) item.id=r[0].id; cacheStocks(); toast('+','Produit ajouté'); }
-    catch(e){ console.warn(e); toast('⚠','Ajout local uniquement — vérifie la table stocks','warn'); }
-  } else toast('+','Produit ajouté localement');
-}
-async function delStock(cat,i){
-  const item=D.stocks?.[cat]?.[i]; if(!item) return;
-  if(!confirm('Supprimer définitivement « '+item.nom+' » du stock ?')) return;
-  D.stocks[cat].splice(i,1);
-  renderStocks(); cacheStocks();
-  if(sbReady && item.id && !String(item.id).startsWith('local_')){ try{ await sbQ('stocks',{id:`eq.${item.id}`},'DELETE'); toast('×','Produit supprimé'); } catch(e){ console.warn(e); toast('⚠','Supprimé localement mais pas dans Supabase','warn'); } }
-  else toast('×','Produit supprimé localement');
-}
-async function toggleStockAccessoire(cat,i,val){
-  const item=D.stocks?.[cat]?.[i]; if(!item) return;
-  item.accessoire = val === true || val === 'true' || val === 1 || val === '1';
-  renderStocks(); await persistStockItem(item);
+function addStock(cat){
+  const nom=prompt('Nom du produit :');if(!nom)return;
+  const unite=prompt('Unité :','unités');
+  const qte=parseInt(prompt('Quantité :','0')||'0');
+  D.stocks[cat].push({id:'local_'+Date.now(),nom,unite:unite||'unités',quantite:qte,seuil:5});
+  renderStocks();
 }
 
 // ── COMMANDES EXTRAS ──
@@ -2798,6 +3221,7 @@ let revGraphMode = 'weekly';
 let finFilter = 'all';
 let finSearch = '';
 let stockGraphCat = 'all';
+let stockListCat = 'softs';
 
 // ── CANVAS HELPERS ──
 function getCtx(id){ const c=document.getElementById(id); if(!c)return null; c.width=c.offsetWidth||c.parentElement?.offsetWidth||600; return c.getContext('2d'); }
@@ -3131,42 +3555,338 @@ function exportFinCSV(){
 }
 
 // ══ STOCKS RENDER ENRICHI ══
+const STOCK_CATS = ['smoothies','softs','extras','accessoires'];
+const STOCK_CAT_LABELS = {
+  smoothies:'🥤 Smoothies',
+  softs:'🧃 Softs',
+  extras:'✦ Extras',
+  accessoires:'🛠 Accessoires'
+};
+const STOCK_CAT_COLORS = {smoothies:GOLD,softs:INFO,extras:OK,accessoires:PURPLE};
+
+function normalizeStockItem(s){
+  return {
+    ...s,
+    categorie:s.categorie || s.cat || 'extras',
+    seuil:s.seuil ?? s.seuil_alerte ?? 5,
+    quantite:Number(s.quantite || 0),
+    unite:s.unite || 'unités'
+  };
+}
+function saveStocksLocal(){
+  localStorage.setItem('eden_stocks_cache', JSON.stringify(D.stocks));
+}
+async function persistStockItem(cat, idx){
+  const s = D.stocks?.[cat]?.[idx];
+  if(!s) return;
+  saveStocksLocal();
+  if(sbReady && s.id && !String(s.id).startsWith('local_')){
+    try{
+      await sbQ('stocks',{id:`eq.${s.id}`},'PATCH',{
+        categorie:cat,
+        nom:s.nom,
+        unite:s.unite,
+        quantite:Number(s.quantite||0),
+        seuil_alerte:s.seuil ?? s.seuil_alerte ?? 5
+      });
+      toast('✓','Stock sauvegardé');
+    }catch(e){
+      console.error(e);
+      toast('⚠','Stock modifié en local mais non sauvegardé Supabase','warn');
+    }
+  }
+}
+
 function renderStocks(){
-  ['smoothies','softs','extras'].forEach(cat=>{ D.stocks[cat]=(D.stocks[cat]||[]).map(stockNorm); });
-  const all=Object.values(D.stocks).flat();
-  const lows=all.filter(s=>Number(s.quantite||0)<=Number(s.seuil||0));
-  const crits=all.filter(s=>Number(s.quantite||0)<=2);
-  const setTxt=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
-  setTxt('sk-total',all.length); setTxt('sk-alerts',lows.length); setTxt('sk-critical',crits.length); setTxt('sk-date',new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short'}));
-  const alerts=document.getElementById('stock-alerts');
-  if(alerts) alerts.innerHTML=crits.length ? crits.map(s=>`<div class="alert err">🚨 <b>${s.nom}</b> — RUPTURE CRITIQUE : ${s.quantite} ${s.unite} restant(s)</div>`).join('') : lows.length ? lows.map(s=>`<div class="alert warn">⚠ <b>${s.nom}</b> — stock bas : ${s.quantite} ${s.unite} (seuil: ${s.seuil})</div>`).join('') : '<div class="alert ok">✓ Tous les stocks sont au-dessus des seuils d&#39;alerte</div>';
-  ['smoothies','softs','extras'].forEach(cat=>{
-    const el=document.getElementById('st-'+cat); if(!el) return; const items=D.stocks[cat]||[];
-    el.innerHTML=items.map((s,i)=>{ const pct=Math.min(100, Number(s.quantite||0)/(Math.max(1,Number(s.seuil||5))*4)*100); const clr=Number(s.quantite||0)<=2?'var(--err)':Number(s.quantite||0)<=Number(s.seuil||5)?'var(--warn)':'var(--ok)'; const acc=s.accessoire?'<span style="font-size:7px;color:var(--info);letter-spacing:1px;text-transform:uppercase">Accessoire</span>':''; return`<div class="si"><div class="si-name">${s.nom}<small>${s.unite} ${acc}</small></div><div style="width:80px"><div style="height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-bottom:3px"><div style="height:100%;background:${clr};width:${pct}%;transition:width .5s"></div></div><div style="font-size:7px;color:var(--muted)">${Math.round(pct)}%</div></div><div class="si-qty" style="color:${clr}">${s.quantite}<small> ${(s.unite||'u').substring(0,3)}</small></div><div class="si-ctrl"><button class="sib" onclick="adjStock('${cat}',${i},-1)">−</button><button class="sib" onclick="adjStock('${cat}',${i},1)">+</button><button class="sib" title="Supprimer" onclick="delStock('${cat}',${i})" style="color:var(--err)">×</button></div></div>`; }).join('')||'<p style="font-size:11px;color:var(--muted);padding:8px 0">Aucun produit</p>';
+  STOCK_CATS.forEach(k=>{ if(!Array.isArray(D.stocks[k])) D.stocks[k]=[]; });
+  const all=STOCK_CATS.flatMap(cat=>(D.stocks[cat]||[]).map((s,idx)=>({...normalizeStockItem(s),cat,idx})));
+  const lows=all.filter(s=>s.quantite<=s.seuil);
+  const crits=all.filter(s=>s.quantite<=2);
+
+  const skTotal=document.getElementById('sk-total');
+  const skAlerts=document.getElementById('sk-alerts');
+  const skCrit=document.getElementById('sk-critical');
+  const skDate=document.getElementById('sk-date');
+  if(skTotal) skTotal.textContent=all.length;
+  if(skAlerts) skAlerts.textContent=lows.length;
+  if(skCrit) skCrit.textContent=crits.length;
+  if(skDate) skDate.textContent=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+
+  const alertEl=document.getElementById('stock-alerts');
+  if(alertEl){
+    alertEl.innerHTML=crits.length
+      ?crits.map(s=>`<div class="alert err">🚨 <b>${s.nom}</b> — RUPTURE CRITIQUE : ${s.quantite} ${s.unite} restant(s)</div>`).join('')
+      :lows.length
+      ?lows.map(s=>`<div class="alert warn">⚠ <b>${s.nom}</b> — stock bas : ${s.quantite} ${s.unite} (seuil: ${s.seuil})</div>`).join('')
+      :'<div class="alert ok">✓ Tous les stocks sont au-dessus des seuils d&#39;alerte</div>';
+  }
+
+  STOCK_CATS.forEach(cat=>{
+    const el=document.getElementById('st-'+cat);
+    if(!el)return;
+    const items=D.stocks[cat]||[];
+    el.innerHTML=items.map((raw,i)=>{
+      const s=normalizeStockItem(raw);
+      const pct=Math.min(100,s.quantite/((s.seuil||5)*4)*100);
+      const clr=s.quantite<=2?'var(--err)':s.quantite<=s.seuil?'var(--warn)':'var(--ok)';
+      return`<div class="si">
+        <div class="si-name">${s.nom}<small>${s.unite}</small></div>
+        <div style="width:78px">
+          <div style="height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-bottom:3px">
+            <div style="height:100%;background:${clr};width:${pct}%;transition:width .5s"></div>
+          </div>
+          <div style="font-size:7px;color:var(--muted)">${Math.round(pct)}%</div>
+        </div>
+        <div class="si-ctrl" style="align-items:center">
+          <button class="sib" onclick="adjStock('${cat}',${i},-1)">−</button>
+          <input class="stock-qty-input" type="number" min="0" value="${s.quantite}" onchange="setStockQty('${cat}',${i},this.value)" onkeydown="if(event.key==='Enter')this.blur()">
+          <button class="sib" onclick="adjStock('${cat}',${i},1)">+</button>
+        </div>
+      </div>`;
+    }).join('')||'<p style="font-size:11px;color:var(--muted);padding:8px 0">Aucun produit</p>';
   });
-  setTimeout(()=>renderStockChart(),80); renderStockTable(document.getElementById('stock-search')?.value||''); updateBadges();
+
+  updateStockListVisibility();
+  setTimeout(()=>renderStockChart(),80);
+  renderStockTable(document.getElementById('stock-search')?.value || '');
+  updateBadges();
 }
+
+function updateStockListVisibility(){
+  if(!STOCK_CATS.includes(stockListCat)) stockListCat='softs';
+  STOCK_CATS.forEach(cat=>{
+    const el=document.getElementById('st-'+cat);
+    const card=el?.closest('.card');
+    if(card) card.style.display = (cat===stockListCat) ? '' : 'none';
+  });
+  document.querySelectorAll('.stock-cat-tab').forEach(btn=>{
+    btn.classList.toggle('on', btn.dataset.stockTab===stockListCat);
+    const cat=btn.dataset.stockTab;
+    if(cat && STOCK_CAT_LABELS?.[cat]){
+      const count=(D.stocks?.[cat]||[]).length;
+      const base=STOCK_CAT_LABELS[cat];
+      btn.innerHTML = `${base} <span style="opacity:.55">(${count})</span>`;
+    }
+  });
+}
+
+function setStockListCat(cat,btn){
+  if(!STOCK_CATS.includes(cat)) return;
+  stockListCat=cat;
+  updateStockListVisibility();
+}
+
+async function adjStock(cat,i,d){
+  if(!D.stocks?.[cat]?.[i]) return;
+  D.stocks[cat][i].quantite=Math.max(0,Number(D.stocks[cat][i].quantite||0)+d);
+  renderStocks();
+  await persistStockItem(cat,i);
+}
+
+async function setStockQty(cat,idx,val){
+  if(!D.stocks?.[cat]?.[idx]) return;
+  const n=Math.max(0,parseInt(val,10)||0);
+  D.stocks[cat][idx].quantite=n;
+  renderStocks();
+  await persistStockItem(cat,idx);
+}
+
+async function setStockCategory(cat,idx,newCat){
+  if(!D.stocks?.[cat]?.[idx] || !STOCK_CATS.includes(newCat)) return;
+  if(cat===newCat) return;
+  const item={...D.stocks[cat][idx],categorie:newCat};
+  D.stocks[cat].splice(idx,1);
+  D.stocks[newCat].push(item);
+  renderStocks();
+  const newIdx=D.stocks[newCat].length-1;
+  await persistStockItem(newCat,newIdx);
+}
+
+async function deleteStock(cat,idx){
+  const item=D.stocks?.[cat]?.[idx];
+  if(!item) return;
+  if(!confirm(`Supprimer définitivement "${item.nom}" du stock ?`)) return;
+  D.stocks[cat].splice(idx,1);
+  saveStocksLocal();
+  renderStocks();
+  if(sbReady && item.id && !String(item.id).startsWith('local_')){
+    try{
+      await sbQ('stocks',{id:`eq.${item.id}`},'DELETE');
+      toast('✓','Produit supprimé');
+    }catch(e){
+      console.error(e);
+      toast('⚠','Produit supprimé localement mais pas dans Supabase','warn');
+    }
+  }
+}
+
+async function saveStocks(){
+  saveStocksLocal();
+  if(!sbReady){ toast('✓','Stocks sauvegardés localement'); return; }
+  try{
+    for(const cat of STOCK_CATS){
+      const items=D.stocks[cat]||[];
+      for(let i=0;i<items.length;i++){
+        const s=normalizeStockItem(items[i]);
+        if(s.id && !String(s.id).startsWith('local_')){
+          await sbQ('stocks',{id:`eq.${s.id}`},'PATCH',{
+            categorie:cat, nom:s.nom, unite:s.unite,
+            quantite:Number(s.quantite||0), seuil_alerte:s.seuil ?? 5
+          });
+        }
+      }
+    }
+    toast('✓','Stocks sauvegardés dans Supabase');
+  }catch(e){ console.error(e); toast('⚠','Erreur Supabase','warn'); }
+}
+
+async function addStock(cat){
+  if(!STOCK_CATS.includes(cat)) cat='softs';
+  const nom=prompt('Nom du produit :'); if(!nom)return;
+  const unite=prompt('Unité :','unités') || 'unités';
+  const qte=Math.max(0,parseInt(prompt('Quantité :','0')||'0',10)||0);
+  const seuil=Math.max(0,parseInt(prompt('Seuil alerte :','5')||'5',10)||5);
+  const item={id:'local_'+Date.now(),categorie:cat,nom,unite,quantite:qte,seuil};
+  D.stocks[cat].push(item);
+  saveStocksLocal();
+  renderStocks();
+  if(sbReady){
+    try{
+      const res=await sbQ('stocks',{},'POST',{categorie:cat,nom,unite,quantite:qte,seuil_alerte:seuil});
+      if(Array.isArray(res)&&res[0]?.id) D.stocks[cat][D.stocks[cat].length-1].id=res[0].id;
+      saveStocksLocal();
+      toast('✓','Produit ajouté');
+    }catch(e){ console.error(e); toast('⚠','Produit ajouté localement mais pas dans Supabase','warn'); }
+  }
+}
+
 function renderStockChart(){
-  const cat=stockGraphCat; let items=cat==='all'?Object.values(D.stocks).flat():D.stocks[cat]||[];
-  const labels=items.map(s=>String(s.nom||'').substring(0,14)); const values=items.map(s=>Number(s.quantite||0)); const colors=items.map(s=>Number(s.quantite||0)<=2?ERR:Number(s.quantite||0)<=Number(s.seuil||5)?WARN:GOLD);
-  const canvas=document.getElementById('stock-chart-canvas'); if(!canvas)return; canvas.width=canvas.parentElement?.offsetWidth||600; const ctx=getCtx('stock-chart-canvas'); if(!ctx)return;
-  const W=canvas.width,H=canvas.height,pad={t:20,r:10,b:50,l:44},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b; ctx.clearRect(0,0,W,H); drawGrid(ctx,W,H,4);
-  const max=Math.max(...values,1), bw=Math.max(8,(cW/(values.length||1))-8), gap=(cW-bw*values.length)/(values.length+1||1);
-  ctx.fillStyle='rgba(122,122,104,.6)';ctx.font='9px Jost,sans-serif';ctx.textAlign='right'; for(let i=0;i<=4;i++){ const y=pad.t+cH-(cH/4)*i; ctx.fillText(Math.round(max/4*i),pad.l-5,y+3); }
-  const seuilY=pad.t+cH-(5/max)*cH; ctx.strokeStyle='rgba(240,160,48,.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(pad.l,seuilY);ctx.lineTo(pad.l+cW,seuilY);ctx.stroke();ctx.setLineDash([]); ctx.fillStyle='rgba(240,160,48,.6)';ctx.font='8px Jost,sans-serif';ctx.textAlign='left';ctx.fillText('Seuil alerte',pad.l+4,seuilY-4);
-  values.forEach((v,i)=>{ const x=pad.l+gap*(i+1)+bw*i,bh=Math.max(2,(v/max)*cH),y=pad.t+cH-bh; ctx.fillStyle=colors[i];ctx.fillRect(x,y,bw,bh); ctx.fillStyle=colors[i];ctx.font='8px Jost,sans-serif';ctx.textAlign='center'; if(v>0) ctx.fillText(v,x+bw/2,y-5); ctx.save();ctx.translate(x+bw/2,pad.t+cH+8);ctx.rotate(-Math.PI/4);ctx.fillStyle='rgba(122,122,104,.7)';ctx.font='8px Jost,sans-serif';ctx.textAlign='right';ctx.fillText(labels[i],0,0);ctx.restore(); });
-  const cats=['smoothies','softs','extras']; const catTotals=cats.map(k=>(D.stocks[k]||[]).reduce((s,i)=>s+Number(i.quantite||0),0)); const catColors=[GOLD,INFO,OK]; drawPie('stock-pie-canvas',catTotals,catColors);
-  const leg=document.getElementById('stock-pie-legend'); if(leg) leg.innerHTML=cats.map((k,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(196,160,78,.04)"><div style="width:10px;height:10px;border-radius:2px;background:${catColors[i]};flex-shrink:0"></div><div style="flex:1;font-size:10px;color:var(--light);text-transform:capitalize">${k}</div><div style="font-family:var(--serif);font-size:14px;color:${catColors[i]}">${catTotals[i]}</div></div>`).join('');
-  const det=document.getElementById('stock-pie-details'); if(det) det.innerHTML=cats.map((k,i)=>`<span style="font-size:8px;color:var(--muted)">${k}: <b style="color:${catColors[i]}">${catTotals[i]} unités</b></span>`).join(' · ');
+  const cat=stockGraphCat;
+  let items=cat==='all'?STOCK_CATS.flatMap(k=>D.stocks[k]||[]):D.stocks[cat]||[];
+  const labels=items.map(s=>String(s.nom||'').substring(0,14));
+  const values=items.map(s=>Number(s.quantite||0));
+  const colors=items.map(s=>s.quantite<=2?ERR:s.quantite<=(s.seuil??s.seuil_alerte??5)?WARN:GOLD);
+
+  const canvas=document.getElementById('stock-chart-canvas');
+  if(!canvas)return;
+  canvas.width=canvas.parentElement?.offsetWidth||600;
+  const ctx=getCtx('stock-chart-canvas');
+  if(!ctx)return;
+  const W=canvas.width,H=canvas.height;
+  const pad={t:20,r:10,b:50,l:44};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  drawGrid(ctx,W,H,4);
+
+  const max=Math.max(...values,1);
+  const bw=Math.max(8,(cW/Math.max(values.length,1))-8);
+  const gap=(cW-bw*Math.max(values.length,1))/(Math.max(values.length,1)+1);
+
+  ctx.fillStyle='rgba(122,122,104,.6)';ctx.font='9px Jost,sans-serif';ctx.textAlign='right';
+  for(let i=0;i<=4;i++){
+    const y=pad.t+cH-(cH/4)*i;
+    ctx.fillText(Math.round(max/4*i),pad.l-5,y+3);
+  }
+
+  const seuilY=pad.t+cH-(5/max)*cH;
+  ctx.strokeStyle='rgba(240,160,48,.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(pad.l,seuilY);ctx.lineTo(pad.l+cW,seuilY);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(240,160,48,.6)';ctx.font='8px Jost,sans-serif';ctx.textAlign='left';
+  ctx.fillText('Seuil alerte',pad.l+4,seuilY-4);
+
+  values.forEach((v,i)=>{
+    const x=pad.l+gap*(i+1)+bw*i;
+    const bh=Math.max(2,(v/max)*cH);
+    const y=pad.t+cH-bh;
+    ctx.fillStyle=colors[i];ctx.fillRect(x,y,bw,bh);
+    ctx.fillStyle=colors[i];ctx.font='8px Jost,sans-serif';ctx.textAlign='center';
+    if(v>0) ctx.fillText(v,x+bw/2,y-5);
+    ctx.save();ctx.translate(x+bw/2,pad.t+cH+8);ctx.rotate(-Math.PI/4);
+    ctx.fillStyle='rgba(122,122,104,.7)';ctx.font='8px Jost,sans-serif';ctx.textAlign='right';
+    ctx.fillText(labels[i],0,0);
+    ctx.restore();
+  });
+
+  const cats=STOCK_CATS;
+  const catTotals=cats.map(k=>(D.stocks[k]||[]).reduce((s,i)=>s+Number(i.quantite||0),0));
+  const catColors=cats.map(k=>STOCK_CAT_COLORS[k]);
+  drawPie('stock-pie-canvas',catTotals,catColors);
+  const legend=document.getElementById('stock-pie-legend');
+  if(legend) legend.innerHTML=cats.map((k,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(196,160,78,.04)">
+      <div style="width:10px;height:10px;border-radius:2px;background:${catColors[i]};flex-shrink:0"></div>
+      <div style="flex:1;font-size:10px;color:var(--light)">${STOCK_CAT_LABELS[k]}</div>
+      <div style="font-family:var(--serif);font-size:14px;color:${catColors[i]}">${catTotals[i]}</div>
+    </div>`).join('');
+  const details=document.getElementById('stock-pie-details');
+  if(details) details.innerHTML=cats.map((k,i)=>`
+    <span style="font-size:8px;color:var(--muted)">${STOCK_CAT_LABELS[k]}: <b style="color:${catColors[i]}">${catTotals[i]} unités</b></span>`).join(' · ');
 }
+
 function renderStockTable(search=''){
-  const tb=document.getElementById('stock-full-tb'); if(!tb)return; const cats=['smoothies','softs','extras']; let rows=cats.flatMap(cat=>(D.stocks[cat]||[]).map((s,i)=>({...s,cat,idx:i}))); if(search) rows=rows.filter(s=>String(s.nom||'').toLowerCase().includes(search.toLowerCase()));
-  tb.innerHTML=rows.map(s=>{ const pct=Math.min(100,Number(s.quantite||0)/(Math.max(1,Number(s.seuil||5))*4)*100); const status=Number(s.quantite||0)<=2?'<span class="badge cancelled"><span class="badge-dot"></span>Critique</span>':Number(s.quantite||0)<=Number(s.seuil||5)?'<span class="badge pending"><span class="badge-dot"></span>Bas</span>':'<span class="badge confirmed"><span class="badge-dot"></span>OK</span>'; const catLabel=s.cat==='smoothies'?'🥤 Smoothies':s.cat==='softs'?'🧃 Softs':'✦ Extras'; return`<tr><td class="name">${s.nom}</td><td><span style="font-size:9px;color:var(--muted)">${catLabel}</span></td><td><select class="mat-input tiny" style="width:88px" onchange="toggleStockAccessoire('${s.cat}',${s.idx},this.value)"><option value="false" ${!s.accessoire?'selected':''}>Non</option><option value="true" ${s.accessoire?'selected':''}>Oui</option></select></td><td><div style="display:flex;align-items:center;gap:8px"><div style="width:60px;height:3px;background:rgba(255,255,255,.04);border-radius:2px"><div style="height:100%;background:${Number(s.quantite||0)<=2?'var(--err)':Number(s.quantite||0)<=Number(s.seuil||5)?'var(--warn)':'var(--ok)'};width:${pct}%"></div></div><span style="font-family:var(--serif);font-size:15px;color:var(--cream)">${s.quantite}</span></div></td><td class="small">${s.unite}</td><td style="color:var(--warn)">${s.seuil}</td><td>${status}</td><td onclick="event.stopPropagation()"><div style="display:flex;gap:4px;flex-wrap:wrap"><button class="sib" onclick="adjStock('${s.cat}',${s.idx},-1)">−</button><button class="sib" onclick="adjStock('${s.cat}',${s.idx},1)">+</button><button class="atb" onclick="editStockQty('${s.cat}',${s.idx})">✏</button><button class="atb err" onclick="delStock('${s.cat}',${s.idx})">Suppr.</button></div></td></tr>`; }).join('') || `<tr><td colspan="8"><div class="empty"><div class="empty-icon">▣</div><p class="empty-txt">Aucun produit</p></div></td></tr>`;
+  const tb=document.getElementById('stock-full-tb');
+  if(!tb)return;
+  let rows=STOCK_CATS.flatMap(cat=>(D.stocks[cat]||[]).map((s,i)=>({...normalizeStockItem(s),cat,idx:i})));
+  if(search) rows=rows.filter(s=>String(s.nom||'').toLowerCase().includes(search.toLowerCase()));
+  tb.innerHTML=rows.map(s=>{
+    const pct=Math.min(100,s.quantite/((s.seuil||5)*4)*100);
+    const status=s.quantite<=2?'<span class="badge cancelled"><span class="badge-dot"></span>Critique</span>'
+      :s.quantite<=s.seuil?'<span class="badge pending"><span class="badge-dot"></span>Bas</span>'
+      :'<span class="badge confirmed"><span class="badge-dot"></span>OK</span>';
+    const select=`<select class="stock-cat-select" onchange="setStockCategory('${s.cat}',${s.idx},this.value)">${STOCK_CATS.map(c=>`<option value="${c}" ${c===s.cat?'selected':''}>${STOCK_CAT_LABELS[c]}</option>`).join('')}</select>`;
+    return`<tr>
+      <td class="name">${s.nom}</td>
+      <td>${select}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:60px;height:3px;background:rgba(255,255,255,.04);border-radius:2px">
+            <div style="height:100%;background:${s.quantite<=2?'var(--err)':s.quantite<=s.seuil?'var(--warn)':'var(--ok)'};width:${pct}%"></div>
+          </div>
+          <input class="stock-qty-input" type="number" min="0" value="${s.quantite}" onchange="setStockQty('${s.cat}',${s.idx},this.value)" onkeydown="if(event.key==='Enter')this.blur()">
+        </div>
+      </td>
+      <td class="small">${s.unite}</td>
+      <td style="color:var(--warn)">${s.seuil}</td>
+      <td>${status}</td>
+      <td onclick="event.stopPropagation()">
+        <div style="display:flex;gap:4px;align-items:center">
+          <button class="sib" onclick="adjStock('${s.cat}',${s.idx},-1)">−</button>
+          <button class="sib" onclick="adjStock('${s.cat}',${s.idx},1)">+</button>
+          <button class="atb" onclick="editStockQty('${s.cat}',${s.idx})">✏</button>
+          <button class="atb" style="color:var(--err);border-color:rgba(224,80,80,.25)" onclick="deleteStock('${s.cat}',${s.idx})">Suppr.</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
 }
+
 function filterStockTable(v){ renderStockTable(v); }
-function setStockGraph(cat,btn){ stockGraphCat=cat; document.querySelectorAll('#page-stocks .fb').forEach(b=>b.classList.remove('on')); if(btn) btn.classList.add('on'); renderStockChart(); }
-async function editStockQty(cat,idx){ const s=D.stocks[cat][idx]; if(!s)return; const val=prompt(`Quantité pour "${s.nom}" :`,s.quantite); if(val!==null&&!isNaN(parseInt(val,10))){ s.quantite=Math.max(0,parseInt(val,10)); renderStocks(); await persistStockItem(s); } }
-function exportStockCSV(){ const rows=[['Produit','Catégorie','Accessoire','Quantité','Unité','Seuil alerte','Statut']]; Object.entries(D.stocks).forEach(([cat,items])=>items.forEach(s=>{ const st=Number(s.quantite||0)<=2?'Critique':Number(s.quantite||0)<=Number(s.seuil||5)?'Bas':'OK'; rows.push([s.nom,cat,s.accessoire?'Oui':'Non',s.quantite,s.unite,s.seuil,st]); })); const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\\n'); const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);a.download='eden-stocks-'+new Date().toISOString().slice(0,10)+'.csv';a.click();toast('↓','Export stocks téléchargé'); }
+function setStockGraph(cat,btn){
+  stockGraphCat=cat;
+  document.querySelectorAll('#page-stocks .fb').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  renderStockChart();
+}
+
+function editStockQty(cat,idx){
+  const s=D.stocks[cat][idx];
+  const val=prompt(`Quantité pour "${s.nom}" :`,s.quantite);
+  if(val!==null&&!isNaN(parseInt(val))){ setStockQty(cat,idx,val); }
+}
+
+function exportStockCSV(){
+  const rows=[['Produit','Catégorie','Quantité','Unité','Seuil alerte','Statut']];
+  STOCK_CATS.forEach(cat=>(D.stocks[cat]||[]).forEach(s=>{
+    const n=Number(s.quantite||0), seuil=s.seuil??s.seuil_alerte??5;
+    const st=n<=2?'Critique':n<=seuil?'Bas':'OK';
+    rows.push([s.nom,cat,n,s.unite,seuil,st]);
+  }));
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='eden-stocks-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  toast('↓','Export stocks téléchargé');
+}
 
 // ══ WINDOW RESIZE — redraw charts ══
 window.addEventListener('resize',()=>{
@@ -6000,44 +6720,554 @@ window.addEventListener('resize', ()=>{
 try{ if(!CH_STATE) loadCharges(); }catch(e){}
 
 
-/* ══ INVENTAIRE GLOBAL — MATÉRIEL / INFORMATIQUE / SANITAIRE-LINGES ══ */
-const MAT_CAT_LABELS = { materiel:'Matériel', informatique:'Informatique', sanitaire_linge:'Sanitaire / Linges', accessoire:'Accessoires' };
-const MAT_DEFAULT_ITEMS = [
-  {nom:'Serviettes premium',famille:'sanitaire_linge',accessoire:false,stock:80,casse:0,unite:'pcs',min:30,cible:100,prix:6.5,etat:'Bon',fournisseur:'',lien:'',comm:'Vestiaires / espace bien-être'},
-  {nom:'Peignoirs',famille:'sanitaire_linge',accessoire:false,stock:30,casse:0,unite:'pcs',min:12,cible:40,prix:18,etat:'Bon',fournisseur:'',lien:'',comm:'Location / VIP'},
-  {nom:'Tapis de bain / sortie douche',famille:'sanitaire_linge',accessoire:false,stock:20,casse:0,unite:'pcs',min:8,cible:25,prix:8,etat:'Bon',fournisseur:'',lien:'',comm:''},
-  {nom:'Gel douche rechargeable',famille:'sanitaire_linge',accessoire:false,stock:10,casse:0,unite:'L',min:4,cible:12,prix:7,etat:'Bon',fournisseur:'',lien:'',comm:'Sanitaires / douches'},
-  {nom:'Papier toilette professionnel',famille:'sanitaire_linge',accessoire:false,stock:48,casse:0,unite:'rlx',min:18,cible:72,prix:0.65,etat:'Bon',fournisseur:'',lien:'',comm:''},
-  {nom:'Sacs poubelle',famille:'sanitaire_linge',accessoire:true,stock:120,casse:0,unite:'pcs',min:40,cible:150,prix:0.18,etat:'Bon',fournisseur:'',lien:'',comm:''},
-  {nom:'Ordinateur accueil',famille:'informatique',accessoire:false,stock:1,casse:0,unite:'u',min:1,cible:1,prix:700,etat:'Bon',fournisseur:'',lien:'',comm:'Administration / caisse'},
-  {nom:'Tablette signature / client',famille:'informatique',accessoire:false,stock:1,casse:0,unite:'u',min:1,cible:2,prix:250,etat:'Bon',fournisseur:'',lien:'',comm:''},
-  {nom:'Routeur / borne Wi-Fi',famille:'informatique',accessoire:false,stock:1,casse:0,unite:'u',min:1,cible:2,prix:150,etat:'Bon',fournisseur:'',lien:'',comm:'Réseau privé + visiteurs'},
-  {nom:'Câbles RJ45 / USB / chargeurs',famille:'informatique',accessoire:true,stock:10,casse:0,unite:'pcs',min:4,cible:15,prix:8,etat:'Bon',fournisseur:'',lien:'',comm:''},
-  {nom:'Aspirateur / matériel nettoyage',famille:'materiel',accessoire:false,stock:1,casse:0,unite:'u',min:1,cible:1,prix:180,etat:'Bon',fournisseur:'',lien:'',comm:''},
-  {nom:'Paniers linge sale',famille:'materiel',accessoire:true,stock:4,casse:0,unite:'pcs',min:2,cible:6,prix:25,etat:'Bon',fournisseur:'',lien:'',comm:''}
-].map((x,i)=>Object.assign({id:'mat_default_'+i},x));
-let MAT_STATE=null, MAT_FILTER='all', MAT_SEARCH='';
-function matStorageKey(){ return 'eden_inventaire_global'; }
-function matNum(v){ v=Number(v); return isFinite(v)&&v>=0?v:0; }
-function matFmt(v){ return Math.round(matNum(v)).toLocaleString('fr-FR'); }
-function matEsc(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function matNormalize(it){ it.id=it.id||('mat_local_'+Date.now()+Math.floor(Math.random()*999)); it.nom=it.nom||''; it.famille=it.famille||it.cat||'materiel'; it.accessoire=!!it.accessoire; it.stock=matNum(it.stock); it.casse=matNum(it.casse); it.unite=it.unite||'u'; it.min=matNum(it.min); it.cible=matNum(it.cible); it.prix=matNum(it.prix); it.etat=it.etat||'Bon'; it.fournisseur=it.fournisseur||''; it.lien=it.lien||''; it.comm=it.comm||''; return it; }
-function matCalc(it){ const dispo=Math.max(0,matNum(it.stock)-matNum(it.casse)); const manque=dispo<=matNum(it.min)?Math.max(0,matNum(it.cible)-dispo):0; return {dispo,manque,cout:manque*matNum(it.prix),alert:dispo<=matNum(it.min),hs:matNum(it.casse)>0}; }
-function loadMateriel(){ try{ const raw=localStorage.getItem(matStorageKey()); MAT_STATE=raw?JSON.parse(raw):{items:JSON.parse(JSON.stringify(MAT_DEFAULT_ITEMS))}; } catch(e){ MAT_STATE={items:JSON.parse(JSON.stringify(MAT_DEFAULT_ITEMS))}; } if(!Array.isArray(MAT_STATE.items)) MAT_STATE.items=[]; MAT_STATE.items=MAT_STATE.items.map(matNormalize); }
-function saveMateriel(){ try{ localStorage.setItem(matStorageKey(),JSON.stringify(MAT_STATE)); }catch(e){} }
-async function loadMatFromSupabase(){ if(!sbReady||!MAT_STATE||MAT_STATE._sbLoaded) return; MAT_STATE._sbLoaded=true; try{ const rows=await sbQ('inventaire',{select:'*',order:'created_at.asc'}); if(Array.isArray(rows)&&rows.length){ MAT_STATE.items=rows.map(r=>matNormalize({id:r.id,nom:r.nom,famille:r.famille,accessoire:r.accessoire,stock:r.stock,casse:r.casse,unite:r.unite,min:r.stock_min,cible:r.stock_cible,prix:r.prix_unit,etat:r.etat,fournisseur:r.fournisseur,lien:r.lien,comm:r.commentaire})); saveMateriel(); } }catch(e){ console.warn('inventaire supabase non disponible',e); } }
-async function persistMatItem(it){ saveMateriel(); if(!sbReady||!it)return; const body={nom:it.nom,famille:it.famille,accessoire:!!it.accessoire,stock:matNum(it.stock),casse:matNum(it.casse),unite:it.unite,stock_min:matNum(it.min),stock_cible:matNum(it.cible),prix_unit:matNum(it.prix),etat:it.etat,fournisseur:it.fournisseur,lien:it.lien,commentaire:it.comm,updated_at:new Date().toISOString()}; try{ if(it.id && !String(it.id).startsWith('mat_local_') && !String(it.id).startsWith('mat_default_')) await sbQ('inventaire',{id:`eq.${it.id}`},'PATCH',body); }catch(e){ console.warn('persist inventaire err',e); } }
-function setMatFilter(f,btn){ MAT_FILTER=f; document.querySelectorAll('#page-materiel .filter-row .fb').forEach(b=>b.classList.remove('on')); if(btn)btn.classList.add('on'); renderMateriel(); }
-function filterMatTb(q){ MAT_SEARCH=(q||'').toLowerCase(); renderMatTable(); }
-function getMatFiltered(){ let a=(MAT_STATE?.items||[]).slice(); if(MAT_FILTER==='accessoire') a=a.filter(x=>x.accessoire); else if(MAT_FILTER==='alerte') a=a.filter(x=>matCalc(x).alert); else if(MAT_FILTER==='hs') a=a.filter(x=>matCalc(x).hs); else if(MAT_FILTER!=='all') a=a.filter(x=>x.famille===MAT_FILTER); if(MAT_SEARCH) a=a.filter(x=>(x.nom+' '+x.fournisseur+' '+x.comm).toLowerCase().includes(MAT_SEARCH)); return a; }
-async function setMatField(id,field,val){ const it=MAT_STATE.items.find(x=>x.id===id); if(!it)return; if(['stock','casse','min','cible','prix'].includes(field)) it[field]=matNum(val); else if(field==='accessoire') it[field]=(val===true||val==='true'||val==='1'||val===1); else it[field]=val; matNormalize(it); renderMateriel(); await persistMatItem(it); }
-function renderMateriel(){ if(!MAT_STATE) loadMateriel(); if(sbReady && !MAT_STATE._sbLoaded) loadMatFromSupabase().then(()=>renderMateriel()); updateMatKPIs(); renderMatTable(); }
-function updateMatKPIs(){ const items=MAT_STATE?.items||[]; let re=0,hs=0,cost=0; items.forEach(it=>{ const c=matCalc(it); if(c.manque>0)re++; hs+=matNum(it.casse); cost+=c.cout; }); const set=(id,v)=>{const e=document.getElementById(id); if(e)e.textContent=v;}; set('mat-k-total',items.length); set('mat-k-reappro',re); set('mat-k-reappro-sub',re+' article(s) sous seuil'); set('mat-k-hs',hs); set('mat-k-cost',matFmt(cost)+' €'); }
-function renderMatTable(){ const tb=document.getElementById('mat-tb'); if(!tb||!MAT_STATE)return; const rows=getMatFiltered(); tb.innerHTML=rows.map(it=>{ const c=matCalc(it); const row=c.manque>0?'row-warn':c.hs?'row-alert':''; const link=it.lien?`<a href="${matEsc(it.lien)}" target="_blank" rel="noopener" style="color:var(--info);text-decoration:none">ouvrir ↗</a>`:'–'; return `<tr class="${row}"><td><input class="mat-cell text" style="width:160px;color:var(--cream)" value="${matEsc(it.nom)}" oninput="setMatField('${it.id}','nom',this.value)"></td><td><select class="mat-input tiny" onchange="setMatField('${it.id}','famille',this.value)">${Object.entries(MAT_CAT_LABELS).map(([k,v])=>`<option value="${k}" ${it.famille===k?'selected':''}>${v}</option>`).join('')}</select></td><td><select class="mat-input tiny" onchange="setMatField('${it.id}','accessoire',this.value)"><option value="false" ${!it.accessoire?'selected':''}>Non</option><option value="true" ${it.accessoire?'selected':''}>Oui</option></select></td><td><input type="number" class="mat-cell" value="${it.stock}" min="0" oninput="setMatField('${it.id}','stock',this.value)"></td><td><input type="number" class="mat-cell" value="${it.casse}" min="0" oninput="setMatField('${it.id}','casse',this.value)"></td><td style="font-family:var(--serif);font-size:14px;color:${c.dispo<=it.min?'var(--warn)':'var(--gold)'}">${matFmt(c.dispo)}</td><td><input class="mat-cell text" style="width:60px" value="${matEsc(it.unite)}" oninput="setMatField('${it.id}','unite',this.value)"></td><td><input type="number" class="mat-cell" value="${it.min}" min="0" oninput="setMatField('${it.id}','min',this.value)"></td><td><input type="number" class="mat-cell" value="${it.cible}" min="0" oninput="setMatField('${it.id}','cible',this.value)"></td><td style="font-family:var(--serif);font-size:14px;color:${c.manque>0?'var(--warn)':'var(--muted)'}">${c.manque>0?matFmt(c.manque):'–'}</td><td><input type="number" class="mat-cell" step="0.01" value="${it.prix}" min="0" oninput="setMatField('${it.id}','prix',this.value)"></td><td style="font-family:var(--serif);font-size:14px;color:${c.cout>0?'var(--gold-l)':'var(--muted)'}">${c.cout>0?matFmt(c.cout)+' €':'–'}</td><td><input class="mat-cell text" style="width:90px" value="${matEsc(it.etat)}" oninput="setMatField('${it.id}','etat',this.value)"></td><td><input class="mat-cell text" style="width:110px" value="${matEsc(it.fournisseur)}" oninput="setMatField('${it.id}','fournisseur',this.value)"></td><td>${link}<input class="mat-cell text" style="width:120px" value="${matEsc(it.lien)}" placeholder="URL" oninput="setMatField('${it.id}','lien',this.value)"></td><td><input class="mat-cell text" style="width:140px" value="${matEsc(it.comm)}" oninput="setMatField('${it.id}','comm',this.value)"></td><td><button class="atb err" onclick="delMatItem('${it.id}')">Suppr.</button></td></tr>`; }).join('') || `<tr><td colspan="17"><div class="empty"><div class="empty-icon">▣</div><p class="empty-txt">Aucun article</p></div></td></tr>`; }
-async function addMatItem(){ const nom=prompt('Nom de l\'article :'); if(!nom)return; let famille=prompt('Famille : materiel / informatique / sanitaire_linge / accessoire','materiel')||'materiel'; if(!MAT_CAT_LABELS[famille]) famille='materiel'; const accessoire=confirm('Est-ce un accessoire ? OK = Oui / Annuler = Non') || famille==='accessoire'; const stock=matNum(prompt('Stock total :','0')); const casse=matNum(prompt('Cassé / HS :','0')); const unite=prompt('Unité :','u')||'u'; const min=matNum(prompt('Stock minimum :','1')); const cible=matNum(prompt('Stock cible :','1')); const prix=matNum(prompt('Prix unitaire (€) :','0')); const it=matNormalize({id:'mat_local_'+Date.now(),nom:nom.trim(),famille,accessoire,stock,casse,unite,min,cible,prix,etat:'Bon',fournisseur:'',lien:'',comm:''}); MAT_STATE.items.unshift(it); saveMateriel(); renderMateriel(); if(sbReady){ try{ const r=await sbQ('inventaire',{},'POST',{nom:it.nom,famille:it.famille,accessoire:it.accessoire,stock:it.stock,casse:it.casse,unite:it.unite,stock_min:it.min,stock_cible:it.cible,prix_unit:it.prix,etat:it.etat,fournisseur:it.fournisseur,lien:it.lien,commentaire:it.comm}); if(Array.isArray(r)&&r[0]){ it.id=r[0].id; saveMateriel(); } }catch(e){ console.warn(e); toast('⚠','Ajout local — crée la table inventaire Supabase pour synchroniser','warn'); } } }
-async function delMatItem(id){ const it=MAT_STATE.items.find(x=>x.id===id); if(!it)return; if(!confirm('Supprimer définitivement « '+it.nom+' » ?'))return; MAT_STATE.items=MAT_STATE.items.filter(x=>x.id!==id); saveMateriel(); renderMateriel(); if(sbReady && id && !String(id).startsWith('mat_local_') && !String(id).startsWith('mat_default_')){ try{ await sbQ('inventaire',{id:`eq.${id}`},'DELETE'); }catch(e){ console.warn(e); toast('⚠','Suppression locale uniquement','warn'); } } }
-function resetMateriel(){ if(!confirm('Réinitialiser les stocks matériel / informatique / sanitaire-linges ?'))return; localStorage.removeItem(matStorageKey()); MAT_STATE=null; loadMateriel(); saveMateriel(); renderMateriel(); }
-function exportMatCSV(){ if(!MAT_STATE)return; const rows=[['Article','Famille','Accessoire','Stock total','Cassé / HS','Disponible','Unité','Stock min','Stock cible','À reprendre','Prix unitaire','Coût réappro','État','Fournisseur','Lien','Commentaire']]; MAT_STATE.items.forEach(it=>{ const c=matCalc(it); rows.push([it.nom,MAT_CAT_LABELS[it.famille]||it.famille,it.accessoire?'Oui':'Non',it.stock,it.casse,c.dispo,it.unite,it.min,it.cible,c.manque,it.prix,Math.round(c.cout*100)/100,it.etat,it.fournisseur,it.lien,it.comm]); }); const csv=rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n'); const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv); a.download='eden-inventaire-global-'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); toast('↓','Export inventaire téléchargé'); }
+/* ══ MATÉRIEL & RÉAPPRO ══ */
+const MAT_CAT_LABELS = {
+  linge:'Linge & textile',
+  hygiene:'Hygiène & consommable',
+  soin:'Produits soin',
+  equipement:'Équipement durable'
+};
+const MAT_DEFAULT_PARAMS = {
+  clients: 50,           // clients par semaine
+  days: 7,               // jours d'ouverture par semaine
+  seuilCouverture: 7,    // jours minimum de couverture
+  safety: 20,            // marge de sécurité %
+  targetDays: 30         // couverture visée pour les commandes
+};
+const MAT_DEFAULT_ITEMS = [];
+
+let MAT_STATE = null;     // { params:{}, items:[], filter:'all', search:'' }
+
+function matStorageKey(){ return 'eden_materiel_stock'; }
+
+function loadMateriel(){
+  try{
+    const raw = localStorage.getItem(matStorageKey());
+    if(!raw){
+      MAT_STATE = {
+        params: Object.assign({}, MAT_DEFAULT_PARAMS),
+        items: JSON.parse(JSON.stringify(MAT_DEFAULT_ITEMS))
+      };
+      return;
+    }
+    const obj = JSON.parse(raw);
+    MAT_STATE = {
+      params: Object.assign({}, MAT_DEFAULT_PARAMS, obj.params||{}),
+      items: Array.isArray(obj.items) ? obj.items : JSON.parse(JSON.stringify(MAT_DEFAULT_ITEMS))
+    };
+  }catch(e){
+    console.warn('mat load err', e);
+    MAT_STATE = { params:Object.assign({},MAT_DEFAULT_PARAMS), items:JSON.parse(JSON.stringify(MAT_DEFAULT_ITEMS)) };
+  }
+}
+function saveMateriel(){
+  try{ localStorage.setItem(matStorageKey(), JSON.stringify(MAT_STATE)); }catch(e){}
+}
+
+let MAT_FILTER = 'all';
+let MAT_SEARCH = '';
+
+function setMatClients(v, btn){
+  let n = Math.round(Number(v)); if(!isFinite(n)||n<1) n=1;
+  MAT_STATE.params.clients = n;
+  saveMateriel();
+  // sync UI
+  const num = document.getElementById('mat-client-num'); if(num) num.textContent = n;
+  const sld = document.getElementById('mat-slider'); if(sld && +sld.value!==n) sld.value = n;
+  document.querySelectorAll('#page-materiel .mat-presets .fb').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  updateMateriel();
+}
+function setMatParam(key, val){
+  let v = Number(val); if(!isFinite(v)||v<0) v=0;
+  if(key==='days' && v>7) v=7;
+  if(key==='days' && v<0.5) v=0.5;
+  MAT_STATE.params[key] = v;
+  saveMateriel();
+  updateMateriel();
+}
+function setMatField(id, field, val){
+  const it = MAT_STATE.items.find(x=>x.id===id);
+  if(!it) return;
+  if(['stock','cout','consoCli','min','delai'].includes(field)){
+    let v = Number(val); if(!isFinite(v)||v<0) v=0;
+    it[field] = v;
+  } else {
+    it[field] = val;
+  }
+  saveMateriel();
+  updateMateriel();
+}
+function setMatFilter(f, btn){
+  MAT_FILTER = f;
+  document.querySelectorAll('#page-materiel .filter-row .fb').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  renderMatGrid();
+  renderMatTable();
+}
+function filterMatTb(q){
+  MAT_SEARCH = (q||'').toLowerCase();
+  renderMatTable();
+}
+
+function addMatItem(){
+  const askText = (q, def)=>{ const v = prompt(q, def==null?'':def); return v===null ? null : v; };
+  const askNum  = (q, def)=>{ const v = prompt(q, def==null?'':String(def)); if(v===null) return null; const n = Number(v.replace(',','.')); return isFinite(n)&&n>=0 ? n : 0; };
+
+  const nom = askText('1/11 — Nom de l\'article ?\n(ex : Serviettes éponge)');
+  if(nom===null || !nom.trim()) return;
+
+  let cat = askText('2/11 — Catégorie ?\n• linge\n• hygiene\n• soin\n• equipement', 'hygiene');
+  if(cat===null) return;
+  const validCats = ['linge','hygiene','soin','equipement'];
+  cat = validCats.includes((cat||'').toLowerCase()) ? cat.toLowerCase() : 'hygiene';
+
+  const stock = askNum('3/11 — Stock actuel ? (quantité)', 0);
+  if(stock===null) return;
+
+  let unite = askText('4/11 — Unité ?\n(u, ml, g, paire, rlx, kg…)', 'u');
+  if(unite===null) return;
+  if(!unite.trim()) unite = 'u';
+
+  const cout = askNum('5/11 — Coût unitaire (€) ?', 0);
+  if(cout===null) return;
+
+  const consoCli = askNum('6/11 — Consommation par client ?\n(en '+unite+'/client — ex : 1 drap, 0.13 serviette, 8 ml huile…)', 0);
+  if(consoCli===null) return;
+
+  const min = askNum('7/11 — Stock minimum (alerte si en dessous) ?', 0);
+  if(min===null) return;
+
+  const delai = askNum('8/11 — Délai de livraison (jours) ?', 5);
+  if(delai===null) return;
+
+  const fournisseur = askText('9/11 — Fournisseur ? (laisser vide si aucun)', '');
+  if(fournisseur===null) return;
+
+  const lien = askText('10/11 — Lien fournisseur ? (URL — laisser vide si aucun)', '');
+  if(lien===null) return;
+
+  const comm = askText('11/11 — Commentaire libre ? (laisser vide si aucun)', '');
+  if(comm===null) return;
+
+  const id = 'mat_custom_'+Date.now()+'_'+Math.floor(Math.random()*1000);
+  MAT_STATE.items.push({
+    id, nom:nom.trim(), cat, stock, unite:unite.trim(), cout, consoCli, min, delai,
+    fournisseur:fournisseur.trim(), lien:lien.trim(), comm:comm.trim()
+  });
+  saveMateriel();
+  renderMateriel();
+  if(typeof toast==='function') toast('+','Article « '+nom.trim()+' » ajouté');
+}
+function delMatItem(id){
+  if(!confirm('Supprimer cet article ?')) return;
+  MAT_STATE.items = MAT_STATE.items.filter(x=>x.id!==id);
+  saveMateriel();
+  renderMateriel();
+}
+function resetMateriel(){
+  if(!confirm('Réinitialiser tout le matériel ? Les données saisies seront perdues.')) return;
+  try{ localStorage.removeItem(matStorageKey()); }catch(e){}
+  MAT_STATE = null;
+  loadMateriel();
+  renderMateriel();
+  if(typeof toast==='function') toast('↺','Matériel réinitialisé');
+}
+
+function matComputeItem(it){
+  const p = MAT_STATE.params;
+  const consoSem = (Number(it.consoCli)||0) * (Number(p.clients)||0);
+  const consoJour = (Number(p.days)||7) > 0 ? consoSem / Number(p.days) : consoSem/7;
+  const consoMois = consoSem * 4.33;
+  const consoAn = consoMois * 12;
+  const valeur = (Number(it.stock)||0) * (Number(it.cout)||0);
+  const couvJours = consoJour > 0 ? (Number(it.stock)||0) / consoJour : 9999;
+  const couvSem = couvJours / 7;
+  // Date de rupture
+  let dateRupt = null;
+  if(consoJour > 0 && couvJours < 365){
+    const d = new Date();
+    d.setDate(d.getDate() + Math.round(couvJours));
+    dateRupt = d;
+  }
+  // Statut combiné : alert si stock<min OU couverture<délai. warn si couverture<seuil. ok sinon.
+  const seuilJours = Number(p.seuilCouverture)||7;
+  const delai = Number(it.delai)||0;
+  let status = 'ok';
+  if(consoJour > 0){
+    if((Number(it.stock)||0) < (Number(it.min)||0) || couvJours <= delai) status = 'alert';
+    else if(couvJours < seuilJours + delai) status = 'warn';
+  } else {
+    // Pas de conso : juste comparer au stock min
+    if((Number(it.stock)||0) < (Number(it.min)||0)) status = 'alert';
+  }
+  // Quantité à commander : couvrir targetDays + marge sécurité, ou ramener au min selon le plus grand
+  const safety = 1 + (Number(p.safety)||0)/100;
+  const targetDays = Number(p.targetDays)||30;
+  let qteCmd = 0;
+  if(status !== 'ok'){
+    const besoinJours = targetDays * safety;
+    const target = Math.ceil(consoJour * besoinJours);
+    const ramenerMin = Math.max(0, (Number(it.min)||0) - (Number(it.stock)||0));
+    qteCmd = Math.max(target - (Number(it.stock)||0), ramenerMin, 0);
+    if(qteCmd<0) qteCmd = 0;
+  }
+  const coutCmd = qteCmd * (Number(it.cout)||0);
+  return { consoSem, consoJour, consoMois, consoAn, valeur, couvJours, couvSem, dateRupt, status, qteCmd, coutCmd };
+}
+
+function matFmt(n){ if(!isFinite(n)) n=0; return Math.round(n).toLocaleString('fr-FR'); }
+function matFmt1(n){ if(!isFinite(n)) n=0; return n.toLocaleString('fr-FR',{maximumFractionDigits:1}); }
+function matFmt2(n){ if(!isFinite(n)) n=0; return n.toLocaleString('fr-FR',{maximumFractionDigits:2}); }
+function matFmtDate(d){
+  if(!d) return '–';
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+function renderMateriel(){
+  if(!MAT_STATE) loadMateriel();
+  const p = MAT_STATE.params;
+  // Sync slider et inputs
+  const sld = document.getElementById('mat-slider'); if(sld) sld.value = p.clients;
+  const num = document.getElementById('mat-client-num'); if(num) num.textContent = p.clients;
+  const setVal = (id,v)=>{ const e=document.getElementById(id); if(e&&document.activeElement!==e) e.value=v; };
+  setVal('mat-days', p.days);
+  setVal('mat-cov', p.seuilCouverture);
+  setVal('mat-safety', p.safety);
+  setVal('mat-target', p.targetDays);
+  // Update preset buttons
+  document.querySelectorAll('#page-materiel .mat-presets .fb').forEach(b=>{
+    b.classList.toggle('on', +b.textContent.trim() === +p.clients);
+  });
+  renderMatGrid();
+  renderMatTable();
+  updateMatKPIs();
+}
+
+function updateMateriel(){
+  if(!MAT_STATE) return;
+  const p = MAT_STATE.params;
+  const num = document.getElementById('mat-client-num'); if(num) num.textContent = p.clients;
+  const day = document.getElementById('mat-client-day'); if(day) day.textContent = matFmt1(p.clients/(p.days||7));
+  const mth = document.getElementById('mat-client-month'); if(mth) mth.textContent = matFmt(p.clients*4.33);
+  const yr  = document.getElementById('mat-client-year'); if(yr) yr.textContent = matFmt(p.clients*52);
+  renderMatGrid();
+  renderMatTable();
+  updateMatKPIs();
+}
+
+function getMatFiltered(){
+  let arr = MAT_STATE.items.slice();
+  if(MAT_FILTER === 'alert'){
+    arr = arr.filter(it=>{
+      const c = matComputeItem(it);
+      return c.status === 'alert' || c.status === 'warn';
+    });
+  } else if(MAT_FILTER !== 'all'){
+    arr = arr.filter(it=>it.cat===MAT_FILTER);
+  }
+  if(MAT_SEARCH){
+    arr = arr.filter(it=>(it.nom||'').toLowerCase().includes(MAT_SEARCH) || (it.fournisseur||'').toLowerCase().includes(MAT_SEARCH));
+  }
+  return arr;
+}
+
+function renderMatGrid(){
+  const grid = document.getElementById('mat-grid');
+  if(!grid) return;
+  const items = getMatFiltered();
+  if(!items.length){
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);font-size:11px">Aucun article correspondant</div>`;
+    return;
+  }
+  grid.innerHTML = items.map(it=>{
+    const c = matComputeItem(it);
+    const covPct = Math.min(100, (c.couvJours/30)*100);
+    const covCls = c.status==='alert' ? 'alert' : c.status==='warn' ? 'warn' : 'ok';
+    const supplier = (it.fournisseur||'').trim();
+    const link = (it.lien||'').trim();
+    return `<div class="mat-card ${c.status}" data-id="${it.id}">
+      <div class="mat-card-h">
+        <div class="mat-card-name">
+          <input class="mat-card-nameinp" value="${(it.nom||'').replace(/"/g,'&quot;')}" oninput="setMatField('${it.id}','nom',this.value)">
+          <span class="mat-card-cat-tag ${it.cat}">${MAT_CAT_LABELS[it.cat]||it.cat}</span>
+        </div>
+        <div class="mat-card-status ${c.status}"><span class="badge-dot" style="background:currentColor"></span>${c.status==='ok'?'OK':c.status==='warn'?'À surveiller':'Recommander'}</div>
+      </div>
+      <div class="mat-card-row">
+        <label>Stock actuel</label>
+        <div class="with-unit"><input type="number" class="mat-input tiny" min="0" step="1" value="${it.stock}" oninput="setMatField('${it.id}','stock',this.value)"><span class="unit"><input type="text" class="mat-input tiny" style="width:46px" value="${it.unite||'u'}" oninput="setMatField('${it.id}','unite',this.value)"></span></div>
+        <label>Coût unitaire (€)</label>
+        <div class="with-unit"><input type="number" class="mat-input tiny" min="0" step="0.01" value="${it.cout}" oninput="setMatField('${it.id}','cout',this.value)"><span class="unit">€/${it.unite||'u'}</span></div>
+        <label>Conso / client</label>
+        <div class="with-unit"><input type="number" class="mat-input tiny" min="0" step="0.01" value="${it.consoCli}" oninput="setMatField('${it.id}','consoCli',this.value)"><span class="unit">${it.unite||'u'}/client</span></div>
+        <label>Stock minimum</label>
+        <div class="with-unit"><input type="number" class="mat-input tiny" min="0" step="1" value="${it.min}" oninput="setMatField('${it.id}','min',this.value)"><span class="unit">${it.unite||'u'}</span></div>
+        <label>Délai livraison (j)</label>
+        <div class="with-unit"><input type="number" class="mat-input tiny" min="0" step="1" value="${it.delai}" oninput="setMatField('${it.id}','delai',this.value)"><span class="unit">jours</span></div>
+        <label>Fournisseur</label>
+        <input type="text" class="mat-input tiny" value="${(it.fournisseur||'').replace(/"/g,'&quot;')}" placeholder="Nom" oninput="setMatField('${it.id}','fournisseur',this.value)">
+        <label>Lien commande</label>
+        <input type="text" class="mat-input tiny" value="${(it.lien||'').replace(/"/g,'&quot;')}" placeholder="https://…" oninput="setMatField('${it.id}','lien',this.value)">
+      </div>
+      <div class="mat-card-stats">
+        <div class="mat-stat"><p class="mat-stat-lbl">Valeur stock</p><p class="mat-stat-val"><b>${matFmt(c.valeur)} €</b></p></div>
+        <div class="mat-stat"><p class="mat-stat-lbl">Conso semaine</p><p class="mat-stat-val">${matFmt1(c.consoSem)} <small style="font-size:9px;color:var(--muted)">${it.unite||'u'}</small></p></div>
+        <div class="mat-stat ${covCls}"><p class="mat-stat-lbl">Couverture</p><p class="mat-stat-val">${c.couvJours>365?'∞':matFmt1(c.couvJours)} <small style="font-size:9px">jours</small></p></div>
+        <div class="mat-stat ${covCls}"><p class="mat-stat-lbl">Date rupture</p><p class="mat-stat-val">${matFmtDate(c.dateRupt)}</p></div>
+        <div class="mat-stat"><p class="mat-stat-lbl">Coût mensuel</p><p class="mat-stat-val">${matFmt(c.consoMois*it.cout)} €</p></div>
+        <div class="mat-stat ${c.qteCmd>0?'warn':''}"><p class="mat-stat-lbl">À commander</p><p class="mat-stat-val">${c.qteCmd>0?matFmt(c.qteCmd)+' '+(it.unite||'u')+' · '+matFmt(c.coutCmd)+' €':'–'}</p></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:7px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);margin-bottom:3px">
+          <span>Couverture</span>
+          <span>${c.couvJours>365?'∞':matFmt1(c.couvJours)} j / 30 j visés</span>
+        </div>
+        <div class="mat-cov-bar"><div class="mat-cov-fill ${covCls}" style="width:${covPct}%"></div></div>
+      </div>
+      <textarea class="mat-card-comment" placeholder="Commentaire libre…" oninput="setMatField('${it.id}','comm',this.value)">${(it.comm||'').replace(/</g,'&lt;')}</textarea>
+      <div class="mat-card-foot">
+        ${supplier ? (link ? `<a class="mat-supp-link" href="${link}" target="_blank" rel="noopener">↗ ${supplier}</a>` : `<span class="mat-supp-link" style="color:var(--muted)">${supplier}</span>`) : '<span class="mat-supp-link" style="color:var(--muted)">Aucun fournisseur</span>'}
+        <div class="mat-card-acts">
+          <button onclick="restockMatToTarget('${it.id}')" title="Mettre à jour le stock après réception">⥁</button>
+          <button class="del" onclick="delMatItem('${it.id}')" title="Supprimer">×</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function restockMatToTarget(id){
+  const it = MAT_STATE.items.find(x=>x.id===id);
+  if(!it) return;
+  const c = matComputeItem(it);
+  const recommended = (Number(it.stock)||0) + c.qteCmd;
+  const inp = prompt('Nouveau stock après réception ? (recommandé : '+matFmt(recommended)+' '+(it.unite||'u')+')', recommended);
+  if(inp===null) return;
+  let v = Number(inp); if(!isFinite(v)||v<0) v=0;
+  it.stock = v;
+  saveMateriel();
+  updateMateriel();
+  if(typeof toast==='function') toast('⥁','Stock mis à jour');
+}
+
+function renderMatTable(){
+  const tb = document.getElementById('mat-tb');
+  const tf = document.getElementById('mat-tfoot');
+  if(!tb) return;
+  const items = getMatFiltered();
+  let totVal=0, totConsoSem=0, totConsoMois=0, totCmd=0, totCmdQty=0, totConsoAn=0;
+  tb.innerHTML = items.map(it=>{
+    const c = matComputeItem(it);
+    totVal += c.valeur;
+    totConsoSem += c.consoSem * (Number(it.cout)||0);
+    totConsoMois += c.consoMois * (Number(it.cout)||0);
+    totConsoAn += c.consoAn * (Number(it.cout)||0);
+    totCmd += c.coutCmd;
+    if(c.qteCmd>0) totCmdQty++;
+    const rowCls = c.status==='alert'?'row-alert':c.status==='warn'?'row-warn':'';
+    const tagCls = c.status;
+    const tagTxt = c.status==='ok'?'OK':c.status==='warn'?'Surveiller':'Recommander';
+    const supDisplay = it.fournisseur ? (it.lien ? `<a href="${it.lien}" target="_blank" rel="noopener" style="color:var(--info);text-decoration:none">${it.fournisseur} ↗</a>` : it.fournisseur) : '<span style="color:var(--muted)">–</span>';
+    return `<tr class="${rowCls}">
+      <td style="color:var(--cream);font-weight:300">${it.nom||''}</td>
+      <td><span class="mat-card-cat-tag ${it.cat}">${(MAT_CAT_LABELS[it.cat]||it.cat).split(' ')[0]}</span></td>
+      <td><input type="number" class="mat-cell" min="0" step="1" value="${it.stock}" oninput="setMatField('${it.id}','stock',this.value)"></td>
+      <td style="font-size:10px;color:var(--muted)">${it.unite||'u'}</td>
+      <td><input type="number" class="mat-cell" min="0" step="0.01" value="${it.cout}" oninput="setMatField('${it.id}','cout',this.value)"></td>
+      <td style="font-family:var(--serif);color:var(--gold);font-size:13px">${matFmt(c.valeur)} €</td>
+      <td><input type="number" class="mat-cell" min="0" step="0.01" value="${it.consoCli}" oninput="setMatField('${it.id}','consoCli',this.value)"></td>
+      <td>${matFmt1(c.consoSem)}</td>
+      <td><span class="mat-status-tag ${tagCls}">${c.couvJours>365?'∞':matFmt1(c.couvJours)+' j'}</span></td>
+      <td><input type="number" class="mat-cell" min="0" step="1" value="${it.min}" oninput="setMatField('${it.id}','min',this.value)"></td>
+      <td><input type="number" class="mat-cell" min="0" step="1" value="${it.delai}" oninput="setMatField('${it.id}','delai',this.value)" style="width:42px"></td>
+      <td style="font-size:10px;color:${c.status==='alert'?'var(--err)':'var(--light)'}">${matFmtDate(c.dateRupt)}</td>
+      <td style="font-family:var(--serif);color:${c.qteCmd>0?'var(--warn)':'var(--muted)'};font-size:13px">${c.qteCmd>0?matFmt(c.qteCmd):'–'}</td>
+      <td style="font-family:var(--serif);color:${c.coutCmd>0?'var(--gold-l)':'var(--muted)'};font-size:13px">${c.coutCmd>0?matFmt(c.coutCmd)+' €':'–'}</td>
+      <td style="font-size:10px">${supDisplay}</td>
+      <td><span class="mat-status-tag ${tagCls}">${tagTxt}</span></td>
+      <td><input type="text" class="mat-cell text" value="${(it.comm||'').replace(/"/g,'&quot;')}" placeholder="…" oninput="setMatField('${it.id}','comm',this.value)"></td>
+      <td><button class="atb err" onclick="delMatItem('${it.id}')" title="Supprimer">×</button></td>
+    </tr>`;
+  }).join('');
+  if(!items.length){
+    tb.innerHTML = `<tr><td colspan="18" style="text-align:center;padding:32px"><div class="empty"><div class="empty-icon">▣</div><p class="empty-txt">Aucun article correspondant</p></div></td></tr>`;
+  }
+  if(tf){
+    tf.innerHTML = `<tr>
+      <td class="lbl" colspan="5">Totaux</td>
+      <td>${matFmt(totVal)} €</td>
+      <td colspan="2" style="font-size:10px;color:var(--muted)">conso/sem €</td>
+      <td>${matFmt(totConsoSem)} €</td>
+      <td colspan="3" style="font-size:10px;color:var(--muted)">conso/mois € · /an €</td>
+      <td>${matFmt(totConsoMois)} €</td>
+      <td colspan="2">${matFmt(totConsoAn)} €</td>
+      <td>${matFmt(totCmd)} €</td>
+      <td colspan="3" style="font-size:9px;color:var(--muted);font-family:var(--sans);letter-spacing:1px">${totCmdQty} article(s) à commander</td>
+    </tr>`;
+  }
+}
+
+function updateMatKPIs(){
+  if(!MAT_STATE) return;
+  const items = MAT_STATE.items;
+  let totVal=0, totConsoSemEur=0, totConsoMois=0, totConsoAn=0, totCli=0, totCmdEur=0, alertCount=0, cmdItems=0;
+  let nextRupt = null, nextRuptName = '';
+  items.forEach(it=>{
+    const c = matComputeItem(it);
+    totVal += c.valeur;
+    totConsoSemEur += c.consoSem * (Number(it.cout)||0);
+    totConsoMois += c.consoMois * (Number(it.cout)||0);
+    totConsoAn += c.consoAn * (Number(it.cout)||0);
+    totCli += (Number(it.consoCli)||0) * (Number(it.cout)||0);
+    if(c.qteCmd>0){ totCmdEur += c.coutCmd; cmdItems++; }
+    if(c.status==='alert' || c.status==='warn') alertCount++;
+    if(c.dateRupt && (!nextRupt || c.dateRupt < nextRupt)){
+      nextRupt = c.dateRupt;
+      nextRuptName = it.nom;
+    }
+  });
+  const set = (id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  set('mat-k-val', matFmt(totVal));
+  set('mat-k-val-sub', `${items.length} article${items.length>1?'s':''} référencé${items.length>1?'s':''}`);
+  set('mat-k-alert', alertCount);
+  set('mat-k-alert-sub', alertCount>0 ? `${alertCount} à recommander` : 'aucune alerte');
+  set('mat-k-cost-cli', matFmt2(totCli));
+  set('mat-k-cost-sem', matFmt(totConsoSemEur));
+  set('mat-k-cost-sem-sub', `${MAT_STATE.params.clients} clients/sem`);
+  set('mat-k-cost-mois', matFmt(totConsoMois));
+  set('mat-k-cost-an', matFmt(totConsoAn));
+  set('mat-k-rupt', nextRupt ? matFmtDate(nextRupt) : '–');
+  set('mat-k-rupt-sub', nextRuptName || 'tous OK');
+  set('mat-k-cmd', matFmt(totCmdEur));
+  set('mat-k-cmd-sub', `${cmdItems} article${cmdItems>1?'s':''}`);
+  // Update slider side mini
+  updateMateriel.__skipChildren = true; // indication non utilisée
+  const day = document.getElementById('mat-client-day'); if(day) day.textContent = matFmt1(MAT_STATE.params.clients/(MAT_STATE.params.days||7));
+  const mth = document.getElementById('mat-client-month'); if(mth) mth.textContent = matFmt(MAT_STATE.params.clients*4.33);
+  const ya  = document.getElementById('mat-client-year'); if(ya) ya.textContent = matFmt(MAT_STATE.params.clients*52);
+}
+
+function exportMatCSV(){
+  if(!MAT_STATE) return;
+  const rows = [['Article','Catégorie','Stock','Unité','Coût u.','Valeur stock','Conso/client','Conso/sem','Conso/mois','Couverture jours','Stock min','Délai liv.','Date rupture estimée','Qté à commander','Coût commande','Statut','Fournisseur','Lien','Commentaire']];
+  MAT_STATE.items.forEach(it=>{
+    const c = matComputeItem(it);
+    rows.push([
+      it.nom||'', MAT_CAT_LABELS[it.cat]||it.cat||'', it.stock||0, it.unite||'',
+      it.cout||0, Math.round(c.valeur),
+      it.consoCli||0, Math.round(c.consoSem*10)/10, Math.round(c.consoMois),
+      Math.round(c.couvJours), it.min||0, it.delai||0,
+      c.dateRupt?c.dateRupt.toISOString().slice(0,10):'',
+      c.qteCmd, Math.round(c.coutCmd),
+      c.status, it.fournisseur||'', it.lien||'', (it.comm||'').replace(/\n/g,' ')
+    ]);
+  });
+  const csv = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);
+  a.download = `eden-materiel-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  if(typeof toast==='function') toast('↓','Export matériel téléchargé');
+}
+
+function openMatOrder(){
+  const ov = document.getElementById('mat-order-overlay');
+  if(!ov) return;
+  ov.style.display = 'flex';
+  renderMatOrder();
+}
+function closeMatOrder(){
+  const ov = document.getElementById('mat-order-overlay');
+  if(ov) ov.style.display = 'none';
+}
+function renderMatOrder(){
+  const body = document.getElementById('mat-order-body');
+  if(!body || !MAT_STATE) return;
+  const groups = {};
+  let total = 0;
+  MAT_STATE.items.forEach(it=>{
+    const c = matComputeItem(it);
+    if(c.qteCmd <= 0) return;
+    const sup = it.fournisseur || 'Sans fournisseur';
+    if(!groups[sup]) groups[sup] = [];
+    groups[sup].push({ it, c });
+    total += c.coutCmd;
+  });
+  const supKeys = Object.keys(groups);
+  if(!supKeys.length){
+    body.innerHTML = `<div class="mat-order-empty"><div style="font-size:36px;color:var(--ok);margin-bottom:14px">✓</div>Aucun article à commander.<br>Tous les stocks sont au-dessus des seuils.</div>`;
+    return;
+  }
+  body.innerHTML = supKeys.map(sup=>{
+    const lines = groups[sup];
+    const subtot = lines.reduce((s,l)=>s+l.c.coutCmd,0);
+    return `<div class="mat-order-supplier">
+      <h4>${sup} <span style="font-size:10px;color:var(--muted);font-family:var(--sans);letter-spacing:1.5px;text-transform:uppercase;font-style:normal">${lines.length} ligne${lines.length>1?'s':''} · ${matFmt(subtot)} €</span></h4>
+      ${lines.map(l=>`<div class="mat-order-line">
+        <div class="nm">${l.it.nom}<small>Stock ${matFmt(l.it.stock)} ${l.it.unite} · couverture ${matFmt1(l.c.couvJours)}j · délai ${l.it.delai||0}j${l.it.lien?` · <a href="${l.it.lien}" target="_blank" rel="noopener" style="color:var(--info)">↗ commander</a>`:''}</small></div>
+        <div class="qty">${matFmt(l.c.qteCmd)} ${l.it.unite}</div>
+        <div class="pr">${matFmt2(l.it.cout)} €/${l.it.unite}</div>
+        <div class="tt">${matFmt(l.c.coutCmd)} €</div>
+      </div>`).join('')}
+    </div>`;
+  }).join('') + `<div class="mat-order-total"><span>Total commande</span><span>${matFmt(total)} €</span></div>`;
+}
+
+function copyMatOrder(){
+  if(!MAT_STATE) return;
+  const groups = {};
+  let total = 0;
+  MAT_STATE.items.forEach(it=>{
+    const c = matComputeItem(it);
+    if(c.qteCmd <= 0) return;
+    const sup = it.fournisseur || 'Sans fournisseur';
+    if(!groups[sup]) groups[sup] = [];
+    groups[sup].push({ it, c });
+    total += c.coutCmd;
+  });
+  let txt = `BON DE COMMANDE — EDEN — ${new Date().toLocaleDateString('fr-FR')}\n\n`;
+  Object.keys(groups).forEach(sup=>{
+    txt += `═══ ${sup} ═══\n`;
+    groups[sup].forEach(l=>{
+      txt += `• ${l.it.nom} : ${matFmt(l.c.qteCmd)} ${l.it.unite} (${matFmt(l.c.coutCmd)} €)${l.it.lien?` — ${l.it.lien}`:''}\n`;
+    });
+    txt += '\n';
+  });
+  txt += `Total commande : ${matFmt(total)} €\n`;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(txt).then(()=>{
+      if(typeof toast==='function') toast('⎘','Bon de commande copié');
+    });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); if(typeof toast==='function') toast('⎘','Bon copié'); }catch(e){}
+    document.body.removeChild(ta);
+  }
+}
+
+function exportMatOrderCSV(){
+  if(!MAT_STATE) return;
+  const rows = [['Fournisseur','Article','Quantité','Unité','Coût unitaire','Coût total','Délai (j)','Lien']];
+  let total = 0;
+  MAT_STATE.items.forEach(it=>{
+    const c = matComputeItem(it);
+    if(c.qteCmd <= 0) return;
+    rows.push([it.fournisseur||'-', it.nom, c.qteCmd, it.unite, it.cout, Math.round(c.coutCmd), it.delai, it.lien||'']);
+    total += c.coutCmd;
+  });
+  rows.push(['','TOTAL','','','','','','']);
+  rows.push(['','',`${matFmt(total)} €`,'','','','','']);
+  const csv = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);
+  a.download = `eden-commande-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  if(typeof toast==='function') toast('↓','Bon de commande exporté');
+}
+
+// Init silencieux
 try{ if(!MAT_STATE) loadMateriel(); }catch(e){}
 
 </script>
