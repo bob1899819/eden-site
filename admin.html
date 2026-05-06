@@ -319,6 +319,61 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 .ach-tab:last-child::after{display:none;}
 .ach-kpi-card{transition:all .3s;cursor:pointer;}
 .ach-kpi-card:hover{transform:translateY(-2px);filter:brightness(1.1);}
+/* ══ SIMULATION REMPLISSAGE ══ */
+.sim-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;}
+.sim-card{background:rgba(255,255,255,.015);border:1px solid rgba(196,160,78,.1);padding:18px;display:flex;flex-direction:column;gap:10px;transition:border-color .25s;}
+.sim-card:hover{border-color:rgba(196,160,78,.28);}
+.sim-card-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid rgba(196,160,78,.07);}
+.sim-card-name{font-family:var(--serif);font-size:17px;color:var(--cream);font-weight:300;}
+.sim-card-icon{font-size:14px;color:var(--gold);opacity:.75;}
+.sim-row{display:grid;grid-template-columns:1.1fr 1fr;gap:6px 10px;align-items:center;}
+.sim-row label{font-size:8px;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);}
+.sim-input{background:rgba(255,255,255,.035);border:1px solid rgba(196,160,78,.12);color:var(--cream);padding:6px 9px;font-family:var(--sans);font-size:12px;outline:none;transition:border-color .25s;width:100%;font-weight:300;}
+.sim-input:focus{border-color:rgba(196,160,78,.5);}
+.sim-input.tiny{padding:5px 7px;font-size:11px;}
+.sim-ctrl{display:flex;align-items:center;gap:5px;}
+.sim-ctrl .sim-input{flex:1;text-align:center;font-family:var(--serif);font-size:14px;color:var(--gold);}
+.sim-btn{width:26px;height:26px;border:1px solid rgba(196,160,78,.18);background:rgba(255,255,255,.02);color:var(--gold);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:var(--sans);flex-shrink:0;}
+.sim-btn:hover{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+.sim-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;padding-top:10px;border-top:1px solid rgba(196,160,78,.05);}
+.sim-stat{background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.06);padding:7px 9px;}
+.sim-stat-lbl{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.sim-stat-val{font-family:var(--serif);font-size:14px;color:var(--cream);margin-top:2px;}
+.sim-stat-val b{color:var(--gold);}
+.sim-bar{height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-top:4px;}
+.sim-bar-fill{height:100%;border-radius:2px;background:var(--gold);transition:width .4s var(--ease);}
+.sim-bar-fill.warn{background:var(--warn);}
+.sim-bar-fill.err{background:var(--err);}
+.sim-bar-fill.ok{background:var(--ok);}
+.sim-mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.sim-mini{background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.07);padding:11px 14px;}
+.sim-mini-lbl{font-size:7px;letter-spacing:2.4px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.sim-mini-val{font-family:var(--serif);font-size:18px;color:var(--cream);}
+.sim-mini-val b{color:var(--gold);}
+.sim-fees{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-bottom:14px;}
+.sim-fee-row{display:grid;grid-template-columns:1fr 90px;gap:8px;align-items:center;}
+.sim-fee-row label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--light);}
+.sim-fees-foot{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:12px;border-top:1px solid rgba(196,160,78,.06);}
+.sim-positive{border-color:rgba(76,175,80,.35)!important;background:rgba(76,175,80,.07)!important;}
+.sim-positive .sim-mini-val b,.sim-positive .sim-mini-val{color:var(--ok)!important;}
+.sim-negative{border-color:rgba(224,80,80,.35)!important;background:rgba(224,80,80,.07)!important;}
+.sim-negative .sim-mini-val b,.sim-negative .sim-mini-val{color:var(--err)!important;}
+.sim-warning{border-color:rgba(240,160,48,.35)!important;background:rgba(240,160,48,.07)!important;}
+.sim-warning .sim-mini-val b,.sim-warning .sim-mini-val{color:var(--warn)!important;}
+.sim-bars{display:flex;flex-direction:column;gap:9px;padding:6px 2px;}
+.sim-bars-row{display:grid;grid-template-columns:130px 1fr 90px;gap:10px;align-items:center;}
+.sim-bars-row .sim-bars-name{font-size:10px;color:var(--light);letter-spacing:1px;}
+.sim-bars-row .sim-bars-track{height:12px;background:rgba(255,255,255,.04);border:1px solid rgba(196,160,78,.06);position:relative;overflow:hidden;}
+.sim-bars-row .sim-bars-fill{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold) 70%,var(--gold-l));transition:width .5s var(--ease);}
+.sim-bars-row.mg .sim-bars-fill{background:linear-gradient(90deg,#2c5e2f,var(--ok) 70%,#7bc77f);}
+.sim-bars-row .sim-bars-val{font-family:var(--serif);font-size:14px;color:var(--gold);text-align:right;}
+.sim-bars-row.mg .sim-bars-val{color:var(--ok);}
+.sim-tag{display:inline-block;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:2px;background:rgba(196,160,78,.1);color:var(--gold);border:1px solid rgba(196,160,78,.18);}
+.sim-tag.ok{background:rgba(76,175,80,.1);color:var(--ok);border-color:rgba(76,175,80,.2);}
+.sim-tag.warn{background:rgba(240,160,48,.1);color:var(--warn);border-color:rgba(240,160,48,.2);}
+.sim-tag.err{background:rgba(224,80,80,.1);color:var(--err);border-color:rgba(224,80,80,.2);}
+@media(max-width:900px){.sim-fees{grid-template-columns:1fr;}.sim-mini-grid{grid-template-columns:1fr;}.sim-fees-foot{grid-template-columns:1fr;}}
+
 </style>
 </style>
 </head>
@@ -386,6 +441,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
       <div class="sbi" onclick="nav('fidelite')"><span class="sbi-icon">♔</span>Cartes fidélité <span id="b-fid" class="sbi-badge gold" style="display:none"></span></div>
 
       <p class="sb-sec">Finances</p>
+      <div class="sbi" onclick="nav('simulation')"><span class="sbi-icon">◉</span>Simulation remplissage</div>
       <div class="sbi" onclick="nav('finances')"><span class="sbi-icon">◆</span>Revenus & Stats</div>
 
       <p class="sb-sec">Admin</p>
@@ -657,6 +713,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
         <button class="ach-tab" onclick="achTab('cafes',this)">☕ Cafés</button>
         <button class="ach-tab" onclick="achTab('boissons-spec',this)">🥥 Ingrédients Smoothies</button>
         <button class="ach-tab" onclick="achTab('snacks',this)">🍫 Snacks</button>
+        <button class="ach-tab" onclick="achTab('plateaux-fruits',this)">🍓 Plateaux fruits</button>
         <button class="ach-tab" onclick="achTab('accessoires',this)">🛠 Accessoires</button>
       </div>
 
@@ -791,6 +848,12 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
         <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:14px">🍫 Snacks — Coût par pièce et investissement total</div>
         <div style="height:200px"><canvas id="chart-snacks" style="width:100%;height:200px"></canvas></div>
       </div>
+      
+      <div id="ach-chart-plateaux-fruits" class="ach-chart-section" style="display:none;margin-bottom:24px">
+        <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#f05c7a;margin-bottom:14px">🍓 Plateaux fruits — Coût matière, CA potentiel et marge</div>
+        <div style="height:200px"><canvas id="chart-plateaux-fruits" style="width:100%;height:200px"></canvas></div>
+      </div>
+
       <div id="ach-chart-accessoires"  class="ach-chart-section" style="display:none;margin-bottom:24px">
         <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#f0a030;margin-bottom:14px">🛠 Accessoires & Snacks — Coûts</div>
         <div style="height:200px"><canvas id="chart-accessoires" style="width:100%;height:200px"></canvas></div>
@@ -1047,6 +1110,41 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
           <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Impact sur la marge — si 1 pièce offerte par service</div>
           <div id="snack-impact" style="display:flex;gap:16px;flex-wrap:wrap"></div>
         </div>
+      </div>
+
+
+      <!-- ═══ PLATEAUX FRUITS HEALTHY ═══ -->
+      <div class="tw" style="margin-bottom:24px">
+        <div class="tw-head">
+          <span class="tw-title">🍓 Plateaux fruits healthy — Vente additionnelle premium</span>
+          <div style="font-size:9px;color:var(--muted)">Petit 12€ · Moyen 20€ · Grand 32€</div>
+        </div>
+        <div style="padding:10px 20px;background:rgba(240,92,122,.035);border-bottom:1px solid rgba(196,160,78,.06);font-size:10px;color:var(--muted)">
+          Les plateaux fruits sont intégrés comme stock de production et revenu additionnel Fuel Bar. Le coût matière comprend fruits, finition, support et petits consommables.
+        </div>
+        <table>
+          <thead><tr>
+            <th>Format</th>
+            <th>Portion</th>
+            <th>Coût fabrication</th>
+            <th>Prix revente</th>
+            <th>Qté prévue</th>
+            <th>Investissement</th>
+            <th>CA potentiel</th>
+            <th>Marge brute</th>
+            <th>Marge %</th>
+            <th>Statut</th>
+            <th>Ajust.</th>
+          </tr></thead>
+          <tbody id="plateaux-fruits-tb"></tbody>
+          <tfoot><tr>
+            <td colspan="5" style="padding:10px 16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#f05c7a">Total Plateaux Fruits</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:#f05c7a" id="plateaux-cout-total">–</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--gold)" id="plateaux-ca-total">–</td>
+            <td style="padding:10px 16px;font-family:var(--serif);font-size:16px;color:var(--ok)" id="plateaux-marge-total">–</td>
+            <td colspan="3"></td>
+          </tr></tfoot>
+        </table>
       </div>
 
       <!-- ═══ ACCESSOIRES & SNACKS ═══ -->
@@ -1352,6 +1450,93 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
     </table>
   </div>
 </section>
+    <!-- ════ SIMULATION REMPLISSAGE ════ -->
+    <section class="page" id="page-simulation">
+      <div class="sh">
+        <div class="sh-left"><p class="ey">Pilotage</p><h2>Simulation de <em>remplissage</em></h2><p style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1px">Projection du chiffre d'affaires, des coûts et de la marge par espace.</p></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="btn-s" onclick="applySimScenario('prudent')">Scénario prudent</button>
+          <button class="btn-s" onclick="applySimScenario('realiste')">Scénario réaliste</button>
+          <button class="btn-s" onclick="applySimScenario('fort')">Scénario fort</button>
+          <button class="btn-s danger" onclick="resetSimulation()">↺ Réinitialiser</button>
+        </div>
+      </div>
+
+      <!-- KPIs globaux -->
+      <div class="kpi-grid">
+        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">CA total / jour</p><div class="kpi-val"><b id="sim-k-ca-jour">–</b> €</div><p class="kpi-sub">tous espaces</p><span class="kpi-ico">◷</span></div>
+        <div class="kpi" style="--accent:var(--gold-l)"><p class="kpi-label">CA total / semaine</p><div class="kpi-val"><b id="sim-k-ca-sem">–</b> €</div><p class="kpi-sub">7 jours d'activité</p><span class="kpi-ico">◈</span></div>
+        <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Marge / jour</p><div class="kpi-val"><b id="sim-k-mg-jour">–</b> €</div><p class="kpi-sub" id="sim-k-mg-jour-sub">après coût variable</p><span class="kpi-ico">◆</span></div>
+        <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Marge / semaine</p><div class="kpi-val"><b id="sim-k-mg-sem">–</b> €</div><p class="kpi-sub" id="sim-k-mg-sem-sub">après coût variable</p><span class="kpi-ico">◆</span></div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Remplissage moyen / jour</p><div class="kpi-val"><b id="sim-k-rem-jour">–</b><span style="font-size:18px;color:var(--gold-l)"> %</span></div><p class="kpi-sub">capacités combinées</p><span class="kpi-ico">◉</span></div>
+        <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Remplissage moyen / semaine</p><div class="kpi-val"><b id="sim-k-rem-sem">–</b><span style="font-size:18px;color:var(--gold-l)"> %</span></div><p class="kpi-sub">capacités combinées</p><span class="kpi-ico">◉</span></div>
+        <div class="kpi" style="--accent:var(--purple)"><p class="kpi-label">CA mensuel estimé</p><div class="kpi-val"><b id="sim-k-ca-mois">–</b> €</div><p class="kpi-sub">CA semaine × 4,33</p><span class="kpi-ico">◬</span></div>
+        <div class="kpi" style="--accent:var(--purple)"><p class="kpi-label">Marge mensuelle estimée</p><div class="kpi-val"><b id="sim-k-mg-mois">–</b> €</div><p class="kpi-sub">avant charges fixes</p><span class="kpi-ico">◬</span></div>
+      </div>
+
+      <!-- Cartes par espace -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-h"><span class="card-t">Espaces — réservations & marges</span><span style="font-size:9px;color:var(--muted)">Modifie en temps réel · valeurs sauvegardées localement</span></div>
+        <div class="sim-grid" id="sim-grid"></div>
+      </div>
+
+      <!-- Objectif mensuel & annuel + Charges fixes -->
+      <div class="g2">
+        <div class="card">
+          <div class="card-h"><span class="card-t">Objectif mensuel & annuel estimé</span></div>
+          <div class="sim-mini-grid">
+            <div class="sim-mini"><p class="sim-mini-lbl">CA mensuel</p><p class="sim-mini-val"><b id="sim-obj-ca-mois">–</b> €</p></div>
+            <div class="sim-mini"><p class="sim-mini-lbl">Marge mensuelle</p><p class="sim-mini-val"><b id="sim-obj-mg-mois">–</b> €</p></div>
+            <div class="sim-mini"><p class="sim-mini-lbl">CA annuel</p><p class="sim-mini-val"><b id="sim-obj-ca-an">–</b> €</p></div>
+            <div class="sim-mini"><p class="sim-mini-lbl">Marge annuelle</p><p class="sim-mini-val"><b id="sim-obj-mg-an">–</b> €</p></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><span class="card-t">Charges fixes mensuelles</span><span style="font-size:9px;color:var(--muted)">Modifiable</span></div>
+          <div class="sim-fees" id="sim-fees"></div>
+          <div class="sim-fees-foot">
+            <div class="sim-mini"><p class="sim-mini-lbl">Total charges fixes / mois</p><p class="sim-mini-val"><b id="sim-fees-total">–</b> €</p></div>
+            <div class="sim-mini" id="sim-benef-wrap"><p class="sim-mini-lbl">Bénéfice mensuel estimé</p><p class="sim-mini-val"><b id="sim-benef">–</b> €</p></div>
+            <div class="sim-mini"><p class="sim-mini-lbl">Seuil CA / jour à atteindre</p><p class="sim-mini-val"><b id="sim-seuil-ca">–</b> €</p></div>
+            <div class="sim-mini"><p class="sim-mini-lbl">Seuil marge / jour à atteindre</p><p class="sim-mini-val"><b id="sim-seuil-mg">–</b> €</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tableau détail -->
+      <div class="tw">
+        <div class="tw-head"><span class="tw-title">Détail par espace</span></div>
+        <table>
+          <thead><tr>
+            <th>Espace</th>
+            <th>Résa / jour</th>
+            <th>CA / jour</th>
+            <th>Marge / jour</th>
+            <th>Résa / semaine</th>
+            <th>CA / semaine</th>
+            <th>Marge / semaine</th>
+            <th>Remplissage sem.</th>
+            <th>Marge %</th>
+          </tr></thead>
+          <tbody id="sim-table-tb"></tbody>
+        </table>
+      </div>
+
+      <!-- Graphiques -->
+      <div class="g2">
+        <div class="card">
+          <div class="card-h"><span class="card-t">CA semaine par espace</span></div>
+          <div class="sim-bars" id="sim-bars-ca"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="card-t">Marge semaine par espace</span></div>
+          <div class="sim-bars" id="sim-bars-mg"></div>
+        </div>
+      </div>
+    </section>
     <!-- ════ FINANCES ════ -->
     <section class="page" id="page-finances">
       <div class="sh">
@@ -1952,7 +2137,8 @@ const PAGE_TITLES={
   clients:'Fiches <em>Clients</em>', stocks:'Stock <em>Boissons</em>',
   commandes:'Extras <em>commandés</em>', parrainage:'Parrai<em>nage</em>',
   fidelite:'Cartes <em>fidélité</em>',
-  finances:'Revenus & <em>Statistiques</em>', parametres:'Paramè<em>tres</em>'
+  finances:'Revenus & <em>Statistiques</em>', parametres:'Paramè<em>tres</em>',
+  simulation:'Simulation de <em>remplissage</em>'
 };
 function nav(p){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
@@ -1977,7 +2163,8 @@ function renderPage(p){
   fidelite:renderFidelite,
   achats:renderAchats,
   finances:renderFinances,
-  parametres:renderParams
+  parametres:renderParams,
+  simulation:renderSimulation
 };
   if(map[p]) map[p]();
 }
@@ -3054,6 +3241,7 @@ function achTab(name, btn){
     if(name==="cafes")    drawCafesChart();
     if(name==="boissons-spec") drawBSpecChart();
     if(name==="snacks") drawSnacksChart();
+    if(name==="plateaux-fruits") drawPlateauxFruitsChart();
     if(name==="accessoires") drawAccChart();
   }, 50);
 }
@@ -3266,7 +3454,7 @@ function hexToRgb(hex){
 
 function drawGlobalCharts(){
   var allThes = THES_PREMIUM.concat(THES_STANDARD);
-  var cats    = ["Thés","Sirops","Eaux plates","Eaux gazeuses","Canettes","Cafés","Boissons sp.","Access."];
+  var cats    = ["Thés","Sirops","Eaux plates","Eaux gazeuses","Canettes","Cafés","Boissons sp.","Plateaux fruits","Access."];
   var couts   = [
     allThes.reduce(function(s,t){return s+(t.prix*t.qte);},0),
     SIROPS.reduce(function(s,t){return s+(t.prix*t.qte);},0),
@@ -3275,6 +3463,7 @@ function drawGlobalCharts(){
     CANETTES.reduce(function(s,p){return s+(p.prixPack*p.qte);},0),
     PRIX_CAFE_KG*CAFE_STOCK_KG,
     BSPEC.reduce(function(s,p){return s+(p.prix*p.qte);},0),
+    PLATEAUX_FRUITS.reduce(function(s,p){return s+(p.coutFabrication*p.qte);},0),
     ACCESSOIRES.reduce(function(s,p){return s+(p.prix*p.qte);},0)
   ];
   var cas = [
@@ -3285,11 +3474,12 @@ function drawGlobalCharts(){
     CANETTES.reduce(function(s,p){return s+(p.qte*p.unites*p.prixVente);},0),
     CAFES_DATA.reduce(function(s,c){return s+(CAFE_STOCK_KG*1000/c.dosage)*c.prixCarte;},0)/CAFES_DATA.length,
     BSPEC.reduce(function(s,p){return s+(p.qte*p.prixVente);},0),
+    PLATEAUX_FRUITS.reduce(function(s,p){return s+(p.prixVente*p.qte);},0),
     ACCESSOIRES.reduce(function(s,p){return s+(p.unites>1?p.qte*p.unites*p.prixVente:0);},0)
   ];
   // Draw cost chart with category colors
-  drawColoredBarChart("chart-cout-global", cats, couts, ["#5b9bd5","#4caf50","#9c7fd5","#48b4a0","#e05050","#c4a04e"]);
-  drawColoredBarChart("chart-ca-global",   cats, cas,   ["#5b9bd5","#4caf50","#9c7fd5","#48b4a0","#e05050","#c4a04e"]);
+  drawColoredBarChart("chart-cout-global", cats, couts, ["#5b9bd5","#4caf50","#9c7fd5","#48b4a0","#e05050","#c4a04e","#f05c7a"]);
+  drawColoredBarChart("chart-ca-global",   cats, cas,   ["#5b9bd5","#4caf50","#9c7fd5","#48b4a0","#e05050","#c4a04e","#f05c7a"]);
 }
 
 function drawThesChart(){
@@ -3753,6 +3943,123 @@ var BSPEC = [
 
 
 // ══ SNACKS / ACCOMPAGNEMENTS ══
+
+function renderPlateauxFruits(){
+  var tb = document.getElementById("plateaux-fruits-tb");
+  if(!tb) return;
+  var totalCout = 0, totalCA = 0, totalMarge = 0;
+  var rows = "";
+
+  PLATEAUX_FRUITS.forEach(function(p,i){
+    var cout = p.coutFabrication * p.qte;
+    var ca = p.prixVente * p.qte;
+    var marge = ca - cout;
+    var margePct = ca > 0 ? (marge / ca * 100) : 0;
+    totalCout += cout;
+    totalCA += ca;
+    totalMarge += marge;
+
+    var st = p.qte <= 0
+      ? "<span class='badge cancelled'><span class='badge-dot'></span>Rupture</span>"
+      : p.qte <= p.seuil
+        ? "<span class='badge pending'><span class='badge-dot'></span>Bas</span>"
+        : "<span class='badge confirmed'><span class='badge-dot'></span>OK</span>";
+
+    rows += "<tr>";
+    rows += "<td class='name'>" + p.nom + "</td>";
+    rows += "<td style='color:var(--muted);font-size:10px'>" + p.format + "</td>";
+    rows += "<td style='color:var(--muted)'>" + p.coutFabrication.toFixed(2) + " €</td>";
+    rows += "<td style='color:var(--gold);font-family:var(--serif);font-size:14px'>" + p.prixVente.toFixed(2) + " €</td>";
+    rows += "<td style='text-align:center'><div style='display:flex;align-items:center;gap:5px;justify-content:center'>";
+    rows += "<button class='sib' data-idx='"+i+"' data-d='-1' onclick='adjPlateauFruitsBtn(this)'>−</button>";
+    rows += "<span style='font-family:var(--serif);font-size:16px;min-width:20px;text-align:center'>" + p.qte + "</span>";
+    rows += "<button class='sib' data-idx='"+i+"' data-d='1' onclick='adjPlateauFruitsBtn(this)'>+</button>";
+    rows += "</div></td>";
+    rows += "<td style='color:#f05c7a;font-family:var(--serif);font-size:14px'>" + cout.toFixed(2) + " €</td>";
+    rows += "<td style='color:var(--gold);font-family:var(--serif);font-size:14px'>" + ca.toFixed(2) + " €</td>";
+    rows += "<td style='color:var(--ok);font-family:var(--serif);font-size:14px'>" + marge.toFixed(2) + " €</td>";
+    rows += "<td style='color:var(--ok)'>" + margePct.toFixed(1) + " %</td>";
+    rows += "<td>" + st + "</td>";
+    rows += "<td><button class='atb err' data-idx='"+i+"' onclick='delPlateauFruitsBtn(this)'>✕</button></td>";
+    rows += "</tr>";
+  });
+
+  tb.innerHTML = rows;
+  setKPI("plateaux-cout-total", totalCout.toFixed(2) + " €");
+  setKPI("plateaux-ca-total", totalCA.toFixed(2) + " €");
+  setKPI("plateaux-marge-total", totalMarge.toFixed(2) + " €");
+}
+
+function adjPlateauFruitsBtn(btn){
+  var idx = parseInt(btn.dataset.idx);
+  var d = parseInt(btn.dataset.d);
+  PLATEAUX_FRUITS[idx].qte = Math.max(0, PLATEAUX_FRUITS[idx].qte + d);
+  renderPlateauxFruits();
+  renderRecap();
+  updateAllKPIs();
+  setTimeout(function(){ drawGlobalCharts(); drawPlateauxFruitsChart(); }, 80);
+}
+
+function delPlateauFruitsBtn(btn){
+  if(confirm("Supprimer ce plateau de fruits ?")){
+    PLATEAUX_FRUITS.splice(parseInt(btn.dataset.idx),1);
+    renderPlateauxFruits();
+    renderRecap();
+    updateAllKPIs();
+    toast("OK","Plateau supprimé");
+  }
+}
+
+function drawPlateauxFruitsChart(){
+  var labels = PLATEAUX_FRUITS.map(function(p){ return p.nom.replace(" plateau fruits healthy",""); });
+  var couts = PLATEAUX_FRUITS.map(function(p){ return p.coutFabrication * p.qte; });
+  var cas = PLATEAUX_FRUITS.map(function(p){ return p.prixVente * p.qte; });
+  var marges = PLATEAUX_FRUITS.map(function(p){ return (p.prixVente - p.coutFabrication) * p.qte; });
+
+  var canvas = document.getElementById("chart-plateaux-fruits");
+  if(!canvas) return;
+  canvas.width = canvas.parentElement.offsetWidth || 600;
+  var ctx = getCtx("chart-plateaux-fruits"); if(!ctx) return;
+  var W = canvas.width, H = canvas.height, pad = {t:20,r:10,b:38,l:44};
+  var cW = W - pad.l - pad.r, cH = H - pad.t - pad.b;
+  ctx.clearRect(0,0,W,H);
+  drawGrid(ctx,W,H,4);
+
+  var max = Math.max.apply(null, couts.concat(cas).concat(marges), 1);
+  var groupW = cW / labels.length, bw = groupW * .20;
+
+  labels.forEach(function(l,i){
+    var cx = pad.l + groupW*i + groupW/2;
+    var vals = [couts[i], cas[i], marges[i]];
+    var cols = ["#f05c7a", "#c4a04e", "#4caf50"];
+
+    vals.forEach(function(v,j){
+      var bh = Math.max(2, (v/max)*cH);
+      var x = cx - bw*1.5 + (bw+3)*j;
+      var y = pad.t + cH - bh;
+      var grad = ctx.createLinearGradient(0,y,0,y+bh);
+      grad.addColorStop(0, cols[j]);
+      grad.addColorStop(1, "rgba(255,255,255,.05)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(x,y,bw,bh);
+    });
+
+    ctx.fillStyle = "rgba(122,122,104,.7)";
+    ctx.font = "9px Jost,sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(l, cx, pad.t+cH+18);
+  });
+
+  ctx.fillStyle="#f05c7a";ctx.fillRect(pad.l,4,8,6);
+  ctx.fillStyle="rgba(184,180,164,.7)";ctx.font="8px Jost,sans-serif";ctx.textAlign="left";
+  ctx.fillText("Coût",pad.l+12,10);
+  ctx.fillStyle="#c4a04e";ctx.fillRect(pad.l+64,4,8,6);
+  ctx.fillText("CA",pad.l+76,10);
+  ctx.fillStyle="#4caf50";ctx.fillRect(pad.l+112,4,8,6);
+  ctx.fillText("Marge",pad.l+124,10);
+}
+
+
 function renderSnacks(){
   var tb=document.getElementById("snack-tb"); if(!tb) return;
   var totInvesti=0, totalPieces=0;
@@ -3848,6 +4155,13 @@ var SNACKS = [
   {id:"sn2",nom:"Biscoff Lotus Spéculoos",format:"1200 biscuits/carton",prixCarton:85.47,qte:1,piecesParCarton:1200,coutPiece:0.071,seuil:1,cat:"snack"},
   {id:"sn3",nom:"Chocolat Monbana Pépite Spéculoos",format:"200 pcs/carton",prixCarton:24.99,qte:1,piecesParCarton:200,coutPiece:0.125,seuil:1,cat:"snack"}
 ];
+
+var PLATEAUX_FRUITS = [
+  {id:"pf1", nom:"Petit plateau fruits healthy", format:"1–2 personnes", coutFabrication:4.50, prixVente:12.00, qte:10, seuil:3},
+  {id:"pf2", nom:"Moyen plateau fruits healthy", format:"2–4 personnes", coutFabrication:8.00, prixVente:20.00, qte:6, seuil:2},
+  {id:"pf3", nom:"Grand plateau fruits healthy", format:"4–6 personnes", coutFabrication:13.50, prixVente:32.00, qte:3, seuil:1}
+];
+
 var accFilter = "all";
 
 function renderBSpec(){
@@ -4080,6 +4394,7 @@ function renderAchats(){
   renderCafes();
   renderBSpec();
   renderSnacks();
+  renderPlateauxFruits();
   renderAccessoires();
   renderRecap();
   renderRevenue();
@@ -4187,11 +4502,15 @@ function renderSirops(){
 function renderRecap(){
   var tThes = THES_PREMIUM.reduce(function(s,t){return s+(t.prix*t.qte);},0) + THES_STANDARD.reduce(function(s,t){return s+(t.prix*t.qte);},0);
   var tSirops = SIROPS.reduce(function(s,t){return s+(t.prix*t.qte);},0);
-  var tTotal = tThes + tSirops;
+  var tPlateaux = PLATEAUX_FRUITS.reduce(function(s,p){return s+(p.coutFabrication*p.qte);},0);
+  var caPlateaux = PLATEAUX_FRUITS.reduce(function(s,p){return s+(p.prixVente*p.qte);},0);
+  var margePlateaux = caPlateaux - tPlateaux;
+  var tTotal = tThes + tSirops + tPlateaux;
 
   var alerts = THES_PREMIUM.filter(function(t){return t.qte<=t.seuil;}).length
              + THES_STANDARD.filter(function(t){return t.qte<=t.seuil;}).length
-             + SIROPS.filter(function(s){return s.qte<=s.seuil;}).length;
+             + SIROPS.filter(function(s){return s.qte<=s.seuil;}).length
+             + PLATEAUX_FRUITS.filter(function(p){return p.qte<=p.seuil;}).length;
 
   var elA = document.getElementById("ach-total");
   if(elA) elA.textContent = tTotal.toFixed(2);
@@ -4216,6 +4535,11 @@ function renderRecap(){
       "<div style='font-size:9px;color:var(--muted);margin-top:6px'>" +
         SIROPS.reduce(function(s,t){return s+t.qte;},0) +
         " bouteilles · 14 parfums</div>" +
+    "</div>" +
+    "<div style='padding:20px;background:rgba(240,92,122,.045);border:1px solid rgba(240,92,122,.14);text-align:center'>" +
+      "<div style='font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#f05c7a;margin-bottom:8px'>Plateaux fruits</div>" +
+      "<div style='font-family:var(--serif);font-size:32px;color:#f05c7a'>" + tPlateaux.toFixed(2) + " €</div>" +
+      "<div style='font-size:9px;color:var(--muted);margin-top:6px'>CA " + caPlateaux.toFixed(2) + " € · marge " + margePlateaux.toFixed(2) + " €</div>" +
     "</div>" +
     "<div style='padding:20px;background:rgba(196,160,78,.07);border:1px solid rgba(196,160,78,.25);text-align:center'>" +
       "<div style='font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px'>Total commande</div>" +
@@ -4535,6 +4859,321 @@ function exportAchatsCSV(){
 }
 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDrw(); });
+
+/* ══ SIMULATION REMPLISSAGE ══ */
+const SIM_DEFAULT = [
+  {key:'bain_froid',     nom:'Bain froid',              icon:'❄', prix:40, cout:4,  cap:20, rj:8,  rs:45},
+  {key:'bain_nordique',  nom:'Bain nordique',           icon:'♨', prix:45, cout:8,  cap:16, rj:6,  rs:35},
+  {key:'sauna',          nom:'Sauna / Hammam',          icon:'☼', prix:30, cout:5,  cap:20, rj:7,  rs:40},
+  {key:'pressotherapie', nom:'Pressothérapie',          icon:'◉', prix:25, cout:3,  cap:24, rj:10, rs:55},
+  {key:'massage',        nom:'Massage / soin',          icon:'✦', prix:60, cout:10, cap:8,  rj:3,  rs:18},
+  {key:'fuelbar',        nom:'Fuel Bar',                icon:'☕', prix:6,  cout:3,  cap:80, rj:25, rs:160},
+  {key:'plateaux',       nom:'Plateaux fruits',         icon:'❀', prix:20, cout:8,  cap:15, rj:4,  rs:25}
+];
+const SIM_FEES_DEFAULT = [
+  {key:'loyer',     nom:'Loyer mensuel',     val:2500},
+  {key:'energie',   nom:'Électricité / eau', val:700},
+  {key:'logiciels', nom:'Logiciels',         val:300},
+  {key:'assurance', nom:'Assurance',         val:180},
+  {key:'nettoyage', nom:'Nettoyage',         val:350},
+  {key:'comptable', nom:'Comptable',         val:150},
+  {key:'banque',    nom:'Banque / TPE',      val:120},
+  {key:'marketing', nom:'Marketing',         val:300},
+  {key:'divers',    nom:'Divers',            val:300}
+];
+let SIM_DATA  = JSON.parse(JSON.stringify(SIM_DEFAULT));
+let SIM_FEES  = JSON.parse(JSON.stringify(SIM_FEES_DEFAULT));
+
+function fmtSim(n){ if(!isFinite(n)) n=0; return Math.round(n).toLocaleString('fr-FR'); }
+function fmtSim1(n){ if(!isFinite(n)) n=0; return n.toLocaleString('fr-FR',{maximumFractionDigits:1}); }
+function clampSim(n,min,max){ n=Number(n)||0; if(n<min) n=min; if(max!=null&&n>max) n=max; return n; }
+function pctClass(p){ if(p>=80) return 'ok'; if(p>=50) return ''; if(p>=30) return 'warn'; return 'err'; }
+function pctTag(p){ if(p>=80) return 'ok'; if(p>=50) return ''; if(p>=30) return 'warn'; return 'err'; }
+
+function loadSimulation(){
+  try{
+    const raw = localStorage.getItem('eden_simulation_remplissage');
+    if(!raw) return;
+    const obj = JSON.parse(raw);
+    if(obj && Array.isArray(obj.data)){
+      // Merge with defaults to keep new keys if added later
+      SIM_DATA = SIM_DEFAULT.map(d=>{
+        const found = obj.data.find(x=>x.key===d.key);
+        return found ? Object.assign({}, d, found) : d;
+      });
+    }
+    if(obj && Array.isArray(obj.fees)){
+      SIM_FEES = SIM_FEES_DEFAULT.map(f=>{
+        const found = obj.fees.find(x=>x.key===f.key);
+        return found ? Object.assign({}, f, found) : f;
+      });
+    }
+  }catch(e){ console.warn('sim load err',e); }
+}
+function saveSimulation(){
+  try{
+    localStorage.setItem('eden_simulation_remplissage', JSON.stringify({data:SIM_DATA, fees:SIM_FEES, _t:Date.now()}));
+  }catch(e){ console.warn('sim save err',e); }
+}
+
+function adjustSimValue(index, field, delta){
+  const sp = SIM_DATA[index]; if(!sp) return;
+  let v = (Number(sp[field])||0) + delta;
+  if(v<0) v=0;
+  if(field==='rj' && v>sp.cap) v=sp.cap;
+  if(field==='rs' && v>sp.cap*7) v=sp.cap*7;
+  sp[field] = v;
+  saveSimulation();
+  updateSimulation();
+}
+function setSimField(index, field, value){
+  const sp = SIM_DATA[index]; if(!sp) return;
+  let v = Number(value); if(!isFinite(v)||v<0) v=0;
+  if(field==='rj' && v>sp.cap) v=sp.cap;
+  if(field==='rs' && v>sp.cap*7) v=sp.cap*7;
+  sp[field] = v;
+  saveSimulation();
+  updateSimulation();
+}
+function setSimFee(key, value){
+  const f = SIM_FEES.find(x=>x.key===key); if(!f) return;
+  let v=Number(value); if(!isFinite(v)||v<0) v=0;
+  f.val = v;
+  saveSimulation();
+  updateSimulation();
+}
+function adjustSimFee(key, delta){
+  const f = SIM_FEES.find(x=>x.key===key); if(!f) return;
+  let v=(Number(f.val)||0)+delta; if(v<0) v=0;
+  f.val = v;
+  saveSimulation();
+  updateSimulation();
+}
+
+function applySimScenario(type){
+  if(type==='realiste'){
+    SIM_DATA = JSON.parse(JSON.stringify(SIM_DEFAULT));
+  } else if(type==='prudent'){
+    SIM_DATA.forEach((sp,i)=>{
+      const def = SIM_DEFAULT[i];
+      sp.rj = Math.min(sp.cap,    Math.round(def.rj*0.7));
+      sp.rs = Math.min(sp.cap*7,  Math.round(def.rs*0.7));
+    });
+  } else if(type==='fort'){
+    SIM_DATA.forEach((sp,i)=>{
+      const def = SIM_DEFAULT[i];
+      sp.rj = Math.min(sp.cap,    Math.round(def.rj*1.35));
+      sp.rs = Math.min(sp.cap*7,  Math.round(def.rs*1.35));
+    });
+  }
+  saveSimulation();
+  renderSimulation();
+}
+function resetSimulation(){
+  SIM_DATA = JSON.parse(JSON.stringify(SIM_DEFAULT));
+  SIM_FEES = JSON.parse(JSON.stringify(SIM_FEES_DEFAULT));
+  try{ localStorage.removeItem('eden_simulation_remplissage'); }catch(e){}
+  renderSimulation();
+  if(typeof toast==='function') toast('↺','Simulation réinitialisée');
+}
+
+function renderSimulation(){
+  loadSimulation();
+  // Cartes
+  const grid = document.getElementById('sim-grid');
+  if(grid){
+    grid.innerHTML = SIM_DATA.map((sp,i)=>`
+      <div class="sim-card" id="sim-card-${i}">
+        <div class="sim-card-head">
+          <div class="sim-card-name"><span class="sim-card-icon">${sp.icon}</span> ${sp.nom}</div>
+          <span class="sim-tag" id="sim-tag-${i}">–</span>
+        </div>
+        <div class="sim-row">
+          <label>Prix moyen (€)</label>
+          <input type="number" class="sim-input tiny" min="0" step="0.5" value="${sp.prix}" oninput="setSimField(${i},'prix',this.value)">
+          <label>Coût variable (€)</label>
+          <input type="number" class="sim-input tiny" min="0" step="0.5" value="${sp.cout}" oninput="setSimField(${i},'cout',this.value)">
+          <label>Capacité max / jour</label>
+          <input type="number" class="sim-input tiny" min="0" step="1" value="${sp.cap}" oninput="setSimField(${i},'cap',this.value)">
+        </div>
+        <div class="sim-row" style="margin-top:4px">
+          <label>Réservations / jour</label>
+          <div class="sim-ctrl">
+            <button class="sim-btn" onclick="adjustSimValue(${i},'rj',-1)">−</button>
+            <input type="number" class="sim-input" min="0" step="1" value="${sp.rj}" oninput="setSimField(${i},'rj',this.value)">
+            <button class="sim-btn" onclick="adjustSimValue(${i},'rj',1)">+</button>
+          </div>
+          <label>Réservations / semaine</label>
+          <div class="sim-ctrl">
+            <button class="sim-btn" onclick="adjustSimValue(${i},'rs',-1)">−</button>
+            <input type="number" class="sim-input" min="0" step="1" value="${sp.rs}" oninput="setSimField(${i},'rs',this.value)">
+            <button class="sim-btn" onclick="adjustSimValue(${i},'rs',1)">+</button>
+          </div>
+        </div>
+        <div class="sim-stats">
+          <div class="sim-stat"><p class="sim-stat-lbl">CA jour</p><p class="sim-stat-val"><b id="sim-caj-${i}">–</b> €</p></div>
+          <div class="sim-stat"><p class="sim-stat-lbl">CA semaine</p><p class="sim-stat-val"><b id="sim-cas-${i}">–</b> €</p></div>
+          <div class="sim-stat"><p class="sim-stat-lbl">Marge jour</p><p class="sim-stat-val"><b id="sim-mgj-${i}">–</b> €</p></div>
+          <div class="sim-stat"><p class="sim-stat-lbl">Marge semaine</p><p class="sim-stat-val"><b id="sim-mgs-${i}">–</b> €</p></div>
+        </div>
+        <div>
+          <p style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Remplissage jour <span id="sim-rj-pct-${i}" style="float:right;color:var(--gold)">–%</span></p>
+          <div class="sim-bar"><div class="sim-bar-fill" id="sim-rj-bar-${i}" style="width:0%"></div></div>
+          <p style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:8px 0 3px">Remplissage semaine <span id="sim-rs-pct-${i}" style="float:right;color:var(--gold)">–%</span></p>
+          <div class="sim-bar"><div class="sim-bar-fill" id="sim-rs-bar-${i}" style="width:0%"></div></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Charges fixes
+  const fees = document.getElementById('sim-fees');
+  if(fees){
+    fees.innerHTML = SIM_FEES.map(f=>`
+      <div class="sim-fee-row">
+        <label>${f.nom}</label>
+        <input type="number" class="sim-input tiny" min="0" step="10" value="${f.val}" oninput="setSimFee('${f.key}',this.value)">
+      </div>
+    `).join('');
+  }
+
+  updateSimulation();
+}
+
+function updateSimulation(){
+  let totCAj=0, totCAs=0, totMGj=0, totMGs=0, totCap=0, totRj=0, totCapSem=0, totRs=0;
+
+  SIM_DATA.forEach((sp,i)=>{
+    const caJ = sp.prix * sp.rj;
+    const caS = sp.prix * sp.rs;
+    const cJ  = sp.cout * sp.rj;
+    const cS  = sp.cout * sp.rs;
+    const mgJ = caJ - cJ;
+    const mgS = caS - cS;
+    const remJ = sp.cap>0    ? Math.min(100,(sp.rj/sp.cap)*100)         : 0;
+    const remS = sp.cap*7>0  ? Math.min(100,(sp.rs/(sp.cap*7))*100)     : 0;
+    const mgPct = caS>0 ? (mgS/caS)*100 : 0;
+
+    totCAj += caJ; totCAs += caS;
+    totMGj += mgJ; totMGs += mgS;
+    totCap += sp.cap; totRj += sp.rj;
+    totCapSem += sp.cap*7; totRs += sp.rs;
+
+    const set = (id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+    set(`sim-caj-${i}`, fmtSim(caJ));
+    set(`sim-cas-${i}`, fmtSim(caS));
+    set(`sim-mgj-${i}`, fmtSim(mgJ));
+    set(`sim-mgs-${i}`, fmtSim(mgS));
+    set(`sim-rj-pct-${i}`, fmtSim1(remJ)+'%');
+    set(`sim-rs-pct-${i}`, fmtSim1(remS)+'%');
+    const bj = document.getElementById(`sim-rj-bar-${i}`);
+    const bs = document.getElementById(`sim-rs-bar-${i}`);
+    if(bj){ bj.style.width=remJ+'%'; bj.className='sim-bar-fill '+pctClass(remJ); }
+    if(bs){ bs.style.width=remS+'%'; bs.className='sim-bar-fill '+pctClass(remS); }
+    const tag = document.getElementById(`sim-tag-${i}`);
+    if(tag){
+      tag.className='sim-tag '+pctTag(remS);
+      tag.textContent= fmtSim1(remS)+'% sem.';
+    }
+  });
+
+  const remJourMoy = totCap>0    ? (totRj/totCap)*100      : 0;
+  const remSemMoy  = totCapSem>0 ? (totRs/totCapSem)*100   : 0;
+  const caMois  = totCAs * 4.33;
+  const mgMois  = totMGs * 4.33;
+  const caAn    = caMois * 12;
+  const mgAn    = mgMois * 12;
+
+  const set = (id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('sim-k-ca-jour', fmtSim(totCAj));
+  set('sim-k-ca-sem',  fmtSim(totCAs));
+  set('sim-k-mg-jour', fmtSim(totMGj));
+  set('sim-k-mg-sem',  fmtSim(totMGs));
+  set('sim-k-rem-jour', fmtSim1(remJourMoy));
+  set('sim-k-rem-sem',  fmtSim1(remSemMoy));
+  set('sim-k-ca-mois',  fmtSim(caMois));
+  set('sim-k-mg-mois',  fmtSim(mgMois));
+
+  set('sim-obj-ca-mois', fmtSim(caMois));
+  set('sim-obj-mg-mois', fmtSim(mgMois));
+  set('sim-obj-ca-an',   fmtSim(caAn));
+  set('sim-obj-mg-an',   fmtSim(mgAn));
+
+  const totFees = SIM_FEES.reduce((s,f)=>s+(Number(f.val)||0),0);
+  const benef   = mgMois - totFees;
+  const seuilCA = totFees / 30;
+  const seuilMG = totFees / 30;
+  set('sim-fees-total', fmtSim(totFees));
+  set('sim-benef',      fmtSim(benef));
+  set('sim-seuil-ca',   fmtSim(seuilCA));
+  set('sim-seuil-mg',   fmtSim(seuilMG));
+
+  const bw = document.getElementById('sim-benef-wrap');
+  if(bw){
+    bw.classList.remove('sim-positive','sim-negative','sim-warning');
+    if(benef > totFees*0.05)        bw.classList.add('sim-positive');
+    else if(benef < -totFees*0.02)  bw.classList.add('sim-negative');
+    else                            bw.classList.add('sim-warning');
+  }
+
+  // Tableau détail
+  const tb = document.getElementById('sim-table-tb');
+  if(tb){
+    tb.innerHTML = SIM_DATA.map((sp,i)=>{
+      const caJ = sp.prix*sp.rj, caS = sp.prix*sp.rs;
+      const mgJ = caJ - sp.cout*sp.rj, mgS = caS - sp.cout*sp.rs;
+      const remS = sp.cap*7>0 ? (sp.rs/(sp.cap*7))*100 : 0;
+      const mgPct = caS>0 ? (mgS/caS)*100 : 0;
+      return `<tr>
+        <td class="name">${sp.icon} ${sp.nom}</td>
+        <td>${sp.rj}</td>
+        <td class="gold">${fmtSim(caJ)} €</td>
+        <td>${fmtSim(mgJ)} €</td>
+        <td>${sp.rs}</td>
+        <td class="gold">${fmtSim(caS)} €</td>
+        <td>${fmtSim(mgS)} €</td>
+        <td><span class="sim-tag ${pctTag(remS)}">${fmtSim1(remS)}%</span></td>
+        <td>${fmtSim1(mgPct)}%</td>
+      </tr>`;
+    }).join('');
+  }
+
+  drawSimulationCharts();
+}
+
+function drawSimulationCharts(){
+  const maxCA = Math.max(1, ...SIM_DATA.map(sp=>sp.prix*sp.rs));
+  const maxMG = Math.max(1, ...SIM_DATA.map(sp=>(sp.prix-sp.cout)*sp.rs));
+
+  const ca = document.getElementById('sim-bars-ca');
+  if(ca){
+    ca.innerHTML = SIM_DATA.map(sp=>{
+      const v = sp.prix*sp.rs;
+      const pct = (v/maxCA)*100;
+      return `<div class="sim-bars-row">
+        <div class="sim-bars-name">${sp.icon} ${sp.nom}</div>
+        <div class="sim-bars-track"><div class="sim-bars-fill" style="width:${pct}%"></div></div>
+        <div class="sim-bars-val">${fmtSim(v)} €</div>
+      </div>`;
+    }).join('');
+  }
+  const mg = document.getElementById('sim-bars-mg');
+  if(mg){
+    mg.innerHTML = SIM_DATA.map(sp=>{
+      const v = (sp.prix-sp.cout)*sp.rs;
+      const pct = (Math.max(0,v)/maxMG)*100;
+      return `<div class="sim-bars-row mg">
+        <div class="sim-bars-name">${sp.icon} ${sp.nom}</div>
+        <div class="sim-bars-track"><div class="sim-bars-fill" style="width:${pct}%"></div></div>
+        <div class="sim-bars-val">${fmtSim(v)} €</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// Charger les données dès le démarrage (silencieusement)
+try{ loadSimulation(); }catch(e){}
+
 </script>
 </body>
 </html>
