@@ -101,6 +101,32 @@ body{background:var(--dark);color:var(--cream);font-family:var(--sans);font-weig
 .btn-s.danger{border-color:rgba(224,80,80,.3);color:var(--err);}
 .btn-s.danger:hover{background:var(--err);color:#fff;}
 
+
+/* ══ MENU LATÉRAL RÉDUCTIBLE ══ */
+body.sidebar-collapsed{--sidebar:72px;}
+body.sidebar-collapsed .sidebar{width:72px;}
+body.sidebar-collapsed .sb-top{padding:24px 10px;text-align:center;}
+body.sidebar-collapsed .sb-brand{font-size:16px;letter-spacing:2px;}
+body.sidebar-collapsed .sb-tagline,
+body.sidebar-collapsed .sb-conn,
+body.sidebar-collapsed .sb-sec,
+body.sidebar-collapsed .sb-un,
+body.sidebar-collapsed .sb-ur{display:none!important;}
+body.sidebar-collapsed .sbi{justify-content:center;padding:13px 0;gap:0;font-size:0;}
+body.sidebar-collapsed .sbi-icon{font-size:15px;width:auto;}
+body.sidebar-collapsed .sbi-badge{position:absolute;top:5px;right:8px;margin:0;font-size:7px;padding:1px 5px;}
+body.sidebar-collapsed .sb-foot{padding:16px 10px;}
+body.sidebar-collapsed .sb-user{justify-content:center;}
+body.sidebar-collapsed .sb-av{display:none;}
+body.sidebar-collapsed .sb-out{margin:0;}
+body.sidebar-collapsed .main{margin-left:72px;}
+.side-toggle{width:34px;height:34px;border:1px solid rgba(196,160,78,.22);background:rgba(196,160,78,.04);color:var(--gold);cursor:pointer;font-family:var(--sans);font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;margin-right:14px;flex-shrink:0;}
+.side-toggle:hover{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+.tb-left{display:flex;align-items:center;min-width:0;}
+.tb-left .tb-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.sidebar-collapsed .side-toggle{transform:rotate(180deg);}
+@media(max-width:880px){body.sidebar-collapsed .main{margin-left:0;}.side-toggle{display:none;}}
+
 /* ══ PAGES ══ */
 .page{flex:1;padding:32px;display:none;}
 .page.active{display:block;}
@@ -127,6 +153,8 @@ body{background:var(--dark);color:var(--cream);font-family:var(--sans);font-weig
 
 /* ══ TABLE ══ */
 .tw{background:var(--dark2);border:1px solid rgba(196,160,78,.07);overflow:hidden;margin-bottom:20px;}
+/* Variante sans overflow:hidden pour les tableaux avec scroll horizontal */
+.tw.tw-scroll{overflow:visible;}
 .tw-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(196,160,78,.07);}
 .tw-title{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);}
 .tw-acts{display:flex;gap:8px;align-items:center;}
@@ -237,6 +265,15 @@ td.small{font-size:9px;color:var(--muted);}
 .alert.ok{background:rgba(76,175,80,.05);border:1px solid rgba(76,175,80,.14);color:var(--ok);}
 .alert.info{background:rgba(91,155,213,.05);border:1px solid rgba(91,155,213,.14);color:var(--info);}
 .alert a{color:inherit;text-decoration:underline;cursor:pointer;}
+.alert.dismissible{position:relative;padding-right:42px;}
+.alert-x{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:22px;height:22px;border:1px solid rgba(196,160,78,.18);
+  background:rgba(255,255,255,.025);color:var(--muted);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1;
+  transition:all .2s;font-family:var(--sans);
+}
+.alert-x:hover{border-color:var(--err);color:var(--err);background:rgba(224,80,80,.08);}
 
 /* ══ DRAWER ══ */
 .dov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;backdrop-filter:blur(3px);}
@@ -290,7 +327,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 @media(max-width:1200px){.kpi-grid,.g4{grid-template-columns:repeat(2,1fr);}.g3{grid-template-columns:1fr 1fr;}}
 @media(max-width:880px){.g2,.g3{grid-template-columns:1fr;}.sidebar{transform:translateX(-100%);}.main{margin-left:0;}}
 
-<style>
+/*
 /* Onglets Achats */
 #ach-tabs{
   display:flex;gap:0;margin-bottom:28px;
@@ -543,6 +580,8 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 .mat-card-cat-tag.hygiene{background:rgba(76,175,80,.1);color:var(--ok);border:1px solid rgba(76,175,80,.18);}
 .mat-card-cat-tag.soin{background:rgba(156,127,213,.1);color:var(--purple);border:1px solid rgba(156,127,213,.18);}
 .mat-card-cat-tag.equipement{background:rgba(196,160,78,.1);color:var(--gold);border:1px solid rgba(196,160,78,.18);}
+/* Fallback for simplified categories when not separately defined */
+.mat-card-cat-tag:not([class*=" "]).mat-card-cat-tag{background:rgba(196,160,78,.08);color:var(--muted);border:1px solid rgba(196,160,78,.14);}
 
 
 
@@ -576,7 +615,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 @media(max-width:1100px){.stock-list-grid{grid-template-columns:1fr!important;}.stock-cat-tab{flex:1 1 160px;}}
 
 /* Tableau récap */
-.mat-table{width:100%;border-collapse:collapse;font-size:11px;}
+.mat-table{width:100%;border-collapse:collapse;font-size:11px;min-width:1100px;}
 .mat-table thead th{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:9px 7px;text-align:left;font-weight:400;background:rgba(196,160,78,.025);border-bottom:1px solid rgba(196,160,78,.07);white-space:nowrap;}
 .mat-table tbody td{padding:8px 7px;border-bottom:1px solid rgba(196,160,78,.035);color:var(--light);font-size:11px;vertical-align:middle;}
 .mat-table tbody tr.row-alert{background:rgba(224,80,80,.035);}
@@ -616,9 +655,312 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 @media(max-width:700px){.mat-extra{grid-template-columns:1fr;}.mat-slider-num{font-size:42px;}}
 
 </style>
+
+<style>
+/* Stock matériel simplifié — style identique stock boissons */
+#page-materiel .mat-qty-input{
+  width:100%;background:rgba(255,255,255,.035);border:1px solid rgba(196,160,78,.14);
+  color:var(--cream);padding:6px 8px;font-family:var(--serif);font-size:15px;outline:none;
+  transition:border-color .25s,background .25s;font-weight:300;box-sizing:border-box;
+}
+#page-materiel .mat-qty-input:focus{border-color:rgba(196,160,78,.55);background:rgba(196,160,78,.055);color:var(--gold-l);}
+#page-materiel .mat-line{display:grid;grid-template-columns:1.5fr 120px 100px 100px 70px 90px;gap:8px;align-items:center;padding:10px 4px;border-bottom:1px solid rgba(196,160,78,.045);}
+#page-materiel .mat-line:last-child{border-bottom:none;}
+#page-materiel .mat-line > div{min-width:0;overflow:hidden;}
+#page-materiel .mat-line-name{font-size:12px;color:var(--cream);line-height:1.45;}
+#page-materiel .mat-line-name small{display:block;font-size:8px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;}
+#page-materiel .mat-mini-select{background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.12);color:var(--cream);padding:6px 8px;font-family:var(--sans);font-size:10px;outline:none;}
+#page-materiel .mat-mini-select option{background:var(--dark2);color:var(--cream);}
+#page-materiel .mat-cat-tabs .fb{min-width:130px;}
+
+/* ══ COULEURS PAR CATÉGORIE — TAGS + BOUTONS FILTRES ══ */
+/* Matériel */
+.mat-card-cat-tag.materiel{background:rgba(196,160,78,.12);color:var(--gold);border:1px solid rgba(196,160,78,.28);}
+.fb[data-cat="materiel"].on,.fb.cat-materiel.on{border-color:#c4a04e;color:#c4a04e;background:rgba(196,160,78,.07);}
+/* Informatique */
+.mat-card-cat-tag.informatique{background:rgba(91,155,213,.12);color:#5b9bd5;border:1px solid rgba(91,155,213,.28);}
+.fb[data-cat="informatique"].on,.fb.cat-informatique.on{border-color:#5b9bd5;color:#5b9bd5;background:rgba(91,155,213,.07);}
+/* Sanitaire / Linges */
+.mat-card-cat-tag.sanitaire_linges{background:rgba(32,188,168,.12);color:#20bca8;border:1px solid rgba(32,188,168,.28);}
+.fb[data-cat="sanitaire_linges"].on,.fb.cat-sanitaire_linges.on{border-color:#20bca8;color:#20bca8;background:rgba(32,188,168,.07);}
+/* Senteur / Odeur */
+.mat-card-cat-tag.senteur_odeur{background:rgba(187,107,217,.12);color:#bb6bd9;border:1px solid rgba(187,107,217,.28);}
+.fb[data-cat="senteur_odeur"].on,.fb.cat-senteur_odeur.on{border-color:#bb6bd9;color:#bb6bd9;background:rgba(187,107,217,.07);}
+/* Extérieur */
+.mat-card-cat-tag.exterieur{background:rgba(76,175,80,.12);color:#4caf50;border:1px solid rgba(76,175,80,.28);}
+.fb[data-cat="exterieur"].on,.fb.cat-exterieur.on{border-color:#4caf50;color:#4caf50;background:rgba(76,175,80,.07);}
+/* Accessoires */
+.mat-card-cat-tag.accessoires{background:rgba(240,130,48,.12);color:#f08230;border:1px solid rgba(240,130,48,.28);}
+.fb[data-cat="accessoires"].on,.fb.cat-accessoires.on{border-color:#f08230;color:#f08230;background:rgba(240,130,48,.07);}
+
+/* Accent couleur catégorie sur la liste active */
+#page-materiel .mat-cat-filter-bar .fb.on{transition:all .22s;}
+/* Dot couleur à gauche de chaque ligne de la liste */
+#page-materiel .mat-line{border-left:3px solid transparent;}
+#page-materiel .mat-line.cat-materiel{border-left-color:rgba(196,160,78,.45);}
+#page-materiel .mat-line.cat-informatique{border-left-color:rgba(91,155,213,.45);}
+#page-materiel .mat-line.cat-sanitaire_linges{border-left-color:rgba(32,188,168,.45);}
+#page-materiel .mat-line.cat-senteur_odeur{border-left-color:rgba(187,107,217,.45);}
+#page-materiel .mat-line.cat-exterieur{border-left-color:rgba(76,175,80,.45);}
+#page-materiel .mat-line.cat-accessoires{border-left-color:rgba(240,130,48,.45);}
+
+/* ══ TABLEAU COMPLET — CODE COULEUR PAR CATÉGORIE ══ */
+.mat-table tbody tr.cat-materiel        td:first-child{border-left:3px solid rgba(196,160,78,.55);}
+.mat-table tbody tr.cat-informatique    td:first-child{border-left:3px solid rgba(91,155,213,.55);}
+.mat-table tbody tr.cat-sanitaire_linges td:first-child{border-left:3px solid rgba(32,188,168,.55);}
+.mat-table tbody tr.cat-senteur_odeur   td:first-child{border-left:3px solid rgba(187,107,217,.55);}
+.mat-table tbody tr.cat-exterieur       td:first-child{border-left:3px solid rgba(76,175,80,.55);}
+.mat-table tbody tr.cat-accessoires     td:first-child{border-left:3px solid rgba(240,130,48,.55);}
+
+/* Lignes de groupe par catégorie */
+.mat-table tr.cat-group-hdr td{
+  padding:7px 16px 6px;font-size:7.5px;letter-spacing:3px;text-transform:uppercase;
+  font-weight:400;border-bottom:none;font-family:var(--sans);
+  background:rgba(255,255,255,.022);
+}
+.mat-table tr.cat-group-hdr.g-materiel         td{color:#c4a04e;border-left:3px solid rgba(196,160,78,.7);}
+.mat-table tr.cat-group-hdr.g-informatique      td{color:#5b9bd5;border-left:3px solid rgba(91,155,213,.7);}
+.mat-table tr.cat-group-hdr.g-sanitaire_linges  td{color:#20bca8;border-left:3px solid rgba(32,188,168,.7);}
+.mat-table tr.cat-group-hdr.g-senteur_odeur     td{color:#bb6bd9;border-left:3px solid rgba(187,107,217,.7);}
+.mat-table tr.cat-group-hdr.g-exterieur         td{color:#4caf50;border-left:3px solid rgba(76,175,80,.7);}
+.mat-table tr.cat-group-hdr.g-accessoires       td{color:#f08230;border-left:3px solid rgba(240,130,48,.7);}
+
+/* Barre de stock mini dans cellule */
+.mat-mini-bar{height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-top:4px;}
+.mat-mini-bar-fill{height:100%;border-radius:2px;transition:width .4s;}
+
+/* Footer par catégorie */
+.mat-table tfoot tr.cat-subtot td{
+  font-size:9px;letter-spacing:1px;padding:5px 7px;
+  border-top:1px solid rgba(196,160,78,.05);
+  font-family:var(--serif);
+}
+.mat-table tfoot tr.cat-subtot.g-materiel         td{color:rgba(196,160,78,.8);}
+.mat-table tfoot tr.cat-subtot.g-informatique      td{color:rgba(91,155,213,.8);}
+.mat-table tfoot tr.cat-subtot.g-sanitaire_linges  td{color:rgba(32,188,168,.8);}
+.mat-table tfoot tr.cat-subtot.g-senteur_odeur     td{color:rgba(187,107,217,.8);}
+.mat-table tfoot tr.cat-subtot.g-exterieur         td{color:rgba(76,175,80,.8);}
+.mat-table tfoot tr.cat-subtot.g-accessoires       td{color:rgba(240,130,48,.8);}
+
+/* Commentaire dans tableau */
+.mat-cell.comm{width:140px;font-style:italic;font-size:10px;color:var(--muted);}
+.mat-cell.comm:focus{font-style:normal;color:var(--cream);}
+
+/* Boutons de filtre catégorie au-dessus du tableau complet */
+#mat-table-cat-bar{display:flex;gap:5px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid rgba(196,160,78,.05);}
+#mat-table-cat-bar .fb{font-size:7.5px;padding:4px 11px;min-width:0;}
+#mat-table-cat-bar .fb.on{font-weight:400;}
+/* Teintes actives par catégorie dans la barre du tableau */
+#mat-table-cat-bar .fb[data-cat="all"].on{border-color:var(--gold);color:var(--gold);background:rgba(196,160,78,.06);}
+#mat-table-cat-bar .fb[data-cat="materiel"].on{border-color:#c4a04e;color:#c4a04e;background:rgba(196,160,78,.06);}
+#mat-table-cat-bar .fb[data-cat="informatique"].on{border-color:#5b9bd5;color:#5b9bd5;background:rgba(91,155,213,.06);}
+#mat-table-cat-bar .fb[data-cat="sanitaire_linges"].on{border-color:#20bca8;color:#20bca8;background:rgba(32,188,168,.06);}
+#mat-table-cat-bar .fb[data-cat="senteur_odeur"].on{border-color:#bb6bd9;color:#bb6bd9;background:rgba(187,107,217,.06);}
+#mat-table-cat-bar .fb[data-cat="exterieur"].on{border-color:#4caf50;color:#4caf50;background:rgba(76,175,80,.06);}
+#mat-table-cat-bar .fb[data-cat="accessoires"].on{border-color:#f08230;color:#f08230;background:rgba(240,130,48,.06);}
+#mat-table-cat-bar .fb[data-cat="alert"].on{border-color:var(--err);color:var(--err);background:rgba(224,80,80,.06);}
+
+/* ══ ÉQUIPEMENT & ÉNERGIE ══ */
+.eq-table{width:100%;border-collapse:collapse;font-size:11px;}
+.eq-table thead th{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:9px 8px;text-align:left;font-weight:400;background:rgba(196,160,78,.025);border-bottom:1px solid rgba(196,160,78,.07);white-space:nowrap;}
+.eq-table tbody td{padding:8px 8px;border-bottom:1px solid rgba(196,160,78,.032);color:var(--light);font-size:11px;vertical-align:middle;}
+.eq-table tbody tr:hover{background:rgba(196,160,78,.02);}
+.eq-table tr.eq-amenagement  td:first-child{border-left:3px solid rgba(196,160,78,.5);}
+.eq-table tr.eq-accessoire   td:first-child{border-left:3px solid rgba(240,130,48,.5);}
+.eq-table tr.eq-bar          td:first-child{border-left:3px solid rgba(187,107,217,.5);}
+.eq-table tr.eq-exterieur    td:first-child{border-left:3px solid rgba(76,175,80,.5);}
+.eq-table tr.eq-stockage     td:first-child{border-left:3px solid rgba(91,155,213,.5);}
+.eq-table tr.eq-boutique     td:first-child{border-left:3px solid rgba(32,188,168,.5);}
+.eq-cat-badge{display:inline-block;font-size:6.5px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 6px;border-radius:2px;}
+.eq-cat-badge.amenagement {background:rgba(196,160,78,.12);color:#c4a04e;border:1px solid rgba(196,160,78,.28);}
+.eq-cat-badge.accessoire  {background:rgba(240,130,48,.12);color:#f08230;border:1px solid rgba(240,130,48,.28);}
+.eq-cat-badge.bar         {background:rgba(187,107,217,.12);color:#bb6bd9;border:1px solid rgba(187,107,217,.28);}
+.eq-cat-badge.exterieur   {background:rgba(76,175,80,.12); color:#4caf50;border:1px solid rgba(76,175,80,.28);}
+.eq-cat-badge.stockage    {background:rgba(91,155,213,.12);color:#5b9bd5;border:1px solid rgba(91,155,213,.28);}
+.eq-cat-badge.boutique    {background:rgba(32,188,168,.12);color:#20bca8;border:1px solid rgba(32,188,168,.28);}
+.eq-conso-w{font-size:10px;color:var(--warn);font-family:var(--serif);}
+.eq-conso-w.solar{color:var(--ok);}
+.eq-conso-l{font-size:10px;color:var(--info);font-family:var(--serif);}
+.eq-cost-cell{font-family:var(--serif);font-size:12px;}
+.eq-group-hdr td{padding:6px 8px;font-size:7.5px;letter-spacing:3px;text-transform:uppercase;font-family:var(--sans);background:rgba(255,255,255,.018);border-bottom:none;}
+.eq-group-hdr.g-amenagement td{color:#c4a04e;border-left:3px solid rgba(196,160,78,.7);}
+.eq-group-hdr.g-accessoire td{color:#f08230;border-left:3px solid rgba(240,130,48,.7);}
+.eq-group-hdr.g-bar td{color:#bb6bd9;border-left:3px solid rgba(187,107,217,.7);}
+.eq-group-hdr.g-exterieur td{color:#4caf50;border-left:3px solid rgba(76,175,80,.7);}
+.eq-group-hdr.g-stockage td{color:#5b9bd5;border-left:3px solid rgba(91,155,213,.7);}
+.eq-group-hdr.g-boutique td{color:#20bca8;border-left:3px solid rgba(32,188,168,.7);}
+/* Simulation widget */
+.eq-sim{background:var(--dark2);border:1px solid rgba(196,160,78,.1);padding:24px;margin-bottom:20px;}
+.eq-sim-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.eq-sim-field{display:flex;flex-direction:column;gap:5px;}
+.eq-sim-field label{font-size:7.5px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.eq-sim-input{background:rgba(255,255,255,.04);border:1px solid rgba(196,160,78,.14);color:var(--cream);padding:7px 10px;font-family:var(--serif);font-size:13px;outline:none;transition:border .2s;width:100%;}
+.eq-sim-input:focus{border-color:rgba(196,160,78,.5);color:var(--gold);}
+.eq-sim-results{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding-top:16px;border-top:1px solid rgba(196,160,78,.07);}
+.eq-res{background:rgba(255,255,255,.015);border:1px solid rgba(196,160,78,.07);padding:14px;}
+.eq-res-lbl{font-size:7px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.eq-res-val{font-family:var(--serif);font-size:22px;}
+.eq-res-val b{font-weight:300;}
+.eq-res-sub{font-size:8.5px;color:var(--muted);margin-top:4px;}
+.eq-breakdown{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.eq-bk-item{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(196,160,78,.04);}
+.eq-bk-item:last-child{border-bottom:none;}
+.eq-bk-name{font-size:10px;color:var(--light);}
+.eq-bk-val{font-family:var(--serif);font-size:12px;color:var(--gold);white-space:nowrap;}
+.eq-bk-bar-wrap{grid-column:1/-1;height:2px;background:rgba(255,255,255,.04);border-radius:1px;}
+.eq-bk-bar-fill{height:100%;border-radius:1px;transition:width .5s;}
+.eq-filter-bar{display:flex;gap:5px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid rgba(196,160,78,.05);}
+.eq-filter-bar .fb{font-size:7.5px;padding:4px 12px;}
+.eq-filter-bar .fb.on.f-all{border-color:var(--gold);color:var(--gold);background:rgba(196,160,78,.06);}
+.eq-filter-bar .fb.on.f-amenagement{border-color:#c4a04e;color:#c4a04e;background:rgba(196,160,78,.06);}
+.eq-filter-bar .fb.on.f-accessoire{border-color:#f08230;color:#f08230;background:rgba(240,130,48,.06);}
+.eq-filter-bar .fb.on.f-bar{border-color:#bb6bd9;color:#bb6bd9;background:rgba(187,107,217,.06);}
+.eq-filter-bar .fb.on.f-exterieur{border-color:#4caf50;color:#4caf50;background:rgba(76,175,80,.06);}
+.eq-filter-bar .fb.on.f-stockage{border-color:#5b9bd5;color:#5b9bd5;background:rgba(91,155,213,.06);}
+.eq-filter-bar .fb.on.f-boutique{border-color:#20bca8;color:#20bca8;background:rgba(32,188,168,.06);}
+.eq-filter-bar .fb.on.f-energie{border-color:var(--warn);color:var(--warn);background:rgba(240,160,48,.06);}
+@media(max-width:900px){.eq-sim-grid{grid-template-columns:repeat(2,1fr);}.eq-sim-results{grid-template-columns:1fr 1fr;}.eq-breakdown{grid-template-columns:1fr;}}
+/* ══ ONGLETS PAGE MATÉRIEL ══ */
+.mat-page-tabs{display:flex;gap:0;border-bottom:1px solid rgba(196,160,78,.1);margin-bottom:22px;flex-wrap:wrap;}
+.mat-page-tab{padding:13px 26px;font-size:8px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;border:none;background:none;color:rgba(122,122,104,.6);border-bottom:2px solid transparent;transition:all .22s;font-family:var(--sans);}
+.mat-page-tab:hover{color:var(--light);background:rgba(196,160,78,.03);}
+.mat-page-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(196,160,78,.04);}
+.mat-page-tab .tab-sub{font-size:6.5px;letter-spacing:1.5px;color:var(--muted);display:block;margin-top:2px;}
+/* Cellules éditables tableau équipement */
+.eq-cell{background:transparent;border:1px solid transparent;color:var(--light);padding:3px 6px;font-family:var(--sans);font-size:10px;outline:none;width:100%;box-sizing:border-box;font-weight:300;}
+.eq-cell:hover{border-color:rgba(196,160,78,.14);background:rgba(196,160,78,.03);}
+.eq-cell:focus{border-color:rgba(196,160,78,.5);background:rgba(196,160,78,.06);color:var(--gold);}
+.eq-cell.num{text-align:right;width:70px;}
+.eq-cell.wide{width:150px;}
+.eq-cell-select{background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.1);color:var(--cream);padding:3px 6px;font-family:var(--sans);font-size:10px;outline:none;cursor:pointer;}
+.eq-cell-select option{background:var(--dark2);}
+.eq-cell-select:focus{border-color:rgba(196,160,78,.4);}
+
+/* ══ CELLULES MATÉRIEL TABLE ══ */
+.mat-cell{background:transparent;border:1px solid transparent;color:var(--cream);padding:3px 6px;font-family:var(--sans);font-size:10px;outline:none;width:60px;box-sizing:border-box;font-weight:300;}
+.mat-cell:hover{border-color:rgba(196,160,78,.18);background:rgba(196,160,78,.03);}
+.mat-cell:focus{border-color:rgba(196,160,78,.5);background:rgba(196,160,78,.06);color:var(--gold);}
+.mat-cell.text{width:130px;}
+.mat-status-tag{display:inline-block;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;border-radius:2px;white-space:nowrap;color:var(--light);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);}
+.mat-status-tag.ok{background:rgba(76,175,80,.09);color:var(--ok);border-color:rgba(76,175,80,.22);}
+.mat-status-tag.warn{background:rgba(240,160,48,.09);color:var(--warn);border-color:rgba(240,160,48,.22);}
+.mat-status-tag.alert{background:rgba(224,80,80,.09);color:var(--err);border-color:rgba(224,80,80,.22);}
+
+/* ══ BADGES PAIEMENT ÉQUIPEMENT ══ */
+.eq-paie-comptant{background:rgba(76,175,80,.08);color:var(--ok);border:1px solid rgba(76,175,80,.2);}
+.eq-paie-acompte{background:rgba(156,127,213,.1);color:var(--purple);border:1px solid rgba(156,127,213,.2);}
+.eq-paie-echeances{background:rgba(91,155,213,.09);color:var(--info);border:1px solid rgba(91,155,213,.2);}
+.eq-paie-comptant:hover,.eq-paie-acompte:hover,.eq-paie-echeances:hover{opacity:.75;}
+
+/* ══ ÉQUIPEMENT TABLE ══ */
+.eq-table-wrap{
+  overflow-x: auto;
+  overflow-y: visible;
+  max-width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.eq-table-wrap::-webkit-scrollbar{ display: none; }
+
+/* En-tête : pas de sticky — incompatible avec overflow-x sur le parent */
+.eq-table thead th{
+  background: var(--dark2);
+  border-bottom: 2px solid rgba(196,160,78,.22);
+  white-space: nowrap;
+  padding: 9px 10px;
+  font-size: 7px;
+  letter-spacing: 2.5px;
+}
+
+/* Largeur min pour forcer le scroll */
+.eq-table{ min-width: 1500px; }
+.eq-table-wrap.eq-compact .eq-table{ min-width: 950px; }
+
+/* ── Mode compact ── */
+.eq-compact-btn{
+  font-size:8px; letter-spacing:1.5px; text-transform:uppercase;
+  border:1px solid rgba(196,160,78,.2); color:var(--muted);
+  padding:6px 12px; cursor:pointer; background:none; font-family:var(--sans);
+  transition:all .2s; display:flex; align-items:center; gap:5px;
+}
+.eq-compact-btn:hover{ border-color:var(--gold); color:var(--gold); }
+.eq-compact-btn.on{ border-color:var(--gold); color:var(--gold); background:rgba(196,160,78,.06); }
+.eq-table-wrap.eq-compact .eq-table thead th{ padding:5px 4px; font-size:6.5px; letter-spacing:1.2px; }
+.eq-table-wrap.eq-compact .eq-table tbody td{ padding:4px 3px; }
+.eq-table-wrap.eq-compact .eq-cell{ font-size:9px; padding:2px 3px; }
+.eq-table-wrap.eq-compact .eq-cell.num{ width:48px; }
+.eq-table-wrap.eq-compact .eq-cell.wide{ width:100px; }
+.eq-table-wrap.eq-compact .eq-cell-select{ font-size:9px; padding:2px 3px; }
+.eq-table-wrap.eq-compact .eq-amort{ font-size:9px; }
+.eq-table-wrap.eq-compact .eq-paie-comptant,
+.eq-table-wrap.eq-compact .eq-paie-acompte,
+.eq-table-wrap.eq-compact .eq-paie-echeances{ font-size:6px; padding:1px 5px; }
+
+/* Barre de noms de colonnes (statique, au-dessus du tableau) */
+.eq-col-guide{
+  display:flex; align-items:center; gap:4px;
+  padding:5px 12px;
+  background:rgba(196,160,78,.025);
+  border-bottom:1px solid rgba(196,160,78,.06);
+  overflow:hidden;
+  font-size:7px; letter-spacing:1.5px; text-transform:uppercase;
+  color:rgba(122,122,104,.5);
+  white-space:nowrap;
+}
+
+/* ══ SLIDER DE DÉFILEMENT HORIZONTAL ══ */
+.tbl-slider-wrap{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 8px;
+  background: rgba(196,160,78,.02);
+  border-top: 1px solid rgba(196,160,78,.08);
+}
+.tbl-slider-wrap label{
+  font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold-d); white-space: nowrap; flex-shrink: 0; opacity:.7;
+}
+.tbl-slider{
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: rgba(255,255,255,.08);
+  outline: none;
+  border-radius: 2px;
+  cursor: ew-resize;
+}
+.tbl-slider::-webkit-slider-thumb{
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: ew-resize;
+  box-shadow: 0 0 0 4px rgba(196,160,78,.18);
+  transition: box-shadow .15s;
+}
+.tbl-slider::-webkit-slider-thumb:hover{ box-shadow: 0 0 0 8px rgba(196,160,78,.22); }
+.tbl-slider::-moz-range-thumb{
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--gold); cursor: ew-resize;
+  border: none; box-shadow: 0 0 0 4px rgba(196,160,78,.18);
+}
+.tbl-slider-pct{
+  font-size: 9px; font-family: var(--serif);
+  color: var(--gold); min-width: 32px; text-align: right; flex-shrink: 0; opacity:.8;
+}
+.eq-etat{display:inline-block;font-size:6.5px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:2px;white-space:nowrap;}
+.eq-etat.neuf   {background:rgba(76,175,80,.1);color:#4caf50;border:1px solid rgba(76,175,80,.22);}
+.eq-etat.bon    {background:rgba(91,155,213,.1);color:#5b9bd5;border:1px solid rgba(91,155,213,.22);}
+.eq-etat.reviser{background:rgba(240,160,48,.1);color:var(--warn);border:1px solid rgba(240,160,48,.22);}
+.eq-etat.hs     {background:rgba(224,80,80,.1);color:var(--err);border:1px solid rgba(224,80,80,.22);}
+.eq-amort{font-family:var(--serif);font-size:11px;color:rgba(156,127,213,.8);}
+.eq-table tr.eq-warn-row td{background:rgba(240,160,48,.022);}
+.eq-table tr.eq-err-row  td{background:rgba(224,80,80,.022);}
+
 </style>
-</head>
-<body>
+
 
 <!-- ══════════════════ LOGIN ══════════════════ -->
 <div id="login-screen">
@@ -630,21 +972,19 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 
     <!-- Mode Supabase Auth -->
     <div class="login-box" id="login-box-supabase">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px;padding:10px 14px;background:rgba(76,175,80,.05);border:1px solid rgba(76,175,80,.15)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;padding:10px 14px;background:rgba(76,175,80,.05);border:1px solid rgba(76,175,80,.15)">
         <span style="font-size:10px">🔐</span>
-        <span style="font-size:9px;color:#4caf50;letter-spacing:1px">Authentification Supabase sécurisée</span>
+        <span style="font-size:9px;color:#4caf50;letter-spacing:1px">Authentification Supabase</span>
       </div>
 
       <div class="lf">
         <label>Email administrateur</label>
         <input type="email" id="auth-email" placeholder="admin@eden-wellness.fr" onkeydown="if(event.key==='Enter')document.getElementById('auth-pwd').focus()">
       </div>
-
       <div class="lf">
         <label>Mot de passe</label>
         <input type="password" id="auth-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginSupabase()">
       </div>
-
       <button class="login-btn" id="login-btn-sb" onclick="loginSupabase()">Accéder à l'espace admin</button>
       <p class="login-attempts" id="login-err"></p>
     </div>
@@ -660,7 +1000,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
     <div class="sb-top">
       <div class="sb-brand">EDEN</div>
       <div class="sb-tagline">Administration</div>
-      <div class="sb-conn"><div class="cdot" id="cdot"></div><span class="sb-conn-txt" id="ctxt">Local</span></div>
+      <div class="sb-conn"><div class="cdot" id="cdot"></div><span class="sb-conn-txt" id="ctxt">Supabase</span></div>
     </div>
     <nav class="sb-nav">
       <p class="sb-sec">Vue générale</p>
@@ -674,7 +1014,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 
       <p class="sb-sec">Bar & Stock</p>
       <div class="sbi" onclick="nav('achats')"><span class="sbi-icon">📦</span>Achats & Coûts</div>
-      <div class="sbi" onclick="nav('materiel')"><span class="sbi-icon">⊟</span>Matériel & Réappro</div>
+      <div class="sbi" onclick="nav('materiel')"><span class="sbi-icon">⊟</span>Matériel, Équip. &amp; Énergie</div>
       <div class="sbi" onclick="nav('stocks')"><span class="sbi-icon">▣</span>Stock Boissons <span id="b-stock" class="sbi-badge gold" style="display:none"></span></div>
       <div class="sbi" onclick="nav('commandes')"><span class="sbi-icon">♔</span>Extras Commandés</div>
 
@@ -701,7 +1041,10 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 
   <div class="main">
     <header class="topbar">
-      <div class="tb-title" id="page-title">Tableau de <em>bord</em></div>
+      <div class="tb-left">
+        <button class="side-toggle" id="side-toggle" onclick="toggleSidebar()" title="Réduire / ouvrir le menu">‹</button>
+        <div class="tb-title" id="page-title">Tableau de <em>bord</em></div>
+      </div>
       <div class="tb-right">
         <span class="tb-date" id="today-lbl"></span>
         <div class="tb-bell" onclick="nav('demandes')" title="Nouvelles demandes">✉<span class="tb-bell-n" id="bell-n" style="display:none">0</span></div>
@@ -1716,139 +2059,231 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 </section>
     <!-- ════ MATÉRIEL & RÉAPPRO ════ -->
     <section class="page" id="page-materiel">
+      <!-- ── Header ── -->
       <div class="sh">
-        <div class="sh-left"><p class="ey">Stock & approvisionnement</p><h2>Matériel <em>& Réappro</em></h2><p style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1px">Stock, conso/client, prévision rupture, recommandations de commande.</p></div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <button class="btn-s" onclick="addMatItem()">+ Article</button>
-          <button class="btn-s fill" onclick="openMatOrder()">⊟ Générer commande</button>
-          <button class="btn-s" onclick="exportMatCSV()">↓ Export CSV</button>
-          <button class="btn-s danger" onclick="resetMateriel()">↺ Réinitialiser</button>
+        <div class="sh-left">
+          <p class="ey">Inventaire complet</p>
+          <h2>Matériel <em>&amp; Équipement</em></h2>
+          <p style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1px">Consommables · Équipement fixe · Simulation énergie et eau</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap" id="mat-hdr-btns">
+          <button class="btn-s" onclick="addMatItem()">+ Consommable</button>
+          <button class="btn-s" onclick="importRitualsProducts()" title="Importer Rituals">🌸 Rituals</button>
+          <button class="btn-s fill" onclick="saveMateriel();if(typeof toast==='function')toast('✓','Sauvegardé')">💾 Sauvegarder</button>
+          <button class="btn-s" onclick="exportMatCSV()">↓ CSV</button>
         </div>
       </div>
 
-      <!-- Slider clients/semaine -->
-      <div class="card mat-slider-card" style="margin-bottom:20px">
-        <div class="card-h">
-          <span class="card-t">Simulation — clients par semaine</span>
-          <span style="font-size:9px;color:var(--muted)">Toutes les projections se mettent à jour en direct</span>
+      <!-- ── Onglets ── -->
+      <div class="mat-page-tabs">
+        <button class="mat-page-tab active" onclick="setMatTab('consommables',this)">
+          📦 Consommables & Réappro
+          <span class="tab-sub">stock, alertes, seuils</span>
+        </button>
+        <button class="mat-page-tab" onclick="setMatTab('equipement',this)">
+          🔧 Équipement Fixe
+          <span class="tab-sub" id="tab-eq-sub">inventaire · 99 éq.</span>
+        </button>
+        <button class="mat-page-tab" onclick="setMatTab('energie',this)">
+          ⚡ Énergie &amp; Eau
+          <span class="tab-sub">simulation charges mensuelles</span>
+        </button>
+      </div>
+
+      <!-- ══════════ TAB 1 : CONSOMMABLES ══════════ -->
+      <div id="mat-tab-consommables">
+        <div class="kpi-grid" id="mat-simple-kpis" style="margin-bottom:20px">
+          <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Total articles</p><div class="kpi-val"><b id="mat-s-total">0</b></div><p class="kpi-sub">références actives</p></div>
+          <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">Alertes stock</p><div class="kpi-val"><b id="mat-s-alerts">0</b></div><p class="kpi-sub" style="color:var(--warn)">sous le minimum</p></div>
+          <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Catégorie affichée</p><div class="kpi-val" style="font-size:22px"><b id="mat-s-cat">Matériel</b></div><p class="kpi-sub">menu ci-dessous</p></div>
+          <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Dernière sauvegarde</p><div class="kpi-val" style="font-size:20px"><b id="mat-s-date">—</b></div></div>
         </div>
-        <div class="mat-slider-wrap">
-          <div class="mat-slider-vals">
-            <div class="mat-slider-display">
-              <span class="mat-slider-num" id="mat-client-num">50</span>
-              <span class="mat-slider-unit">clients / semaine</span>
+        <div id="mat-simple-alerts" style="margin-bottom:16px"></div>
+        <div class="card" style="margin-bottom:18px;padding:14px 18px">
+          <div class="filter-row mat-cat-tabs mat-cat-filter-bar" style="padding:0;border:none;align-items:center;gap:6px">
+            <button class="fb on" data-cat="materiel" onclick="setMatFilter('materiel',this)">🔧 Matériel</button>
+            <button class="fb" data-cat="informatique" onclick="setMatFilter('informatique',this)">💻 Informatique</button>
+            <button class="fb" data-cat="sanitaire_linges" onclick="setMatFilter('sanitaire_linges',this)">🧼 Sanitaire / Linges</button>
+            <button class="fb" data-cat="senteur_odeur" onclick="setMatFilter('senteur_odeur',this)">🌸 Senteur / Odeur</button>
+            <button class="fb" data-cat="exterieur" onclick="setMatFilter('exterieur',this)">🌿 Extérieur</button>
+            <button class="fb" data-cat="accessoires" onclick="setMatFilter('accessoires',this)">✨ Accessoires</button>
+          </div>
+        </div>
+        <div class="g2" style="grid-template-columns:1fr;gap:18px;margin-bottom:20px">
+          <div class="card">
+            <div class="card-h">
+              <span class="card-t" id="mat-active-title">▣ Matériel</span>
+              <button class="btn-s" onclick="addMatItem(MAT_FILTER)">+ Ajouter dans cette catégorie</button>
             </div>
-            <div class="mat-slider-side">
-              <div class="mat-mini"><p class="mat-mini-lbl">Par jour (sur 7j)</p><p class="mat-mini-val"><b id="mat-client-day">–</b> /j</p></div>
-              <div class="mat-mini"><p class="mat-mini-lbl">Par mois (×4,33)</p><p class="mat-mini-val"><b id="mat-client-month">–</b> /m</p></div>
-              <div class="mat-mini"><p class="mat-mini-lbl">Par an</p><p class="mat-mini-val"><b id="mat-client-year">–</b> /an</p></div>
+            <div style="margin-bottom:10px">
+              <div style="display:grid;grid-template-columns:1.5fr 120px 100px 100px 70px 90px;gap:8px;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:0 4px 8px;border-bottom:1px solid rgba(196,160,78,.06)">
+                <span>Article</span><span>Quantité</span><span>Prix HT</span><span>Prix TTC</span><span>+ / −</span><span>Action</span>
+              </div>
+            </div>
+            <div id="mat-active-list"></div>
+          </div>
+        </div>
+        <div class="tw" style="margin-top:4px">
+          <div class="tw-head">
+            <span class="tw-title">Liste complète — tout le stock consommables</span>
+            <div class="tw-acts">
+              <input class="search" placeholder="Rechercher…" oninput="filterMatTb(this.value)" id="mat-search">
+              <button class="btn-s" onclick="exportMatCSV()">↓ CSV</button>
             </div>
           </div>
-          <input type="range" id="mat-slider" class="mat-slider" min="10" max="250" step="5" value="50" oninput="setMatClients(this.value)">
-          <div class="mat-presets">
-            <button class="fb" onclick="setMatClients(20,this)">20</button>
-            <button class="fb" onclick="setMatClients(40,this)">40</button>
-            <button class="fb on" onclick="setMatClients(50,this)">50</button>
-            <button class="fb" onclick="setMatClients(65,this)">65</button>
-            <button class="fb" onclick="setMatClients(80,this)">80</button>
-            <button class="fb" onclick="setMatClients(100,this)">100</button>
-            <button class="fb" onclick="setMatClients(150,this)">150</button>
-            <button class="fb" onclick="setMatClients(200,this)">200</button>
+          <div id="mat-table-cat-bar">
+            <button class="fb on" data-cat="all" onclick="setMatTbCat('all',this)">Tout</button>
+            <button class="fb" data-cat="materiel" onclick="setMatTbCat('materiel',this)">🔧 Matériel</button>
+            <button class="fb" data-cat="informatique" onclick="setMatTbCat('informatique',this)">💻 Informatique</button>
+            <button class="fb" data-cat="sanitaire_linges" onclick="setMatTbCat('sanitaire_linges',this)">🧼 Sanitaire</button>
+            <button class="fb" data-cat="senteur_odeur" onclick="setMatTbCat('senteur_odeur',this)">🌸 Senteur</button>
+            <button class="fb" data-cat="exterieur" onclick="setMatTbCat('exterieur',this)">🌿 Extérieur</button>
+            <button class="fb" data-cat="accessoires" onclick="setMatTbCat('accessoires',this)">✨ Accessoires</button>
+            <button class="fb" data-cat="alert" onclick="setMatTbCat('alert',this)" style="margin-left:auto">⚠ Alertes seules</button>
           </div>
-          <div class="mat-extra">
-            <div class="mat-p"><label>Jours d'ouverture / sem</label><input type="number" id="mat-days" class="mat-input" min="1" max="7" step="0.5" value="7" oninput="setMatParam('days',this.value)"></div>
-            <div class="mat-p"><label>Seuil couverture (jours)</label><input type="number" id="mat-cov" class="mat-input" min="1" step="1" value="7" oninput="setMatParam('seuilCouverture',this.value)"></div>
-            <div class="mat-p"><label>Marge sécurité (%)</label><input type="number" id="mat-safety" class="mat-input" min="0" step="5" value="20" oninput="setMatParam('safety',this.value)"></div>
-            <div class="mat-p"><label>Couverture commande visée (jours)</label><input type="number" id="mat-target" class="mat-input" min="7" step="1" value="30" oninput="setMatParam('targetDays',this.value)"></div>
+          <div id="mat-table-scroll" style="overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;">
+            <table class="mat-table">
+              <thead><tr>
+                <th style="min-width:170px">Article</th><th>Catégorie</th><th>Qté</th><th>Unité</th>
+                <th>Prix HT</th><th>Prix TTC</th><th>Total HT</th><th>Total TTC</th>
+                <th>Mini</th><th>Statut</th><th>Fournisseur</th><th>Commentaire</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="mat-tb"></tbody>
+              <tfoot id="mat-tfoot"></tfoot>
+            </table>
           </div>
-        </div>
-      </div>
-
-      <!-- KPIs globaux -->
-      <div class="kpi-grid">
-        <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Valeur totale stock</p><div class="kpi-val"><b id="mat-k-val">–</b> €</div><p class="kpi-sub" id="mat-k-val-sub">– articles référencés</p><span class="kpi-ico">▣</span></div>
-        <div class="kpi" style="--accent:var(--err)"><p class="kpi-label">Articles en alerte</p><div class="kpi-val"><b id="mat-k-alert">–</b></div><p class="kpi-sub" id="mat-k-alert-sub">à recommander</p><span class="kpi-ico">⚠</span></div>
-        <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Coût matériel / client</p><div class="kpi-val"><b id="mat-k-cost-cli">–</b> €</div><p class="kpi-sub">tous postes confondus</p><span class="kpi-ico">◯</span></div>
-        <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Coût matériel / semaine</p><div class="kpi-val"><b id="mat-k-cost-sem">–</b> €</div><p class="kpi-sub" id="mat-k-cost-sem-sub">à ce volume</p><span class="kpi-ico">◷</span></div>
-      </div>
-      <div class="kpi-grid">
-        <div class="kpi" style="--accent:var(--gold-l)"><p class="kpi-label">Coût mensuel projeté</p><div class="kpi-val"><b id="mat-k-cost-mois">–</b> €</div><p class="kpi-sub">conso × 4,33</p><span class="kpi-ico">◬</span></div>
-        <div class="kpi" style="--accent:var(--gold-l)"><p class="kpi-label">Coût annuel projeté</p><div class="kpi-val"><b id="mat-k-cost-an">–</b> €</div><p class="kpi-sub">×12 mois</p><span class="kpi-ico">◈</span></div>
-        <div class="kpi" style="--accent:var(--purple)"><p class="kpi-label">Prochaine rupture</p><div class="kpi-val"><b id="mat-k-rupt">–</b></div><p class="kpi-sub" id="mat-k-rupt-sub">–</p><span class="kpi-ico">⏳</span></div>
-        <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">À commander (estimation)</p><div class="kpi-val"><b id="mat-k-cmd">–</b> €</div><p class="kpi-sub" id="mat-k-cmd-sub">– articles</p><span class="kpi-ico">⊟</span></div>
-      </div>
-
-      <!-- Filtres -->
-      <div class="card" style="margin-bottom:18px;padding:14px 18px">
-        <div class="filter-row" style="padding:0;border:none;align-items:center">
-          <button class="fb on" onclick="setMatFilter('all',this)">Tout</button>
-          <button class="fb" onclick="setMatFilter('linge',this)">Linge & textile</button>
-          <button class="fb" onclick="setMatFilter('hygiene',this)">Hygiène & consommable</button>
-          <button class="fb" onclick="setMatFilter('soin',this)">Produits soin</button>
-          <button class="fb" onclick="setMatFilter('equipement',this)">Équipement durable</button>
-          <button class="fb" onclick="setMatFilter('alert',this)" style="margin-left:auto;border-color:rgba(224,80,80,.3);color:var(--err)">⚠ Alertes uniquement</button>
-        </div>
-      </div>
-
-      <!-- Cartes par article -->
-      <div class="mat-grid" id="mat-grid"></div>
-
-      <!-- Tableau récap complet -->
-      <div class="tw">
-        <div class="tw-head">
-          <span class="tw-title">Vue tableau — récap complet</span>
-          <div class="tw-acts">
-            <input class="search" placeholder="Rechercher…" oninput="filterMatTb(this.value)" id="mat-search">
-            <button class="btn-s" onclick="exportMatCSV()">↓ CSV</button>
+          <div class="tbl-slider-wrap">
+            <label>◁ déplacer ▷</label>
+            <input type="range" class="tbl-slider" id="mat-tbl-slider" min="0" max="1000" value="0"
+              oninput="(function(v){var w=document.getElementById('mat-table-scroll');if(!w)return;var m=w.scrollWidth-w.clientWidth;w.scrollLeft=(v/1000)*m;document.getElementById('mat-tbl-pct').textContent=Math.round(v/10)+'%';})(+this.value)">
+            <span class="tbl-slider-pct" id="mat-tbl-pct">0%</span>
           </div>
         </div>
-        <div style="overflow-x:auto">
-          <table class="mat-table">
-            <thead>
-              <tr>
-                <th>Article</th>
-                <th>Cat.</th>
-                <th>Stock</th>
-                <th>Unité</th>
-                <th>Coût u.</th>
-                <th>Valeur</th>
-                <th>Conso/client</th>
-                <th>Conso/sem</th>
-                <th>Couverture</th>
-                <th>Stock min</th>
-                <th>Délai liv.</th>
-                <th>Date rupture</th>
-                <th>À cmd</th>
-                <th>Coût cmd</th>
-                <th>Fournisseur</th>
-                <th>Statut</th>
-                <th>Commentaire</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="mat-tb"></tbody>
-            <tfoot id="mat-tfoot"></tfoot>
-          </table>
-        </div>
-      </div>
+      </div><!-- /tab-consommables -->
 
-      <!-- Drawer commande -->
-      <div class="mat-order-overlay" id="mat-order-overlay" onclick="if(event.target===this)closeMatOrder()" style="display:none">
-        <div class="mat-order-drawer">
-          <div class="mat-order-h">
-            <div>
-              <p class="ey" style="color:var(--gold)">Recommandation</p>
-              <h3 style="font-family:var(--serif);font-size:22px;font-weight:300;margin-top:4px">Bon de <em style="color:var(--gold-l);font-style:italic">commande</em></h3>
+      <!-- ══════════ TAB 2 : ÉQUIPEMENT FIXE ══════════ -->
+      <div id="mat-tab-equipement" style="display:none">
+        <!-- KPIs équipement -->
+        <div class="kpi-grid" style="margin-bottom:20px">
+          <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Investissement total HT</p><div class="kpi-val"><b id="eq-k-invest">–</b> €</div><p class="kpi-sub" id="eq-k-invest-ttc">– € TTC</p><span class="kpi-ico">◈</span></div>
+          <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">Puissance installée</p><div class="kpi-val"><b id="eq-k-kw">–</b> <span style="font-size:18px">kW</span></div><p class="kpi-sub" id="eq-k-kw-sub">–</p><span class="kpi-ico">⚡</span></div>
+          <div class="kpi" style="--accent:var(--purple,#9c7fd5)" id="eq-k-amort-kpi"><p class="kpi-label">Amorti. total / mois</p><div class="kpi-val"><b id="eq-k-amort">–</b> €</div><p class="kpi-sub">coût mensuel des actifs</p><span class="kpi-ico">◷</span></div>
+          <div class="kpi" style="--accent:var(--err)"><p class="kpi-label">À réviser / HS</p><div class="kpi-val"><b id="eq-k-alert">–</b></div><p class="kpi-sub" id="eq-k-alert-sub">–</p><span class="kpi-ico">⚠</span></div>
+        </div>
+        <!-- Table équipement -->
+        <div class="tw tw-scroll">
+          <div class="tw-head">
+            <span class="tw-title">Équipement fixe — <span id="eq-tb-count">0</span> articles · <span id="eq-tb-invest">–</span> € TTC</span>
+            <div class="tw-acts" style="gap:8px">
+              <input class="search" placeholder="Rechercher…" oninput="filterEquip(this.value)" id="eq-search" style="width:180px">
+              <button class="eq-compact-btn" id="eq-compact-btn" onclick="toggleEqCompact(this)" title="Vue compacte — réduit les colonnes pour tout voir">⊡ Compact</button>
+              <button class="btn-s" onclick="addEqItem()">+ Ajouter</button>
+              <button class="btn-s fill" onclick="saveEquipement();if(typeof toast==='function')toast('✓','Équipement sauvegardé')">💾 Sauvegarder</button>
+              <button class="btn-s" onclick="exportEquipCSV()">↓ CSV</button>
             </div>
-            <button class="btn-s" onclick="closeMatOrder()">✕ Fermer</button>
           </div>
-          <div id="mat-order-body" style="margin-top:18px"></div>
-          <div class="mat-order-foot">
-            <button class="btn-s" onclick="copyMatOrder()">⎘ Copier le texte</button>
-            <button class="btn-s fill" onclick="exportMatOrderCSV()">↓ Export CSV</button>
+          <div class="eq-filter-bar">
+            <button class="fb on f-all"      onclick="setEqFilter('all',this)">Tout</button>
+            <button class="fb f-amenagement" onclick="setEqFilter('amenagement',this)">🛋 Aménagement</button>
+            <button class="fb f-accessoire"  onclick="setEqFilter('accessoire',this)">✨ Accessoires</button>
+            <button class="fb f-bar"         onclick="setEqFilter('bar',this)">☕ Bar</button>
+            <button class="fb f-exterieur"   onclick="setEqFilter('exterieur',this)">🌿 Extérieur</button>
+            <button class="fb f-stockage"    onclick="setEqFilter('stockage',this)">📦 Stockage</button>
+            <button class="fb f-boutique"    onclick="setEqFilter('boutique',this)">🛍 Boutique</button>
+            <button class="fb f-energie"     onclick="setEqFilter('energie',this)">⚡ Avec conso.</button>
+            <button class="fb" onclick="setEqFilter('reviser',this)" style="margin-left:auto;border-color:rgba(240,160,48,.25);color:var(--warn)">⚠ À réviser / HS</button>
+          </div>
+          <!-- Barre de guidage colonnes -->
+          <div class="eq-col-guide" id="eq-col-guide">
+            <span style="color:var(--gold);margin-right:6px">◈</span>
+            <span style="color:var(--cream);min-width:110px">Équipement</span>
+            <span>·</span><span>Marque</span>
+            <span>·</span><span>Catégorie</span>
+            <span>·</span><span>Qté</span>
+            <span>·</span><span>P.U. HT</span>
+            <span>·</span><span>P.U. TTC</span>
+            <span>·</span><span>Total HT</span>
+            <span>·</span><span>Total TTC</span>
+            <span>·</span><span>⚡ W/u</span>
+            <span>·</span><span>💧 L/u</span>
+            <span>·</span><span>Vie</span>
+            <span>·</span><span>Amorti</span>
+            <span>·</span><span style="color:var(--info)">💳 Paiement</span>
+            <span>·</span><span>État</span>
+            <span>·</span><span>Lien</span>
+            <span>·</span><span>Notes</span>
+          </div>
+          <!-- Barre de progression scroll -->
+          <div class="eq-table-wrap" id="eq-table-wrap">
+            <table class="eq-table">
+              <thead><tr>
+                <th style="min-width:180px">Équipement</th>
+                <th>Marque</th>
+                <th>Catégorie</th>
+                <th style="text-align:right">Qté</th>
+                <th style="text-align:right">P.U. HT</th>
+                <th style="text-align:right">P.U. TTC</th>
+                <th style="text-align:right">Total HT</th>
+                <th style="text-align:right">Total TTC</th>
+                <th style="text-align:right">⚡ W/u</th>
+                <th style="text-align:right">💧 L/u</th>
+                <th style="text-align:right">Vie (ans)</th>
+                <th style="text-align:right">Amorti/mois</th>
+                <th>💳 Paiement</th>
+                <th>État</th>
+                <th>Lien</th>
+                <th>Notes</th>
+                <th>Actions</th>
+              </tr></thead>
+              <tbody id="eq-tb"></tbody>
+              <tfoot id="eq-tfoot"></tfoot>
+            </table>
+          </div>
+          <div class="tbl-slider-wrap">
+            <label>◁ déplacer ▷</label>
+            <input type="range" class="tbl-slider" id="eq-tbl-slider" min="0" max="1000" value="0"
+              oninput="(function(v){var w=document.getElementById('eq-table-wrap');if(!w)return;var m=w.scrollWidth-w.clientWidth;w.scrollLeft=(v/1000)*m;document.getElementById('eq-tbl-pct').textContent=Math.round(v/10)+'%';})(+this.value)">
+            <span class="tbl-slider-pct" id="eq-tbl-pct">0%</span>
           </div>
         </div>
-      </div>
+      </div><!-- /tab-equipement -->
+
+      <!-- ══════════ TAB 3 : ÉNERGIE & EAU ══════════ -->
+      <div id="mat-tab-energie" style="display:none">
+        <div class="kpi-grid" style="margin-bottom:20px">
+          <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">Puissance installée</p><div class="kpi-val"><b id="eq-k-kw2">–</b> kW</div><p class="kpi-sub">consommateurs actifs</p><span class="kpi-ico">⚡</span></div>
+          <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Coût élec estimé / mois</p><div class="kpi-val"><b id="eq-k-elec">–</b> €</div><p class="kpi-sub">selon simulation</p><span class="kpi-ico">◷</span></div>
+          <div class="kpi" style="--accent:#20bca8"><p class="kpi-label">Coût eau estimé / mois</p><div class="kpi-val"><b id="eq-k-eau">–</b> €</div><p class="kpi-sub">selon simulation</p><span class="kpi-ico">◎</span></div>
+          <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Total énergie / an</p><div class="kpi-val"><b id="eq-k-total-an">–</b> €</div><p class="kpi-sub">estimation annuelle</p><span class="kpi-ico">◈</span></div>
+        </div>
+        <div class="eq-sim">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold)">⚡ Simulateur — Charges Énergie &amp; Eau</span>
+            <span style="font-size:8.5px;color:var(--muted)">Paramètres modifiables · calcul en temps réel</span>
+          </div>
+          <div class="eq-sim-grid">
+            <div class="eq-sim-field"><label>Prix kWh (€)</label><input class="eq-sim-input" id="eq-p-kwh" type="number" step="0.001" value="0.2516" oninput="calcEquipSim()"></div>
+            <div class="eq-sim-field"><label>Prix eau (€/m³)</label><input class="eq-sim-input" id="eq-p-m3" type="number" step="0.01" value="4.35" oninput="calcEquipSim()"></div>
+            <div class="eq-sim-field"><label>Jours ouverts / mois</label><input class="eq-sim-input" id="eq-p-jours" type="number" step="1" value="26" oninput="calcEquipSim()"></div>
+            <div class="eq-sim-field"><label>Heures d'ouverture / jour</label><input class="eq-sim-input" id="eq-p-h" type="number" step="0.5" value="12" oninput="calcEquipSim()"></div>
+            <div class="eq-sim-field"><label>Sessions sauna / jour</label><input class="eq-sim-input" id="eq-p-sauna" type="number" step="1" value="8" oninput="calcEquipSim()"><span style="font-size:8px;color:var(--muted);margin-top:2px">↳ ~30min chauffe/session</span></div>
+            <div class="eq-sim-field"><label>Bains froids / jour</label><input class="eq-sim-input" id="eq-p-bain" type="number" step="1" value="20" oninput="calcEquipSim()"><span style="font-size:8px;color:var(--muted);margin-top:2px">↳ 500L / remplissage hebdo</span></div>
+            <div class="eq-sim-field"><label>Cycles machine / mois</label><input class="eq-sim-input" id="eq-p-machine" type="number" step="1" value="120" oninput="calcEquipSim()"><span style="font-size:8px;color:var(--muted);margin-top:2px">↳ 58L + 2 kWh / cycle</span></div>
+            <div class="eq-sim-field"><label>Douches extérieur / jour</label><input class="eq-sim-input" id="eq-p-douche" type="number" step="1" value="15" oninput="calcEquipSim()"><span style="font-size:8px;color:var(--muted);margin-top:2px">↳ 60L / douche</span></div>
+          </div>
+          <div class="eq-sim-results">
+            <div class="eq-res" style="border-color:rgba(240,160,48,.15)"><p class="eq-res-lbl">⚡ Électricité / mois</p><p class="eq-res-val" style="color:var(--warn)"><b id="eq-r-elec">–</b> €</p><p class="eq-res-sub"><span id="eq-r-kwh">–</span> kWh</p></div>
+            <div class="eq-res" style="border-color:rgba(32,188,168,.15)"><p class="eq-res-lbl">💧 Eau / mois</p><p class="eq-res-val" style="color:#20bca8"><b id="eq-r-eau">–</b> €</p><p class="eq-res-sub"><span id="eq-r-m3">–</span> m³</p></div>
+            <div class="eq-res" style="border-color:rgba(196,160,78,.15)"><p class="eq-res-lbl">◈ Total / mois</p><p class="eq-res-val" style="color:var(--gold)"><b id="eq-r-total">–</b> €</p><p class="eq-res-sub">élec + eau</p></div>
+            <div class="eq-res" style="border-color:rgba(196,160,78,.08)"><p class="eq-res-lbl">◷ Estimation annuelle</p><p class="eq-res-val" style="color:var(--gold-l)"><b id="eq-r-an">–</b> €</p><p class="eq-res-sub">× 12 mois</p></div>
+          </div>
+          <details style="margin-top:16px">
+            <summary style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);cursor:pointer;padding:6px 0;border-top:1px solid rgba(196,160,78,.07);list-style:none">▸ Détail par poste de consommation</summary>
+            <div class="eq-breakdown" id="eq-breakdown-detail" style="margin-top:12px"></div>
+          </details>
+        </div>
+      </div><!-- /tab-energie -->
+
     </section>
     <!-- ════ SUIVI DES CHARGES ════ -->
     <section class="page" id="page-charges">
@@ -2177,14 +2612,6 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
             <p style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Changer le mot de passe Supabase</p>
             <p style="font-size:10px;color:var(--muted);line-height:1.9;margin-bottom:14px">Pour changer le mot de passe admin, rendez-vous sur <b style="color:var(--gold)">supabase.com</b> → Authentication → Users → sélectionnez votre compte → Reset Password.</p>
             <a href="https://supabase.com" target="_blank" class="btn-s fill" style="display:inline-block;text-decoration:none;text-align:center">Ouvrir Supabase →</a>
-
-            <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(196,160,78,.06)">
-              <p style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Mot de passe fallback (mode local)</p>
-              <div class="df" style="margin-bottom:11px"><label>Nouveau mot de passe local</label><input type="password" id="np1" placeholder="••••••••"></div>
-              <div class="df" style="margin-bottom:11px"><label>Confirmer</label><input type="password" id="np2" placeholder="••••••••"></div>
-              <button class="btn-s" onclick="changePwd()">Changer le mot de passe local</button>
-              <p id="pwd-st" style="font-size:9px;margin-top:8px;color:var(--muted)"></p>
-            </div>
           </div>
         </div>
         <div>
@@ -2346,7 +2773,20 @@ const D = {
 };
 
 // ── INIT ──
+
+function applySidebarState(){
+  const collapsed = localStorage.getItem('eden_sidebar_collapsed') === '1';
+  document.body.classList.toggle('sidebar-collapsed', collapsed);
+}
+
+function toggleSidebar(){
+  const collapsed = !document.body.classList.contains('sidebar-collapsed');
+  document.body.classList.toggle('sidebar-collapsed', collapsed);
+  localStorage.setItem('eden_sidebar_collapsed', collapsed ? '1' : '0');
+}
+
 window.onload = function(){
+  applySidebarState();
   // Credentials pré-configurés
   localStorage.setItem('eden_sb_url', 'https://jdcxhejkuttaviiqqonz.supabase.co');
   localStorage.setItem('eden_sb_key', 'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A');
@@ -2372,7 +2812,7 @@ window.onload = function(){
 var sessionExp = localStorage.getItem(SESSION_K);
 var token = localStorage.getItem(TOKEN_K);
 
-if(sessionExp && Date.now() < parseInt(sessionExp) && token) {
+if(sessionExp && Date.now() < parseInt(sessionExp, 10) && token) {
   SB_TOKEN = token;
   showApp();
 } else {
@@ -2392,18 +2832,10 @@ function checkSbConfig(){
   var hasSB = url && key && url.includes('supabase.co');
 
   var boxSB = document.getElementById('login-box-supabase');
-  var boxLocal = document.getElementById('login-box-local');
   var noCfg = document.getElementById('sb-no-cfg');
 
-  if(hasSB) {
-    if(boxSB) boxSB.style.display = 'block';
-    if(boxLocal) boxLocal.style.display = 'none';
-    if(noCfg) noCfg.style.display = 'none';
-  } else {
-    if(boxSB) boxSB.style.display = 'none';
-    if(boxLocal) boxLocal.style.display = 'block';
-    if(noCfg) noCfg.style.display = 'block';
-  }
+  if(boxSB) boxSB.style.display = 'block';
+  if(noCfg) noCfg.style.display = hasSB ? 'none' : 'block';
 }
 
 // ── LOGIN SUPABASE AUTH (sécurisé) ──
@@ -2417,11 +2849,17 @@ async function loginSupabase(){
     if(errEl) errEl.textContent = 'Email et mot de passe requis';
     return;
   }
+
+  var url = (localStorage.getItem(SB_URL_K) || SB_URL || '').trim().replace(/\/$/, '');
+  var key = (localStorage.getItem(SB_KEY_K) || SB_KEY || '').trim();
+
+  if(!url || !key || !url.includes('supabase.co')) {
+    if(errEl) errEl.textContent = 'Configuration Supabase manquante ou invalide';
+    return;
+  }
+
   if(btn) { btn.textContent = 'Connexion en cours…'; btn.disabled = true; }
   if(errEl) errEl.textContent = '';
-
-  var url = (localStorage.getItem(SB_URL_K) || SB_URL).trim();
-  var key = (localStorage.getItem(SB_KEY_K) || SB_KEY).trim();
 
   try {
     var res = await fetch(url + '/auth/v1/token?grant_type=password', {
@@ -2433,29 +2871,35 @@ async function loginSupabase(){
       body: JSON.stringify({ email: email, password: pwd })
     });
 
-    var data = await res.json();
+    var data = {};
+    try { data = await res.json(); } catch(e) {}
 
-    if(!res.ok) {
-      throw new Error(data.error_description || data.msg || 'Identifiants incorrects');
+    if(!res.ok || !data.access_token) {
+      var msg = data.error_description || data.msg || data.message || 'Identifiants Supabase incorrects';
+      throw new Error(msg);
     }
 
-    // ✅ Authentification réussie
+    SB_URL = url;
+    SB_KEY = key;
     SB_TOKEN = data.access_token;
+
+    localStorage.setItem(SB_URL_K, url);
+    localStorage.setItem(SB_KEY_K, key);
     localStorage.setItem(TOKEN_K, data.access_token);
     localStorage.setItem(RTOKEN_K, data.refresh_token || '');
-    // Session expire dans 1h
-    localStorage.setItem(SESSION_K, (Date.now() + 3600000).toString());
-    sessionStorage.setItem('eden_ok', '1');
+    localStorage.setItem(SESSION_K, (Date.now() + ((data.expires_in || 3600) * 1000)).toString());
+    sessionStorage.removeItem('eden_ok');
 
-    // Démarrer le refresh automatique (toutes les 55 min)
     startTokenRefresh();
 
-    document.getElementById('auth-pwd').value = '';
+    var pwdEl = document.getElementById('auth-pwd');
+    if(pwdEl) pwdEl.value = '';
     showApp();
 
   } catch(err) {
-    if(errEl) errEl.textContent = err.message || 'Erreur de connexion';
-    document.getElementById('auth-pwd').value = '';
+    if(errEl) errEl.textContent = err.message || 'Erreur de connexion Supabase';
+    var pwdEl = document.getElementById('auth-pwd');
+    if(pwdEl) pwdEl.value = '';
   } finally {
     if(btn) { btn.textContent = "Accéder à l'espace admin"; btn.disabled = false; }
   }
@@ -2487,20 +2931,10 @@ function startTokenRefresh(){
   }, 55 * 60 * 1000); // 55 minutes
 }
 
-// ── LOGIN LOCAL (fallback sans Supabase) ──
+// ── ACCÈS LOCAL SUPPRIMÉ ──
 function loginLocal(){
-  var val = document.getElementById('pwd-local') ? document.getElementById('pwd-local').value : '';
-  var stored = localStorage.getItem('eden_pwd') || 'eden2024';
-  var errEl = document.getElementById('login-err-local');
-  if(val === stored) {
-    sessionStorage.setItem('eden_ok','1');
-    document.getElementById('pwd-local').value = '';
-    if(errEl) errEl.textContent = '';
-    showApp();
-  } else {
-    if(errEl) errEl.textContent = 'Mot de passe incorrect';
-    document.getElementById('pwd-local').value = '';
-  }
+  var errEl = document.getElementById('login-err');
+  if(errEl) errEl.textContent = 'Accès local supprimé : connexion Supabase obligatoire';
 }
 
 // Garder login() comme alias pour compatibilité clavier
@@ -2538,7 +2972,8 @@ async function logout(){
 
 // ── SHOW APP ──
 function showApp(){
-  if(!localStorage.getItem(TOKEN_K)){
+  const hasToken = !!localStorage.getItem(TOKEN_K);
+  if(!hasToken){
     var errEl = document.getElementById('login-err');
     if(errEl) errEl.textContent = 'Connexion Supabase requise';
     return;
@@ -2550,9 +2985,7 @@ function showApp(){
   a.classList.add('visible');
   initSB();
   renderAll();
-  // Démarrer refresh si token présent
-  if(localStorage.getItem(TOKEN_K)) startTokenRefresh();
-  // Détecter inactivité (30 min)
+  startTokenRefresh();
   startInactivityTimer();
 }
 
@@ -2652,9 +3085,9 @@ async function loadSB(){
 }
 function setConn(ok){
   document.getElementById('cdot').className='cdot'+(ok?' live':'');
-  document.getElementById('ctxt').textContent=ok?'Supabase · Live':'Mode local';
+  document.getElementById('ctxt').textContent=ok?'Supabase · Live':'Supabase';
   const st=document.getElementById('cfg-st');
-  if(st) st.textContent=ok?'✓ Connecté':'⚠ Non connecté — mode démo';
+  if(st) st.textContent=ok?'✓ Connecté':'⚠ Non connecté à Supabase';
 }
 
 // ── NAV ──
@@ -2669,7 +3102,13 @@ const PAGE_TITLES={
   charges:'Suivi des <em>charges</em>',
   materiel:'Matériel & <em>Réappro</em>'
 };
+function autoSaveAll(){
+  try{ if(EQUIP_STATE) saveEquipement(); }catch(e){}
+  try{ if(MAT_STATE)   saveMateriel();   }catch(e){}
+}
+
 function nav(p){
+  autoSaveAll(); // ← sauvegarde avant de changer de page
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
   document.querySelectorAll('.sbi').forEach(x=>x.classList.remove('active'));
@@ -2677,6 +3116,10 @@ function nav(p){
   document.getElementById('page-title').innerHTML=PAGE_TITLES[p]||p;
   renderPage(p);
 }
+
+// Sauvegarde quand on quitte la page navigateur ou on change d'onglet
+window.addEventListener('beforeunload', autoSaveAll);
+document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='hidden') autoSaveAll(); });
 
 function renderAll(){ renderDashboard(); updateBadges(); }
 function renderPage(p){
@@ -3027,22 +3470,14 @@ function renderParams(){
     } else if(sbConfigured) {
       sl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(240,160,48,.05);border:1px solid rgba(240,160,48,.15);margin-bottom:12px"><span style="font-size:16px">🔓</span><div><p style="font-size:10px;color:var(--warn)">Niveau de sécurité : Moyen</p><p style="font-size:9px;color:var(--muted);margin-top:2px">Supabase configuré mais non authentifié</p></div></div>';
     } else {
-      sl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(224,80,80,.05);border:1px solid rgba(224,80,80,.15);margin-bottom:12px"><span style="font-size:16px">⚠️</span><div><p style="font-size:10px;color:var(--err)">Niveau de sécurité : Faible</p><p style="font-size:9px;color:var(--muted);margin-top:2px">Mode local — configurez Supabase pour sécuriser</p></div></div>';
+      sl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(224,80,80,.05);border:1px solid rgba(224,80,80,.15);margin-bottom:12px"><span style="font-size:16px">⚠️</span><div><p style="font-size:10px;color:var(--err)">Niveau de sécurité : Non connecté</p><p style="font-size:9px;color:var(--muted);margin-top:2px">Connexion Supabase obligatoire</p></div></div>';
     }
   }
   document.getElementById('cfg-url').value=localStorage.getItem(SB_URL_K)||'https://jdcxhejkuttaviiqqonz.supabase.co';
   document.getElementById('cfg-key').value=localStorage.getItem(SB_KEY_K)||'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A';
 }
 function changePwd(){
-  const p1=document.getElementById('np1').value,p2=document.getElementById('np2').value;
-  const st=document.getElementById('pwd-st');
-  if(!p1){st.style.color='var(--err)';st.textContent='Champ vide';return;}
-  if(p1!==p2){st.style.color='var(--err)';st.textContent='Les mots de passe ne correspondent pas';return;}
-  if(p1.length<6){st.style.color='var(--err)';st.textContent='Minimum 6 caractères';return;}
-  localStorage.setItem('eden_pwd',p1); toast('✓','Mot de passe local mis à jour');
-  st.style.color='var(--ok)';st.textContent='✓ Mot de passe changé avec succès';
-  document.getElementById('np1').value='';document.getElementById('np2').value='';
-  toast('✓','Mot de passe mis à jour');
+  toast('⚠','Le mode local a été supprimé : mot de passe Supabase uniquement');
 }
 function copySQL(){navigator.clipboard.writeText(document.getElementById('sql-pre').textContent).then(()=>toast('✓','SQL copié'));}
 
@@ -6734,7 +7169,24 @@ const MAT_DEFAULT_PARAMS = {
   safety: 20,            // marge de sécurité %
   targetDays: 30         // couverture visée pour les commandes
 };
-const MAT_DEFAULT_ITEMS = [];
+const MAT_DEFAULT_ITEMS = [
+  // ── The Ritual of Yozakura ──────────────────────────────────────────────
+  // Prix unitaire TTC = total facture / quantité
+  {id:'mat_rituals_001',nom:'Yozakura — Hand Balm 175 ml',       cat:'senteur_odeur',stock:2,unite:'fl', min:1,prix_ht:11.58,prix_ttc:13.90,cout:11.58,consoCli:0,delai:5,fournisseur:'Rituals',lien:'',comm:'27,80 € les 2'},
+  {id:'mat_rituals_002',nom:'Yozakura — Hand Wash 300 ml',        cat:'senteur_odeur',stock:2,unite:'fl', min:1,prix_ht:11.58,prix_ttc:13.90,cout:11.58,consoCli:0,delai:5,fournisseur:'Rituals',lien:'',comm:'27,80 € les 2'},
+  {id:'mat_rituals_003',nom:'Yozakura — Fragrance Sticks 250 ml', cat:'senteur_odeur',stock:3,unite:'fl', min:1,prix_ht:25.75,prix_ttc:30.90,cout:25.75,consoCli:0,delai:5,fournisseur:'Rituals',lien:'',comm:'92,70 € les 3'},
+  {id:'mat_rituals_004',nom:'Yozakura — Refill Hand Wash 600 ml', cat:'senteur_odeur',stock:1,unite:'fl', min:1,prix_ht:15.75,prix_ttc:18.90,cout:15.75,consoCli:0,delai:5,fournisseur:'Rituals',lien:'',comm:''},
+  {id:'mat_rituals_005',nom:'Yozakura — Scented Candle 290 g',    cat:'senteur_odeur',stock:6,unite:'u',  min:2,prix_ht:19.08,prix_ttc:22.90,cout:19.08,consoCli:0,delai:5,fournisseur:'Rituals',lien:'',comm:'137,40 € les 6'},
+  {id:'mat_rituals_006',nom:'Yozakura — Car Perfume Spray Kit',    cat:'senteur_odeur',stock:1,unite:'u',  min:1,prix_ht:20.75,prix_ttc:24.90,cout:20.75,consoCli:0,delai:5,fournisseur:'Rituals',lien:'',comm:''},
+  {id:'mat_rituals_007',nom:'Yozakura — Car Air Freshener',        cat:'senteur_odeur',stock:1,unite:'u',  min:1,prix_ht:13.06,prix_ttc:15.67,cout:13.06,consoCli:0,delai:5,fournisseur:'Rituals',lien:'',comm:'Promo — prix normal 20,90 €'},
+  {id:'mat_rituals_008',nom:'Yozakura — Cartridge 30 ml',          cat:'senteur_odeur',stock:1,unite:'fl', min:1,prix_ht:31.61,prix_ttc:37.93,cout:31.61,consoCli:0,delai:5,fournisseur:'Rituals',lien:'',comm:'Promo — prix normal 39,90 €'},
+  {id:'mat_rituals_009',nom:'Yozakura — Refill Home Perfume 400 ml',cat:'senteur_odeur',stock:2,unite:'fl',min:1,prix_ht:24.92,prix_ttc:29.90,cout:24.92,consoCli:0,delai:5,fournisseur:'Rituals',lien:'',comm:'59,80 € les 2'},
+  {id:'mat_rituals_010',nom:'Yozakura — Home Perfume 400 ml',      cat:'senteur_odeur',stock:1,unite:'fl', min:1,prix_ht:29.08,prix_ttc:34.90,cout:29.08,consoCli:0,delai:5,fournisseur:'Rituals',lien:'',comm:''},
+  // ── Private Collection ──────────────────────────────────────────────────
+  {id:'mat_rituals_011',nom:'Private Collection — Velvet Oudh Stone Diffuser 20 ml',cat:'senteur_odeur',stock:1,unite:'u',min:1,prix_ht:35.75,prix_ttc:42.90,cout:35.75,consoCli:0,delai:7,fournisseur:'Rituals',lien:'',comm:'Collection Private'},
+  // ── The Perfume Genie ───────────────────────────────────────────────────
+  {id:'mat_rituals_012',nom:'The Perfume Genie',                   cat:'senteur_odeur',stock:2,unite:'u',  min:1,prix_ht:81.20,prix_ttc:97.44,cout:81.20,consoCli:0,delai:7,fournisseur:'Rituals',lien:'',comm:'Promo — 194,87 € les 2 (normal 99,90 €/u)'},
+];
 
 let MAT_STATE = null;     // { params:{}, items:[], filter:'all', search:'' }
 
@@ -6755,6 +7207,15 @@ function loadMateriel(){
       params: Object.assign({}, MAT_DEFAULT_PARAMS, obj.params||{}),
       items: Array.isArray(obj.items) ? obj.items : JSON.parse(JSON.stringify(MAT_DEFAULT_ITEMS))
     };
+    // Nettoyage immédiat des doublons au chargement
+    const seenIds=new Set(), seenNoms=new Set();
+    MAT_STATE.items = MAT_STATE.items.filter(it=>{
+      if(!it.id) it.id='mat_'+Date.now()+'_'+Math.floor(Math.random()*100000);
+      if(seenIds.has(it.id)) return false; seenIds.add(it.id);
+      const k=String(it.nom||'').trim().toLowerCase()+'__'+String(it.cat||'');
+      if(seenNoms.has(k)) return false; seenNoms.add(k);
+      return true;
+    });
   }catch(e){
     console.warn('mat load err', e);
     MAT_STATE = { params:Object.assign({},MAT_DEFAULT_PARAMS), items:JSON.parse(JSON.stringify(MAT_DEFAULT_ITEMS)) };
@@ -6922,6 +7383,30 @@ function matFmt2(n){ if(!isFinite(n)) n=0; return n.toLocaleString('fr-FR',{maxi
 function matFmtDate(d){
   if(!d) return '–';
   return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+function matGetDismissedAlerts(){
+  try{ return JSON.parse(localStorage.getItem('eden_mat_alerts_dismissed') || '{}'); }
+  catch(e){ return {}; }
+}
+function matSaveDismissedAlerts(obj){
+  localStorage.setItem('eden_mat_alerts_dismissed', JSON.stringify(obj || {}));
+}
+function matAlertKey(it){
+  return String(it.id || it.nom || '') + '|' + String(Number(it.stock||0)) + '|' + String(Number(it.min||0));
+}
+function dismissMatAlert(id){
+  if(!MAT_STATE) loadMateriel();
+  const it=(MAT_STATE.items||[]).find(x=>String(x.id)===String(id));
+  const dismissed=matGetDismissedAlerts();
+  if(it) dismissed[matAlertKey(it)] = true;
+  else dismissed[String(id)] = true;
+  matSaveDismissedAlerts(dismissed);
+  renderMateriel();
+}
+function resetDismissedMatAlerts(){
+  localStorage.removeItem('eden_mat_alerts_dismissed');
+  renderMateriel();
 }
 
 function renderMateriel(){
@@ -7270,6 +7755,931 @@ function exportMatOrderCSV(){
 // Init silencieux
 try{ if(!MAT_STATE) loadMateriel(); }catch(e){}
 
+
+
+/* ══ OVERRIDE — STOCK MATÉRIEL SIMPLIFIÉ TYPE STOCK BOISSONS ══ */
+const MAT_SIMPLE_CATS = ['materiel','informatique','sanitaire_linges','senteur_odeur','exterieur','accessoires'];
+const MAT_SIMPLE_LABELS = {
+  materiel:'Matériel',
+  informatique:'Informatique',
+  sanitaire_linges:'Sanitaire / Linges',
+  senteur_odeur:'Senteur / Odeur',
+  exterieur:'Extérieur',
+  accessoires:'Accessoires'
+};
+function matSimpleEsc(v){ return String(v ?? '').replace(/[&<>"]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
+function matSimpleCat(cat){
+  const c = String(cat||'').toLowerCase();
+  if(['materiel','matériel','equipement','équipement','equipment'].includes(c)) return 'materiel';
+  if(['informatique','it','ordinateur','pc'].includes(c)) return 'informatique';
+  if(['sanitaire_linges','sanitaire','linge','linges','hygiene','hygiène','soin'].includes(c)) return 'sanitaire_linges';
+  if(['senteur_odeur','senteur','senteurs','odeur','odeurs','parfum','parfums','diffuseur','diffuseurs','ambiance'].includes(c)) return 'senteur_odeur';
+  if(['exterieur','extérieur','outdoor','dehors','parking','jardin','terrasse'].includes(c)) return 'exterieur';
+  if(['accessoires','accessoire'].includes(c)) return 'accessoires';
+  return 'materiel';
+}
+function matNormalizeSimple(){
+  if(!MAT_STATE) loadMateriel();
+  if(!MAT_STATE.items) MAT_STATE.items=[];
+  MAT_STATE.items.forEach((it,idx)=>{
+    if(!it.id) it.id='mat_'+Date.now()+'_'+idx;
+    it.cat = matSimpleCat(it.cat);
+    it.nom = it.nom || 'Nouvel article';
+    it.stock = Number(it.stock ?? it.quantite ?? 0) || 0;
+    it.unite = it.unite || 'u';
+    it.min = Number(it.min ?? it.seuil ?? it.seuil_alerte ?? 0) || 0;
+    it.fournisseur = it.fournisseur || '';
+    it.lien = it.lien || '';
+    it.comm = it.comm || '';
+  });
+}
+function matStatusSimple(it){
+  const stock=Number(it.stock||0), min=Number(it.min||0);
+  if(min>0 && stock<=Math.max(1, Math.floor(min/2))) return {cls:'cancelled', txt:'Critique'};
+  if(min>0 && stock<=min) return {cls:'pending', txt:'A reprendre'};
+  return {cls:'confirmed', txt:'OK'};
+}
+function renderMateriel(){
+  if(!MAT_STATE) loadMateriel();
+  matNormalizeSimple();
+  if(!MAT_SIMPLE_CATS.includes(MAT_FILTER)) MAT_FILTER='materiel';
+  saveMateriel();
+  const all = MAT_STATE.items || [];
+  const rawAlerts = all.filter(it=>Number(it.min||0)>0 && Number(it.stock||0)<=Number(it.min||0));
+  const dismissedAlerts = matGetDismissedAlerts();
+  const alerts = rawAlerts.filter(it=>!dismissedAlerts[matAlertKey(it)]);
+  const setTxt=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  setTxt('mat-s-total', all.length);
+  setTxt('mat-s-alerts', rawAlerts.length);
+  setTxt('mat-s-cat', MAT_SIMPLE_LABELS[MAT_FILTER]||MAT_FILTER);
+  setTxt('mat-s-date', new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short'}));
+  const alertBox=document.getElementById('mat-simple-alerts');
+  if(alertBox){
+    const hiddenCount = rawAlerts.length - alerts.length;
+    alertBox.innerHTML = alerts.length
+      ? alerts.slice(0,6).map(it=>`<div class="alert warn dismissible">⚠ <b>${matSimpleEsc(it.nom)}</b> — stock ${Number(it.stock||0)} ${matSimpleEsc(it.unite||'u')} / minimum ${Number(it.min||0)} <button class="alert-x" onclick="dismissMatAlert('${matSimpleEsc(it.id)}')" title="Masquer cette alerte" type="button">×</button></div>`).join('')
+      : (hiddenCount>0 ? `<div class="alert ok dismissible">✓ Alertes vues et masquées. <a onclick="resetDismissedMatAlerts()">Réafficher</a></div>` : '');
+  }
+  document.querySelectorAll('#page-materiel .mat-cat-tabs .fb').forEach(b=>{
+    const t=(b.textContent||'').toLowerCase();
+    const is = (MAT_FILTER==='materiel'&&t.includes('matériel')) || (MAT_FILTER==='informatique'&&t.includes('informatique')) || (MAT_FILTER==='sanitaire_linges'&&t.includes('sanitaire')) || (MAT_FILTER==='senteur_odeur'&&(t.includes('senteur')||t.includes('odeur'))) || (MAT_FILTER==='exterieur'&&(t.includes('extérieur')||t.includes('exterieur'))) || (MAT_FILTER==='accessoires'&&t.includes('accessoires'));
+    b.classList.toggle('on', is);
+  });
+  renderMatActiveList();
+  renderMatTable();
+}
+function renderMatActiveList(){
+  const title=document.getElementById('mat-active-title');
+  if(title) title.textContent = '▣ ' + (MAT_SIMPLE_LABELS[MAT_FILTER]||MAT_FILTER);
+  const wrap=document.getElementById('mat-active-list');
+  if(!wrap) return;
+  const items=(MAT_STATE.items||[]).filter(it=>matSimpleCat(it.cat)===MAT_FILTER);
+  if(!items.length){ wrap.innerHTML='<p style="font-size:11px;color:var(--muted);padding:8px 0">Aucun article dans cette catégorie</p>'; return; }
+  wrap.innerHTML = items.map(it=>{
+    const st=matStatusSimple(it);
+    const pct = Number(it.min||0)>0 ? Math.min(100, Math.round((Number(it.stock||0)/Math.max(Number(it.min||1)*2,1))*100)) : 100;
+    const color = st.cls==='cancelled'?'var(--err)':st.cls==='pending'?'var(--warn)':'var(--ok)';
+    return `<div class="mat-line">
+      <div class="mat-line-name">${matSimpleEsc(it.nom)}<small>${matSimpleEsc(it.unite||'u')} · minimum ${Number(it.min||0)}</small></div>
+      <div>
+        <div style="height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-bottom:6px"><div style="height:100%;background:${color};width:${pct}%"></div></div>
+        <input class="mat-qty-input" type="number" min="0" step="1" value="${Number(it.stock||0)}" onchange="setMatQty('${it.id}',this.value)">
+      </div>
+      <div style="display:flex;gap:4px">
+        <button class="sib" onclick="adjMatStock('${it.id}',-1)">−</button>
+        <button class="sib" onclick="adjMatStock('${it.id}',1)">+</button>
+      </div>
+      <div style="display:flex;gap:4px">
+        <button class="atb" onclick="editMatBasic('${it.id}')">✏</button>
+        <button class="atb err" onclick="delMatItem('${it.id}')">Suppr.</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderMatTable_unused_v1(){/* remplacé par le bloc override HT/TTC ci-dessous */}
+function setMatFilter(f, btn){ MAT_FILTER = matSimpleCat(f); renderMateriel(); }
+function filterMatTb(q){ MAT_SEARCH=(q||'').toLowerCase(); renderMatTable(); }
+window.MAT_TB_CAT = 'all';
+function setMatTbCat(cat, btn){
+  window.MAT_TB_CAT = cat;
+  document.querySelectorAll('#mat-table-cat-bar .fb').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  renderMatTable();
+}
+function setMatQty(id,val){ const it=(MAT_STATE.items||[]).find(x=>x.id===id); if(!it) return; let n=Number(val); if(!isFinite(n)||n<0)n=0; it.stock=n; saveMateriel(); renderMateriel(); if(typeof toast==='function') toast('✓','Quantité mise à jour'); }
+function adjMatStock(id,d){ const it=(MAT_STATE.items||[]).find(x=>x.id===id); if(!it) return; it.stock=Math.max(0,Number(it.stock||0)+d); saveMateriel(); renderMateriel(); }
+function setMatField(id,field,val){ const it=(MAT_STATE.items||[]).find(x=>x.id===id); if(!it) return; if(field==='stock'||field==='min'){ let n=Number(val); if(!isFinite(n)||n<0)n=0; it[field]=n; } else if(field==='cat'){ it.cat=matSimpleCat(val); } else { it[field]=val; } saveMateriel(); renderMateriel(); }
+function editMatBasic(id){
+  const it=(MAT_STATE.items||[]).find(x=>x.id===id); if(!it) return;
+  const nom=prompt('Nom de l\'article',it.nom||''); if(nom===null) return;
+  const unite=prompt('Unité',it.unite||'u'); if(unite===null) return;
+  const min=prompt('Stock minimum',String(it.min||0)); if(min===null) return;
+  const fournisseur=prompt('Fournisseur',it.fournisseur||''); if(fournisseur===null) return;
+  const lien=prompt('Lien fournisseur',it.lien||''); if(lien===null) return;
+  it.nom=nom.trim()||it.nom; it.unite=unite.trim()||'u'; it.min=Math.max(0,Number(String(min).replace(',','.'))||0); it.fournisseur=fournisseur.trim(); it.lien=lien.trim();
+  saveMateriel(); renderMateriel();
+}
+function addMatItem(cat){
+  if(!MAT_STATE) loadMateriel();
+  cat = matSimpleCat(cat || MAT_FILTER || 'materiel');
+  const nom=prompt('Nom de l\'article ?'); if(nom===null || !nom.trim()) return;
+  const q=prompt('Quantité actuelle ?', '0'); if(q===null) return;
+  const unite=prompt('Unité ? (u, pcs, kg, L, lot…)', 'u'); if(unite===null) return;
+  const min=prompt('Stock minimum / seuil d\'alerte ?', '0'); if(min===null) return;
+  MAT_STATE.items.push({id:'mat_'+Date.now()+'_'+Math.floor(Math.random()*1000), nom:nom.trim(), cat, stock:Math.max(0,Number(String(q).replace(',','.'))||0), unite:(unite||'u').trim()||'u', min:Math.max(0,Number(String(min).replace(',','.'))||0), fournisseur:'', lien:'', comm:''});
+  saveMateriel(); renderMateriel(); if(typeof toast==='function') toast('+','Article ajouté');
+}
+function delMatItem(id){ if(!confirm('Supprimer définitivement cet article du stock matériel ?')) return; MAT_STATE.items=(MAT_STATE.items||[]).filter(x=>x.id!==id); saveMateriel(); renderMateriel(); if(typeof toast==='function') toast('×','Article supprimé'); }
+
+function importRitualsProducts(){
+  if(!MAT_STATE) loadMateriel();
+  const seenIds  = new Set((MAT_STATE.items||[]).map(x=>x.id));
+  const seenNoms = new Set((MAT_STATE.items||[]).map(x=>String(x.nom||'').trim().toLowerCase()));
+  const toAdd = MAT_DEFAULT_ITEMS.filter(x=>
+    !seenIds.has(x.id) &&
+    !seenNoms.has(String(x.nom||'').trim().toLowerCase())
+  );
+  if(!toAdd.length){ if(typeof toast==='function') toast('✓','Produits Rituals déjà présents'); return; }
+  MAT_STATE.items = (MAT_STATE.items||[]).concat(JSON.parse(JSON.stringify(toAdd)));
+  saveMateriel(); renderMateriel();
+  if(typeof toast==='function') toast('🌸', toAdd.length+' produit(s) Rituals importé(s)');
+}
+function exportMatCSV(){
+  if(!MAT_STATE) loadMateriel(); matNormalizeSimple();
+  const rows=[['Article','Catégorie','Quantité','Unité','Stock minimum','Fournisseur','Lien','Commentaire']];
+  (MAT_STATE.items||[]).forEach(it=>rows.push([it.nom,MAT_SIMPLE_LABELS[matSimpleCat(it.cat)]||it.cat,it.stock,it.unite,it.min,it.fournisseur||'',it.lien||'',it.comm||'']));
+  const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\n');
+  const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,\ufeff'+encodeURIComponent(csv); a.download='eden-stock-materiel-'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); if(typeof toast==='function') toast('↓','CSV stock matériel exporté');
+}
+
+
+/* ══ OVERRIDE — STOCK MATÉRIEL : PRIX HT/TTC + TRI ALPHABÉTIQUE ══ */
+function matSimpleNumber(v){
+  const n = Number(String(v ?? '').replace(',', '.'));
+  return isFinite(n) && n >= 0 ? n : 0;
+}
+function matMoney(v){
+  return matSimpleNumber(v).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function matSortAlpha(arr){
+  return [...(arr || [])].sort((a,b)=>String(a.nom||'').localeCompare(String(b.nom||''),'fr',{sensitivity:'base'}));
+}
+function matNormalizePrice(it){
+  const oldCost = matSimpleNumber(it.cout);
+  if(it.prix_ht === undefined || it.prix_ht === null || it.prix_ht === '') it.prix_ht = oldCost;
+  it.prix_ht = matSimpleNumber(it.prix_ht);
+  if(it.prix_ttc === undefined || it.prix_ttc === null || it.prix_ttc === '') it.prix_ttc = +(it.prix_ht * 1.2).toFixed(2);
+  it.prix_ttc = matSimpleNumber(it.prix_ttc);
+  it.cout = it.prix_ht;
+}
+function matNormalizeSimple(){
+  if(!MAT_STATE) loadMateriel();
+  if(!MAT_STATE.items) MAT_STATE.items=[];
+  MAT_STATE.items.forEach(it=>{
+    it.id = it.id || ('mat_'+Date.now()+'_'+Math.floor(Math.random()*100000));
+    it.cat = matSimpleCat(it.cat);
+    it.nom = it.nom || 'Nouvel article';
+    it.stock = matSimpleNumber(it.stock ?? it.quantite ?? 0);
+    it.unite = it.unite || 'u';
+    it.min = matSimpleNumber(it.min ?? it.seuil ?? it.seuil_alerte ?? 0);
+    matNormalizePrice(it);
+    it.fournisseur = it.fournisseur || '';
+    it.lien = it.lien || '';
+    it.comm = it.comm || '';
+  });
+  // ── Déduplication : 1) par ID, 2) par nom normalisé + catégorie ──
+  const seenIds = new Set(), seenNomCat = new Set();
+  MAT_STATE.items = MAT_STATE.items.filter(it=>{
+    if(seenIds.has(it.id)) return false;
+    seenIds.add(it.id);
+    const key = String(it.nom||'').trim().toLowerCase()+'__'+it.cat;
+    if(seenNomCat.has(key)) return false;
+    seenNomCat.add(key);
+    return true;
+  });
+  MAT_STATE.items = matSortAlpha(MAT_STATE.items);
+}
+function renderMatActiveList(){
+  const title=document.getElementById('mat-active-title');
+  if(title) title.textContent = '▣ ' + (MAT_SIMPLE_LABELS[MAT_FILTER]||MAT_FILTER);
+  const wrap=document.getElementById('mat-active-list');
+  if(!wrap) return;
+  const items=matSortAlpha((MAT_STATE.items||[]).filter(it=>matSimpleCat(it.cat)===MAT_FILTER));
+  if(!items.length){ wrap.innerHTML='<p style="font-size:11px;color:var(--muted);padding:8px 0">Aucun article dans cette catégorie</p>'; return; }
+  wrap.innerHTML = items.map(it=>{
+    matNormalizePrice(it);
+    const st=matStatusSimple(it);
+    const pct = Number(it.min||0)>0 ? Math.min(100, Math.round((Number(it.stock||0)/Math.max(Number(it.min||1)*2,1))*100)) : 100;
+    const color = st.cls==='cancelled'?'var(--err)':st.cls==='pending'?'var(--warn)':'var(--ok)';
+    return `<div class="mat-line cat-${matSimpleCat(it.cat)}" style="grid-template-columns:1.5fr 120px 100px 100px 70px 90px;gap:8px">
+      <div class="mat-line-name">${matSimpleEsc(it.nom)}<small>${matSimpleEsc(it.unite||'u')} · minimum ${Number(it.min||0)} · total ${matMoney(Number(it.stock||0)*Number(it.prix_ttc||0))} € TTC</small></div>
+      <div>
+        <div style="height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-bottom:6px"><div style="height:100%;background:${color};width:${pct}%"></div></div>
+        <input class="mat-qty-input" type="number" min="0" step="1" value="${Number(it.stock||0)}" onchange="setMatQty('${it.id}',this.value)">
+      </div>
+      <div><input class="mat-qty-input" type="number" min="0" step="0.01" value="${Number(it.prix_ht||0)}" onchange="setMatPrice('${it.id}','ht',this.value)"></div>
+      <div><input class="mat-qty-input" type="number" min="0" step="0.01" value="${Number(it.prix_ttc||0)}" onchange="setMatPrice('${it.id}','ttc',this.value)"></div>
+      <div style="display:flex;gap:4px">
+        <button class="sib" onclick="adjMatStock('${it.id}',-1)">−</button>
+        <button class="sib" onclick="adjMatStock('${it.id}',1)">+</button>
+      </div>
+      <div style="display:flex;gap:4px">
+        <button class="atb" onclick="editMatBasic('${it.id}')">✏</button>
+        <button class="atb err" onclick="delMatItem('${it.id}')">Suppr.</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderMatTable(){
+  const tb=document.getElementById('mat-tb'); if(!tb) return;
+  matNormalizeSimple();
+  const q=(MAT_SEARCH||'').toLowerCase();
+  const catFilter = window.MAT_TB_CAT || 'all';
+
+  // Cat config for colors & labels
+  const CAT_CFG = {
+    materiel:         {color:'#c4a04e', icon:'🔧'},
+    informatique:     {color:'#5b9bd5', icon:'💻'},
+    sanitaire_linges: {color:'#20bca8', icon:'🧼'},
+    senteur_odeur:    {color:'#bb6bd9', icon:'🌸'},
+    exterieur:        {color:'#4caf50', icon:'🌿'},
+    accessoires:      {color:'#f08230', icon:'✨'},
+  };
+
+  let allItems = MAT_STATE.items || [];
+
+  // Text search
+  if(q) allItems = allItems.filter(it=>
+    String(it.nom||'').toLowerCase().includes(q) ||
+    String(it.fournisseur||'').toLowerCase().includes(q) ||
+    String(MAT_SIMPLE_LABELS[matSimpleCat(it.cat)]||'').toLowerCase().includes(q)
+  );
+
+  // Category filter from bar
+  if(catFilter==='alert'){
+    allItems = allItems.filter(it=>matStatusSimple(it).cls!=='confirmed');
+  } else if(catFilter!=='all'){
+    allItems = allItems.filter(it=>matSimpleCat(it.cat)===catFilter);
+  }
+
+  if(!allItems.length){
+    tb.innerHTML='<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:22px;font-size:11px">Aucun article correspondant</td></tr>';
+    const tf=document.getElementById('mat-tfoot'); if(tf) tf.innerHTML='';
+    return;
+  }
+
+  // Group by category
+  const grouped={};
+  MAT_SIMPLE_CATS.forEach(c=>{ grouped[c]=[]; });
+  allItems.forEach(it=>{ const c=matSimpleCat(it.cat); if(grouped[c]) grouped[c].push(it); });
+
+  let rows='', totalHTAll=0, totalTTCAll=0;
+  const catTotals=[];
+  const useGroups = !q && catFilter==='all'; // grouper seulement si pas de recherche et "Tout" actif
+
+  MAT_SIMPLE_CATS.forEach(cat=>{
+    const items = matSortAlpha(grouped[cat]||[]);
+    if(!items.length) return;
+    let catHT=0, catTTC=0;
+
+    if(useGroups){
+      const cfg=CAT_CFG[cat]||{color:'var(--gold)',icon:'▣'};
+      rows += `<tr class="cat-group-hdr g-${cat}"><td colspan="13">${cfg.icon} ${MAT_SIMPLE_LABELS[cat]||cat} <span style="opacity:.5;font-size:7px;letter-spacing:1px">(${items.length} article${items.length>1?'s':''})</span></td></tr>`;
+    }
+
+    items.forEach(it=>{
+      matNormalizePrice(it);
+      const st=matStatusSimple(it);
+      const qte=Number(it.stock||0), pht=Number(it.prix_ht||0), pttc=Number(it.prix_ttc||0);
+      const tHT=qte*pht, tTTC=qte*pttc;
+      catHT+=tHT; catTTC+=tTTC; totalHTAll+=tHT; totalTTCAll+=tTTC;
+      const sup = it.fournisseur ? (it.lien ? `<a href="${matSimpleEsc(it.lien)}" target="_blank" rel="noopener" style="color:var(--info);text-decoration:none;font-size:10px">${matSimpleEsc(it.fournisseur)} ↗</a>` : `<span style="font-size:10px">${matSimpleEsc(it.fournisseur)}</span>`) : '<span style="color:var(--muted)">–</span>';
+      const minV=Number(it.min||0);
+      const pct=minV>0?Math.min(100,Math.round((qte/Math.max(minV*2,1))*100)):100;
+      const barColor=st.cls==='cancelled'?'var(--err)':st.cls==='pending'?'var(--warn)':'var(--ok)';
+      rows += `<tr class="cat-${cat}${st.cls!=='confirmed'?' row-'+( st.cls==='cancelled'?'alert':'warn'):''}">
+        <td class="name"><input class="mat-cell text" style="width:170px;color:var(--cream)" value="${matSimpleEsc(it.nom)}" onblur="setMatField('${it.id}','nom',this.value)"></td>
+        <td><span class="mat-card-cat-tag ${cat}" style="white-space:nowrap">${MAT_SIMPLE_LABELS[cat]||cat}</span></td>
+        <td>
+          <input class="mat-cell" type="number" min="0" step="1" value="${qte}" onblur="setMatQty('${it.id}',this.value)">
+          ${minV>0?`<div class="mat-mini-bar"><div class="mat-mini-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>`:''}
+        </td>
+        <td><input class="mat-cell text" style="width:48px" value="${matSimpleEsc(it.unite||'u')}" onblur="setMatField('${it.id}','unite',this.value)"></td>
+        <td><input class="mat-cell" type="number" min="0" step="0.01" value="${pht}" onblur="setMatPrice('${it.id}','ht',this.value)"></td>
+        <td><input class="mat-cell" type="number" min="0" step="0.01" value="${pttc}" onblur="setMatPrice('${it.id}','ttc',this.value)"></td>
+        <td style="font-family:var(--serif);color:var(--gold);font-size:13px;white-space:nowrap">${matMoney(tHT)} €</td>
+        <td style="font-family:var(--serif);color:var(--gold-l);font-size:13px;white-space:nowrap">${matMoney(tTTC)} €</td>
+        <td><input class="mat-cell" type="number" min="0" step="1" value="${Number(it.min||0)}" onblur="setMatField('${it.id}','min',this.value)"></td>
+        <td><span class="badge ${st.cls}"><span class="badge-dot"></span>${st.txt}</span></td>
+        <td>${sup}</td>
+        <td><input class="mat-cell comm" type="text" value="${matSimpleEsc(it.comm||'')}" placeholder="…" onblur="setMatField('${it.id}','comm',this.value)"></td>
+        <td onclick="event.stopPropagation()"><div style="display:flex;gap:4px;align-items:center">
+          <button class="sib" onclick="adjMatStock('${it.id}',-1)" title="−1">−</button>
+          <button class="sib" onclick="adjMatStock('${it.id}',1)" title="+1">+</button>
+          <button class="atb err" onclick="delMatItem('${it.id}')" title="Supprimer">×</button>
+        </div></td>
+      </tr>`;
+    });
+
+    if(useGroups){
+      catTotals.push({cat, catHT, catTTC, items});
+    }
+  });
+
+  tb.innerHTML = rows;
+
+  // Footer
+  const tf=document.getElementById('mat-tfoot');
+  if(tf){
+    let footHTML='';
+    if(useGroups && catTotals.length>1){
+      catTotals.forEach(({cat,catHT,catTTC,items})=>{
+        footHTML+=`<tr class="cat-subtot g-${cat}">
+          <td colspan="6" style="font-family:var(--sans);font-size:8px;letter-spacing:2px;text-transform:uppercase">${MAT_SIMPLE_LABELS[cat]||cat} (${items.length})</td>
+          <td style="white-space:nowrap">${matMoney(catHT)} €</td>
+          <td style="white-space:nowrap">${matMoney(catTTC)} €</td>
+          <td colspan="5"></td>
+        </tr>`;
+      });
+    }
+    footHTML+=`<tr>
+      <td class="lbl" colspan="6" style="border-top:1px solid rgba(196,160,78,.15)">TOTAL STOCK</td>
+      <td style="font-family:var(--serif);color:var(--gold);font-size:15px;border-top:1px solid rgba(196,160,78,.15);white-space:nowrap">${matMoney(totalHTAll)} € HT</td>
+      <td style="font-family:var(--serif);color:var(--gold-l);font-size:15px;border-top:1px solid rgba(196,160,78,.15);white-space:nowrap">${matMoney(totalTTCAll)} € TTC</td>
+      <td colspan="5" style="font-size:9px;color:var(--muted);font-family:var(--sans);letter-spacing:1px;border-top:1px solid rgba(196,160,78,.15)">${allItems.length} article(s)</td>
+    </tr>`;
+    tf.innerHTML=footHTML;
+  }
+}
+function setMatPrice(id,type,val){
+  const it=(MAT_STATE.items||[]).find(x=>x.id===id); if(!it) return;
+  const n=matSimpleNumber(val);
+  if(type==='ht'){
+    it.prix_ht = n;
+    it.prix_ttc = +(n * 1.2).toFixed(2);
+    it.cout = it.prix_ht;
+  }else{
+    it.prix_ttc = n;
+    it.prix_ht = +(n / 1.2).toFixed(2);
+    it.cout = it.prix_ht;
+  }
+  saveMateriel(); renderMateriel(); if(typeof toast==='function') toast('✓','Prix mis à jour');
+}
+function addMatItem(cat){
+  if(!MAT_STATE) loadMateriel();
+  cat = matSimpleCat(cat || MAT_FILTER || 'materiel');
+  const nom=prompt('Nom de l\'article ?'); if(nom===null || !nom.trim()) return;
+  const q=prompt('Quantité actuelle ?', '0'); if(q===null) return;
+  const unite=prompt('Unité ? (u, pcs, kg, L, lot…)', 'u'); if(unite===null) return;
+  const min=prompt('Stock minimum / seuil d\'alerte ?', '0'); if(min===null) return;
+  const prixHT=prompt('Prix unitaire HT ?', '0'); if(prixHT===null) return;
+  const ht=matSimpleNumber(prixHT);
+  MAT_STATE.items.push({id:'mat_'+Date.now()+'_'+Math.floor(Math.random()*1000), nom:nom.trim(), cat, stock:matSimpleNumber(q), unite:(unite||'u').trim()||'u', min:matSimpleNumber(min), prix_ht:ht, prix_ttc:+(ht*1.2).toFixed(2), cout:ht, fournisseur:'', lien:'', comm:''});
+  saveMateriel(); renderMateriel(); if(typeof toast==='function') toast('+','Article ajouté');
+}
+function exportMatCSV(){
+  if(!MAT_STATE) loadMateriel(); matNormalizeSimple();
+  const rows=[['Article','Catégorie','Quantité','Unité','Prix HT','Prix TTC','Total HT','Total TTC','Stock minimum','Fournisseur','Lien','Commentaire']];
+  matSortAlpha(MAT_STATE.items||[]).forEach(it=>{
+    matNormalizePrice(it);
+    const q=Number(it.stock||0), ht=Number(it.prix_ht||0), ttc=Number(it.prix_ttc||0);
+    rows.push([it.nom,MAT_SIMPLE_LABELS[matSimpleCat(it.cat)]||it.cat,q,it.unite,ht,ttc,(q*ht).toFixed(2),(q*ttc).toFixed(2),it.min,it.fournisseur||'',it.lien||'',it.comm||'']);
+  });
+  const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\n');
+  const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,\ufeff'+encodeURIComponent(csv); a.download='eden-stock-materiel-'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); if(typeof toast==='function') toast('↓','CSV stock matériel exporté');
+}
+// ══════════════════════════════════════════════════════════════
+// ÉQUIPEMENT & ÉNERGIE
+// ══════════════════════════════════════════════════════════════
+const EQ_CATS = {
+  amenagement:'Aménagement', accessoire:'Accessoire',
+  bar:'Bar', exterieur:'Extérieur', stockage:'Stockage', boutique:'Boutique'
+};
+const EQ_ICONS = {amenagement:'🛋',accessoire:'✨',bar:'☕',exterieur:'🌿',stockage:'📦',boutique:'🛍'};
+
+// consoW = Watts en fonctionnement | consoEauL = Litres par usage/remplissage
+// hUsage = heures/jour utilisé (pour simulation élec) | nUses = utilisations/jour (pour eau)
+const EQUIP_ITEMS = [
+  // ── ACCESSOIRES ──────────────────────────────────────────────────────────
+  {id:'eq_001',nom:'Boîte à thé en bois d\'acacia 7 compartiments',     marque:'Maisons du Monde',  cat:'accessoire', prixHT:16.25,  prixTTC:19.50,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'20.5×20.5×6.5 cm'},
+  {id:'eq_002',nom:'Horloge Amance — aluminium argenté/noir D35',        marque:'Maisons du Monde',  cat:'accessoire', prixHT:16.66,  prixTTC:19.99,  qty:2,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_003',nom:'Diffuseur d\'arômes Haevn Charge Gold',              marque:'Aemster',           cat:'accessoire', prixHT:147.93, prixTTC:177.52, qty:1,  consoW:15,  consoEauL:0,   hU:12,nU:0, lien:'', notes:'Diffuseur connecté Or'},
+  {id:'eq_004',nom:'Sous couche caoutchouc 3 mm',                        marque:'Décoplus',          cat:'accessoire', prixHT:525,    prixTTC:630,    qty:7,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Isolant parquet'},
+  {id:'eq_005',nom:'Porte-visuel A4 incliné à poser sur table',          marque:'Retif',             cat:'accessoire', prixHT:29.90,  prixTTC:35.88,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_006',nom:'Armoire à clés 48 crochets serrure cylindrique',     marque:'Metro',             cat:'accessoire', prixHT:23.36,  prixTTC:28.03,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Noir · 2 clés'},
+  {id:'eq_007',nom:'Grande clochette de réception Bolero',               marque:'Metro',             cat:'accessoire', prixHT:7.69,   prixTTC:9.23,   qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_008',nom:'Corbeille à papier noire 16L',                       marque:'Retif',             cat:'accessoire', prixHT:20.20,  prixTTC:24.24,  qty:4,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_009',nom:'Collation équipe — Royco Restauration',              marque:'Royco',             cat:'accessoire', prixHT:144.13, prixTTC:172.95, qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Consommables équipe'},
+  {id:'eq_010',nom:'Chaussons jetables velours supérieur × 100',         marque:'Metro',             cat:'accessoire', prixHT:197.70, prixTTC:234.84, qty:2,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Blanc — FILFA FRANCE'},
+  {id:'eq_011',nom:'Masque de sommeil Hub Noir Mask',                    marque:'–',                 cat:'accessoire', prixHT:519.20, prixTTC:628.23, qty:8,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Masque sommeil Pro'},
+  {id:'eq_012',nom:'Masque de massage yeux Renpho Eyeris',               marque:'Nature & Découverte',cat:'accessoire',prixHT:599.93, prixTTC:719.92, qty:8,  consoW:7,   consoEauL:0,   hU:2, nU:0, lien:'', notes:'7W USB — 2h/j actif'},
+  {id:'eq_013',nom:'Carillon grégorien soprano',                         marque:'Nature & Découverte',cat:'accessoire',prixHT:29.13,  prixTTC:34.95,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_014',nom:'Fontaine cascade LED polyrésine rouge',              marque:'Maisons du Monde',  cat:'accessoire', prixHT:96.66,  prixTTC:115.99, qty:1,  consoW:20,  consoEauL:0,   hU:12,nU:0, lien:'', notes:'Eau en circuit fermé'},
+  {id:'eq_015',nom:'Tapis Kansas extérieur jute 240×340 cm',             marque:'Maisons du Monde',  cat:'accessoire', prixHT:114.99, prixTTC:137.99, qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Zone sommeil 4 pers.'},
+  {id:'eq_016',nom:'Tapis Kansas extérieur jute 160×230 cm',             marque:'Maisons du Monde',  cat:'accessoire', prixHT:61.66,  prixTTC:73.99,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Zone sommeil 1 pers.'},
+  {id:'eq_017',nom:'Tapis Acra extérieur effet jute 120×170 cm',         marque:'Maisons du Monde',  cat:'accessoire', prixHT:345.13, prixTTC:414.16, qty:8,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Tapis jolt'},
+  {id:'eq_018',nom:'Tapis de bain froid',                                marque:'–',                 cat:'accessoire', prixHT:80,     prixTTC:100,    qty:4,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_019',nom:'Bouquet décoratif Ainala branches sèches',           marque:'SKLUM',             cat:'accessoire', prixHT:8.25,   prixTTC:9.90,   qty:2,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_020',nom:'Lampe de table bois manguier Gracia',                marque:'SKLUM',             cat:'accessoire', prixHT:111.58, prixTTC:133.90, qty:2,  consoW:40,  consoEauL:0,   hU:12,nU:0, lien:'', notes:'40W ampoule incluse'},
+  {id:'eq_021',nom:'Pack 5 branches sèches décoratives Dagrai',          marque:'SKLUM',             cat:'accessoire', prixHT:33,     prixTTC:39.60,  qty:8,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_022',nom:'Peignoir mixte Miron velours polyester',             marque:'Lusini',            cat:'accessoire', prixHT:747,    prixTTC:896.40, qty:30, consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_023',nom:'Miroir vestiaire',                                   marque:'–',                 cat:'accessoire', prixHT:500,    prixTTC:600,    qty:4,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_024',nom:'Produits ménagers simples',                          marque:'Grande surface',    cat:'accessoire', prixHT:125,    prixTTC:150,    qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Consommables'},
+  {id:'eq_025',nom:'Petit informatique',                                 marque:'Grande surface',    cat:'accessoire', prixHT:125,    prixTTC:150,    qty:1,  consoW:50,  consoEauL:0,   hU:8, nU:0, lien:'', notes:'Divers périphériques'},
+  // ── AMÉNAGEMENT ──────────────────────────────────────────────────────────
+  {id:'eq_026',nom:'Fauteuil acier + rotin synthétique coussin blanc',   marque:'Metro',             cat:'amenagement',prixHT:190.83, prixTTC:229,    qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_027',nom:'Chiliennes bambou/toile naturelle (lot de 2)',        marque:'Maisons du Monde',  cat:'amenagement',prixHT:74.99,  prixTTC:89.99,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Davao'},
+  {id:'eq_028',nom:'Fauteuil papasan polyrotin rotatif Tahiti',          marque:'Maisons du Monde',  cat:'amenagement',prixHT:249.98, prixTTC:299.98, qty:2,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_029',nom:'Salon en rotin Bahamas',                             marque:'Retif',             cat:'amenagement',prixHT:446.98, prixTTC:536.38, qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_030',nom:'Chilienne Sora 3 positions coussin beige',           marque:'Maisons du Monde',  cat:'amenagement',prixHT:463.33, prixTTC:556,    qty:4,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_031',nom:'Table basse rotin + verre trempé 90×H51 cm',        marque:'Retif',             cat:'amenagement',prixHT:681.15, prixTTC:817.36, qty:3,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_032',nom:'Fauteuil suspendu + repose-pieds Jane',              marque:'Maisons du Monde',  cat:'amenagement',prixHT:566.58, prixTTC:679.90, qty:4,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Effet rotin'},
+  {id:'eq_033',nom:'Tapis Kansas extérieur jute rond 160 cm',            marque:'Maisons du Monde',  cat:'amenagement',prixHT:117.98, prixTTC:141.58, qty:2,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_034',nom:'Tapis DOTTY polypropylène beige tressé 180×270',     marque:'Maisons du Monde',  cat:'amenagement',prixHT:199.98, prixTTC:239.98, qty:2,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_035',nom:'Planche de surf Tiki Bar H.100 cm',                  marque:'Metro',             cat:'amenagement',prixHT:64.90,  prixTTC:77.88,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Déco Tiki'},
+  {id:'eq_036',nom:'Duo fauteuil Papasan salon de jardin',               marque:'Nature & Découverte',cat:'amenagement',prixHT:249.92,prixTTC:299.90, qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'2 fauteuils + 1 table'},
+  {id:'eq_037',nom:'Pagaie Tiki bar pirate H.100 cm',                    marque:'Metro',             cat:'amenagement',prixHT:99,     prixTTC:118.80, qty:2,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Déco Tiki'},
+  {id:'eq_038',nom:'Vase en céramique Dalita (grand)',                   marque:'SKLUM',             cat:'amenagement',prixHT:32.38,  prixTTC:38.85,  qty:3,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_039',nom:'Bambou lot 6',                                       marque:'Lusini',            cat:'amenagement',prixHT:222.75, prixTTC:303.18, qty:5,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_040',nom:'Machine à laver 10–15 kg',                          marque:'BUT',               cat:'amenagement',prixHT:499,    prixTTC:599,    qty:1,  consoW:2000,consoEauL:58,  hU:1, nU:5, lien:'', notes:'45 kWh/100 cycles — 58L/cycle'},
+  {id:'eq_041',nom:'Corbeille anti-feu 30L acier brillant',             marque:'Retif',             cat:'amenagement',prixHT:82.33,  prixTTC:98.80,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_042',nom:'Canapé Harper tissu beige 3 places L266 cm',        marque:'Maisons du Monde',  cat:'amenagement',prixHT:665.83, prixTTC:799,    qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_043',nom:'Table basse Schickeria effet marbre noir 80 cm',    marque:'Kare Design/MDM',   cat:'amenagement',prixHT:249.17, prixTTC:299,    qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_044',nom:'Banque d\'accueil PMR Sotto',                        marque:'Bikkom',            cat:'amenagement',prixHT:1749,   prixTTC:2098,   qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_045',nom:'Tapis d\'accueil gris foncé trafic intense 90×150', marque:'Retif',             cat:'amenagement',prixHT:85.19,  prixTTC:103.10, qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_046',nom:'Poubelle triangle avec couvercle 45L',              marque:'Retif',             cat:'amenagement',prixHT:64.14,  prixTTC:76.97,  qty:3,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_047',nom:'Bac à sable incendie 100L + pelle',                 marque:'Metro',             cat:'amenagement',prixHT:191.39, prixTTC:229.67, qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Sécurité incendie'},
+  {id:'eq_048',nom:'Coffre-fort électronique acier 50×35×34.5 cm',      marque:'Metro',             cat:'amenagement',prixHT:75.83,  prixTTC:91,     qty:1,  consoW:5,   consoEauL:0,   hU:24,nU:0, lien:'', notes:'5W standby permanent'},
+  {id:'eq_049',nom:'Chaise d\'accueil Lyssa High',                      marque:'Northdeco',         cat:'amenagement',prixHT:249.17, prixTTC:299,    qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_050',nom:'Chaise pour client Lyssa',                          marque:'Northdeco',         cat:'amenagement',prixHT:387.50, prixTTC:465,    qty:3,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_051',nom:'Séchoir corporel Valiryo',                          marque:'Valiryo',           cat:'amenagement',prixHT:1082.48,prixTTC:1298.98,qty:1,  consoW:900, consoEauL:0,   hU:4, nU:0, lien:'', notes:'~900W estimé — 30min/client'},
+  {id:'eq_052',nom:'Sèche-mains Valiryo',                               marque:'Valiryo',           cat:'amenagement',prixHT:448.35, prixTTC:538.02, qty:2,  consoW:600, consoEauL:0,   hU:2, nU:0, lien:'', notes:'~600W/u estimé'},
+  {id:'eq_053',nom:'Vestiaires homme/femme 180 casiers',                marque:'–',                 cat:'amenagement',prixHT:5208,   prixTTC:7500,   qty:4,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'4 vestiaires × 180 casiers'},
+  {id:'eq_054',nom:'Presothérapie Jolt',                                marque:'Jolt',              cat:'amenagement',prixHT:5821.75,prixTTC:6986.10,qty:1,  consoW:300, consoEauL:0,   hU:6, nU:0, lien:'', notes:'~300W — 6h/j cumulé'},
+  {id:'eq_055',nom:'Cryothérapie — Bain froid Lumi',                    marque:'Lumitherapy',       cat:'amenagement',prixHT:4138.04,prixTTC:4965.65,qty:4,  consoW:445, consoEauL:500, hU:12,nU:0, lien:'', notes:'445W/u · 500L/remplissage · ×4 unités'},
+  {id:'eq_056',nom:'Bain finlandais nordique 180×240 cm 8/10 pers.',    marque:'Skadi',             cat:'amenagement',prixHT:11092.50,prixTTC:13311, qty:2,  consoW:2150,consoEauL:2000,hU:8, nU:0, lien:'', notes:'2150W/u · 2000L/remplissage · Sauna 4300W total'},
+  {id:'eq_057',nom:'Parquet stratifié effet bois naturel Sundsvall 6mm',marque:'Castorama',         cat:'amenagement',prixHT:2916.67,prixTTC:3500,   qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'L.19.3cm Ep.6mm'},
+  {id:'eq_058',nom:'Pas japonais',                                       marque:'–',                 cat:'amenagement',prixHT:320,    prixTTC:400,    qty:30, consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_059',nom:'Douche extérieur espace bien-être',                 marque:'Vidal',             cat:'amenagement',prixHT:745.79, prixTTC:894.95, qty:5,  consoW:0,   consoEauL:60,  hU:0, nU:15,lien:'', notes:'60L/utilisation · acier inox carré'},
+  {id:'eq_060',nom:'Pack 2 fauteuils bar bois d\'acacia Verona',        marque:'SKLUM',             cat:'amenagement',prixHT:1233.25,prixTTC:1479.90,qty:2,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_061',nom:'Pack 4 chaises salle à manger chêne/tapissées Olea',marque:'SKLUM',            cat:'amenagement',prixHT:1733.25,prixTTC:2079.90,qty:4,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_062',nom:'Palmier artificiel décoratif Design (petit)',        marque:'SKLUM',             cat:'amenagement',prixHT:132.38, prixTTC:158.85, qty:3,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_063',nom:'Palmier artificiel décoratif Design (grand)',        marque:'SKLUM',             cat:'amenagement',prixHT:366.50, prixTTC:439.80, qty:4,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_064',nom:'Palmier artificiel décoratif (medium)',              marque:'SKLUM',             cat:'amenagement',prixHT:324.75, prixTTC:389.70, qty:6,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_065',nom:'Porte-manteau sur pied bois Russ',                  marque:'SKLUM',             cat:'amenagement',prixHT:116.50, prixTTC:139.80, qty:4,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_066',nom:'Pouf Giorgia 105×65 cm tapissé',                    marque:'SKLUM',             cat:'amenagement',prixHT:537.38, prixTTC:644.85, qty:4,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Pour canapé modulaire'},
+  {id:'eq_067',nom:'Table basse ronde pierre/manguier Lavinia (grande)', marque:'SKLUM',             cat:'amenagement',prixHT:1166.46,prixTTC:1399.75,qty:5,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_068',nom:'Table d\'appoint Lavinia travertin/manguier',       marque:'SKLUM',             cat:'amenagement',prixHT:549.83, prixTTC:659.80, qty:4,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_069',nom:'Table bar ronde Ø120 cm MDF/hévéa Arnaiz',         marque:'SKLUM',             cat:'amenagement',prixHT:1145.63,prixTTC:1374.75,qty:5,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_070',nom:'Vase en céramique Dalita (petit)',                  marque:'SKLUM',             cat:'amenagement',prixHT:21.58,  prixTTC:25.90,  qty:2,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  // ── BAR ──────────────────────────────────────────────────────────────────
+  {id:'eq_071',nom:'Goupillon bouteille embout éponge fackelmann',      marque:'Retif',             cat:'bar',        prixHT:8.54,   prixTTC:10.25,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_072',nom:'Bague gobelet carton brun ondulé 12.2×6.4 cm ×100',marque:'Retif',             cat:'bar',        prixHT:27.65,  prixTTC:33.18,  qty:700,consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Consommable'},
+  {id:'eq_073',nom:'Cuillère à café inox 18/0 Daily baguette (×12)',    marque:'Retif',             cat:'bar',        prixHT:37.38,  prixTTC:44.85,  qty:36, consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_074',nom:'Enseigne lumineuse LED "open"',                     marque:'Retif',             cat:'bar',        prixHT:31.50,  prixTTC:37.80,  qty:1,  consoW:15,  consoEauL:0,   hU:12,nU:0, lien:'', notes:'15W — allumée en continu'},
+  {id:'eq_075',nom:'Porte-gobelet 2 gobelets carton recyclé ×100',      marque:'Retif',             cat:'bar',        prixHT:33.38,  prixTTC:40.06,  qty:200,consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Consommable'},
+  {id:'eq_076',nom:'Tasse expresso boîte de 12',                        marque:'Retif',             cat:'bar',        prixHT:41.05,  prixTTC:49.26,  qty:12, consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_077',nom:'Rince doigts biodégradable citron ×320',            marque:'Retif',             cat:'bar',        prixHT:41.39,  prixTTC:49.67,  qty:320,consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Consommable'},
+  {id:'eq_078',nom:'Porte-documents pivotant A4 easymount 10 cadres',   marque:'Retif',             cat:'bar',        prixHT:62.90,  prixTTC:75.48,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_079',nom:'Porte-gobelet 2 gobelets suspendus à poignée ×400', marque:'Retif',             cat:'bar',        prixHT:103.26, prixTTC:123.91, qty:400,consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Consommable'},
+  {id:'eq_080',nom:'Cafetière avec broyeur PHILIPS EP1224/00',          marque:'Philips',           cat:'bar',        prixHT:241.66, prixTTC:289.99, qty:1,  consoW:1500,consoEauL:0,   hU:4, nU:0, lien:'', notes:'1500W · 1500W'},
+  {id:'eq_081',nom:'Tasses à Latte Whiteware Olympia 310ml (×12)',      marque:'Metro',             cat:'bar',        prixHT:29,     prixTTC:34.80,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_082',nom:'Tasses à café porcelaine 290ml (×6)',               marque:'Metro',             cat:'bar',        prixHT:21.03,  prixTTC:25.26,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_083',nom:'Lot 24 tasses à cappuccino 228ml porcelaine',       marque:'Metro',             cat:'bar',        prixHT:38,     prixTTC:45.60,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_084',nom:'Tasse à café 100ml porcelaine blanche (×6)',        marque:'Metro',             cat:'bar',        prixHT:26.55,  prixTTC:31.86,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_085',nom:'Agitateurs bois 14 cm distributrice ×1000',         marque:'Metro',             cat:'bar',        prixHT:2.43,   prixTTC:2.92,   qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Consommable'},
+  {id:'eq_086',nom:'Agitateurs bois 11 cm distributrice ×1000',         marque:'Metro',             cat:'bar',        prixHT:1.94,   prixTTC:2.33,   qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Consommable'},
+  {id:'eq_087',nom:'Lot 2 tabourets de bar chêne/tissu gris',           marque:'Metro',             cat:'bar',        prixHT:406.58, prixTTC:487.90, qty:2,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Décoshop26 — cadre acier'},
+  {id:'eq_088',nom:'Porte menu 8 pochettes A4 gris PVC',                marque:'Metro',             cat:'bar',        prixHT:6.29,   prixTTC:7.55,   qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Din-A4 22×31 cm'},
+  {id:'eq_089',nom:'Stock Boisson Bar',                                  marque:'Divers',            cat:'bar',        prixHT:416.67, prixTTC:500,    qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Boissons & consommables bar'},
+  // ── BOUTIQUE ─────────────────────────────────────────────────────────────
+  {id:'eq_090',nom:'Stock Nutrition Prozis bien-être',                  marque:'Prozis',            cat:'boutique',   prixHT:2916.67,prixTTC:3500,   qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Nutrition sport & wellness'},
+  // ── EXTÉRIEUR ────────────────────────────────────────────────────────────
+  {id:'eq_091',nom:'Corbeille ouverture frontale 60L Zeno Etik',        marque:'Metro',             cat:'exterieur',  prixHT:298.85, prixTTC:358.62, qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Marron/gris manganèse'},
+  {id:'eq_092',nom:'Pied cendrier Inox brossé 100 cm SmokeLux',         marque:'Metro',             cat:'exterieur',  prixHT:64.78,  prixTTC:77.74,  qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:''},
+  {id:'eq_093',nom:'Galet de marbre blanc 12/24 mm BigBag 1T',          marque:'Fer et Pierre',     cat:'exterieur',  prixHT:483.32, prixTTC:579.98, qty:2,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'32 m² — 2T'},
+  {id:'eq_094',nom:'Balise extérieure inox Ulexi',                      marque:'SKLUM',             cat:'exterieur',  prixHT:299.17, prixTTC:359,    qty:20, consoW:5,   consoEauL:0,   hU:10,nU:0, lien:'', notes:'5W/u — 100W total pour 20'},
+  {id:'eq_095',nom:'Lampe de sol solaire Arlla (1W solaire)',            marque:'SKLUM',             cat:'exterieur',  prixHT:223.17, prixTTC:267.80, qty:4,  consoW:1,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'🌞 Énergie solaire — coût zéro'},
+  {id:'eq_096',nom:'Lampe de table LED sans fil extérieur Melzu',       marque:'SKLUM',             cat:'exterieur',  prixHT:39.92,  prixTTC:47.90,  qty:2,  consoW:3,   consoEauL:0,   hU:8, nU:0, lien:'', notes:'3W rechargeable'},
+  {id:'eq_097',nom:'Lampe de table solaire LED extérieur Fenri',        marque:'SKLUM',             cat:'exterieur',  prixHT:95.63,  prixTTC:114.75, qty:4,  consoW:1,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'🌞 Énergie solaire — coût zéro'},
+  // ── STOCKAGE ─────────────────────────────────────────────────────────────
+  {id:'eq_098',nom:'Étagère robuste Giant Ragnar 200×100×50 cm',        marque:'Metro',             cat:'stockage',   prixHT:195.10, prixTTC:234.12, qty:6,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'875 kg charge totale · galvanisé'},
+  {id:'eq_099',nom:'Thé mousseline — Palais des Thés',                  marque:'Palais des Thés',   cat:'stockage',   prixHT:208.33, prixTTC:250,    qty:1,  consoW:0,   consoEauL:0,   hU:0, nU:0, lien:'', notes:'Stock thés Détox'},
+];
+
+
+// ══════════════════════════════════════════════════════════════
+// ÉQUIPEMENT FIXE — localStorage + édition inline
+// ══════════════════════════════════════════════════════════════
+
+// Durée de vie par défaut selon catégorie (ans)
+const EQ_VIE_DEF = {amenagement:10, accessoire:5, bar:5, exterieur:7, stockage:15, boutique:3};
+
+let EQUIP_STATE = null;
+const EQUIP_KEY = 'eden_equipement_v2';
+
+function loadEquipement(){
+  try{
+    const raw = localStorage.getItem(EQUIP_KEY);
+    if(!raw){
+      // Construire depuis EQUIP_ITEMS : prixHT/prixTTC = TOTAUX du PDF
+      EQUIP_STATE = EQUIP_ITEMS.map(it=>({
+        ...it,
+        dureeVie: it.dureeVie || EQ_VIE_DEF[it.cat] || 7,
+        etat: it.etat || 'neuf',
+        dateAchat: it.dateAchat || '',
+        garantie: it.garantie || '',
+      }));
+      return;
+    }
+    EQUIP_STATE = JSON.parse(raw);
+  }catch(e){
+    EQUIP_STATE = EQUIP_ITEMS.map(it=>({...it, dureeVie:EQ_VIE_DEF[it.cat]||7, etat:'neuf', dateAchat:'', garantie:''}));
+  }
+}
+function saveEquipement(){
+  try{ localStorage.setItem(EQUIP_KEY, JSON.stringify(EQUIP_STATE)); }catch(e){}
+}
+function setEqField(id, field, val){
+  if(!EQUIP_STATE) loadEquipement();
+  const it = EQUIP_STATE.find(x=>x.id===id); if(!it) return;
+  const numFields=['qty','prixHT','prixTTC','consoW','consoEauL','hU','nU','dureeVie'];
+  if(numFields.includes(field)){
+    let n=parseFloat(String(val).replace(',','.'));
+    if(!isFinite(n)||n<0) n=0;
+    it[field]=n;
+    // Sync HT/TTC when one changes
+    if(field==='prixHT') it.prixTTC = +(it.prixHT*1.2).toFixed(2);
+    if(field==='prixTTC') it.prixHT = +(it.prixTTC/1.2).toFixed(2);
+  } else {
+    it[field] = val;
+  }
+  saveEquipement(); renderEquipement();
+}
+function setEqUnitHT(id, unitVal){
+  if(!EQUIP_STATE) loadEquipement();
+  const it = EQUIP_STATE.find(x=>x.id===id); if(!it) return;
+  const u=parseFloat(String(unitVal).replace(',','.')); if(!isFinite(u)||u<0) return;
+  it.prixHT = +(u * it.qty).toFixed(2);
+  it.prixTTC = +(it.prixHT * 1.2).toFixed(2);
+  saveEquipement(); renderEquipement();
+}
+function setEqUnitTTC(id, unitVal){
+  if(!EQUIP_STATE) loadEquipement();
+  const it = EQUIP_STATE.find(x=>x.id===id); if(!it) return;
+  const u=parseFloat(String(unitVal).replace(',','.')); if(!isFinite(u)||u<0) return;
+  it.prixTTC = +(u * it.qty).toFixed(2);
+  it.prixHT = +(it.prixTTC / 1.2).toFixed(2);
+  saveEquipement(); renderEquipement();
+}
+function setEqQty(id, val){
+  if(!EQUIP_STATE) loadEquipement();
+  const it = EQUIP_STATE.find(x=>x.id===id); if(!it) return;
+  const oldUnit = it.qty>0 ? it.prixHT/it.qty : 0;
+  const n=Math.max(0,parseInt(val)||0);
+  it.qty=n;
+  // Keep unit price, recalc total
+  it.prixHT = +(oldUnit*n).toFixed(2);
+  it.prixTTC = +(it.prixHT*1.2).toFixed(2);
+  saveEquipement(); renderEquipement();
+}
+function addEqItem(){
+  if(!EQUIP_STATE) loadEquipement();
+  const nom=prompt('Nom de l\'équipement ?'); if(!nom?.trim()) return;
+  const cat=prompt('Catégorie ?\n(amenagement / accessoire / bar / exterieur / stockage / boutique)','amenagement'); if(!cat) return;
+  const prixTTC=parseFloat(prompt('Prix TTC total (pour toute la quantité) ?','0')||0);
+  const qty=parseInt(prompt('Quantité ?','1')||1);
+  const newId='eq_custom_'+Date.now();
+  const c=String(cat).toLowerCase();
+  const validCat=['amenagement','accessoire','bar','exterieur','stockage','boutique'];
+  EQUIP_STATE.push({
+    id:newId, nom:nom.trim(), marque:'', cat:validCat.includes(c)?c:'amenagement',
+    prixHT:+(prixTTC/1.2).toFixed(2), prixTTC:prixTTC, qty,
+    consoW:0, consoEauL:0, hU:0, nU:0,
+    dureeVie:EQ_VIE_DEF[c]||7, etat:'neuf', dateAchat:'', garantie:'', lien:'', notes:''
+  });
+  saveEquipement(); renderEquipement();
+  if(typeof toast==='function') toast('+','Équipement ajouté');
+}
+function dupEqItem(id){
+  if(!EQUIP_STATE) loadEquipement();
+  const it=EQUIP_STATE.find(x=>x.id===id); if(!it) return;
+  const clone={...it, id:'eq_dup_'+Date.now(), nom:it.nom+' (copie)'};
+  const idx=EQUIP_STATE.findIndex(x=>x.id===id);
+  EQUIP_STATE.splice(idx+1,0,clone);
+  saveEquipement(); renderEquipement();
+}
+function delEqItem(id){
+  if(!confirm('Supprimer cet équipement ?')) return;
+  EQUIP_STATE=EQUIP_STATE.filter(x=>x.id!==id);
+  saveEquipement(); renderEquipement();
+}
+
+let EQ_FILTER='all', EQ_SEARCH='';
+function eqFmt(n){ return isFinite(n)?Math.round(n).toLocaleString('fr-FR'):0; }
+function eqFmt2(n){ return isFinite(n)?Number(n).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}):0; }
+
+function setMatTab(tab, btn){
+  ['consommables','equipement','energie'].forEach(t=>{
+    const el=document.getElementById('mat-tab-'+t);
+    if(el) el.style.display=t===tab?'block':'none';
+  });
+  document.querySelectorAll('.mat-page-tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  // Show/hide header buttons
+  const hdr=document.getElementById('mat-hdr-btns');
+  if(hdr) hdr.style.display=tab==='consommables'?'flex':'none';
+  if(tab==='consommables') renderMateriel();
+  if(tab==='equipement')   renderEquipement();
+  if(tab==='energie')      calcEquipSim();
+}
+
+function renderEquipement(){
+  if(!EQUIP_STATE) loadEquipement();
+  const q=EQ_SEARCH.toLowerCase();
+  const sim=getEquipSimParams();
+
+  let items=EQUIP_STATE.filter(it=>{
+    if(q && !it.nom.toLowerCase().includes(q) && !(it.marque||'').toLowerCase().includes(q)) return false;
+    if(EQ_FILTER==='energie')  return it.consoW>0||it.consoEauL>0;
+    if(EQ_FILTER==='reviser')  return it.etat==='reviser'||it.etat==='hs';
+    if(EQ_FILTER!=='all')      return it.cat===EQ_FILTER;
+    return true;
+  });
+
+  // KPIs
+  const totalHT  = EQUIP_STATE.reduce((s,i)=>s+Number(i.prixHT||0),0);
+  const totalTTC = EQUIP_STATE.reduce((s,i)=>s+Number(i.prixTTC||0),0);
+  const totalW   = EQUIP_STATE.reduce((s,i)=>s+(Number(i.consoW||0)*Number(i.qty||0)),0);
+  const totalAmort = EQUIP_STATE.reduce((s,i)=>{
+    const dv=Number(i.dureeVie||1); return s+(Number(i.prixHT||0)/(dv*12));
+  },0);
+  const alertCount = EQUIP_STATE.filter(i=>i.etat==='reviser'||i.etat==='hs').length;
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  set('eq-k-invest',  eqFmt(totalHT));
+  set('eq-k-invest-ttc', eqFmt2(totalTTC)+' € TTC');
+  set('eq-k-kw',  (totalW/1000).toFixed(1));
+  set('eq-k-kw2', (totalW/1000).toFixed(1));
+  set('eq-k-kw-sub', EQUIP_STATE.filter(i=>i.consoW>0).length+' équipements électriques');
+  set('eq-k-amort', eqFmt2(totalAmort));
+  set('eq-k-alert', alertCount);
+  set('eq-k-alert-sub', alertCount>0?alertCount+' item(s) à vérifier':'tout est OK');
+  set('eq-tb-count', items.length);
+  set('eq-tb-invest', eqFmt2(items.reduce((s,i)=>s+Number(i.prixTTC||0),0)));
+  set('tab-eq-sub', 'inventaire · '+EQUIP_STATE.length+' éq.');
+  calcEquipSim();
+
+  const tb=document.getElementById('eq-tb'); if(!tb) return;
+  const orderedCats=['amenagement','accessoire','bar','boutique','exterieur','stockage'];
+  const useGroups = !q && EQ_FILTER==='all';
+  let html='', totHT=0, totTTC=0, totAmort=0;
+
+  const ETAT_LABELS={neuf:'Neuf',bon:'Bon état',reviser:'À réviser',hs:'HS'};
+  const CAT_SEL = orderedCats.map(c=>`<option value="${c}">${EQ_CATS[c]||c}</option>`).join('');
+  const ETAT_SEL= ['neuf','bon','reviser','hs'].map(e=>`<option value="${e}">${ETAT_LABELS[e]}</option>`).join('');
+
+  orderedCats.forEach(cat=>{
+    const catItems=items.filter(i=>i.cat===cat);
+    if(!catItems.length) return;
+    if(useGroups){
+      const catTotal=catItems.reduce((s,i)=>s+Number(i.prixHT||0),0);
+      html+=`<tr class="eq-group-hdr g-${cat}"><td colspan="17">${EQ_ICONS[cat]||''} ${EQ_CATS[cat]||cat} <span style="opacity:.5;font-size:7px;letter-spacing:1px">(${catItems.length} équipements · ${eqFmt2(catTotal)} € HT)</span></td></tr>`;
+    }
+    catItems.forEach(it=>{
+      const qty=Number(it.qty||1);
+      const tHT=Number(it.prixHT||0);
+      const tTTC=Number(it.prixTTC||0);
+      const uHT=qty>0?(tHT/qty):0;
+      const uTTC=qty>0?(tTTC/qty):0;
+      const dv=Number(it.dureeVie||1);
+      const amort=tHT/(dv*12);
+      totHT+=tHT; totTTC+=tTTC; totAmort+=amort;
+
+      const elecMois=it.consoW>0?(it.consoW*qty/1000)*it.hU*sim.jours*sim.prixKwh:0;
+      const eauMois=it.consoEauL>0?it.consoEauL*qty*it.nU*sim.jours*(sim.prixM3/1000):0;
+      const rowCls=(it.etat==='hs'?'eq-err-row':it.etat==='reviser'?'eq-warn-row':'');
+      const etatCls=it.etat||'neuf';
+
+      html+=`<tr class="eq-${cat} ${rowCls}">
+        <td><input class="eq-cell wide" value="${(it.nom||'').replace(/"/g,'&quot;')}" placeholder="Équipement" onblur="setEqField('${it.id}','nom',this.value)"></td>
+        <td><input class="eq-cell" value="${(it.marque||'').replace(/"/g,'&quot;')}" placeholder="Marque" onblur="setEqField('${it.id}','marque',this.value)"></td>
+        <td><select class="eq-cell-select" onchange="setEqField('${it.id}','cat',this.value)">${CAT_SEL.replace(`value="${it.cat}"`,'value="'+it.cat+'" selected')}</select></td>
+        <td><input class="eq-cell num" type="number" min="0" step="1" value="${qty}" onblur="setEqQty('${it.id}',this.value)"></td>
+        <td style="text-align:right"><input class="eq-cell num" type="number" min="0" step="0.01" value="${uHT.toFixed(2)}" title="Prix unitaire HT" onblur="setEqUnitHT('${it.id}',this.value)" style="color:var(--muted)"></td>
+        <td style="text-align:right"><input class="eq-cell num" type="number" min="0" step="0.01" value="${uTTC.toFixed(2)}" title="Prix unitaire TTC" onblur="setEqUnitTTC('${it.id}',this.value)"></td>
+        <td style="text-align:right;font-family:var(--serif);font-size:13px;color:var(--gold)">${eqFmt2(tHT)}</td>
+        <td style="text-align:right;font-family:var(--serif);font-size:12px;color:var(--gold-l)">${eqFmt2(tTTC)}</td>
+        <td><input class="eq-cell num" type="number" min="0" step="1" value="${it.consoW||0}" onblur="setEqField('${it.id}','consoW',this.value)" style="${it.consoW>0?'color:var(--warn)':''}"></td>
+        <td><input class="eq-cell num" type="number" min="0" step="1" value="${it.consoEauL||0}" onblur="setEqField('${it.id}','consoEauL',this.value)" style="${it.consoEauL>0?'color:#20bca8':''}"></td>
+        <td><input class="eq-cell num" type="number" min="1" step="1" value="${dv}" title="Durée de vie (ans)" onblur="setEqField('${it.id}','dureeVie',this.value)"></td>
+        <td style="text-align:right"><span class="eq-amort">${eqFmt2(amort)} €</span></td>
+        <td style="white-space:nowrap;min-width:130px">${buildEqPaiementCell(it)}</td>
+        <td><select class="eq-cell-select" onchange="setEqField('${it.id}','etat',this.value)">${ETAT_SEL.replace(`value="${etatCls}"`,'value="'+etatCls+'" selected')}</select></td>
+        <td style="white-space:nowrap">${it.lien?`<a href="${it.lien}" target="_blank" rel="noopener" style="color:var(--info);font-size:10px;text-decoration:none" title="${it.lien}">↗ </a>`:''}
+          <input class="eq-cell" value="${(it.lien||'').replace(/"/g,'&quot;')}" placeholder="URL…" style="width:60px;font-size:9px" onblur="setEqField('${it.id}','lien',this.value)"></td>
+        <td><input class="eq-cell wide" value="${(it.notes||'').replace(/"/g,'&quot;')}" placeholder="Notes…" onblur="setEqField('${it.id}','notes',this.value)"></td>
+        <td onclick="event.stopPropagation()"><div style="display:flex;gap:3px;align-items:center">
+          <button class="atb" onclick="dupEqItem('${it.id}')" title="Dupliquer">⎘</button>
+          <button class="atb err" onclick="delEqItem('${it.id}')" title="Supprimer">×</button>
+        </div></td>
+      </tr>`;
+    });
+  });
+
+  tb.innerHTML = html || '<tr><td colspan="17" style="text-align:center;padding:24px;color:var(--muted)">Aucun équipement</td></tr>';
+  // Init/refresh scroll guide and thumb
+  setTimeout(initEqScrollGuide, 50);
+}
+
+// ── COMPACT MODE + SCROLL GUIDE ──
+function toggleEqCompact(btn){
+  var wrap = document.getElementById('eq-table-wrap');
+  if(!wrap) return;
+  var on = wrap.classList.toggle('eq-compact');
+  if(btn){
+    btn.classList.toggle('on', on);
+    btn.textContent = on ? '⊞ Normal' : '⊡ Compact';
+  }
+  try{ localStorage.setItem('eden_eq_compact', on?'1':'0'); }catch(e){}
+  // Reset slider to 0
+  var sl = document.getElementById('eq-tbl-slider');
+  if(sl){ sl.value=0; wrap.scrollLeft=0; }
+}
+
+function initEqScrollGuide(){
+  // Équipement
+  var eqWrap = document.getElementById('eq-table-wrap');
+  var eqSl   = document.getElementById('eq-tbl-slider');
+  var eqPct  = document.getElementById('eq-tbl-pct');
+  if(eqWrap && eqSl){
+    eqWrap.addEventListener('scroll', function(){
+      var m = eqWrap.scrollWidth - eqWrap.clientWidth;
+      if(m<=0) return;
+      var v = Math.round((eqWrap.scrollLeft/m)*1000);
+      eqSl.value = v;
+      if(eqPct) eqPct.textContent = Math.round(v/10)+'%';
+    });
+  }
+  // Matériel
+  var matWrap = document.getElementById('mat-table-scroll');
+  var matSl   = document.getElementById('mat-tbl-slider');
+  var matPct  = document.getElementById('mat-tbl-pct');
+  if(matWrap && matSl){
+    matWrap.addEventListener('scroll', function(){
+      var m = matWrap.scrollWidth - matWrap.clientWidth;
+      if(m<=0) return;
+      var v = Math.round((matWrap.scrollLeft/m)*1000);
+      matSl.value = v;
+      if(matPct) matPct.textContent = Math.round(v/10)+'%';
+    });
+  }
+  // Restore compact state
+  try{
+    if(localStorage.getItem('eden_eq_compact')==='1'){
+      if(eqWrap) eqWrap.classList.add('eq-compact');
+      var btn = document.getElementById('eq-compact-btn');
+      if(btn){ btn.classList.add('on'); btn.textContent='⊞ Normal'; }
+    }
+  }catch(e){}
+}
+
+// ── PAIEMENT ÉQUIPEMENT ──
+function buildEqPaiementCell(it){
+  var type = it.paiement_type || 'comptant';
+  var total = Number(it.prixTTC||0);
+  var nb = Number(it.paiement_nb||2);
+  var acompte = Number(it.paiement_acompte||0);
+  var id = it.id;
+
+  var typeLabel = {comptant:'Comptant', acompte:'Acompte', echeances:'Éch.'}[type]||type;
+  var typeCls   = {comptant:'eq-paie-comptant', acompte:'eq-paie-acompte', echeances:'eq-paie-echeances'}[type]||'';
+
+  var badge = '<span class="'+typeCls+'" style="display:inline-block;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:2px;cursor:pointer;margin-bottom:4px" onclick="cycleEqPaiement(\''+id+'\')">'+typeLabel+'</span>';
+
+  var detail = '';
+  if(type === 'acompte'){
+    var solde = (total - acompte).toFixed(0);
+    detail = '<div style="display:flex;gap:4px;align-items:center;margin-top:2px">'
+      +'<input type="number" class="eq-cell num" min="0" step="10" value="'+acompte+'" title="Acompte versé (€)" onchange="setEqPaiementDetail(\''+id+'\',\'acompte\',this.value)" style="width:56px;font-size:9px">'
+      +'<span style="font-size:8px;color:var(--muted)">/ <b style="color:var(--gold-l)">'+solde+' €</b> restant</span>'
+      +'</div>';
+  } else if(type === 'echeances'){
+    var each = total>0 ? (total/nb).toFixed(0) : '–';
+    detail = '<div style="display:flex;gap:4px;align-items:center;margin-top:2px">'
+      +'<select class="eq-cell-select" onchange="setEqPaiementDetail(\''+id+'\',\'nb\',this.value)" style="font-size:9px;padding:2px 4px">'
+      +[2,3,4,6,10,12].map(function(n){ return '<option value="'+n+'"'+(nb==n?' selected':'')+'>'+n+'×</option>'; }).join('')
+      +'</select>'
+      +'<span style="font-size:8px;color:var(--info)">'+each+' € /éch.</span>'
+      +'</div>';
+  }
+
+  return badge + detail;
+}
+
+function cycleEqPaiement(id){
+  var it = (EQUIP_STATE||EQUIP_ITEMS).find(function(x){ return x.id===id; });
+  if(!it) return;
+  var cycle = {comptant:'acompte', acompte:'echeances', echeances:'comptant'};
+  it.paiement_type = cycle[it.paiement_type||'comptant']||'comptant';
+  it.paiement_nb = it.paiement_nb||2;
+  it.paiement_acompte = it.paiement_acompte||0;
+  saveEquipement();
+  renderEquipement();
+}
+
+function setEqPaiementDetail(id, field, val){
+  var it = (EQUIP_STATE||EQUIP_ITEMS).find(function(x){ return x.id===id; });
+  if(!it) return;
+  if(field==='nb') it.paiement_nb = parseInt(val)||2;
+  if(field==='acompte') it.paiement_acompte = parseFloat(val)||0;
+  saveEquipement();
+  renderEquipement();
+}
+
+function getEquipSimParams(){
+  const g=id=>parseFloat(document.getElementById(id)?.value)||0;
+  return {
+    prixKwh:g('eq-p-kwh')||0.2516, prixM3:g('eq-p-m3')||4.35,
+    jours:g('eq-p-jours')||26, hOuv:g('eq-p-h')||12,
+    nSauna:g('eq-p-sauna')||8, nBain:g('eq-p-bain')||20,
+    nMachine:g('eq-p-machine')||120, nDouche:g('eq-p-douche')||15,
+  };
+}
+function calcEquipSim(){
+  const p=getEquipSimParams();
+  if(!EQUIP_STATE) loadEquipement();
+  // Appareils continus (hors grands consommateurs spécifiques)
+  const bigIds=['eq_040','eq_051','eq_052','eq_054','eq_055','eq_056'];
+  const consoContinus=(EQUIP_STATE||EQUIP_ITEMS).filter(it=>it.consoW>0&&it.hU>0&&!bigIds.includes(it.id))
+    .reduce((s,it)=>s+(it.consoW*(it.qty||1)/1000)*it.hU*p.jours,0);
+  // Grands consommateurs spécifiques
+  const kWhSauna    =(2150*2/1000)*(p.nSauna*0.5)*p.jours;
+  const kWhBainFroid=(445*4/1000)*p.hOuv*p.jours;
+  const kWhMachine  =2*p.nMachine;
+  const kWhSechoir  =(900/1000)*p.jours*4;
+  const kWhSecheMains=(600*2/1000)*p.jours*2;
+  const kWhPresso   =(300/1000)*p.jours*6;
+  const totalKwh=consoContinus+kWhSauna+kWhBainFroid+kWhMachine+kWhSechoir+kWhSecheMains+kWhPresso;
+  const coutElec=totalKwh*p.prixKwh;
+  // Eau
+  const m3Sauna    =(2000*2/1000)*(p.jours/7);
+  const m3BainFroid=(500*4/1000)*(p.jours/7);
+  const m3Machine  =(58*p.nMachine/1000);
+  const m3Douche   =(60*p.nDouche*p.jours/1000);
+  const totalM3=m3Sauna+m3BainFroid+m3Machine+m3Douche;
+  const coutEau=totalM3*p.prixM3;
+  const total=coutElec+coutEau;
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  set('eq-r-elec',eqFmt2(coutElec)); set('eq-r-kwh',Math.round(totalKwh).toLocaleString('fr-FR'));
+  set('eq-r-eau', eqFmt2(coutEau));  set('eq-r-m3', Math.round(totalM3).toLocaleString('fr-FR'));
+  set('eq-r-total',eqFmt2(total));   set('eq-r-an',eqFmt2(total*12));
+  set('eq-k-elec',eqFmt2(coutElec)); set('eq-k-eau',eqFmt2(coutEau));
+  set('eq-k-total-an',eqFmt2(total*12));
+  // Détail
+  const postes=[
+    {n:'Sauna ×2 (2150W/u)',    kwh:kWhSauna,    m3:m3Sauna,    col:'var(--warn)'},
+    {n:'Bain froid ×4 (445W/u)',kwh:kWhBainFroid,m3:m3BainFroid,col:'#5b9bd5'},
+    {n:'Presothérapie (300W)',  kwh:kWhPresso,   m3:0,          col:'var(--gold)'},
+    {n:'Séchoir Valiryo (900W)',kwh:kWhSechoir,  m3:0,          col:'var(--gold-l)'},
+    {n:'Sèches-mains (×2)',     kwh:kWhSecheMains,m3:0,         col:'var(--muted)'},
+    {n:'Machine à laver',       kwh:kWhMachine,  m3:m3Machine,  col:'#20bca8'},
+    {n:'Divers continus',       kwh:consoContinus,m3:0,         col:'rgba(196,160,78,.5)'},
+    {n:'Douches extérieur ×5',  kwh:0,           m3:m3Douche,   col:'#5b9bd5'},
+  ];
+  const det=document.getElementById('eq-breakdown-detail');
+  if(det){
+    const leftCol=postes.filter(po=>po.kwh>0).map(po=>{
+      const cost=po.kwh*p.prixKwh, pct=totalKwh>0?Math.round((po.kwh/totalKwh)*100):0;
+      return `<div class="eq-bk-item"><span class="eq-bk-name">⚡ ${po.n}</span><span class="eq-bk-val" style="color:var(--warn)">${eqFmt2(cost)} € (${pct}%)</span><div class="eq-bk-bar-wrap"><div class="eq-bk-bar-fill" style="width:${pct}%;background:${po.col}"></div></div></div>`;
+    }).join('');
+    const rightCol=postes.filter(po=>po.m3>0).map(po=>{
+      const cost=po.m3*p.prixM3, pct=totalM3>0?Math.round((po.m3/totalM3)*100):0;
+      return `<div class="eq-bk-item"><span class="eq-bk-name">💧 ${po.n}</span><span class="eq-bk-val" style="color:#20bca8">${eqFmt2(cost)} € (${pct}%)</span><div class="eq-bk-bar-wrap"><div class="eq-bk-bar-fill" style="width:${pct}%;background:#20bca8"></div></div></div>`;
+    }).join('');
+    det.innerHTML=`<div>${leftCol}</div><div>${rightCol}</div>`;
+  }
+}
+
+function setEqFilter(f, btn){
+  EQ_FILTER=f;
+  document.querySelectorAll('.eq-filter-bar .fb').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  renderEquipement();
+}
+function filterEquip(q){ EQ_SEARCH=(q||'').toLowerCase(); renderEquipement(); }
+
+function exportEquipCSV(){
+  if(!EQUIP_STATE) loadEquipement();
+  const rows=[['Équipement','Marque','Catégorie','Qté','Total HT','Total TTC','P.U. HT','P.U. TTC','W/u','L/usage','Durée vie (ans)','Amorti/mois','État','Lien','Notes']];
+  EQUIP_STATE.forEach(it=>{
+    const uHT=it.qty>0?+(it.prixHT/it.qty).toFixed(2):0;
+    const uTTC=it.qty>0?+(it.prixTTC/it.qty).toFixed(2):0;
+    const amort=+(it.prixHT/((it.dureeVie||7)*12)).toFixed(2);
+    rows.push([it.nom,it.marque||'',EQ_CATS[it.cat]||it.cat,it.qty,it.prixHT,it.prixTTC,uHT,uTTC,it.consoW||0,it.consoEauL||0,it.dureeVie||7,amort,it.etat||'neuf',it.lien||'',it.notes||'']);
+  });
+  const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);a.download='eden-equipement-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  if(typeof toast==='function') toast('↓','Export équipement téléchargé');
+}
+
 </script>
-</body>
-</html>
