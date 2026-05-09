@@ -959,6 +959,70 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 .eq-table tr.eq-warn-row td{background:rgba(240,160,48,.022);}
 .eq-table tr.eq-err-row  td{background:rgba(224,80,80,.022);}
 
+
+
+/* ═══════════════════════════════════════════════════════════════
+   EDEN — MODULE ADMIN FIDÉLITÉ EXPÉRIENCE / PASSAGES
+   Ajout : sélection client, barre XP, historique, passage rapide
+═══════════════════════════════════════════════════════════════ */
+#page-fidelite .fid-workspace{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:18px;margin-top:20px;}
+#page-fidelite .fid-panel{background:var(--dark2);border:1px solid rgba(196,160,78,.08);overflow:hidden;}
+#page-fidelite .fid-panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;border-bottom:1px solid rgba(196,160,78,.07);}
+#page-fidelite .fid-panel-title{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
+#page-fidelite .fid-panel-sub{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.5;}
+#page-fidelite .fid-panel-body{padding:18px;}
+#page-fidelite .fid-table-wrap{overflow-x:auto;max-width:100%;}
+#page-fidelite .fid-table{min-width:980px;}
+#page-fidelite .fid-table tbody tr{cursor:pointer;}
+#page-fidelite .fid-table tbody tr.selected{background:rgba(196,160,78,.055);}
+#page-fidelite .fid-mini-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+#page-fidelite .fid-search-wide{width:260px;max-width:100%;}
+#page-fidelite .fid-status-pill{display:inline-flex;align-items:center;gap:5px;font-size:7px;letter-spacing:1.6px;text-transform:uppercase;padding:4px 9px;border-radius:2px;white-space:nowrap;}
+#page-fidelite .fid-status-pill.bronze{background:rgba(205,127,50,.1);color:#cd7f32;border:1px solid rgba(205,127,50,.22);}
+#page-fidelite .fid-status-pill.argent{background:rgba(192,192,192,.09);color:#c0c0c0;border:1px solid rgba(192,192,192,.22);}
+#page-fidelite .fid-status-pill.or{background:rgba(196,160,78,.11);color:var(--gold);border:1px solid rgba(196,160,78,.28);}
+#page-fidelite .fid-client-hero{position:relative;min-height:260px;border:1px solid rgba(196,160,78,.12);background:radial-gradient(circle at top right,rgba(196,160,78,.09),transparent 34%),linear-gradient(145deg,rgba(17,22,8,.98),rgba(6,9,8,.98));padding:24px;overflow:hidden;}
+#page-fidelite .fid-client-hero::before{content:"";position:absolute;right:-80px;bottom:-80px;width:230px;height:230px;border:1px solid rgba(196,160,78,.05);border-radius:50%;}
+#page-fidelite .fid-client-top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;position:relative;z-index:1;}
+#page-fidelite .fid-client-name{font-family:var(--serif);font-size:30px;font-weight:300;color:var(--cream);line-height:1.1;}
+#page-fidelite .fid-client-meta{font-size:11px;color:var(--muted);line-height:1.8;margin-top:8px;}
+#page-fidelite .fid-level-badge{border:1px solid rgba(196,160,78,.25);background:rgba(196,160,78,.055);padding:9px 14px;font-size:8px;letter-spacing:2.8px;text-transform:uppercase;white-space:nowrap;}
+#page-fidelite .fid-level-badge.bronze{color:#cd7f32;border-color:rgba(205,127,50,.35);background:rgba(205,127,50,.08);}
+#page-fidelite .fid-level-badge.argent{color:#c0c0c0;border-color:rgba(192,192,192,.35);background:rgba(192,192,192,.08);}
+#page-fidelite .fid-level-badge.or{color:var(--gold);border-color:rgba(196,160,78,.45);background:rgba(196,160,78,.10);}
+#page-fidelite .fid-xp-zone{position:relative;z-index:1;margin-top:30px;}
+#page-fidelite .fid-xp-top{display:flex;justify-content:space-between;align-items:center;gap:14px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+#page-fidelite .fid-xp-bar{height:10px;background:rgba(255,255,255,.05);overflow:hidden;border:1px solid rgba(196,160,78,.07);}
+#page-fidelite .fid-xp-fill{height:100%;width:0;background:linear-gradient(90deg,#cd7f32,#c0c0c0,var(--gold));transition:width .7s var(--ease);box-shadow:0 0 18px rgba(196,160,78,.18);}
+#page-fidelite .fid-milestones{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+#page-fidelite .fid-ms{border:1px solid rgba(196,160,78,.08);padding:10px;background:rgba(255,255,255,.012);}
+#page-fidelite .fid-ms strong{display:block;font-family:var(--serif);font-size:16px;font-weight:300;margin-bottom:4px;}
+#page-fidelite .fid-ms span{font-size:8px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);}
+#page-fidelite .fid-ms.active{background:rgba(196,160,78,.05);border-color:rgba(196,160,78,.24);}
+#page-fidelite .fid-pass-form{display:grid;gap:12px;margin-top:16px;}
+#page-fidelite .fid-pass-form label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
+#page-fidelite .fid-pass-form input,#page-fidelite .fid-pass-form select{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.12);color:var(--cream);padding:11px 13px;font-family:var(--sans);font-size:11px;outline:none;}
+#page-fidelite .fid-pass-form input:focus,#page-fidelite .fid-pass-form select:focus{border-color:rgba(196,160,78,.45);}
+#page-fidelite .fid-pass-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+#page-fidelite .fid-add-main{width:100%;border:none;background:var(--gold);color:var(--dark);padding:14px 18px;font-family:var(--sans);font-size:9px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .22s;}
+#page-fidelite .fid-add-main:hover{background:var(--gold-l);}
+#page-fidelite .fid-help-box{font-size:11px;color:var(--muted);line-height:1.9;border:1px solid rgba(196,160,78,.08);background:rgba(196,160,78,.025);padding:14px;margin-top:14px;}
+#page-fidelite .fid-history-list{display:flex;flex-direction:column;gap:10px;max-height:460px;overflow-y:auto;padding-right:4px;}
+#page-fidelite .fid-history-empty{font-size:11px;color:var(--muted);line-height:1.8;padding:18px;border:1px solid rgba(196,160,78,.06);background:rgba(255,255,255,.012);}
+#page-fidelite .fid-history-item{border:1px solid rgba(196,160,78,.08);background:rgba(255,255,255,.015);padding:13px 14px;}
+#page-fidelite .fid-history-item strong{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--cream);font-size:12px;font-weight:300;margin-bottom:5px;}
+#page-fidelite .fid-history-item span{display:block;font-size:10px;color:var(--muted);line-height:1.6;}
+#page-fidelite .fid-history-note{margin-top:6px;color:var(--light)!important;}
+#page-fidelite .fid-statline{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:18px;background:rgba(196,160,78,.08);position:relative;z-index:1;}
+#page-fidelite .fid-statline div{background:rgba(6,9,8,.55);padding:12px;}
+#page-fidelite .fid-statline span{display:block;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+#page-fidelite .fid-statline b{font-family:var(--serif);font-size:17px;color:var(--gold);font-weight:300;word-break:break-word;}
+#page-fidelite .fid-muted{color:var(--muted);}
+#page-fidelite .fid-ok{color:var(--ok)!important;}
+#page-fidelite .fid-err{color:var(--err)!important;}
+#page-fidelite .fid-sql-note{margin-top:16px;padding:14px;border:1px solid rgba(240,160,48,.18);background:rgba(240,160,48,.045);font-size:10px;color:var(--muted);line-height:1.8;}
+@media(max-width:1150px){#page-fidelite .fid-workspace{grid-template-columns:1fr;}#page-fidelite .fid-search-wide{width:100%;}}
+@media(max-width:700px){#page-fidelite .fid-client-top,#page-fidelite .fid-xp-top{flex-direction:column;align-items:flex-start;}#page-fidelite .fid-milestones,#page-fidelite .fid-statline,#page-fidelite .fid-pass-grid{grid-template-columns:1fr;}}
 </style>
 
 
@@ -1997,14 +2061,18 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
         <tbody id="par-tb"></tbody></table>
       </div>
     </section>
-<!-- ════ CARTES FIDÉLITÉ ════ -->
+<!-- ════ CARTES FIDÉLITÉ / PASSAGES CLIENTS ════ -->
 <section class="page" id="page-fidelite">
   <div class="sh">
     <div class="sh-left">
       <p class="ey">Programme fidélité</p>
       <h2>Cartes <em>fidélité</em></h2>
+      <p style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1px">Recherche client · ajout de passages · barre d'expérience · historique équipe</p>
     </div>
-    <button class="btn-s" onclick="loadSB()">↻ Actualiser</button>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="btn-s" onclick="loadSB()">↻ Actualiser</button>
+      <button class="btn-s fill" onclick="focusFidSearch()">Scanner / rechercher</button>
+    </div>
   </div>
 
   <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
@@ -2032,29 +2100,129 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 
   <div class="tw">
     <div class="tw-head">
-      <span class="tw-title">Toutes les cartes fidélité</span>
+      <div>
+        <span class="tw-title">Recherche / scan carte fidélité</span>
+        <p style="font-size:10px;color:var(--muted);margin-top:5px">Cherche par prénom, nom, email, téléphone, code parrainage ou numéro membre.</p>
+      </div>
       <div class="tw-acts">
-        <input class="search" placeholder="Rechercher…" oninput="filterFidelite(this.value)" id="fid-search">
+        <input class="search fid-search-wide" placeholder="Scanner ou rechercher un client…" oninput="filterFidelite(this.value)" onkeydown="if(event.key==='Enter') selectFirstFideliteResult()" id="fid-search">
+      </div>
+    </div>
+    <div class="filter-row">
+      <button class="fb on" id="fid-filter-all" onclick="setFidLevelFilter('all',this)">Tous</button>
+      <button class="fb" onclick="setFidLevelFilter('Bronze',this)">Bronze</button>
+      <button class="fb" onclick="setFidLevelFilter('Argent',this)">Argent</button>
+      <button class="fb" onclick="setFidLevelFilter('Or',this)">Or</button>
+      <button class="fb" onclick="setFidLevelFilter('active',this)">Actifs</button>
+      <button class="fb" onclick="setFidLevelFilter('inactive',this)">Inactifs</button>
+    </div>
+    <div class="fid-table-wrap">
+      <table class="fid-table">
+        <thead>
+          <tr>
+            <th>Créée le</th>
+            <th>Membre</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>N° membre</th>
+            <th>Code</th>
+            <th>Niveau</th>
+            <th>XP</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="fid-tb"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="fid-workspace">
+    <div class="fid-panel">
+      <div class="fid-panel-head">
+        <div>
+          <div class="fid-panel-title">Passage client</div>
+          <div class="fid-panel-sub">Sélectionne un client dans le tableau, puis ajoute un passage lorsqu'il arrive pour sa séance.</div>
+        </div>
+        <div class="fid-mini-actions">
+          <button class="btn-s" onclick="selectFirstFideliteResult()">Sélectionner résultat</button>
+        </div>
+      </div>
+      <div class="fid-panel-body">
+        <div class="fid-client-hero" id="fid-selected-card">
+          <div class="fid-client-top">
+            <div>
+              <div class="fid-panel-title">Aucun client sélectionné</div>
+              <div class="fid-client-name" id="fid-selected-name">Sélection client</div>
+              <div class="fid-client-meta" id="fid-selected-meta">Recherche une carte fidélité ou clique sur une ligne du tableau.</div>
+            </div>
+            <div class="fid-level-badge bronze" id="fid-selected-level">—</div>
+          </div>
+
+          <div class="fid-statline">
+            <div><span>Passages</span><b id="fid-selected-visits">0</b></div>
+            <div><span>N° membre</span><b id="fid-selected-member">—</b></div>
+            <div><span>Code</span><b id="fid-selected-code">—</b></div>
+          </div>
+
+          <div class="fid-xp-zone">
+            <div class="fid-xp-top"><span>Barre d'expérience EDEN</span><span id="fid-selected-xp-text">0 / 5 passages</span></div>
+            <div class="fid-xp-bar"><div class="fid-xp-fill" id="fid-selected-xp-bar"></div></div>
+            <div class="fid-milestones">
+              <div class="fid-ms" id="fid-ms-bronze"><strong style="color:#cd7f32">Bronze</strong><span>0 à 2 passages</span></div>
+              <div class="fid-ms" id="fid-ms-argent"><strong style="color:#c0c0c0">Argent</strong><span>3 à 4 passages</span></div>
+              <div class="fid-ms" id="fid-ms-or"><strong style="color:var(--gold)">Or</strong><span>5 passages et +</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fid-pass-form">
+          <div class="fid-pass-grid">
+            <div>
+              <label>Type de passage</label>
+              <select id="fid-pass-type">
+                <option value="Séance EDEN">Séance EDEN</option>
+                <option value="Bain nordique">Bain nordique</option>
+                <option value="Sauna & Hammam">Sauna & Hammam</option>
+                <option value="Bain froid">Bain froid</option>
+                <option value="Pressothérapie">Pressothérapie</option>
+                <option value="Massage">Massage</option>
+                <option value="Fuel Bar">Fuel Bar</option>
+                <option value="VIP / Privatisation">VIP / Privatisation</option>
+              </select>
+            </div>
+            <div>
+              <label>Note interne</label>
+              <input type="text" id="fid-pass-note" placeholder="Ex : formule duo, client VIP, passage offert…">
+            </div>
+          </div>
+          <button class="fid-add-main" onclick="addSelectedFidelitePassage()">+ Ajouter un passage au client sélectionné</button>
+          <p id="fid-action-msg" style="font-size:11px;color:var(--muted);min-height:16px"></p>
+        </div>
+
+        <div class="fid-help-box">
+          <strong style="color:var(--gold);font-weight:300">Fonctionnement :</strong><br>
+          0 à 2 passages = Bronze · 3 à 4 passages = Argent · 5 passages et plus = Or. Chaque clic sur “Ajouter un passage” augmente le compteur, met à jour le niveau et ajoute une ligne dans l'historique.
+        </div>
       </div>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Créée le</th>
-          <th>Membre</th>
-          <th>Email</th>
-          <th>Téléphone</th>
-          <th>N° membre</th>
-          <th>Code</th>
-          <th>Niveau</th>
-          <th>Visites</th>
-          <th>Statut</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="fid-tb"></tbody>
-    </table>
+    <div class="fid-panel">
+      <div class="fid-panel-head">
+        <div>
+          <div class="fid-panel-title">Historique des passages</div>
+          <div class="fid-panel-sub" id="fid-history-count">Aucun client sélectionné</div>
+        </div>
+      </div>
+      <div class="fid-panel-body">
+        <div class="fid-history-list" id="fid-history-list">
+          <div class="fid-history-empty">Sélectionne un client pour afficher ses derniers passages.</div>
+        </div>
+        <div class="fid-sql-note">
+          Si l'historique ne s'affiche pas, vérifie que la table <b>fidelite_passages</b> existe dans Supabase. Le compteur principal fonctionne avec la table <b>fidelite</b>.
+        </div>
+      </div>
+    </div>
   </div>
 </section>
     <!-- ════ MATÉRIEL & RÉAPPRO ════ -->
@@ -3041,7 +3209,21 @@ function saveCfgPage(){
 }
 function initSB(){
   if(!SB_URL||!SB_KEY){ setConn(false); return; }
-  sbQ('reservations',{select:'id',limit:'1'}).then(()=>{ sbReady=true; setConn(true); loadSB(); }).catch(()=>setConn(false));
+
+  // Test de connexion robuste : on ne dépend plus uniquement de la table reservations.
+  // Si reservations est absente/bloquée mais fidelite existe, l'admin doit quand même charger les cartes.
+  Promise.any([
+    sbQ('fidelite',{select:'id',limit:'1'}),
+    sbQ('reservations',{select:'id',limit:'1'}),
+    sbQ('stocks',{select:'id',limit:'1'})
+  ]).then(()=>{
+    sbReady=true;
+    setConn(true);
+    loadSB();
+  }).catch((e)=>{
+    console.error('Connexion Supabase impossible:', e);
+    setConn(false);
+  });
 }
 async function sbQ(table,params={},method='GET',body=null){
   let url=`${SB_URL}/rest/v1/${table}`;
@@ -3059,29 +3241,37 @@ async function sbQ(table,params={},method='GET',body=null){
   return r.json().catch(()=>null);
 }
 async function loadSB(){
-  try{
-    const[res,dem,sto,par,fid]=await Promise.all([
-  sbQ('reservations',{select:'*',order:'created_at.desc'}),
-  sbQ('demandes',{select:'*',order:'created_at.desc'}),
-  sbQ('stocks',{select:'*'}),
-  sbQ('parrainages',{select:'*',order:'created_at.desc'}),
-  sbQ('fidelite',{select:'*',order:'created_at.desc'}),
-]);
-    if(res) D.reservations=res;
-    if(dem) D.demandes=dem;
-    if(sto && sto.length){
-      const c={smoothies:[],softs:[],extras:[],accessoires:[]};
-      sto.forEach(s=>{
-        const cat=c[s.categorie] ? s.categorie : 'extras';
-        c[cat].push({...s,seuil:s.seuil_alerte ?? s.seuil ?? 5});
-      });
-      ['smoothies','softs','extras','accessoires'].forEach(k=>{ D.stocks[k]=c[k] || []; });
-    }
-    if(par) D.parrainages=par;
-    if(fid) D.fidelite=fid;
-    renderAll();
-    toast('◎','Données Supabase chargées');
-  } catch(e){ toast('⚠','Erreur Supabase','warn'); }
+  const safeLoad = async (label, fn) => {
+    try{ return await fn(); }
+    catch(e){ console.warn('Chargement impossible:', label, e); return null; }
+  };
+
+  const res = await safeLoad('reservations', () => sbQ('reservations',{select:'*',order:'created_at.desc'}));
+  const dem = await safeLoad('demandes', () => sbQ('demandes',{select:'*',order:'created_at.desc'}));
+  const sto = await safeLoad('stocks', () => sbQ('stocks',{select:'*'}));
+  const par = await safeLoad('parrainages', () => sbQ('parrainages',{select:'*',order:'created_at.desc'}));
+  const fid = await safeLoad('fidelite', () => sbQ('fidelite',{select:'*',order:'created_at.desc'}));
+
+  if(res) D.reservations=res;
+  if(dem) D.demandes=dem;
+  if(sto && sto.length){
+    const c={smoothies:[],softs:[],extras:[],accessoires:[]};
+    sto.forEach(s=>{
+      const cat=c[s.categorie] ? s.categorie : 'extras';
+      c[cat].push({...s,seuil:s.seuil_alerte ?? s.seuil ?? 5});
+    });
+    ['smoothies','softs','extras','accessoires'].forEach(k=>{ D.stocks[k]=c[k] || []; });
+  }
+  if(par) D.parrainages=par;
+  if(fid) D.fidelite=fid;
+
+  renderAll();
+
+  if(fid){
+    toast('◎',`Cartes fidélité chargées : ${fid.length}`);
+  }else{
+    toast('⚠','Cartes fidélité non chargées : vérifie les politiques RLS de la table fidelite','warn');
+  }
 }
 function setConn(ok){
   document.getElementById('cdot').className='cdot'+(ok?' live':'');
@@ -3342,66 +3532,14 @@ function genCode(){
   D.parrainages.unshift({id:'l'+Date.now(),created_at:new Date().toISOString().slice(0,10),code,createur_nom:nom,filleuls:[],utilisations:0,reduction_offerte:0,actif:true});
   renderParrainage();toast('◎',`Code ${code} créé`);
 }
-// ── CARTES FIDÉLITÉ ──
+// ── CARTES FIDÉLITÉ / PASSAGES CLIENTS ──
 let fidSearch = '';
+let fidLevelFilter = 'all';
+let selectedFideliteId = null;
+let lastFideliteRows = [];
 
-function renderFidelite(){
-  const rows = (D.fidelite || []).filter(f => {
-    const q = fidSearch.toLowerCase();
-    return !q ||
-      String(f.prenom || '').toLowerCase().includes(q) ||
-      String(f.nom || '').toLowerCase().includes(q) ||
-      String(f.email || '').toLowerCase().includes(q) ||
-      String(f.membre_num || '').toLowerCase().includes(q) ||
-      String(f.code_parrainage || '').toLowerCase().includes(q);
-  });
-
-  const total = D.fidelite.length;
-  const bronze = D.fidelite.filter(f => (f.niveau || 'Bronze') === 'Bronze').length;
-  const argent = D.fidelite.filter(f => (f.niveau || '') === 'Argent').length;
-  const or = D.fidelite.filter(f => (f.niveau || '') === 'Or').length;
-
-  document.getElementById('fid-total').textContent = total;
-  document.getElementById('fid-bronze').textContent = bronze;
-  document.getElementById('fid-argent').textContent = argent;
-  document.getElementById('fid-or').textContent = or;
-
-  const badge = document.getElementById('b-fid');
-  if(badge){
-    badge.style.display = total ? 'inline-flex' : 'none';
-    badge.textContent = total;
-  }
-
-  document.getElementById('fid-tb').innerHTML = rows.length ? rows.map(f => {
-    const date = f.created_at ? new Date(f.created_at).toLocaleDateString('fr-FR') : '–';
-    const nom = `${f.prenom || ''} ${f.nom || ''}`.trim() || '–';
-    const niveau = f.niveau || 'Bronze';
-    const visites = Number(f.nb_visites || 0);
-    const actif = f.actif !== false;
-
-    return `
-      <tr>
-        <td class="small">${date}</td>
-        <td class="name">${nom}</td>
-        <td>${f.email || '–'}</td>
-        <td>${f.telephone || '–'}</td>
-        <td class="gold">${f.membre_num || '–'}</td>
-        <td>${f.code_parrainage || '–'}</td>
-        <td><span class="badge ${niveau === 'Or' ? 'confirmed' : niveau === 'Argent' ? 'done' : 'pending'}"><span class="badge-dot"></span>${niveau}</span></td>
-        <td class="gold">${visites}</td>
-        <td>${actif ? '<span class="badge confirmed"><span class="badge-dot"></span>Actif</span>' : '<span class="badge cancelled"><span class="badge-dot"></span>Inactif</span>'}</td>
-        <td>
-          <button class="atb ok" onclick="addVisit('${f.id}', ${visites})">+ visite</button>
-          <button class="atb err" onclick="toggleFid('${f.id}', ${actif})">${actif ? 'Désactiver' : 'Activer'}</button>
-        </td>
-      </tr>
-    `;
-  }).join('') : '<tr><td colspan="10" class="small">Aucune carte fidélité créée pour le moment</td></tr>';
-}
-
-function filterFidelite(v){
-  fidSearch = v || '';
-  renderFidelite();
+function fidEsc(v){
+  return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 }
 
 function calcNiveau(visites){
@@ -3411,31 +3549,234 @@ function calcNiveau(visites){
   return 'Bronze';
 }
 
+function fidLevelInfo(visites){
+  visites = Number(visites || 0);
+  const niveau = calcNiveau(visites);
+  let css = niveau.toLowerCase();
+  let percent = Math.min(100, Math.max(8, (visites / 5) * 100));
+  let next = '';
+  if(niveau === 'Bronze') next = `Encore ${Math.max(0,3-visites)} passage(s) pour atteindre le niveau Argent.`;
+  if(niveau === 'Argent') next = `Encore ${Math.max(0,5-visites)} passage(s) pour atteindre le niveau Or.`;
+  if(niveau === 'Or') next = 'Niveau Or atteint : meilleurs avantages fidélité EDEN.';
+  return {niveau, css, percent, next};
+}
+
+function fidFullName(f){
+  return `${f?.prenom || ''} ${f?.nom || ''}`.trim() || 'Client EDEN';
+}
+
+function renderFidelite(){
+  const all = D.fidelite || [];
+  const q = fidSearch.toLowerCase().trim();
+  const rows = all.filter(f => {
+    const niveau = f.niveau || calcNiveau(f.nb_visites || 0);
+    const actif = f.actif !== false;
+    if(fidLevelFilter === 'active' && !actif) return false;
+    if(fidLevelFilter === 'inactive' && actif) return false;
+    if(['Bronze','Argent','Or'].includes(fidLevelFilter) && niveau !== fidLevelFilter) return false;
+    return !q ||
+      String(f.prenom || '').toLowerCase().includes(q) ||
+      String(f.nom || '').toLowerCase().includes(q) ||
+      String(f.email || '').toLowerCase().includes(q) ||
+      String(f.telephone || '').toLowerCase().includes(q) ||
+      String(f.membre_num || '').toLowerCase().includes(q) ||
+      String(f.code_parrainage || '').toLowerCase().includes(q);
+  });
+
+  lastFideliteRows = rows;
+
+  const total = all.length;
+  const bronze = all.filter(f => (f.niveau || calcNiveau(f.nb_visites || 0)) === 'Bronze').length;
+  const argent = all.filter(f => (f.niveau || calcNiveau(f.nb_visites || 0)) === 'Argent').length;
+  const or = all.filter(f => (f.niveau || calcNiveau(f.nb_visites || 0)) === 'Or').length;
+
+  const setTxt = (id,v)=>{ const el=document.getElementById(id); if(el) el.textContent = v; };
+  setTxt('fid-total', total);
+  setTxt('fid-bronze', bronze);
+  setTxt('fid-argent', argent);
+  setTxt('fid-or', or);
+
+  const badge = document.getElementById('b-fid');
+  if(badge){ badge.style.display = total ? 'inline-flex' : 'none'; badge.textContent = total; }
+
+  const tb = document.getElementById('fid-tb');
+  if(!tb) return;
+
+  tb.innerHTML = rows.length ? rows.map(f => {
+    const date = f.created_at ? new Date(f.created_at).toLocaleDateString('fr-FR') : '–';
+    const nom = fidFullName(f);
+    const visites = Number(f.nb_visites || 0);
+    const info = fidLevelInfo(visites);
+    const niveau = f.niveau || info.niveau;
+    const actif = f.actif !== false;
+    const sel = selectedFideliteId === f.id ? 'selected' : '';
+    return `
+      <tr class="${sel}" onclick="selectFideliteClient('${f.id}')">
+        <td class="small">${fidEsc(date)}</td>
+        <td class="name">${fidEsc(nom)}</td>
+        <td>${fidEsc(f.email || '–')}</td>
+        <td>${fidEsc(f.telephone || '–')}</td>
+        <td class="gold">${fidEsc(f.membre_num || '–')}</td>
+        <td>${fidEsc(f.code_parrainage || '–')}</td>
+        <td><span class="fid-status-pill ${niveau.toLowerCase()}">${fidEsc(niveau)}</span></td>
+        <td class="gold">${visites} / 5</td>
+        <td>${actif ? '<span class="badge confirmed"><span class="badge-dot"></span>Actif</span>' : '<span class="badge cancelled"><span class="badge-dot"></span>Inactif</span>'}</td>
+        <td onclick="event.stopPropagation()">
+          <button class="atb ok" onclick="selectFideliteClient('${f.id}');addVisit('${f.id}', ${visites})">+ passage</button>
+          <button class="atb err" onclick="toggleFid('${f.id}', ${actif})">${actif ? 'Désactiver' : 'Activer'}</button>
+        </td>
+      </tr>`;
+  }).join('') : '<tr><td colspan="10" class="small">Aucune carte fidélité trouvée</td></tr>';
+
+  if(selectedFideliteId){
+    const current = all.find(f => f.id === selectedFideliteId);
+    if(current) renderSelectedFidelite(current);
+  }
+}
+
+function filterFidelite(v){
+  fidSearch = v || '';
+  renderFidelite();
+}
+
+function setFidLevelFilter(v, btn){
+  fidLevelFilter = v || 'all';
+  document.querySelectorAll('#page-fidelite .filter-row .fb').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  renderFidelite();
+}
+
+function focusFidSearch(){
+  nav('fidelite');
+  setTimeout(()=>{ const el=document.getElementById('fid-search'); if(el){ el.focus(); el.select(); } },120);
+}
+
+function selectFirstFideliteResult(){
+  if(lastFideliteRows && lastFideliteRows.length) selectFideliteClient(lastFideliteRows[0].id);
+  else toast('⚠','Aucun résultat à sélectionner','warn');
+}
+
+function selectFideliteClient(id){
+  selectedFideliteId = id;
+  const f = (D.fidelite || []).find(x => x.id === id);
+  if(!f){ toast('⚠','Client fidélité introuvable','warn'); return; }
+  renderSelectedFidelite(f);
+  loadFideliteHistory(id);
+  renderFidelite();
+}
+
+function renderSelectedFidelite(f){
+  const visits = Number(f.nb_visites || 0);
+  const info = fidLevelInfo(visits);
+  const niveau = f.niveau || info.niveau;
+  const setTxt = (id,v)=>{ const el=document.getElementById(id); if(el) el.textContent = v; };
+  const name = fidFullName(f);
+  setTxt('fid-selected-name', name);
+  setTxt('fid-selected-meta', `${f.email || 'Email non renseigné'} · ${f.telephone || 'Téléphone non renseigné'}`);
+  setTxt('fid-selected-visits', visits);
+  setTxt('fid-selected-member', f.membre_num || '—');
+  setTxt('fid-selected-code', f.code_parrainage || '—');
+  setTxt('fid-selected-xp-text', `${visits} / 5 passages`);
+  const lvl = document.getElementById('fid-selected-level');
+  if(lvl){ lvl.textContent = niveau; lvl.className = 'fid-level-badge ' + niveau.toLowerCase(); }
+  const bar = document.getElementById('fid-selected-xp-bar');
+  if(bar) bar.style.width = info.percent + '%';
+  ['bronze','argent','or'].forEach(k=>{ const el=document.getElementById('fid-ms-'+k); if(el) el.classList.remove('active'); });
+  const active = document.getElementById('fid-ms-'+niveau.toLowerCase());
+  if(active) active.classList.add('active');
+  const msg = document.getElementById('fid-action-msg');
+  if(msg){ msg.className='fid-muted'; msg.textContent = info.next; }
+}
+
+async function addSelectedFidelitePassage(){
+  if(!selectedFideliteId){ toast('⚠','Sélectionne un client d’abord','warn'); return; }
+  const f = (D.fidelite || []).find(x => x.id === selectedFideliteId);
+  if(!f){ toast('⚠','Client fidélité introuvable','warn'); return; }
+  await addVisit(f.id, Number(f.nb_visites || 0));
+}
+
 async function addVisit(id, current){
+  const msg = document.getElementById('fid-action-msg');
+  const selected = (D.fidelite || []).find(f => f.id === id);
   const next = Number(current || 0) + 1;
   const niveau = calcNiveau(next);
+  const typeEl = document.getElementById('fid-pass-type');
+  const noteEl = document.getElementById('fid-pass-note');
+  const type = typeEl ? typeEl.value : 'Séance EDEN';
+  const note = noteEl ? noteEl.value.trim() : '';
+  if(msg){ msg.className='fid-muted'; msg.textContent='Ajout du passage en cours…'; }
 
   try{
     await sbQ('fidelite',{id:`eq.${id}`},'PATCH',{
       nb_visites: next,
-      niveau: niveau
+      niveau: niveau,
+      derniere_visite: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     });
-    toast('✓','Visite ajoutée');
-    loadSB();
+
+    try{
+      await sbQ('fidelite_passages',{},'POST',{
+        fidelite_id: id,
+        membre_num: selected?.membre_num || null,
+        nom_client: selected ? fidFullName(selected) : null,
+        type_passage: type || 'Séance EDEN',
+        note: note || null
+      });
+    }catch(histErr){
+      console.warn('Historique fidelite_passages indisponible:', histErr);
+      toast('⚠','Compteur mis à jour, historique non enregistré','warn');
+    }
+
+    if(noteEl) noteEl.value='';
+    toast('✓',`Passage ajouté · ${niveau}`);
+    if(msg){ msg.className='fid-ok'; msg.textContent = `Passage ajouté. Total : ${next}. Niveau : ${niveau}.`; }
+    selectedFideliteId = id;
+    await loadSB();
+    renderFidelite();
+    loadFideliteHistory(id);
   } catch(e){
-    toast('⚠','Erreur ajout visite','warn');
+    console.error(e);
+    if(msg){ msg.className='fid-err'; msg.textContent='Erreur : passage non enregistré.'; }
+    toast('⚠','Erreur ajout passage','warn');
   }
 }
 
 async function toggleFid(id, actif){
   try{
     await sbQ('fidelite',{id:`eq.${id}`},'PATCH',{
-      actif: !actif
+      actif: !actif,
+      updated_at: new Date().toISOString()
     });
     toast('✓','Statut fidélité modifié');
+    selectedFideliteId = id;
     loadSB();
   } catch(e){
     toast('⚠','Erreur modification fidélité','warn');
+  }
+}
+
+async function loadFideliteHistory(id){
+  const list = document.getElementById('fid-history-list');
+  const count = document.getElementById('fid-history-count');
+  if(!list) return;
+  list.innerHTML = '<div class="fid-history-empty">Chargement de l’historique…</div>';
+  if(count) count.textContent = 'Chargement…';
+  try{
+    const rows = await sbQ('fidelite_passages',{select:'*',fidelite_id:`eq.${id}`,order:'created_at.desc',limit:'20'});
+    if(count) count.textContent = `${rows?.length || 0} passage${(rows?.length || 0)>1?'s':''}`;
+    if(!rows || !rows.length){
+      list.innerHTML = '<div class="fid-history-empty">Aucun passage enregistré pour ce client pour le moment.</div>';
+      return;
+    }
+    list.innerHTML = rows.map(p=>{
+      const d = p.created_at ? new Date(p.created_at) : null;
+      const dt = d ? d.toLocaleDateString('fr-FR') + ' · ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : 'Date inconnue';
+      return `<div class="fid-history-item"><strong><span>${fidEsc(p.type_passage || 'Séance EDEN')}</span><em style="font-style:normal;color:var(--gold);font-size:10px">+1 XP</em></strong><span>${fidEsc(dt)}</span>${p.note ? `<span class="fid-history-note">Note : ${fidEsc(p.note)}</span>` : ''}</div>`;
+    }).join('');
+  }catch(e){
+    console.warn('Impossible de charger fidelite_passages:', e);
+    if(count) count.textContent = 'Historique indisponible';
+    list.innerHTML = '<div class="fid-history-empty">Historique indisponible. Crée la table <b>fidelite_passages</b> dans Supabase avec le SQL fourni.</div>';
   }
 }
 // ── FINANCES ──
