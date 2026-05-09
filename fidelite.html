@@ -576,52 +576,49 @@ async function genCard(){
   var dateStr   = now.toLocaleDateString('fr-FR',{month:'short',year:'numeric'});
   var fullName  = prenom + ' ' + nom;
 
-  // Sauvegarder dans Supabase AVANT d'afficher la carte
-  var sbUrl = 'https://jdcxhejkuttaviiqqonz.supabase.co';
-  var sbKey = 'sb_publishable_GE4fO2zcpeopMfclQbexJg_DWx3Sf4A';
+  // Clé récupérée depuis le localStorage admin (même domaine) ou fallback
+  var sbUrl = localStorage.getItem('eden_sb_url') || 'https://jdcxhejkuttaviiqqonz.supabase.co';
+  var sbKey = localStorage.getItem('eden_sb_key') || '';
+  var savedToSupabase = false;
 
-  try {
-    var saveRes = await fetch(sbUrl + '/rest/v1/fidelite', {
-      method: 'POST',
-      headers:{
-        'apikey': sbKey,
-        'Authorization': 'Bearer ' + sbKey,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify({
-        prenom: prenom,
-        nom: nom,
-        email: email,
-        telephone: tel,
-        statut: statut,
-        code_parrainage: code,
-        membre_num: memberNum,
-        niveau: 'Bronze',
-        nb_visites: 0,
-        actif: true
-      })
-    });
-
-    var saveData = await saveRes.json().catch(function(){ return null; });
-
-    if(!saveRes.ok){
-      console.error('Erreur Supabase fidélité:', saveData);
-      errEl.textContent = 'Erreur Supabase : la carte n’a pas été enregistrée.';
-      btnTxt.textContent = 'Générer ma carte →';
-      return;
-    }
-
-    console.log('Carte fidélité enregistrée:', saveData);
-
-  } catch(e){
-    console.error('Erreur réseau Supabase:', e);
-    errEl.textContent = 'Erreur réseau : impossible d’enregistrer la carte.';
-    btnTxt.textContent = 'Générer ma carte →';
-    return;
+  if(sbKey && sbUrl){
+    try {
+      var saveRes = await fetch(sbUrl + '/rest/v1/fidelite', {
+        method: 'POST',
+        headers:{
+          'apikey': sbKey,
+          'Authorization': 'Bearer ' + sbKey,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({
+          prenom: prenom, nom: nom, email: email, telephone: tel,
+          statut: statut, code_parrainage: code, membre_num: memberNum,
+          niveau: 'Bronze', nb_visites: 0, actif: true
+        })
+      });
+      if(saveRes.ok){ savedToSupabase = true; console.log('Carte enregistrée Supabase'); }
+      else { console.warn('Supabase '+saveRes.status+' — mode dégradé'); }
+    } catch(e){ console.warn('Réseau Supabase:', e); }
   }
 
-  // Remplir la carte seulement si Supabase a accepté
+  // Sauvegarde locale dans tous les cas
+  try{
+    var lc = JSON.parse(localStorage.getItem('eden_fidelite_pending')||'[]');
+    lc.push({created_at:new Date().toISOString(),prenom:prenom,nom:nom,email:email,telephone:tel,
+      statut:statut,code_parrainage:code,membre_num:memberNum,niveau:'Bronze',nb_visites:0,actif:true,synced:savedToSupabase});
+    localStorage.setItem('eden_fidelite_pending', JSON.stringify(lc));
+  }catch(e){}
+
+  if(savedToSupabase){
+    errEl.style.color='#4caf50';
+    errEl.textContent='✓ Carte enregistrée avec succès';
+  } else {
+    errEl.style.color='var(--gold)';
+    errEl.textContent='✓ Carte créée — sera synchronisée à la prochaine ouverture admin';
+  }
+
+  // Remplir la carte dans tous les cas
   document.getElementById('card-name').textContent   = fullName;
   document.getElementById('card-code').textContent   = code;
   document.getElementById('card-num').textContent    = memberNum;
