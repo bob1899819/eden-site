@@ -4938,6 +4938,27 @@ CREATE POLICY "anon_all" ON parrainages    FOR ALL USING (true) WITH CHECK (true
 <div class="toast" id="toast-el" style="border-color: rgba(196, 160, 78, 0.18);"><span class="ti" id="toast-i">+</span><span class="tm" id="toast-m">Équipement ajouté</span></div>
 
 <script>
+/* EDEN FIX — stockage sûr : évite que l'admin plante si le navigateur bloque localStorage */
+var EDEN_STORAGE = (function(){
+  try{
+    var ls = window.localStorage;
+    var t = '__eden_storage_test__';
+    ls.setItem(t,'1');
+    ls.removeItem(t);
+    return ls;
+  }catch(e){
+    var mem = {};
+    console.warn('EDEN: localStorage indisponible, stockage mémoire temporaire utilisé.', e);
+    return {
+      getItem:function(k){ return Object.prototype.hasOwnProperty.call(mem,k) ? mem[k] : null; },
+      setItem:function(k,v){ mem[k] = String(v); },
+      removeItem:function(k){ delete mem[k]; },
+      clear:function(){ mem = {}; }
+    };
+  }
+})();
+var localStorage = EDEN_STORAGE;
+
 
 /* ══════════════════════════════════════════════
    SÉCURITÉ — Authentification Supabase + Fallback
@@ -5318,7 +5339,7 @@ function setConn(ok){
 }
 
 // ── NAV ──
-const PAGE_TITLES={
+var PAGE_TITLES={
   dashboard:'Tableau de <em>bord</em>', planning:'Plan<em>ning</em>',
   reservations:'Réser<em>vations</em>', demandes:'Demandes de <em>réservation</em>',
   clients:'Fiches <em>Clients</em>', stocks:'Stock <em>Boissons</em>',
@@ -5327,6 +5348,7 @@ const PAGE_TITLES={
   finances:'Revenus & <em>Statistiques</em>', parametres:'Paramè<em>tres</em>',
   simulation:'Simulation de <em>remplissage</em>',
   charges:'Suivi des <em>charges</em>',
+  applications:'Applications & <em>abonnements</em>',
   materiel:'Matériel & <em>Équipement</em>'
 };
 function autoSaveAll(){
@@ -10852,7 +10874,7 @@ function importEquipementIntoMateriel(){
 // Durée de vie par défaut selon catégorie (ans)
 const EQ_VIE_DEF = {amenagement:10, accessoire:5, senteur_odeur:3, bar:5, exterieur:7, stockage:15, boutique:3, marketing:3, sanitaire:8, vestiaire:8};
 
-let EQUIP_STATE = null;
+var EQUIP_STATE = null;
 const EQUIP_KEY = 'eden_equipement_v2';
 
 // Nettoyage strict : suppression des lignes sanitaires ajoutées par erreur (eq_100 à eq_142).
@@ -11019,7 +11041,7 @@ function delEqItem(id){
   saveEquipement(); renderEquipement();
 }
 
-let EQ_FILTER='all', EQ_SEARCH='';
+var EQ_FILTER='all', EQ_SEARCH='';
 function eqFmt(n){ return isFinite(n)?Math.round(n).toLocaleString('fr-FR'):0; }
 function eqFmt2(n){ return isFinite(n)?Number(n).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}):0; }
 
@@ -11120,7 +11142,7 @@ function renderEquipement(){
       html+=`<tr class="eq-${cat} ${rowCls}">
         <td><input class="eq-cell wide" value="${(it.nom||'').replace(/"/g,'&quot;')}" placeholder="Équipement" onblur="setEqField('${it.id}','nom',this.value)"></td>
         <td><input class="eq-cell" value="${(it.marque||'').replace(/"/g,'&quot;')}" placeholder="Marque" onblur="setEqField('${it.id}','marque',this.value)"></td>
-        <td><select class="eq-cell-select" onchange="setEqField('${it.id}','cat',this.value)">${CAT_SEL.replace(`value="${it.cat}"`,'value="'+it.cat+'" selected')}</select></td>
+        <td><select class="eq-cell-select" onchange="setEqField('${it.id}','cat',this.value)">${CAT_SEL.replace(`value="${normalizeEqCat(it.cat)}"`,'value="'+normalizeEqCat(it.cat)+'" selected')}</select></td>
         <td><input class="eq-cell num" type="number" min="0" step="1" value="${qty}" onblur="setEqQty('${it.id}',this.value)"></td>
         <td style="text-align:right"><input class="eq-cell num" type="number" min="0" step="0.01" value="${uHT.toFixed(2)}" title="Prix unitaire HT" onblur="setEqUnitHT('${it.id}',this.value)" style="color:var(--muted)"></td>
         <td style="text-align:right"><input class="eq-cell num" type="number" min="0" step="0.01" value="${uTTC.toFixed(2)}" title="Prix unitaire TTC" onblur="setEqUnitTTC('${it.id}',this.value)"></td>
