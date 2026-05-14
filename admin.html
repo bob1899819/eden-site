@@ -820,6 +820,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 .eq-filter-bar .fb.on.f-exterieur{border-color:#4caf50;color:#4caf50;background:rgba(76,175,80,.06);}
 .eq-filter-bar .fb.on.f-stockage{border-color:#5b9bd5;color:#5b9bd5;background:rgba(91,155,213,.06);}
 .eq-filter-bar .fb.on.f-boutique{border-color:#20bca8;color:#20bca8;background:rgba(32,188,168,.06);}
+.eq-filter-bar .fb.on.f-marketing{border-color:#ff6b6b;color:#ff6b6b;background:rgba(255,107,107,.06);}
 .eq-filter-bar .fb.on.f-sanitaire{border-color:#14b8d8;color:#14b8d8;background:rgba(20,184,216,.06);}
 .eq-filter-bar .fb.on.f-energie{border-color:var(--warn);color:var(--warn);background:rgba(240,160,48,.06);}
 @media(max-width:900px){.eq-sim-grid{grid-template-columns:repeat(2,1fr);}.eq-sim-results{grid-template-columns:1fr 1fr;}.eq-breakdown{grid-template-columns:1fr;}}
@@ -2938,7 +2939,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
             </div>
           </div>
           <div class="eq-filter-bar">
-            <button class="fb f-all" onclick="setEqFilter('all',this)">Tout</button>
+            <button class="fb f-all on" onclick="setEqFilter('all',this)">Tout</button>
             <button class="fb f-amenagement" onclick="setEqFilter('amenagement',this)">🛋 Aménagement</button>
             <button class="fb f-accessoire" onclick="setEqFilter('accessoire',this)">✨ Accessoires</button>
             <button class="fb f-senteur" onclick="setEqFilter('senteur_odeur',this)">🌸 Senteur / Odeur</button>
@@ -2946,8 +2947,9 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
             <button class="fb f-exterieur" onclick="setEqFilter('exterieur',this)">🌿 Extérieur</button>
             <button class="fb f-stockage" onclick="setEqFilter('stockage',this)">📦 Stockage</button>
             <button class="fb f-boutique" onclick="setEqFilter('boutique',this)">🛍 Boutique</button>
+            <button class="fb f-marketing" onclick="setEqFilter('marketing',this)">📣 Marketing</button>
             <button class="fb f-sanitaire" onclick="setEqFilter('sanitaire',this)">🚿 Sanitaire / Linges</button>
-            <button class="fb f-vestiaire on" onclick="setEqFilter('vestiaire',this)">🧺 Vestiaire</button>
+            <button class="fb f-vestiaire" onclick="setEqFilter('vestiaire',this)">🧺 Vestiaire</button>
             <button class="fb f-energie" onclick="setEqFilter('energie',this)">⚡ Avec conso.</button>
             <button class="fb" onclick="setEqFilter('reviser',this)" style="margin-left:auto;border-color:rgba(240,160,48,.25);color:var(--warn)">⚠ À réviser / HS</button>
           </div>
@@ -10595,9 +10597,10 @@ const EQ_CATS = {
   amenagement:'Aménagement', accessoire:'Accessoire', senteur_odeur:'Senteur / Odeur',
   bar:'Bar', exterieur:'Extérieur', stockage:'Stockage', boutique:'Boutique',
   sanitaire:'Sanitaire / Linges',
-  vestiaire:'Vestiaire'
+  vestiaire:'Vestiaire',
+  marketing:'Marketing'
 };
-const EQ_ICONS = {amenagement:'🛋',accessoire:'✨',senteur_odeur:'🌸',bar:'☕',exterieur:'🌿',stockage:'📦',boutique:'🛍',sanitaire:'🚿',vestiaire:'🧺'};
+const EQ_ICONS = {amenagement:'🛋',accessoire:'✨',senteur_odeur:'🌸',bar:'☕',exterieur:'🌿',stockage:'📦',boutique:'🛍',marketing:'📣',sanitaire:'🚿',vestiaire:'🧺'};
 
 // consoW = Watts en fonctionnement | consoEauL = Litres par usage/remplissage
 // hUsage = heures/jour utilisé (pour simulation élec) | nUses = utilisations/jour (pour eau)
@@ -10847,7 +10850,7 @@ function importEquipementIntoMateriel(){
 // ══════════════════════════════════════════════════════════════
 
 // Durée de vie par défaut selon catégorie (ans)
-const EQ_VIE_DEF = {amenagement:10, accessoire:5, senteur_odeur:3, bar:5, exterieur:7, stockage:15, boutique:3, sanitaire:8, vestiaire:8};
+const EQ_VIE_DEF = {amenagement:10, accessoire:5, senteur_odeur:3, bar:5, exterieur:7, stockage:15, boutique:3, marketing:3, sanitaire:8, vestiaire:8};
 
 let EQUIP_STATE = null;
 const EQUIP_KEY = 'eden_equipement_v2';
@@ -10992,7 +10995,7 @@ function addEqItem(){
   const qty=parseInt(prompt('Quantité ?','1')||1);
   const newId='eq_custom_'+Date.now();
   const c=String(cat).toLowerCase();
-  const validCat=['amenagement','accessoire','senteur_odeur','bar','exterieur','stockage','boutique','sanitaire','vestiaire'];
+  const validCat=['amenagement','accessoire','senteur_odeur','bar','exterieur','stockage','boutique','marketing','sanitaire','vestiaire'];
   EQUIP_STATE.push({
     id:newId, nom:nom.trim(), marque:'', cat:validCat.includes(c)?c:'amenagement',
     prixHT:+(prixTTC/1.2).toFixed(2), prixTTC:prixTTC, qty,
@@ -11034,6 +11037,19 @@ function setMatTab(tab, btn){
   if(tab==='energie')      calcEquipSim();
 }
 
+
+function normalizeEqCat(cat){
+  cat = String(cat || '').trim().toLowerCase();
+  const map = {
+    'senteur':'senteur_odeur','senteur/odeur':'senteur_odeur','senteur / odeur':'senteur_odeur','odeur':'senteur_odeur',
+    'sanitaire_linges':'sanitaire','sanitaire / linges':'sanitaire','linges':'sanitaire','linge':'sanitaire',
+    'accessoires':'accessoire','amenagement':'amenagement','aménagement':'amenagement',
+    'extérieur':'exterieur','exterieur':'exterieur','stock':'stockage','rangements':'stockage','rangement':'stockage',
+    'pub':'marketing','communication':'marketing','marketting':'marketing','marketing':'marketing'
+  };
+  return map[cat] || cat || 'amenagement';
+}
+
 function renderEquipement(){
   if(!EQUIP_STATE) loadEquipement();
   const q=EQ_SEARCH.toLowerCase();
@@ -11043,7 +11059,7 @@ function renderEquipement(){
     if(q && !it.nom.toLowerCase().includes(q) && !(it.marque||'').toLowerCase().includes(q)) return false;
     if(EQ_FILTER==='energie')  return it.consoW>0||it.consoEauL>0;
     if(EQ_FILTER==='reviser')  return it.etat==='reviser'||it.etat==='hs';
-    if(EQ_FILTER!=='all')      return it.cat===EQ_FILTER;
+    if(EQ_FILTER!=='all')      return normalizeEqCat(it.cat)===EQ_FILTER;
     return true;
   });
 
@@ -11070,7 +11086,8 @@ function renderEquipement(){
   calcEquipSim();
 
   const tb=document.getElementById('eq-tb'); if(!tb) return;
-  const orderedCats=['amenagement','accessoire','senteur_odeur','bar','boutique','exterieur','stockage','sanitaire','vestiaire'];
+  const orderedCats=['amenagement','accessoire','senteur_odeur','bar','boutique','marketing','exterieur','stockage','sanitaire','vestiaire'];
+  (items||[]).forEach(i=>{ const c=normalizeEqCat(i.cat); if(c && !orderedCats.includes(c)) orderedCats.push(c); });
   const useGroups = !q && EQ_FILTER==='all';
   let html='', totHT=0, totTTC=0, totAmort=0;
 
@@ -11079,7 +11096,7 @@ function renderEquipement(){
   const ETAT_SEL= ['neuf','bon','reviser','hs'].map(e=>`<option value="${e}">${ETAT_LABELS[e]}</option>`).join('');
 
   orderedCats.forEach(cat=>{
-    const catItems=items.filter(i=>i.cat===cat);
+    const catItems=items.filter(i=>normalizeEqCat(i.cat)===cat);
     if(!catItems.length) return;
     if(useGroups){
       const catTotal=catItems.reduce((s,i)=>s+Number(i.prixHT||0),0);
@@ -11391,7 +11408,8 @@ function calcEquipSim(){
 }
 
 function setEqFilter(f, btn){
-  EQ_FILTER=f;
+  // Filtre visuel uniquement : ne modifie jamais EQUIP_STATE, donc aucune ligne/prix ne disparaît.
+  EQ_FILTER = (f === 'all' || f === 'energie' || f === 'reviser') ? f : normalizeEqCat(f);
   document.querySelectorAll('.eq-filter-bar .fb').forEach(b=>b.classList.remove('on'));
   if(btn) btn.classList.add('on');
   renderEquipement();
