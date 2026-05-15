@@ -5289,6 +5289,16 @@ function showApp(){
   loadAdminCache();
   initSB();
   renderAll();
+  // Si la page active par défaut (dans le HTML) n'est pas le dashboard,
+  // déclencher son rendu : sinon les éléments comme #eq-tb-count, #eq-k-invest, etc.
+  // gardent les valeurs hardcodées du HTML et ne reflètent pas localStorage.
+  try{
+    const activeSection = document.querySelector('.page.active');
+    if(activeSection){
+      const pageId = activeSection.id.replace(/^page-/, '');
+      if(pageId && pageId !== 'dashboard' && typeof renderPage === 'function') renderPage(pageId);
+    }
+  }catch(e){ console.warn('init active page render', e); }
   startTokenRefresh();
   startInactivityTimer();
 }
@@ -5463,7 +5473,7 @@ function renderPage(p){
   parametres:renderParams,
   simulation:renderSimulation,
   charges:renderCharges,
-  materiel:function(){ setMatTab('equipement'); }
+  materiel:function(){ if(typeof renderMateriel==='function') renderMateriel(); setMatTab('equipement'); }
 };
   if(map[p]) map[p]();
 }
