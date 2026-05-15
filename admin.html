@@ -4998,6 +4998,83 @@ const D = {
   fidelite: []
 };
 
+
+/* ══════════════════════════════════════════════
+   FIX PERSISTANCE ADMIN — sauvegarde locale durable
+   Objectif : les modifications restent visibles après rechargement, même si Supabase
+   est momentanément indisponible, si une requête échoue, ou si la table distante est vide.
+══════════════════════════════════════════════ */
+const EDEN_ADMIN_CACHE_K = 'eden_admin_cache_v3';
+
+function clonePlain(v){
+  try{ return JSON.parse(JSON.stringify(v)); }catch(e){ return v; }
+}
+function normalizeDShape(obj){
+  obj = obj && typeof obj === 'object' ? obj : {};
+  const out = {
+    reservations: Array.isArray(obj.reservations) ? obj.reservations : [],
+    demandes: Array.isArray(obj.demandes) ? obj.demandes : [],
+    stocks: {
+      smoothies: Array.isArray(obj.stocks?.smoothies) ? obj.stocks.smoothies : [],
+      softs: Array.isArray(obj.stocks?.softs) ? obj.stocks.softs : [],
+      extras: Array.isArray(obj.stocks?.extras) ? obj.stocks.extras : [],
+      accessoires: Array.isArray(obj.stocks?.accessoires) ? obj.stocks.accessoires : []
+    },
+    parrainages: Array.isArray(obj.parrainages) ? obj.parrainages : [],
+    fidelite: Array.isArray(obj.fidelite) ? obj.fidelite : []
+  };
+  return out;
+}
+function applyDCache(cache){
+  const c = normalizeDShape(cache);
+  D.reservations = c.reservations;
+  D.demandes = c.demandes;
+  D.stocks = c.stocks;
+  D.parrainages = c.parrainages;
+  D.fidelite = c.fidelite;
+}
+function loadAdminCache(){
+  try{
+    const raw = localStorage.getItem(EDEN_ADMIN_CACHE_K);
+    if(raw) applyDCache(JSON.parse(raw));
+
+    // Compatibilité avec l'ancienne sauvegarde stock séparée.
+    const oldStocks = localStorage.getItem('eden_stocks_cache');
+    if(oldStocks){
+      const parsed = JSON.parse(oldStocks);
+      if(parsed && typeof parsed === 'object'){
+        ['smoothies','softs','extras','accessoires'].forEach(k=>{
+          if(Array.isArray(parsed[k]) && parsed[k].length) D.stocks[k] = parsed[k];
+        });
+      }
+    }
+  }catch(e){ console.warn('EDEN cache load err', e); }
+}
+function saveAdminCache(){
+  try{
+    localStorage.setItem(EDEN_ADMIN_CACHE_K, JSON.stringify({
+      reservations: D.reservations || [],
+      demandes: D.demandes || [],
+      stocks: D.stocks || {smoothies:[],softs:[],extras:[],accessoires:[]},
+      parrainages: D.parrainages || [],
+      fidelite: D.fidelite || [],
+      _saved_at: new Date().toISOString()
+    }));
+  }catch(e){ console.warn('EDEN cache save err', e); }
+}
+function replaceOnlyWhenArrayNotNull(targetKey, value){
+  if(Array.isArray(value)) D[targetKey] = value;
+}
+function mergeSupabaseStocks(sto){
+  if(!Array.isArray(sto) || !sto.length) return;
+  const c={smoothies:[],softs:[],extras:[],accessoires:[]};
+  sto.forEach(s=>{
+    const cat=c[s.categorie] ? s.categorie : 'extras';
+    c[cat].push({...s,seuil:s.seuil_alerte ?? s.seuil ?? 5});
+  });
+  ['smoothies','softs','extras','accessoires'].forEach(k=>{ D.stocks[k]=c[k] || []; });
+}
+
 // ── INIT ──
 
 function applySidebarState(){
@@ -5209,6 +5286,7 @@ function showApp(){
   var a = document.getElementById('app');
   a.style.display = 'flex';
   a.classList.add('visible');
+  loadAdminCache();
   initSB();
   renderAll();
   startTokenRefresh();
@@ -5299,6 +5377,9 @@ async function sbQ(table,params={},method='GET',body=null){
   return r.json().catch(()=>null);
 }
 async function loadSB(){
+  // Charger d'abord la sauvegarde locale pour éviter un écran vide au refresh.
+  loadAdminCache();
+
   const safeLoad = async (label, fn) => {
     try{ return await fn(); }
     catch(e){ console.warn('Chargement impossible:', label, e); return null; }
@@ -5310,25 +5391,19 @@ async function loadSB(){
   const par = await safeLoad('parrainages', () => sbQ('parrainages',{select:'*',order:'created_at.desc'}));
   const fid = await safeLoad('fidelite', () => sbQ('fidelite',{select:'*',order:'created_at.desc'}));
 
-  if(res) D.reservations=res;
-  if(dem) D.demandes=dem;
-  if(sto && sto.length){
-    const c={smoothies:[],softs:[],extras:[],accessoires:[]};
-    sto.forEach(s=>{
-      const cat=c[s.categorie] ? s.categorie : 'extras';
-      c[cat].push({...s,seuil:s.seuil_alerte ?? s.seuil ?? 5});
-    });
-    ['smoothies','softs','extras','accessoires'].forEach(k=>{ D.stocks[k]=c[k] || []; });
-  }
-  if(par) D.parrainages=par;
-  if(fid) D.fidelite=fid;
+  replaceOnlyWhenArrayNotNull('reservations', res);
+  replaceOnlyWhenArrayNotNull('demandes', dem);
+  mergeSupabaseStocks(sto);
+  replaceOnlyWhenArrayNotNull('parrainages', par);
+  replaceOnlyWhenArrayNotNull('fidelite', fid);
 
+  saveAdminCache();
   renderAll();
 
   if(fid){
     toast('◎',`Cartes fidélité chargées : ${fid.length}`);
   }else{
-    toast('⚠','Cartes fidélité non chargées : vérifie les politiques RLS de la table fidelite','warn');
+    toast('⚠','Données locales chargées — Supabase fidélité non disponible','warn');
   }
 }
 function setConn(ok){
@@ -5352,6 +5427,7 @@ var PAGE_TITLES={
   materiel:'Matériel & <em>Équipement</em>'
 };
 function autoSaveAll(){
+  try{ saveAdminCache(); }catch(e){}
   try{ if(EQUIP_STATE) saveEquipement(); }catch(e){}
   try{ if(MAT_STATE)   saveMateriel();   }catch(e){}
 }
@@ -5589,6 +5665,7 @@ function genCode(){
   const nom=prompt('Nom du client parrain :');if(!nom)return;
   const code='EDEN-'+nom.toUpperCase().split(' ')[0].substring(0,6)+Math.floor(Math.random()*90+10);
   D.parrainages.unshift({id:'l'+Date.now(),created_at:new Date().toISOString().slice(0,10),code,createur_nom:nom,filleuls:[],utilisations:0,reduction_offerte:0,actif:true});
+  saveAdminCache();
   renderParrainage();toast('◎',`Code ${code} créé`);
 }
 // ── CARTES FIDÉLITÉ / PASSAGES CLIENTS ──
@@ -5774,7 +5851,14 @@ async function addVisit(id, current){
   if(msg){ msg.className='fid-muted'; msg.textContent='Ajout du passage en cours…'; }
 
   try{
-    await sbQ('fidelite',{id:`eq.${id}`},'PATCH',{
+    if(selected){
+      selected.nb_visites = next;
+      selected.niveau = niveau;
+      selected.derniere_visite = new Date().toISOString();
+      selected.updated_at = new Date().toISOString();
+      saveAdminCache();
+    }
+    if(sbReady) await sbQ('fidelite',{id:`eq.${id}`},'PATCH',{
       nb_visites: next,
       niveau: niveau,
       derniere_visite: new Date().toISOString(),
@@ -5798,9 +5882,9 @@ async function addVisit(id, current){
     toast('✓',`Passage ajouté · ${niveau}`);
     if(msg){ msg.className='fid-ok'; msg.textContent = `Passage ajouté. Total : ${next}. Niveau : ${niveau}.`; }
     selectedFideliteId = id;
-    await loadSB();
+    if(sbReady) await loadSB();
     renderFidelite();
-    loadFideliteHistory(id);
+    if(sbReady) loadFideliteHistory(id);
   } catch(e){
     console.error(e);
     if(msg){ msg.className='fid-err'; msg.textContent='Erreur : passage non enregistré.'; }
@@ -5828,7 +5912,13 @@ async function removeVisit(id, current){
   if(msg){ msg.className='fid-muted'; msg.textContent='Retrait du passage en cours…'; }
 
   try{
-    await sbQ('fidelite',{id:`eq.${id}`},'PATCH',{
+    if(selected){
+      selected.nb_visites = next;
+      selected.niveau = niveau;
+      selected.updated_at = new Date().toISOString();
+      saveAdminCache();
+    }
+    if(sbReady) await sbQ('fidelite',{id:`eq.${id}`},'PATCH',{
       nb_visites: next,
       niveau: niveau,
       updated_at: new Date().toISOString()
@@ -5851,9 +5941,9 @@ async function removeVisit(id, current){
     toast('✓',`Passage retiré · ${niveau}`);
     if(msg){ msg.className='fid-ok'; msg.textContent = `Passage retiré. Total : ${next}. Niveau : ${niveau}.`; }
     selectedFideliteId = id;
-    await loadSB();
+    if(sbReady) await loadSB();
     renderFidelite();
-    loadFideliteHistory(id);
+    if(sbReady) loadFideliteHistory(id);
   } catch(e){
     console.error(e);
     if(msg){ msg.className='fid-err'; msg.textContent='Erreur : passage non retiré.'; }
@@ -5862,16 +5952,19 @@ async function removeVisit(id, current){
 }
 
 async function toggleFid(id, actif){
+  const f=(D.fidelite||[]).find(x=>x.id===id);
+  if(f){ f.actif = !actif; f.updated_at = new Date().toISOString(); saveAdminCache(); }
   try{
-    await sbQ('fidelite',{id:`eq.${id}`},'PATCH',{
+    if(sbReady) await sbQ('fidelite',{id:`eq.${id}`},'PATCH',{
       actif: !actif,
       updated_at: new Date().toISOString()
     });
     toast('✓','Statut fidélité modifié');
     selectedFideliteId = id;
-    loadSB();
+    if(sbReady) loadSB(); else renderFidelite();
   } catch(e){
-    toast('⚠','Erreur modification fidélité','warn');
+    renderFidelite();
+    toast('⚠','Statut modifié en local seulement','warn');
   }
 }
 
@@ -6016,6 +6109,7 @@ function convDem(id){
   if(!date){toast('⚠','Date obligatoire','warn');return;}
   D.reservations.unshift({id:'l'+Date.now(),created_at:new Date().toISOString(),nom:d.nom,email:d.email,telephone:d.telephone,formule:d.formule_souhaitee||'À définir',date_seance:date,heure,nb_personnes:d.nb_personnes||1,extras:[],montant_total:montant,statut:'confirmed',notes:d.message||''});
   d.statut='processed';
+  saveAdminCache();
   closeDrw();
   nav('reservations');
   toast('✓',`Réservation créée pour ${d.nom}`);
@@ -6047,6 +6141,7 @@ async function saveNewRes(){
   const nr={id:'l'+Date.now(),created_at:new Date().toISOString(),nom,email:document.getElementById('nr-email')?.value||'',telephone:document.getElementById('nr-tel')?.value||'',formule,date_seance:date,heure:document.getElementById('nr-heure')?.value||'',nb_personnes:parseInt(document.getElementById('nr-pers')?.value)||1,extras:[],montant_total:parseFloat(document.getElementById('nr-mt')?.value)||0,statut:'confirmed',notes:document.getElementById('nr-note')?.value||''};
   if(sbReady){ try{ const s=await sbQ('reservations',{},'POST',{...nr,id:undefined}); if(s&&s[0]) nr.id=s[0].id; }catch(e){} }
   D.reservations.unshift(nr);
+  saveAdminCache();
   closeDrw();renderAll();renderRes();
   toast('✓',`Réservation créée pour ${nom}`);
 }
@@ -6055,11 +6150,12 @@ async function saveNewRes(){
 async function setStatus(id,status){
   const r=D.reservations.find(x=>x.id===id);if(!r)return;
   r.statut=status;
-  if(sbReady){ try{ await sbQ('reservations',{id:`eq.${id}`},'PATCH',{statut:status}); }catch(e){} }
+  saveAdminCache();
+  if(sbReady){ try{ await sbQ('reservations',{id:`eq.${id}`},'PATCH',{statut:status}); }catch(e){ console.warn('Statut gardé en local, Supabase indisponible', e); } }
   renderAll();renderRes();
   toast('✓',`Statut : ${slabel(status)}`);
 }
-function saveNote(id){ const r=D.reservations.find(x=>x.id===id);if(r){r.notes=document.getElementById('note-edit')?.value||'';toast('✓','Notes sauvegardées');} }
+function saveNote(id){ const r=D.reservations.find(x=>x.id===id);if(r){r.notes=document.getElementById('note-edit')?.value||'';saveAdminCache();toast('✓','Notes sauvegardées');} }
 
 // ── EXPORT CSV ──
 function exportCSV(){
@@ -6471,6 +6567,7 @@ function normalizeStockItem(s){
 }
 function saveStocksLocal(){
   localStorage.setItem('eden_stocks_cache', JSON.stringify(D.stocks));
+  saveAdminCache();
 }
 async function persistStockItem(cat, idx){
   const s = D.stocks?.[cat]?.[idx];
