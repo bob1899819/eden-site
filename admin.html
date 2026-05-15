@@ -2830,7 +2830,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
           <button class="btn-s" onclick="addMatItem()">+ Consommable</button>
           <button class="btn-s" onclick="importRitualsProducts()" title="Importer Rituals">🌸 Rituals</button>
           <button class="btn-s" onclick="importEquipementIntoMateriel()" title="Ajouter équipement fixe/pro dans le tableau matériel, sans ajouter les éléments sanitaires non demandés">🔧 Import équipement</button>
-          <button class="btn-s fill" onclick="saveMateriel();if(typeof toast==='function')toast('✓','Sauvegardé')">💾 Sauvegarder</button>
+          <button class="btn-s fill" onclick="saveAllMaterielEquipement();if(typeof toast==='function')toast('✓','Sauvegardé')">💾 Sauvegarder</button>
           <button class="btn-s" onclick="exportMatCSV()">↓ CSV</button>
         </div>
       </div>
@@ -10098,7 +10098,7 @@ function restockMatToTarget(id){
   if(typeof toast==='function') toast('⥁','Stock mis à jour');
 }
 
-function renderMatTable(){
+function renderMatTable_legacy(){
   const tb = document.getElementById('mat-tb');
   const tf = document.getElementById('mat-tfoot');
   if(!tb) return;
@@ -11079,7 +11079,17 @@ function loadEquipement(){
   }
 }
 function saveEquipement(){
-  try{ localStorage.setItem(EQUIP_KEY, JSON.stringify(EQUIP_STATE)); }catch(e){}
+  try{
+    localStorage.setItem(EQUIP_KEY, JSON.stringify(EQUIP_STATE));
+    if(typeof saveAdminCache === 'function') saveAdminCache();
+  }catch(e){
+    console.warn('saveEquipement error', e);
+  }
+}
+function saveAllMaterielEquipement(){
+  try{ if(typeof saveMateriel === 'function') saveMateriel(); }catch(e){ console.warn('saveMateriel all error', e); }
+  try{ if(typeof saveEquipement === 'function') saveEquipement(); }catch(e){ console.warn('saveEquipement all error', e); }
+  try{ if(typeof saveAdminCache === 'function') saveAdminCache(); }catch(e){ console.warn('saveAdminCache all error', e); }
 }
 function setEqField(id, field, val){
   if(!EQUIP_STATE) loadEquipement();
@@ -11217,8 +11227,8 @@ function renderEquipement(){
   set('eq-k-amort', eqFmt2(totalAmort));
   set('eq-k-alert', alertCount);
   set('eq-k-alert-sub', alertCount>0?alertCount+' item(s) à vérifier':'tout est OK');
-  set('eq-tb-count', items.length);
-  set('eq-tb-invest', eqFmt2(items.reduce((s,i)=>s+Number(i.prixTTC||0),0)));
+  set('eq-tb-count', EQUIP_STATE.length);
+  set('eq-tb-invest', eqFmt2(totalTTC));
   set('tab-eq-sub', 'inventaire · '+EQUIP_STATE.length+' éq.');
   calcEquipSim();
 
