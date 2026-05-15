@@ -11744,4 +11744,26 @@ function exportEquipDebug(){
   }
 }
 
+// ══════════════════════════════════════════════════════════════
+// FALLBACK INIT : si la page Matériel est active dès l'ouverture
+// (class="page active" sur #page-materiel dans le HTML), on déclenche
+// son rendu sans attendre un clic. Sinon les compteurs #eq-tb-count,
+// #eq-k-invest, etc. gardent les valeurs hardcodées du HTML.
+// On reste passif si l'app n'est pas encore visible (login screen).
+// ══════════════════════════════════════════════════════════════
+function __edenRenderInitialActivePage(){
+  try{
+    const app = document.getElementById('app');
+    if(!app || app.style.display === 'none') return;
+    const active = document.querySelector('.page.active');
+    if(!active) return;
+    const pageId = (active.id || '').replace(/^page-/, '');
+    if(!pageId || pageId === 'dashboard') return;
+    if(typeof renderPage === 'function') renderPage(pageId);
+  }catch(e){ console.warn('eden initial render', e); }
+}
+// Appel différé pour laisser showApp() finir, puis re-tentative tardive.
+setTimeout(__edenRenderInitialActivePage, 0);
+setTimeout(__edenRenderInitialActivePage, 300);
+
 </script></body></html>
