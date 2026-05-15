@@ -10567,8 +10567,8 @@ function renderMatTable(){
     accessoires:      {color:'#f08230', icon:'✨'},
   };
 
-  let sourceItems = MAT_STATE.items || [];
-let allItems = [...sourceItems];
+  const sourceItems = MAT_STATE.items || [];
+  let allItems = [...sourceItems];
 
   // Text search
   if(q) allItems = allItems.filter(it=>
@@ -10590,22 +10590,24 @@ let allItems = [...sourceItems];
     return;
   }
 
+  // Totaux globaux indépendants du filtre affiché
+  let totalGlobalHT = 0;
+  let totalGlobalTTC = 0;
+  sourceItems.forEach(it=>{
+    matNormalizePrice(it);
+    const qte = Number(it.stock || 0);
+    const pht = Number(it.prix_ht || 0);
+    const pttc = Number(it.prix_ttc || 0);
+    totalGlobalHT += qte * pht;
+    totalGlobalTTC += qte * pttc;
+  });
+
   // Group by category
   const grouped={};
   MAT_SIMPLE_CATS.forEach(c=>{ grouped[c]=[]; });
   allItems.forEach(it=>{ const c=matSimpleCat(it.cat); if(grouped[c]) grouped[c].push(it); });
 
-  let totalGlobalHT = 0;
-let totalGlobalTTC = 0;
-
-sourceItems.forEach(it=>{
-  matNormalizePrice(it);
-  const qte = Number(it.stock || 0);
-  const pht = Number(it.prix_ht || 0);
-  const pttc = Number(it.prix_ttc || 0);
-  totalGlobalHT += qte * pht;
-  totalGlobalTTC += qte * pttc;
-});
+  let rows='', totalHTAll=0, totalTTCAll=0;
   const catTotals=[];
   const useGroups = !q && catFilter==='all'; // grouper seulement si pas de recherche et "Tout" actif
 
