@@ -10362,8 +10362,8 @@ function matStatusSimple(it){
 function renderMateriel(){
   if(!MAT_STATE) loadMateriel();
   renderMaterielParams();
-  cleanAutoSanitaireEquipmentFromMateriel();
-  // Consommables & Réappro supprimé de l'interface : plus de fusion automatique depuis Équipement fixe.
+  // cleanAutoSanitaireEquipmentFromMateriel() retiré : il supprimait silencieusement
+  // les items mat_from_eq_* à chaque rendu, ce qui causait des pertes de données.
   matNormalizeSimple();
   if(!MAT_SIMPLE_CATS.includes(MAT_FILTER)) MAT_FILTER='materiel';
   saveMateriel();
@@ -11089,7 +11089,6 @@ function loadEquipement(){
   try{
     const deletedBase = getDeletedEquipIds();
     const base = EQUIP_ITEMS
-      .filter(it=>!isSuggestedSanitaireEquipement(it))
       .filter(it=>!deletedBase.has(String(it.id)))
       .map(it=>({
         ...it,
@@ -11113,7 +11112,11 @@ function loadEquipement(){
     
     let saved = [];
     try{
-      saved = JSON.parse(raw).filter(it=>!isSuggestedSanitaireEquipement(it));
+      // Ne plus filtrer les items « sanitaire » sauvegardés : c'était une cleanup automatique
+      // qui supprimait silencieusement les eq_100→eq_142 à chaque chargement et finissait par
+      // être réécrite en localStorage à la prochaine sauvegarde, faisant perdre 43 items.
+      saved = JSON.parse(raw);
+      if(!Array.isArray(saved)) saved = [];
     }catch(parseErr){
       console.error('localStorage corrompu, rechargement des défauts', parseErr);
       localStorage.removeItem(EQUIP_KEY);
@@ -11148,7 +11151,6 @@ function loadEquipement(){
   }catch(e){
     console.error('loadEquipement fail', e);
     EQUIP_STATE = EQUIP_ITEMS
-      .filter(it=>!isSuggestedSanitaireEquipement(it))
       .map(it=>({...it, dureeVie:EQ_VIE_DEF[it.cat]||7, etat:'neuf', dateAchat:'', garantie:''}));
   }
 }
