@@ -5289,6 +5289,16 @@ function showApp(){
   loadAdminCache();
   initSB();
   renderAll();
+  // Si la page active par défaut (dans le HTML) n'est pas le dashboard,
+  // déclencher son rendu : sinon les éléments comme #eq-tb-count, #eq-k-invest, etc.
+  // gardent les valeurs hardcodées du HTML et ne reflètent pas localStorage.
+  try{
+    const activeSection = document.querySelector('.page.active');
+    if(activeSection){
+      const pageId = activeSection.id.replace(/^page-/, '');
+      if(pageId && pageId !== 'dashboard' && typeof renderPage === 'function') renderPage(pageId);
+    }
+  }catch(e){ console.warn('init active page render', e); }
   startTokenRefresh();
   startInactivityTimer();
 }
@@ -5463,7 +5473,7 @@ function renderPage(p){
   parametres:renderParams,
   simulation:renderSimulation,
   charges:renderCharges,
-  materiel:function(){ setMatTab('equipement'); }
+  materiel:function(){ if(typeof renderMateriel==='function') renderMateriel(); setMatTab('equipement'); }
 };
   if(map[p]) map[p]();
 }
@@ -10362,8 +10372,8 @@ function matStatusSimple(it){
 function renderMateriel(){
   if(!MAT_STATE) loadMateriel();
   renderMaterielParams();
-  cleanAutoSanitaireEquipmentFromMateriel();
-  // Consommables & Réappro supprimé de l'interface : plus de fusion automatique depuis Équipement fixe.
+  // cleanAutoSanitaireEquipmentFromMateriel() retiré : il supprimait silencieusement
+  // les items mat_from_eq_* à chaque rendu, ce qui causait des pertes de données.
   matNormalizeSimple();
   if(!MAT_SIMPLE_CATS.includes(MAT_FILTER)) MAT_FILTER='materiel';
   saveMateriel();
@@ -11089,7 +11099,6 @@ function loadEquipement(){
   try{
     const deletedBase = getDeletedEquipIds();
     const base = EQUIP_ITEMS
-      .filter(it=>!isSuggestedSanitaireEquipement(it))
       .filter(it=>!deletedBase.has(String(it.id)))
       .map(it=>({
         ...it,
@@ -11113,7 +11122,11 @@ function loadEquipement(){
     
     let saved = [];
     try{
-      saved = JSON.parse(raw).filter(it=>!isSuggestedSanitaireEquipement(it));
+      // Ne plus filtrer les items « sanitaire » sauvegardés : c'était une cleanup automatique
+      // qui supprimait silencieusement les eq_100→eq_142 à chaque chargement et finissait par
+      // être réécrite en localStorage à la prochaine sauvegarde, faisant perdre 43 items.
+      saved = JSON.parse(raw);
+      if(!Array.isArray(saved)) saved = [];
     }catch(parseErr){
       console.error('localStorage corrompu, rechargement des défauts', parseErr);
       localStorage.removeItem(EQUIP_KEY);
@@ -11148,7 +11161,6 @@ function loadEquipement(){
   }catch(e){
     console.error('loadEquipement fail', e);
     EQUIP_STATE = EQUIP_ITEMS
-      .filter(it=>!isSuggestedSanitaireEquipement(it))
       .map(it=>({...it, dureeVie:EQ_VIE_DEF[it.cat]||7, etat:'neuf', dateAchat:'', garantie:''}));
   }
 }
@@ -11731,5 +11743,27 @@ function exportEquipDebug(){
     console.error('Erreur export', e);
   }
 }
+
+// ══════════════════════════════════════════════════════════════
+// FALLBACK INIT : si la page Matériel est active dès l'ouverture
+// (class="page active" sur #page-materiel dans le HTML), on déclenche
+// son rendu sans attendre un clic. Sinon les compteurs #eq-tb-count,
+// #eq-k-invest, etc. gardent les valeurs hardcodées du HTML.
+// On reste passif si l'app n'est pas encore visible (login screen).
+// ══════════════════════════════════════════════════════════════
+function __edenRenderInitialActivePage(){
+  try{
+    const app = document.getElementById('app');
+    if(!app || app.style.display === 'none') return;
+    const active = document.querySelector('.page.active');
+    if(!active) return;
+    const pageId = (active.id || '').replace(/^page-/, '');
+    if(!pageId || pageId === 'dashboard') return;
+    if(typeof renderPage === 'function') renderPage(pageId);
+  }catch(e){ console.warn('eden initial render', e); }
+}
+// Appel différé pour laisser showApp() finir, puis re-tentative tardive.
+setTimeout(__edenRenderInitialActivePage, 0);
+setTimeout(__edenRenderInitialActivePage, 300);
 
 </script></body></html>
