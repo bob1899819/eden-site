@@ -9780,9 +9780,13 @@ function loadMateriel(){
   }
 }
 function saveMateriel(){
-  try{ localStorage.setItem(matStorageKey(), JSON.stringify(MAT_STATE)); }catch(e){}
+  try{
+    localStorage.setItem(matStorageKey(), JSON.stringify(MAT_STATE));
+    if(typeof saveAdminCache === 'function') saveAdminCache();
+  }catch(e){
+    console.warn('saveMateriel error', e);
+  }
 }
-
 let MAT_FILTER = 'all';
 let MAT_SEARCH = '';
 
