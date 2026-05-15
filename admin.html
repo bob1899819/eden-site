@@ -11050,6 +11050,20 @@ function migrateSelectedMaterielToEquipement(){
   }catch(e){ console.warn('migration ancien réappro → équipement fixe', e); return 0; }
 }
 
+function generateEquipChecksum(data){
+  // Hash simple pour valider l'intégrité des données
+  try{
+    const str = JSON.stringify(data.map(x=>({id:x.id,nom:x.nom,qty:x.qty,prixHT:x.prixHT,prixTTC:x.prixTTC})));
+    return str.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a;},0).toString(36);
+  }catch(e){ return 'invalid'; }
+}
+
+function validateEquipState(state){
+  // Vérifie que EQUIP_STATE est valide et complète
+  if(!Array.isArray(state) || state.length===0) return false;
+  return state.every(x => x && typeof x==='object' && x.id && x.nom);
+}
+
 function loadEquipement(){
   try{
     const base = EQUIP_ITEMS
@@ -11061,29 +11075,91 @@ function loadEquipement(){
         dateAchat: it.dateAchat || '',
         garantie: it.garantie || '',
       }));
+    
     const raw = localStorage.getItem(EQUIP_KEY);
-    if(!raw){ EQUIP_STATE = base; migrateSelectedMaterielToEquipement(); saveEquipement(); return; }
-    const saved = JSON.parse(raw).filter(it=>!isSuggestedSanitaireEquipement(it));
+    const metaRaw = localStorage.getItem(EQUIP_KEY+'_meta');
+    let meta = {};
+    try{ meta = metaRaw ? JSON.parse(metaRaw) : {}; }catch(e){}
+    
+    if(!raw){ 
+      EQUIP_STATE = base; 
+      migrateSelectedMaterielToEquipement(); 
+      saveEquipement(); 
+      return; 
+    }
+    
+    let saved = [];
+    try{
+      saved = JSON.parse(raw).filter(it=>!isSuggestedSanitaireEquipement(it));
+    }catch(parseErr){
+      console.error('localStorage corrompu, rechargement des défauts', parseErr);
+      localStorage.removeItem(EQUIP_KEY);
+      localStorage.removeItem(EQUIP_KEY+'_meta');
+      EQUIP_STATE = base;
+      saveEquipement();
+      return;
+    }
+    
+    // ✅ MERGE CORRIGÉ : les items sauvegardés ont priorité, pas de doublons
     const savedMap = new Map(saved.map(i=>[i.id, i]));
-    // Merge: saved items take priority, new items from base are appended
-    EQUIP_STATE = base.map(it => savedMap.has(it.id) ? savedMap.get(it.id) : it);
-    // Also keep any user-created items (ids not in base)
     const baseIds = new Set(base.map(i=>i.id));
-    saved.forEach(it=>{ if(!baseIds.has(it.id)) EQUIP_STATE.push(it); });
+    
+    // 1) Reprendre les items base avec les valeurs sauvegardées si elles existent
+    EQUIP_STATE = base.map(it => savedMap.has(it.id) ? {...it, ...savedMap.get(it.id)} : it);
+    
+    // 2) Ajouter UNIQUEMENT les items utilisateur (pas dans base) ET vérifier qu'ils ne sont pas des doublons
+    const userItems = saved.filter(it=>!baseIds.has(it.id));
+    const userIds = new Set(EQUIP_STATE.map(x=>x.id));
+    userItems.forEach(it=>{ 
+      if(!userIds.has(it.id)) EQUIP_STATE.push(it); 
+    });
+    
     migrateSelectedMaterielToEquipement();
-    saveEquipement();
+    
+    // Sauvegarder avec timestamp pour détecter les versions
+    meta.loadTime = Date.now();
+    meta.itemCount = EQUIP_STATE.length;
+    meta.checksum = generateEquipChecksum(EQUIP_STATE);
+    localStorage.setItem(EQUIP_KEY+'_meta', JSON.stringify(meta));
+    
   }catch(e){
+    console.error('loadEquipement fail', e);
     EQUIP_STATE = EQUIP_ITEMS
       .filter(it=>!isSuggestedSanitaireEquipement(it))
       .map(it=>({...it, dureeVie:EQ_VIE_DEF[it.cat]||7, etat:'neuf', dateAchat:'', garantie:''}));
   }
 }
+
+// Debounce pour éviter les race conditions en sauvegarde multiple
+var EQUIP_SAVE_TIMEOUT = null;
 function saveEquipement(){
   try{
-    localStorage.setItem(EQUIP_KEY, JSON.stringify(EQUIP_STATE));
-    if(typeof saveAdminCache === 'function') saveAdminCache();
+    // Valider avant de sauvegarder
+    if(!validateEquipState(EQUIP_STATE)){
+      console.error('EQUIP_STATE invalide, sauvegarde annulée');
+      return;
+    }
+    
+    // Debounce : attendre 300ms avant de vraiment sauvegarder
+    clearTimeout(EQUIP_SAVE_TIMEOUT);
+    EQUIP_SAVE_TIMEOUT = setTimeout(function(){
+      try{
+        const meta = {
+          saveTime: Date.now(),
+          itemCount: EQUIP_STATE.length,
+          checksum: generateEquipChecksum(EQUIP_STATE),
+          version: 2
+        };
+        localStorage.setItem(EQUIP_KEY, JSON.stringify(EQUIP_STATE));
+        localStorage.setItem(EQUIP_KEY+'_meta', JSON.stringify(meta));
+        if(typeof saveAdminCache === 'function') saveAdminCache();
+      }catch(e){
+        console.error('saveEquipement storage error', e);
+        if(typeof toast === 'function') toast('⚠️', 'Erreur sauvegarde (localStorage plein?)');
+      }
+    }, 300);
   }catch(e){
-    console.warn('saveEquipement error', e);
+    console.error('saveEquipement error', e);
   }
 }
 function saveAllMaterielEquipement(){
@@ -11563,18 +11639,69 @@ function setEqFilter(f, btn){
 }
 function filterEquip(q){ EQ_SEARCH=(q||'').toLowerCase(); renderEquipement(); }
 
-function exportEquipCSV(){
-  if(!EQUIP_STATE) loadEquipement();
-  const rows=[['Équipement','Marque','Catégorie','Qté','Total HT','Total TTC','P.U. HT','P.U. TTC','W/u','L/usage','Durée vie (ans)','Amorti/mois','État','Lien','Notes']];
-  EQUIP_STATE.forEach(it=>{
-    const uHT=it.qty>0?+(it.prixHT/it.qty).toFixed(2):0;
-    const uTTC=it.qty>0?+(it.prixTTC/it.qty).toFixed(2):0;
-    const amort=+(it.prixHT/((it.dureeVie||7)*12)).toFixed(2);
-    rows.push([it.nom,it.marque||'',EQ_CATS[it.cat]||it.cat,it.qty,it.prixHT,it.prixTTC,uHT,uTTC,it.consoW||0,it.consoEauL||0,it.dureeVie||7,amort,it.etat||'neuf',it.lien||'',it.notes||'']);
-  });
-  const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\n');
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);a.download='eden-equipement-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
-  if(typeof toast==='function') toast('↓','Export équipement téléchargé');
+function cleanEquipLocalStorage(){
+  // Nettoie complètement localStorage pour les équipements
+  try{
+    localStorage.removeItem(EQUIP_KEY);
+    localStorage.removeItem(EQUIP_KEY+'_meta');
+    EQUIP_STATE = null;
+    loadEquipement();
+    renderEquipement();
+    if(typeof toast==='function') toast('🧹', 'localStorage nettoyé. Données réinitialisées.');
+  }catch(e){
+    console.error('Erreur nettoyage', e);
+    if(typeof toast==='function') toast('⚠️', 'Erreur lors du nettoyage');
+  }
+}
+
+function debugEquipState(){
+  // Affiche l'état actuel pour debug
+  const meta = localStorage.getItem(EQUIP_KEY+'_meta');
+  const raw = localStorage.getItem(EQUIP_KEY);
+  const parsed = raw ? JSON.parse(raw) : null;
+  const msg = `
+📊 ÉTAT ÉQUIPEMENT:
+- Items en mémoire: ${EQUIP_STATE ? EQUIP_STATE.length : 'null'}
+- Items en localStorage: ${parsed ? parsed.length : 'aucun'}
+- Meta: ${meta || 'aucun'}
+- Prix total: ${EQUIP_STATE ? EQUIP_STATE.reduce((s,x)=>s+(x.prixTTC||0),0).toFixed(2) : '?'} €
+`;
+  console.log(msg);
+  if(typeof toast==='function') toast('🔍', 'Voir console pour détails');
+}
+
+function repairEquipFromBackup(){
+  // Si localStorage est corrompu, charger depuis EQUIP_ITEMS
+  try{
+    if(!confirm('Restaurer les données par défaut (données éditées seront perdues)?')) return;
+    localStorage.removeItem(EQUIP_KEY);
+    localStorage.removeItem(EQUIP_KEY+'_meta');
+    EQUIP_STATE = null;
+    loadEquipement();
+    renderEquipement();
+    if(typeof toast==='function') toast('✓', 'Restauration par défaut effectuée');
+  }catch(e){
+    console.error('Erreur repair', e);
+  }
+}
+
+function exportEquipDebug(){
+  // Exporte un fichier JSON de debug
+  try{
+    const data = {
+      timestamp: new Date().toISOString(),
+      equip_state: EQUIP_STATE,
+      equip_meta: localStorage.getItem(EQUIP_KEY+'_meta') ? JSON.parse(localStorage.getItem(EQUIP_KEY+'_meta')) : null,
+      checksum: generateEquipChecksum(EQUIP_STATE)
+    };
+    const a = document.createElement('a');
+    a.href = 'data:application/json,' + encodeURIComponent(JSON.stringify(data, null, 2));
+    a.download = 'equip-backup-'+new Date().toISOString().slice(0,10)+'.json';
+    a.click();
+    if(typeof toast==='function') toast('↓', 'Backup exporté');
+  }catch(e){
+    console.error('Erreur export', e);
+  }
 }
 
 </script></body></html>
