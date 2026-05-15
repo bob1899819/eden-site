@@ -10567,17 +10567,30 @@ function renderMatTable(){
     accessoires:      {color:'#f08230', icon:'✨'},
   };
 
+  // IMPORTANT : sourceItems reste la base complète.
+  // allItems sert uniquement à l'affichage filtré du tableau.
   const sourceItems = MAT_STATE.items || [];
   let allItems = [...sourceItems];
 
-  // Text search
+  let totalGlobalHT = 0;
+  let totalGlobalTTC = 0;
+  sourceItems.forEach(it=>{
+    matNormalizePrice(it);
+    const qte = Number(it.stock || 0);
+    const pht = Number(it.prix_ht || 0);
+    const pttc = Number(it.prix_ttc || 0);
+    totalGlobalHT += qte * pht;
+    totalGlobalTTC += qte * pttc;
+  });
+
+  // Text search : filtre seulement les lignes visibles.
   if(q) allItems = allItems.filter(it=>
     String(it.nom||'').toLowerCase().includes(q) ||
     String(it.fournisseur||'').toLowerCase().includes(q) ||
     String(MAT_SIMPLE_LABELS[matSimpleCat(it.cat)]||'').toLowerCase().includes(q)
   );
 
-  // Category filter from bar
+  // Category filter from bar : filtre seulement les lignes visibles.
   if(catFilter==='alert'){
     allItems = allItems.filter(it=>matStatusSimple(it).cls!=='confirmed');
   } else if(catFilter!=='all'){
@@ -10589,18 +10602,6 @@ function renderMatTable(){
     const tf=document.getElementById('mat-tfoot'); if(tf) tf.innerHTML='';
     return;
   }
-
-  // Totaux globaux indépendants du filtre affiché
-  let totalGlobalHT = 0;
-  let totalGlobalTTC = 0;
-  sourceItems.forEach(it=>{
-    matNormalizePrice(it);
-    const qte = Number(it.stock || 0);
-    const pht = Number(it.prix_ht || 0);
-    const pttc = Number(it.prix_ttc || 0);
-    totalGlobalHT += qte * pht;
-    totalGlobalTTC += qte * pttc;
-  });
 
   // Group by category
   const grouped={};
@@ -10680,7 +10681,7 @@ function renderMatTable(){
       <td class="lbl" colspan="6" style="border-top:1px solid rgba(196,160,78,.15)">TOTAL STOCK</td>
       <td style="font-family:var(--serif);color:var(--gold);font-size:15px;border-top:1px solid rgba(196,160,78,.15);white-space:nowrap">${matMoney(totalGlobalHT)} € HT</td>
       <td style="font-family:var(--serif);color:var(--gold-l);font-size:15px;border-top:1px solid rgba(196,160,78,.15);white-space:nowrap">${matMoney(totalGlobalTTC)} € TTC</td>
-      <td colspan="5" style="font-size:9px;color:var(--muted);font-family:var(--sans);letter-spacing:1px;border-top:1px solid rgba(196,160,78,.15)">${allItems.length} article(s)</td>
+      <td colspan="5" style="font-size:9px;color:var(--muted);font-family:var(--sans);letter-spacing:1px;border-top:1px solid rgba(196,160,78,.15)">${sourceItems.length} article(s) au total · ${allItems.length} affiché(s)</td>
     </tr>`;
     tf.innerHTML=footHTML;
   }
