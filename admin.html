@@ -10567,7 +10567,8 @@ function renderMatTable(){
     accessoires:      {color:'#f08230', icon:'✨'},
   };
 
-  let allItems = MAT_STATE.items || [];
+  let sourceItems = MAT_STATE.items || [];
+let allItems = [...sourceItems];
 
   // Text search
   if(q) allItems = allItems.filter(it=>
@@ -10594,7 +10595,17 @@ function renderMatTable(){
   MAT_SIMPLE_CATS.forEach(c=>{ grouped[c]=[]; });
   allItems.forEach(it=>{ const c=matSimpleCat(it.cat); if(grouped[c]) grouped[c].push(it); });
 
-  let rows='', totalHTAll=0, totalTTCAll=0;
+  let totalGlobalHT = 0;
+let totalGlobalTTC = 0;
+
+sourceItems.forEach(it=>{
+  matNormalizePrice(it);
+  const qte = Number(it.stock || 0);
+  const pht = Number(it.prix_ht || 0);
+  const pttc = Number(it.prix_ttc || 0);
+  totalGlobalHT += qte * pht;
+  totalGlobalTTC += qte * pttc;
+});
   const catTotals=[];
   const useGroups = !q && catFilter==='all'; // grouper seulement si pas de recherche et "Tout" actif
 
@@ -10665,8 +10676,8 @@ function renderMatTable(){
     }
     footHTML+=`<tr>
       <td class="lbl" colspan="6" style="border-top:1px solid rgba(196,160,78,.15)">TOTAL STOCK</td>
-      <td style="font-family:var(--serif);color:var(--gold);font-size:15px;border-top:1px solid rgba(196,160,78,.15);white-space:nowrap">${matMoney(totalHTAll)} € HT</td>
-      <td style="font-family:var(--serif);color:var(--gold-l);font-size:15px;border-top:1px solid rgba(196,160,78,.15);white-space:nowrap">${matMoney(totalTTCAll)} € TTC</td>
+      <td style="font-family:var(--serif);color:var(--gold);font-size:15px;border-top:1px solid rgba(196,160,78,.15);white-space:nowrap">${matMoney(totalGlobalHT)} € HT</td>
+      <td style="font-family:var(--serif);color:var(--gold-l);font-size:15px;border-top:1px solid rgba(196,160,78,.15);white-space:nowrap">${matMoney(totalGlobalTTC)} € TTC</td>
       <td colspan="5" style="font-size:9px;color:var(--muted);font-family:var(--sans);letter-spacing:1px;border-top:1px solid rgba(196,160,78,.15)">${allItems.length} article(s)</td>
     </tr>`;
     tf.innerHTML=footHTML;
