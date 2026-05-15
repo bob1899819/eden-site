@@ -2830,7 +2830,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
           <button class="btn-s" onclick="addMatItem()">+ Consommable</button>
           <button class="btn-s" onclick="importRitualsProducts()" title="Importer Rituals">🌸 Rituals</button>
           <button class="btn-s" onclick="importEquipementIntoMateriel()" title="Ajouter équipement fixe/pro dans le tableau matériel, sans ajouter les éléments sanitaires non demandés">🔧 Import équipement</button>
-          <button class="btn-s fill" onclick="saveAllMaterielEquipement();if(typeof toast==='function')toast('✓','Sauvegardé')">💾 Sauvegarder</button>
+          <button class="btn-s fill" onclick="saveAllMaterielEquipement(true)">💾 Sauvegarder</button>
           <button class="btn-s" onclick="exportMatCSV()">↓ CSV</button>
         </div>
       </div>
@@ -2934,7 +2934,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
               <input class="search" placeholder="Rechercher…" oninput="filterEquip(this.value)" id="eq-search" style="width:180px">
               <button class="eq-compact-btn on" id="eq-compact-btn" onclick="toggleEqCompact(this)" title="Vue compacte — réduit les colonnes pour tout voir">⊞ Normal</button>
               <button class="btn-s" onclick="addEqItem()">+ Ajouter</button>
-              <button class="btn-s fill" onclick="saveEquipement();if(typeof toast==='function')toast('✓','Équipement sauvegardé')">💾 Sauvegarder</button>
+              <button class="btn-s fill" onclick="saveEquipement(true)">💾 Sauvegarder</button>
               <button class="btn-s" onclick="exportEquipCSV()">↓ CSV</button>
             </div>
           </div>
@@ -5289,6 +5289,16 @@ function showApp(){
   loadAdminCache();
   initSB();
   renderAll();
+  // Si la page active par défaut (dans le HTML) n'est pas le dashboard,
+  // déclencher son rendu : sinon les éléments comme #eq-tb-count, #eq-k-invest, etc.
+  // gardent les valeurs hardcodées du HTML et ne reflètent pas localStorage.
+  try{
+    const activeSection = document.querySelector('.page.active');
+    if(activeSection){
+      const pageId = activeSection.id.replace(/^page-/, '');
+      if(pageId && pageId !== 'dashboard' && typeof renderPage === 'function') renderPage(pageId);
+    }
+  }catch(e){ console.warn('init active page render', e); }
   startTokenRefresh();
   startInactivityTimer();
 }
@@ -5463,7 +5473,7 @@ function renderPage(p){
   parametres:renderParams,
   simulation:renderSimulation,
   charges:renderCharges,
-  materiel:function(){ setMatTab('equipement'); }
+  materiel:function(){ if(typeof renderMateriel==='function') renderMateriel(); setMatTab('equipement'); }
 };
   if(map[p]) map[p]();
 }
@@ -9971,10 +9981,12 @@ function resetDismissedMatAlerts(){
   renderMateriel();
 }
 
-function renderMateriel(){
-  if(!MAT_STATE) loadMateriel();
-  const p = MAT_STATE.params;
-  // Sync slider et inputs
+// Synchronise les inputs/sliders des paramètres matériel (clients, jours, seuils).
+// Appelé depuis renderMateriel (l'unique, défini plus bas). Avant, c'était dupliqué dans une seconde
+// définition de renderMateriel qui écrasait celle-ci ; on a fusionné pour garder la synchro.
+function renderMaterielParams(){
+  if(!MAT_STATE) return;
+  const p = MAT_STATE.params || {};
   const sld = document.getElementById('mat-slider'); if(sld) sld.value = p.clients;
   const num = document.getElementById('mat-client-num'); if(num) num.textContent = p.clients;
   const setVal = (id,v)=>{ const e=document.getElementById(id); if(e&&document.activeElement!==e) e.value=v; };
@@ -9982,13 +9994,9 @@ function renderMateriel(){
   setVal('mat-cov', p.seuilCouverture);
   setVal('mat-safety', p.safety);
   setVal('mat-target', p.targetDays);
-  // Update preset buttons
   document.querySelectorAll('#page-materiel .mat-presets .fb').forEach(b=>{
     b.classList.toggle('on', +b.textContent.trim() === +p.clients);
   });
-  renderMatGrid();
-  renderMatTable();
-  updateMatKPIs();
 }
 
 function updateMateriel(){
@@ -10363,9 +10371,9 @@ function matStatusSimple(it){
 }
 function renderMateriel(){
   if(!MAT_STATE) loadMateriel();
-  cleanAutoSanitaireEquipmentFromMateriel();
-  // Consommables & Réappro supprimé de l'interface : plus de fusion automatique depuis Équipement fixe.
-  cleanAutoSanitaireEquipmentFromMateriel();
+  renderMaterielParams();
+  // cleanAutoSanitaireEquipmentFromMateriel() retiré : il supprimait silencieusement
+  // les items mat_from_eq_* à chaque rendu, ce qui causait des pertes de données.
   matNormalizeSimple();
   if(!MAT_SIMPLE_CATS.includes(MAT_FILTER)) MAT_FILTER='materiel';
   saveMateriel();
@@ -11059,15 +11067,39 @@ function generateEquipChecksum(data){
 }
 
 function validateEquipState(state){
-  // Vérifie que EQUIP_STATE est valide et complète
-  if(!Array.isArray(state) || state.length===0) return false;
-  return state.every(x => x && typeof x==='object' && x.id && x.nom);
+  // Doit être un tableau (vide accepté : l'utilisateur peut tout supprimer)
+  return Array.isArray(state);
+}
+function normalizeEquipState(state){
+  // Auto-répare les items incomplets au lieu de bloquer toute la sauvegarde.
+  if(!Array.isArray(state)) return;
+  state.forEach((x, i) => {
+    if(!x || typeof x !== 'object') return;
+    if(!x.id) x.id = 'eq_auto_'+Date.now()+'_'+i;
+    if(!x.nom || !String(x.nom).trim()) x.nom = 'Équipement sans nom';
+  });
+}
+
+// Tombstones : on retient les items de base supprimés pour qu'ils ne reviennent pas au reload.
+const EQUIP_DELETED_KEY = 'eden_equipement_v2_deleted';
+function getDeletedEquipIds(){
+  try{
+    const raw = localStorage.getItem(EQUIP_DELETED_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  }catch(e){ return new Set(); }
+}
+function markEquipDeleted(id){
+  if(!id) return;
+  const set = getDeletedEquipIds();
+  set.add(String(id));
+  try{ localStorage.setItem(EQUIP_DELETED_KEY, JSON.stringify([...set])); }catch(e){}
 }
 
 function loadEquipement(){
   try{
+    const deletedBase = getDeletedEquipIds();
     const base = EQUIP_ITEMS
-      .filter(it=>!isSuggestedSanitaireEquipement(it))
+      .filter(it=>!deletedBase.has(String(it.id)))
       .map(it=>({
         ...it,
         dureeVie: it.dureeVie || EQ_VIE_DEF[it.cat] || 7,
@@ -11090,7 +11122,11 @@ function loadEquipement(){
     
     let saved = [];
     try{
-      saved = JSON.parse(raw).filter(it=>!isSuggestedSanitaireEquipement(it));
+      // Ne plus filtrer les items « sanitaire » sauvegardés : c'était une cleanup automatique
+      // qui supprimait silencieusement les eq_100→eq_142 à chaque chargement et finissait par
+      // être réécrite en localStorage à la prochaine sauvegarde, faisant perdre 43 items.
+      saved = JSON.parse(raw);
+      if(!Array.isArray(saved)) saved = [];
     }catch(parseErr){
       console.error('localStorage corrompu, rechargement des défauts', parseErr);
       localStorage.removeItem(EQUIP_KEY);
@@ -11125,47 +11161,47 @@ function loadEquipement(){
   }catch(e){
     console.error('loadEquipement fail', e);
     EQUIP_STATE = EQUIP_ITEMS
-      .filter(it=>!isSuggestedSanitaireEquipement(it))
       .map(it=>({...it, dureeVie:EQ_VIE_DEF[it.cat]||7, etat:'neuf', dateAchat:'', garantie:''}));
   }
 }
 
-// Debounce pour éviter les race conditions en sauvegarde multiple
-var EQUIP_SAVE_TIMEOUT = null;
-function saveEquipement(){
+// Sauvegarde synchrone : pas de debounce, le bouton 💾 écrit immédiatement dans localStorage.
+// Retourne true si écrit, false sinon. Affiche un toast uniquement si showToast=true.
+function saveEquipement(showToast){
   try{
-    // Valider avant de sauvegarder
     if(!validateEquipState(EQUIP_STATE)){
-      console.error('EQUIP_STATE invalide, sauvegarde annulée');
-      return;
+      console.error('EQUIP_STATE n\'est pas un tableau, sauvegarde annulée');
+      if(showToast && typeof toast === 'function') toast('⚠️', 'Données équipement invalides');
+      return false;
     }
-    
-    // Debounce : attendre 300ms avant de vraiment sauvegarder
-    clearTimeout(EQUIP_SAVE_TIMEOUT);
-    EQUIP_SAVE_TIMEOUT = setTimeout(function(){
-      try{
-        const meta = {
-          saveTime: Date.now(),
-          itemCount: EQUIP_STATE.length,
-          checksum: generateEquipChecksum(EQUIP_STATE),
-          version: 2
-        };
-        localStorage.setItem(EQUIP_KEY, JSON.stringify(EQUIP_STATE));
-        localStorage.setItem(EQUIP_KEY+'_meta', JSON.stringify(meta));
-        if(typeof saveAdminCache === 'function') saveAdminCache();
-      }catch(e){
-        console.error('saveEquipement storage error', e);
-        if(typeof toast === 'function') toast('⚠️', 'Erreur sauvegarde (localStorage plein?)');
-      }
-    }, 300);
+    normalizeEquipState(EQUIP_STATE);
+    const meta = {
+      saveTime: Date.now(),
+      itemCount: EQUIP_STATE.length,
+      checksum: generateEquipChecksum(EQUIP_STATE),
+      version: 2
+    };
+    localStorage.setItem(EQUIP_KEY, JSON.stringify(EQUIP_STATE));
+    localStorage.setItem(EQUIP_KEY+'_meta', JSON.stringify(meta));
+    if(typeof saveAdminCache === 'function') saveAdminCache();
+    if(showToast && typeof toast === 'function') toast('✓','Équipement sauvegardé ('+EQUIP_STATE.length+')');
+    return true;
   }catch(e){
     console.error('saveEquipement error', e);
+    if(showToast && typeof toast === 'function') toast('⚠️', 'Erreur sauvegarde : '+(e && e.message || 'localStorage plein ?'));
+    return false;
   }
 }
-function saveAllMaterielEquipement(){
-  try{ if(typeof saveMateriel === 'function') saveMateriel(); }catch(e){ console.warn('saveMateriel all error', e); }
-  try{ if(typeof saveEquipement === 'function') saveEquipement(); }catch(e){ console.warn('saveEquipement all error', e); }
+function saveAllMaterielEquipement(showToast){
+  let okMat = true, okEq = true;
+  try{ if(typeof saveMateriel === 'function') saveMateriel(); }catch(e){ console.warn('saveMateriel all error', e); okMat = false; }
+  try{ if(typeof saveEquipement === 'function') okEq = saveEquipement(false); }catch(e){ console.warn('saveEquipement all error', e); okEq = false; }
   try{ if(typeof saveAdminCache === 'function') saveAdminCache(); }catch(e){ console.warn('saveAdminCache all error', e); }
+  if(showToast && typeof toast === 'function'){
+    if(okMat && okEq) toast('✓','Sauvegardé');
+    else toast('⚠️','Sauvegarde partielle — voir console');
+  }
+  return okMat && okEq;
 }
 function setEqField(id, field, val){
   if(!EQUIP_STATE) loadEquipement();
@@ -11238,6 +11274,10 @@ function dupEqItem(id){
 }
 function delEqItem(id){
   if(!confirm('Supprimer cet équipement ?')) return;
+  // Tombstone : si c'est un item de base (présent dans EQUIP_ITEMS), on le mémorise pour ne pas le réinjecter au reload.
+  try{
+    if(Array.isArray(EQUIP_ITEMS) && EQUIP_ITEMS.some(b=>String(b.id)===String(id))) markEquipDeleted(id);
+  }catch(e){}
   EQUIP_STATE=EQUIP_STATE.filter(x=>x.id!==id);
   saveEquipement(); renderEquipement();
 }
