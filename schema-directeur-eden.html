@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schéma Directeur EDEN — Simulateur financier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&amp;family=Jost:wght@100;200;300;400;500&amp;display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+  --gold:#c4a04e;--gold-l:#dbbf78;--gold-d:#8a7038;--gold-pale:#f2e8d0;
+  --dark:#060908;--dark2:#0c110a;--dark3:#111608;--dark4:#0a0f07;
+  --cream:#f4efe5;--muted:#7a7a68;--light:#b8b4a4;
+  --ok:#4caf50;--warn:#f0a030;--err:#e05050;--info:#5b9bd5;--purple:#9c7fd5;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Jost',system-ui,sans-serif;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+  --ease2:cubic-bezier(.22,.68,0,1.2);
+  --sidebar:265px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--cream);font-family:var(--sans);font-weight:300;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--dark2);}
+::-webkit-scrollbar-thumb{background:rgba(196,160,78,.18);border-radius:2px;}
+
+/* ══ LOGIN ══ */
+#login-screen{position:fixed;inset:0;z-index:9999;background:var(--dark);display:flex;align-items:center;justify-content:center;}
+#login-screen.hidden{display:none;}
+.login-wrap{width:440px;}
+.login-deco{text-align:center;margin-bottom:40px;}
+.login-logo{font-family:var(--serif);font-size:52px;letter-spacing:18px;color:var(--gold);display:block;line-height:1;}
+.login-sub{font-size:8px;letter-spacing:6px;text-transform:uppercase;color:var(--muted);margin-top:10px;display:block;}
+.login-line{height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.3),transparent);margin:28px 0;}
+.login-box{background:var(--dark2);border:1px solid rgba(196,160,78,.12);padding:40px 44px;}
+.lf{display:flex;flex-direction:column;gap:7px;margin-bottom:18px;}
+.lf label{font-size:8px;letter-spacing:3.5px;text-transform:uppercase;color:var(--gold);}
+.lf input{background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.14);color:var(--cream);padding:13px 16px;font-family:var(--sans);font-size:13px;outline:none;transition:border-color .3s;font-weight:300;}
+.lf input:focus{border-color:rgba(196,160,78,.5);}
+.login-btn{width:100%;background:var(--gold);color:var(--dark);border:none;padding:15px;font-family:var(--sans);font-size:9px;letter-spacing:4px;text-transform:uppercase;font-weight:400;cursor:pointer;transition:all .3s;margin-top:6px;}
+.login-btn:hover{background:var(--gold-l);}
+.login-attempts{font-size:9px;color:var(--err);margin-top:10px;text-align:center;min-height:16px;}
+.login-locked{font-size:9px;color:var(--err);text-align:center;padding:10px;background:rgba(224,80,80,.07);border:1px solid rgba(224,80,80,.15);margin-top:10px;display:none;}
+.login-sep{display:none!important;}
+.sb-cfg-box{display:none!important;}
+.sb-cfg-title{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.cfg-input{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.1);color:var(--cream);padding:9px 12px;font-family:monospace;font-size:10px;outline:none;transition:border-color .3s;margin-bottom:8px;}
+.cfg-input:focus{border-color:rgba(196,160,78,.35);}
+.cfg-input::placeholder{color:var(--muted);font-family:var(--sans);}
+.login-note{font-size:9px;color:var(--muted);text-align:center;line-height:2;margin-top:16px;}
+#sb-no-cfg{display:none!important;}
+
+/* ══ APP SHELL ══ */
+#app{display:none;min-height:100vh;}
+#app.visible{display:flex;}
+
+/* ══ SIDEBAR ══ */
+.sidebar{width:var(--sidebar);min-height:100vh;background:var(--dark2);border-right:1px solid rgba(196,160,78,.07);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;}
+.sb-top{padding:28px 24px 22px;border-bottom:1px solid rgba(196,160,78,.07);}
+.sb-brand{font-family:var(--serif);font-size:20px;letter-spacing:10px;color:var(--gold);}
+.sb-tagline{font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+.sb-conn{display:flex;align-items:center;gap:6px;margin-top:10px;}
+.cdot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0;}
+.cdot.live{background:var(--ok);animation:pulse 2.2s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(76,175,80,.35)}55%{box-shadow:0 0 0 5px transparent}}
+.sb-conn-txt{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.sb-nav{flex:1;padding:12px 0;overflow-y:auto;}
+.sb-sec{font-size:7px;letter-spacing:3.5px;text-transform:uppercase;color:rgba(122,122,104,.5);padding:14px 24px 6px;}
+.sbi{display:flex;align-items:center;gap:11px;padding:10px 24px;color:rgba(184,180,164,.55);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;border-left:2px solid transparent;user-select:none;position:relative;}
+.sbi:hover{color:var(--cream);background:rgba(196,160,78,.04);}
+.sbi.active{color:var(--gold);border-left-color:var(--gold);background:rgba(196,160,78,.055);}
+.sbi-icon{width:15px;text-align:center;font-size:12px;flex-shrink:0;}
+.sbi-badge{margin-left:auto;font-size:8px;padding:2px 7px;border-radius:10px;min-width:18px;text-align:center;}
+.sbi-badge.red{background:var(--err);color:#fff;}
+.sbi-badge.gold{background:rgba(196,160,78,.12);color:var(--gold);border:1px solid rgba(196,160,78,.22);}
+.sbi-badge.ok{background:rgba(76,175,80,.12);color:var(--ok);border:1px solid rgba(76,175,80,.2);}
+.sb-foot{padding:18px 24px;border-top:1px solid rgba(196,160,78,.07);}
+.sb-user{display:flex;align-items:center;gap:10px;}
+.sb-av{width:32px;height:32px;border:1px solid rgba(196,160,78,.22);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:13px;color:var(--gold);flex-shrink:0;}
+.sb-un{font-size:11px;color:var(--cream);}
+.sb-ur{font-size:7px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;}
+.sb-out{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;transition:color .2s;padding:4px;}
+.sb-out:hover{color:var(--err);}
+
+/* ══ MAIN ══ */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{height:60px;border-bottom:1px solid rgba(196,160,78,.07);display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:rgba(6,9,8,.85);backdrop-filter:blur(24px);position:sticky;top:0;z-index:50;}
+.tb-title{font-family:var(--serif);font-size:19px;font-weight:300;color:var(--cream);}
+.tb-title em{font-style:italic;color:var(--gold-l);}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.tb-date{font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.tb-bell{width:32px;height:32px;border:1px solid rgba(196,160,78,.12);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative;font-size:12px;color:var(--muted);}
+.tb-bell:hover{border-color:var(--gold);color:var(--gold);}
+.tb-bell-n{position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:var(--err);border-radius:50%;font-size:7px;display:flex;align-items:center;justify-content:center;color:#fff;}
+.btn-s{font-size:8px;letter-spacing:2.5px;text-transform:uppercase;border:1px solid rgba(196,160,78,.3);color:var(--gold);padding:8px 16px;cursor:pointer;background:none;font-family:var(--sans);transition:all .22s;}
+.btn-s:hover{background:var(--gold);color:var(--dark);}
+.btn-s.fill{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+.btn-s.fill:hover{background:var(--gold-l);}
+.btn-s.danger{border-color:rgba(224,80,80,.3);color:var(--err);}
+.btn-s.danger:hover{background:var(--err);color:#fff;}
+
+
+/* ══ MENU LATÉRAL RÉDUCTIBLE ══ */
+body.sidebar-collapsed{--sidebar:72px;}
+body.sidebar-collapsed .sidebar{width:72px;}
+body.sidebar-collapsed .sb-top{padding:24px 10px;text-align:center;}
+body.sidebar-collapsed .sb-brand{font-size:16px;letter-spacing:2px;}
+body.sidebar-collapsed .sb-tagline,
+body.sidebar-collapsed .sb-conn,
+body.sidebar-collapsed .sb-sec,
+body.sidebar-collapsed .sb-un,
+body.sidebar-collapsed .sb-ur{display:none!important;}
+body.sidebar-collapsed .sbi{justify-content:center;padding:13px 0;gap:0;font-size:0;}
+body.sidebar-collapsed .sbi-icon{font-size:15px;width:auto;}
+body.sidebar-collapsed .sbi-badge{position:absolute;top:5px;right:8px;margin:0;font-size:7px;padding:1px 5px;}
+body.sidebar-collapsed .sb-foot{padding:16px 10px;}
+body.sidebar-collapsed .sb-user{justify-content:center;}
+body.sidebar-collapsed .sb-av{display:none;}
+body.sidebar-collapsed .sb-out{margin:0;}
+body.sidebar-collapsed .main{margin-left:72px;}
+.side-toggle{width:34px;height:34px;border:1px solid rgba(196,160,78,.22);background:rgba(196,160,78,.04);color:var(--gold);cursor:pointer;font-family:var(--sans);font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;margin-right:14px;flex-shrink:0;}
+.side-toggle:hover{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+.tb-left{display:flex;align-items:center;min-width:0;}
+.tb-left .tb-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.sidebar-collapsed .side-toggle{transform:rotate(180deg);}
+@media(max-width:880px){body.sidebar-collapsed .main{margin-left:0;}.side-toggle{display:none;}}
+
+/* ══ PAGES ══ */
+.page{flex:1;padding:32px;display:none;}
+.page.active{display:block;}
+
+/* ══ SECTION HEADER ══ */
+.sh{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:26px;}
+.sh-left .ey{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.sh-left h2{font-family:var(--serif);font-size:26px;font-weight:300;}
+.sh-left h2 em{font-style:italic;color:var(--gold-l);}
+
+/* ══ KPI GRID ══ */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.kpi{background:var(--dark2);border:1px solid rgba(196,160,78,.07);padding:22px 24px;position:relative;overflow:hidden;transition:border-color .3s;cursor:default;}
+.kpi:hover{border-color:rgba(196,160,78,.22);}
+.kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent,var(--gold)),transparent);opacity:.25;}
+.kpi-label{font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.kpi-val{font-family:var(--serif);font-size:34px;font-weight:300;line-height:1;}
+.kpi-val b{color:var(--accent,var(--gold));}
+.kpi-sub{font-size:9px;color:var(--muted);margin-top:7px;display:flex;align-items:center;gap:6px;}
+.kpi-trend{font-size:8px;padding:2px 7px;}
+.kpi-trend.up{color:var(--ok);background:rgba(76,175,80,.08);}
+.kpi-trend.down{color:var(--err);background:rgba(224,80,80,.08);}
+.kpi-ico{position:absolute;top:18px;right:20px;font-size:20px;opacity:.1;}
+
+/* ══ TABLE ══ */
+.tw{background:var(--dark2);border:1px solid rgba(196,160,78,.07);overflow:hidden;margin-bottom:20px;}
+/* Variante sans overflow:hidden pour les tableaux avec scroll horizontal */
+.tw.tw-scroll{overflow:visible;}
+.tw-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(196,160,78,.07);}
+.tw-title{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);}
+.tw-acts{display:flex;gap:8px;align-items:center;}
+.filter-row{display:flex;gap:5px;flex-wrap:wrap;padding:10px 20px;border-bottom:1px solid rgba(196,160,78,.04);}
+.fb{font-size:8px;letter-spacing:2px;text-transform:uppercase;padding:5px 13px;border:1px solid rgba(196,160,78,.1);background:none;color:var(--muted);cursor:pointer;font-family:var(--sans);transition:all .2s;}
+.fb:hover{border-color:rgba(196,160,78,.3);color:var(--light);}
+.fb.on{border-color:var(--gold);color:var(--gold);background:rgba(196,160,78,.05);}
+.search{background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.1);color:var(--cream);padding:6px 12px;font-family:var(--sans);font-size:11px;outline:none;transition:border-color .3s;width:190px;}
+.search:focus{border-color:rgba(196,160,78,.38);}
+table{width:100%;border-collapse:collapse;}
+thead tr{border-bottom:1px solid rgba(196,160,78,.07);}
+thead th{font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);padding:11px 16px;text-align:left;font-weight:400;}
+tbody tr{border-bottom:1px solid rgba(196,160,78,.035);transition:background .15s;cursor:pointer;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(196,160,78,.025);}
+tbody td{padding:12px 16px;font-size:11px;color:var(--light);}
+td.name{color:var(--cream);font-size:12px;}
+td.gold{color:var(--gold);font-family:var(--serif);font-size:14px;}
+td.small{font-size:9px;color:var(--muted);}
+
+/* ══ STATUS BADGES ══ */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:2px;}
+.badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.badge.pending{background:rgba(240,160,48,.1);color:var(--warn);border:1px solid rgba(240,160,48,.18);}
+.badge.confirmed{background:rgba(76,175,80,.07);color:var(--ok);border:1px solid rgba(76,175,80,.14);}
+.badge.cancelled{background:rgba(224,80,80,.07);color:var(--err);border:1px solid rgba(224,80,80,.14);}
+.badge.done{background:rgba(91,155,213,.07);color:var(--info);border:1px solid rgba(91,155,213,.14);}
+.badge.new{background:rgba(156,127,213,.1);color:var(--purple);border:1px solid rgba(156,127,213,.18);}
+
+/* ══ ACTION BTNS IN TABLE ══ */
+.atb{background:none;border:1px solid rgba(196,160,78,.1);color:var(--muted);padding:4px 10px;font-size:8px;cursor:pointer;font-family:var(--sans);letter-spacing:1.5px;text-transform:uppercase;transition:all .2s;}
+.atb:hover{border-color:var(--gold);color:var(--gold);}
+.atb.ok:hover{border-color:var(--ok);color:var(--ok);}
+.atb.err:hover{border-color:var(--err);color:var(--err);}
+
+/* ══ GRID ══ */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:20px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+
+/* ══ CARD ══ */
+.card{background:var(--dark2);border:1px solid rgba(196,160,78,.07);padding:22px;}
+.card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid rgba(196,160,78,.06);}
+.card-t{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);}
+
+/* ══ STOCK ══ */
+.si{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(196,160,78,.045);}
+.si:last-child{border-bottom:none;}
+.si-name{flex:1;font-size:11px;color:var(--light);}
+.si-name small{display:block;font-size:8px;color:var(--muted);margin-top:2px;letter-spacing:1px;}
+.si-bar{width:100px;height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;}
+.si-fill{height:100%;border-radius:2px;transition:width .5s var(--ease);}
+.si-fill.ok{background:var(--ok);}
+.si-fill.warn{background:var(--warn);}
+.si-fill.err{background:var(--err);}
+.si-qty{width:52px;text-align:right;font-family:var(--serif);font-size:14px;color:var(--cream);}
+.si-qty small{font-size:7px;font-family:var(--sans);color:var(--muted);}
+.si-ctrl{display:flex;gap:3px;}
+.sib{width:24px;height:24px;border:1px solid rgba(196,160,78,.14);background:none;color:var(--gold);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.sib:hover{background:var(--gold);color:var(--dark);}
+
+/* ══ FICHE CLIENT ══ */
+.client-avatar{width:48px;height:48px;border:1px solid rgba(196,160,78,.25);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:20px;color:var(--gold);flex-shrink:0;}
+.client-stat{text-align:center;padding:14px;background:rgba(255,255,255,.02);border:1px solid rgba(196,160,78,.07);}
+.cs-val{font-family:var(--serif);font-size:24px;color:var(--gold);}
+.cs-lbl{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+.loyalty-bar{height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;margin:8px 0;}
+.loyalty-fill{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold));border-radius:3px;transition:width .6s var(--ease);}
+
+/* ══ PLANNING ══ */
+.planning-grid{display:grid;grid-template-columns:80px repeat(7,1fr);border:1px solid rgba(196,160,78,.07);overflow:hidden;}
+.pg-header{background:rgba(196,160,78,.04);border-bottom:1px solid rgba(196,160,78,.07);}
+.pg-day{text-align:center;padding:10px 4px;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);border-right:1px solid rgba(196,160,78,.06);}
+.pg-day.today{background:rgba(196,160,78,.08);}
+.pg-time{padding:6px 10px;font-size:9px;color:var(--muted);border-bottom:1px solid rgba(196,160,78,.04);border-right:1px solid rgba(196,160,78,.06);display:flex;align-items:center;background:rgba(255,255,255,.01);}
+.pg-cell{border-right:1px solid rgba(196,160,78,.04);border-bottom:1px solid rgba(196,160,78,.04);min-height:44px;position:relative;transition:background .2s;cursor:pointer;}
+.pg-cell:hover{background:rgba(196,160,78,.03);}
+.pg-cell.today-col{background:rgba(196,160,78,.025);}
+.pg-evt{position:absolute;inset:2px;border-radius:1px;padding:3px 5px;font-size:8px;line-height:1.3;overflow:hidden;}
+.pg-evt.confirmed{background:rgba(76,175,80,.18);border-left:2px solid var(--ok);}
+.pg-evt.pending{background:rgba(240,160,48,.15);border-left:2px solid var(--warn);}
+.pg-evt.done{background:rgba(91,155,213,.12);border-left:2px solid var(--info);}
+
+/* ══ GRAPHS ══ */
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:80px;margin-top:10px;}
+.bc-bar{flex:1;border-radius:1px 1px 0 0;transition:height .6s var(--ease),background .3s;cursor:pointer;position:relative;min-width:0;}
+.bc-bar:hover{filter:brightness(1.2);}
+.bc-bar-label{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:7px;color:var(--muted);letter-spacing:1px;white-space:nowrap;}
+.bc-bar-val{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--gold);white-space:nowrap;opacity:0;transition:opacity .2s;}
+.bc-bar:hover .bc-bar-val{opacity:1;}
+.pie-wrap{display:flex;align-items:center;gap:18px;margin-top:10px;}
+.pie-legend{display:flex;flex-direction:column;gap:7px;}
+.pl-item{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--light);}
+.pl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* ══ TIMELINE ══ */
+.tl{display:flex;flex-direction:column;}
+.tl-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(196,160,78,.04);}
+.tl-item:last-child{border-bottom:none;}
+.tl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.tl-time{font-size:8px;letter-spacing:1px;color:var(--muted);}
+.tl-txt{font-size:11px;color:var(--light);line-height:1.5;}
+
+/* ══ ALERT BANNER ══ */
+.alert{padding:11px 16px;margin-bottom:16px;display:flex;align-items:center;gap:9px;font-size:10px;line-height:1.6;}
+.alert.warn{background:rgba(240,160,48,.06);border:1px solid rgba(240,160,48,.18);color:var(--warn);}
+.alert.err{background:rgba(224,80,80,.05);border:1px solid rgba(224,80,80,.17);color:var(--err);}
+.alert.ok{background:rgba(76,175,80,.05);border:1px solid rgba(76,175,80,.14);color:var(--ok);}
+.alert.info{background:rgba(91,155,213,.05);border:1px solid rgba(91,155,213,.14);color:var(--info);}
+.alert a{color:inherit;text-decoration:underline;cursor:pointer;}
+.alert.dismissible{position:relative;padding-right:42px;}
+.alert-x{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:22px;height:22px;border:1px solid rgba(196,160,78,.18);
+  background:rgba(255,255,255,.025);color:var(--muted);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1;
+  transition:all .2s;font-family:var(--sans);
+}
+.alert-x:hover{border-color:var(--err);color:var(--err);background:rgba(224,80,80,.08);}
+
+/* ══ DRAWER ══ */
+.dov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;backdrop-filter:blur(3px);}
+.dov.open{display:block;}
+.drawer{position:fixed;right:0;top:0;bottom:0;width:500px;z-index:201;background:var(--dark2);border-left:1px solid rgba(196,160,78,.1);transform:translateX(100%);transition:transform .38s var(--ease);display:flex;flex-direction:column;overflow:hidden;}
+.drawer.open{transform:translateX(0);}
+.dh{padding:24px 28px;border-bottom:1px solid rgba(196,160,78,.07);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;}
+.dh-t{font-family:var(--serif);font-size:22px;font-weight:300;}
+.dh-s{font-size:8px;color:var(--muted);margin-top:3px;letter-spacing:1px;}
+.dclose{background:none;border:1px solid rgba(196,160,78,.12);color:var(--muted);width:32px;height:32px;cursor:pointer;font-size:14px;transition:all .2s;flex-shrink:0;}
+.dclose:hover{border-color:var(--err);color:var(--err);}
+.db{flex:1;overflow-y:auto;padding:24px 28px;}
+.df{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.df label{font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
+.df-v{font-size:12px;color:var(--cream);padding:10px 13px;background:rgba(255,255,255,.02);border:1px solid rgba(196,160,78,.09);line-height:1.6;}
+.df-v.big{font-family:var(--serif);font-size:17px;}
+.df input,.df select,.df textarea{background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.13);color:var(--cream);padding:10px 13px;font-family:var(--sans);font-size:12px;font-weight:300;outline:none;transition:border-color .3s;width:100%;}
+.df input:focus,.df select:focus,.df textarea:focus{border-color:rgba(196,160,78,.42);}
+.df select option{background:var(--dark2);}
+.df textarea{resize:vertical;min-height:72px;}
+.df-row{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.df-sep{height:1px;background:linear-gradient(90deg,transparent,rgba(196,160,78,.15),transparent);margin:14px 0;}
+.dfoot{padding:18px 28px;border-top:1px solid rgba(196,160,78,.07);display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;}
+
+/* ══ CONFIG / PARAMS ══ */
+.cfg-row{display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-bottom:1px solid rgba(196,160,78,.045);}
+.cfg-row:last-child{border-bottom:none;}
+.cfg-lbl{font-size:11px;color:var(--cream);}
+.cfg-desc{font-size:9px;color:var(--muted);margin-top:3px;line-height:1.6;}
+.toggle{position:relative;width:40px;height:21px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;position:absolute;}
+.tog-track{position:absolute;inset:0;background:rgba(255,255,255,.07);border-radius:11px;cursor:pointer;transition:background .3s;}
+.toggle input:checked+.tog-track{background:var(--gold);}
+.tog-thumb{position:absolute;left:3px;top:3px;width:15px;height:15px;background:var(--dark2);border-radius:50%;transition:transform .3s;}
+.toggle input:checked~.tog-thumb{transform:translateX(19px);}
+
+/* ══ TOAST ══ */
+.toast{position:fixed;bottom:28px;right:28px;z-index:9999;background:var(--dark2);border:1px solid rgba(196,160,78,.18);padding:12px 18px;display:flex;align-items:center;gap:9px;transform:translateY(70px);opacity:0;transition:all .32s var(--ease);min-width:240px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.ti{font-size:13px;}
+.tm{font-size:10px;color:var(--cream);letter-spacing:.3px;}
+
+/* ══ EMPTY ══ */
+.empty{text-align:center;padding:52px 20px;}
+.empty-icon{font-size:32px;opacity:.15;margin-bottom:14px;}
+.empty-txt{font-family:var(--serif);font-size:17px;font-style:italic;color:var(--muted);}
+
+/* ══ SQL PRE ══ */
+pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overflow-x:auto;line-height:1.9;border:1px solid rgba(196,160,78,.05);}
+
+@media(max-width:1200px){.kpi-grid,.g4{grid-template-columns:repeat(2,1fr);}.g3{grid-template-columns:1fr 1fr;}}
+@media(max-width:880px){.g2,.g3{grid-template-columns:1fr;}.sidebar{transform:translateX(-100%);}.main{margin-left:0;}}
+
+/*
+/* Onglets Achats */
+#ach-tabs{
+  display:flex;gap:0;margin-bottom:28px;
+  background:var(--dark2);border:1px solid rgba(196,160,78,.1);
+  overflow-x:auto;scrollbar-width:none;
+}
+#ach-tabs::-webkit-scrollbar{display:none;}
+.ach-tab{
+  background:none;border:none;border-bottom:2px solid transparent;
+  color:rgba(122,122,104,.6);font-family:var(--sans);font-size:8px;
+  letter-spacing:3px;text-transform:uppercase;
+  padding:14px 24px;cursor:pointer;
+  transition:all .25s;white-space:nowrap;
+  position:relative;
+}
+.ach-tab:hover{color:var(--light);background:rgba(196,160,78,.03);}
+.ach-tab.active{
+  color:var(--gold);
+  border-bottom:2px solid var(--gold);
+  background:rgba(196,160,78,.05);
+}
+.ach-tab::after{
+  content:'';position:absolute;right:0;top:20%;bottom:20%;
+  width:1px;background:rgba(196,160,78,.08);
+}
+.ach-tab:last-child::after{display:none;}
+.ach-kpi-card{transition:all .3s;cursor:pointer;}
+.ach-kpi-card:hover{transform:translateY(-2px);filter:brightness(1.1);}
+/* ══ SIMULATION REMPLISSAGE ══ */
+.sim-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;}
+.sim-card{background:rgba(255,255,255,.015);border:1px solid rgba(196,160,78,.1);padding:18px;display:flex;flex-direction:column;gap:10px;transition:border-color .25s;}
+.sim-card:hover{border-color:rgba(196,160,78,.28);}
+.sim-card-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid rgba(196,160,78,.07);}
+.sim-card-name{font-family:var(--serif);font-size:17px;color:var(--cream);font-weight:300;}
+.sim-card-icon{font-size:14px;color:var(--gold);opacity:.75;}
+.sim-row{display:grid;grid-template-columns:1.1fr 1fr;gap:6px 10px;align-items:center;}
+.sim-row label{font-size:8px;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);}
+.sim-input{background:rgba(255,255,255,.035);border:1px solid rgba(196,160,78,.12);color:var(--cream);padding:6px 9px;font-family:var(--sans);font-size:12px;outline:none;transition:border-color .25s;width:100%;font-weight:300;}
+.sim-input:focus{border-color:rgba(196,160,78,.5);}
+.sim-input.tiny{padding:5px 7px;font-size:11px;}
+.sim-ctrl{display:flex;align-items:center;gap:5px;}
+.sim-ctrl .sim-input{flex:1;text-align:center;font-family:var(--serif);font-size:14px;color:var(--gold);}
+.sim-btn{width:26px;height:26px;border:1px solid rgba(196,160,78,.18);background:rgba(255,255,255,.02);color:var(--gold);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:var(--sans);flex-shrink:0;}
+.sim-btn:hover{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+.sim-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;padding-top:10px;border-top:1px solid rgba(196,160,78,.05);}
+.sim-stat{background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.06);padding:7px 9px;}
+.sim-stat-lbl{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.sim-stat-val{font-family:var(--serif);font-size:14px;color:var(--cream);margin-top:2px;}
+.sim-stat-val b{color:var(--gold);}
+.sim-bar{height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-top:4px;}
+.sim-bar-fill{height:100%;border-radius:2px;background:var(--gold);transition:width .4s var(--ease);}
+.sim-bar-fill.warn{background:var(--warn);}
+.sim-bar-fill.err{background:var(--err);}
+.sim-bar-fill.ok{background:var(--ok);}
+.sim-mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.sim-mini{background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.07);padding:11px 14px;}
+.sim-mini-lbl{font-size:7px;letter-spacing:2.4px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.sim-mini-val{font-family:var(--serif);font-size:18px;color:var(--cream);}
+.sim-mini-val b{color:var(--gold);}
+.sim-fees{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-bottom:14px;}
+.sim-fee-row{display:grid;grid-template-columns:1fr 90px;gap:8px;align-items:center;}
+.sim-fee-row label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--light);}
+.sim-fees-foot{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:12px;border-top:1px solid rgba(196,160,78,.06);}
+.sim-positive{border-color:rgba(76,175,80,.35)!important;background:rgba(76,175,80,.07)!important;}
+.sim-positive .sim-mini-val b,.sim-positive .sim-mini-val{color:var(--ok)!important;}
+.sim-negative{border-color:rgba(224,80,80,.35)!important;background:rgba(224,80,80,.07)!important;}
+.sim-negative .sim-mini-val b,.sim-negative .sim-mini-val{color:var(--err)!important;}
+.sim-warning{border-color:rgba(240,160,48,.35)!important;background:rgba(240,160,48,.07)!important;}
+.sim-warning .sim-mini-val b,.sim-warning .sim-mini-val{color:var(--warn)!important;}
+.sim-bars{display:flex;flex-direction:column;gap:9px;padding:6px 2px;}
+.sim-bars-row{display:grid;grid-template-columns:130px 1fr 90px;gap:10px;align-items:center;}
+.sim-bars-row .sim-bars-name{font-size:10px;color:var(--light);letter-spacing:1px;}
+.sim-bars-row .sim-bars-track{height:12px;background:rgba(255,255,255,.04);border:1px solid rgba(196,160,78,.06);position:relative;overflow:hidden;}
+.sim-bars-row .sim-bars-fill{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold) 70%,var(--gold-l));transition:width .5s var(--ease);}
+.sim-bars-row.mg .sim-bars-fill{background:linear-gradient(90deg,#2c5e2f,var(--ok) 70%,#7bc77f);}
+.sim-bars-row .sim-bars-val{font-family:var(--serif);font-size:14px;color:var(--gold);text-align:right;}
+.sim-bars-row.mg .sim-bars-val{color:var(--ok);}
+.sim-tag{display:inline-block;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:2px;background:rgba(196,160,78,.1);color:var(--gold);border:1px solid rgba(196,160,78,.18);}
+.sim-tag.ok{background:rgba(76,175,80,.1);color:var(--ok);border-color:rgba(76,175,80,.2);}
+.sim-tag.warn{background:rgba(240,160,48,.1);color:var(--warn);border-color:rgba(240,160,48,.2);}
+.sim-tag.err{background:rgba(224,80,80,.1);color:var(--err);border-color:rgba(224,80,80,.2);}
+@media(max-width:900px){.sim-fees{grid-template-columns:1fr;}.sim-mini-grid{grid-template-columns:1fr;}.sim-fees-foot{grid-template-columns:1fr;}}
+/* ══ SCHÉMA DIRECTEUR EDEN ══ */
+.sch-scen-bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.sch-scen-lbl{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-right:2px;}
+.sch-scen-btn.active{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+.sch-group{margin-bottom:26px;}
+.sch-group-head{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid rgba(196,160,78,.1);}
+.sch-group-head .gh-icon{font-size:16px;}
+.sch-group-head .gh-name{font-family:var(--serif);font-size:20px;color:var(--cream);font-weight:300;}
+.sch-group-head .gh-meta{margin-left:auto;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.sch-type{font-size:7px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:2px;flex-shrink:0;}
+.sch-type.revenu{background:rgba(196,160,78,.12);color:var(--gold);border:1px solid rgba(196,160,78,.2);}
+.sch-type.eco{background:rgba(76,175,80,.12);color:var(--ok);border:1px solid rgba(76,175,80,.2);}
+.sch-type.support{background:rgba(122,122,104,.15);color:var(--light);border:1px solid rgba(122,122,104,.25);}
+.sch-scn-tbl{width:100%;border-collapse:collapse;margin-top:2px;}
+.sch-scn-tbl td,.sch-scn-tbl th{font-size:9.5px;padding:3px 5px;text-align:right;border-bottom:1px solid rgba(196,160,78,.05);}
+.sch-scn-tbl th{color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:400;}
+.sch-scn-tbl td:first-child,.sch-scn-tbl th:first-child{text-align:left;color:var(--light);}
+.sch-scn-tbl td{color:var(--gold);font-family:var(--serif);font-size:11px;}
+.sch-cls{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding-top:10px;border-top:1px solid rgba(196,160,78,.06);}
+.sch-cls label{font-size:7px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px;text-align:center;}
+.sch-cls input{width:100%;background:rgba(255,255,255,.035);border:1px solid rgba(196,160,78,.12);color:var(--gold);padding:4px;font-size:12px;text-align:center;font-family:var(--serif);outline:none;}
+.sch-cls input:focus{border-color:rgba(196,160,78,.5);}
+.sch-rank{display:flex;flex-direction:column;gap:6px;}
+.sch-rank-row{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:8px 10px;background:rgba(196,160,78,.03);border:1px solid rgba(196,160,78,.06);transition:border-color .2s;}
+.sch-rank-row:hover{border-color:rgba(196,160,78,.2);}
+.sch-rank-row .rk-num{font-family:var(--serif);font-size:16px;color:var(--gold);text-align:center;}
+.sch-rank-row .rk-name{font-size:11px;color:var(--cream);}
+.sch-rank-row .rk-grp{font-size:8px;color:var(--muted);letter-spacing:.5px;margin-top:1px;}
+.sch-rank-row .rk-val{font-family:var(--serif);font-size:14px;color:var(--gold);text-align:right;white-space:nowrap;}
+.sch-road-phases{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.sch-road-phase{background:rgba(255,255,255,.015);border:1px solid rgba(196,160,78,.1);padding:14px 16px;}
+.sch-road-phase h4{font-family:var(--serif);font-size:17px;color:var(--gold);font-weight:300;margin:0 0 2px;}
+.sch-road-phase .rp-sub{font-size:7.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;line-height:1.5;}
+.sch-road-item{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--light);padding:4px 0;border-bottom:1px solid rgba(196,160,78,.04);}
+.sch-road-item .ri-inv{color:var(--warn);white-space:nowrap;font-size:9px;}
+.sch-cash{display:flex;align-items:stretch;gap:1px;height:160px;padding:6px 0;}
+.sch-cash-bar{flex:1;min-width:0;display:flex;flex-direction:column;height:100%;}
+.sch-cash-bar .cb-mid{flex:1;display:flex;align-items:flex-end;overflow:hidden;}
+.sch-cash-bar .cb-mid.down{align-items:flex-start;}
+.sch-cash-bar .cb-fill{width:100%;transition:height .4s var(--ease);}
+.sch-cash-bar:hover .cb-fill{opacity:.7;}
+@media(max-width:1100px){.sch-road-phases{grid-template-columns:1fr 1fr;}}
+@media(max-width:760px){.sch-road-phases{grid-template-columns:1fr;}.sch-cls{grid-template-columns:1fr 1fr;}}
+
+/* ══ SUIVI DES CHARGES ══ */
+.ch-select{background:var(--dark2);border:1px solid rgba(196,160,78,.14);color:var(--cream);padding:8px 14px;font-family:var(--sans);font-size:9px;letter-spacing:2px;outline:none;text-transform:uppercase;cursor:pointer;}
+.ch-select:focus{border-color:var(--gold);}
+.ch-params{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 16px;padding-bottom:14px;border-bottom:1px solid rgba(196,160,78,.06);margin-bottom:14px;}
+.ch-p{display:flex;flex-direction:column;gap:5px;}
+.ch-p label{font-size:8px;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);}
+.ch-input{background:rgba(255,255,255,.035);border:1px solid rgba(196,160,78,.12);color:var(--cream);padding:7px 10px;font-family:var(--sans);font-size:12px;outline:none;transition:border-color .25s;font-weight:300;}
+.ch-input:focus{border-color:rgba(196,160,78,.5);}
+.ch-params-out{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.ch-mini{background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.07);padding:11px 14px;}
+.ch-mini-lbl{font-size:7px;letter-spacing:2.2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.ch-mini-val{font-family:var(--serif);font-size:18px;color:var(--cream);}
+.ch-mini-val b{color:var(--gold);}
+.ch-mini.ok{border-color:rgba(76,175,80,.3);background:rgba(76,175,80,.06);}
+.ch-mini.ok b,.ch-mini.ok .ch-mini-val{color:var(--ok);}
+.ch-mini.warn{border-color:rgba(240,160,48,.3);background:rgba(240,160,48,.06);}
+.ch-mini.warn b,.ch-mini.warn .ch-mini-val{color:var(--warn);}
+.ch-mini.err{border-color:rgba(224,80,80,.3);background:rgba(224,80,80,.06);}
+.ch-mini.err b,.ch-mini.err .ch-mini-val{color:var(--err);}
+
+.ch-table{width:100%;border-collapse:collapse;font-size:11px;}
+.ch-table thead th{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:9px 6px;text-align:center;font-weight:400;border-bottom:1px solid rgba(196,160,78,.07);background:rgba(196,160,78,.02);}
+.ch-table thead th.cat-h{text-align:left;padding-left:14px;min-width:160px;}
+.ch-table thead th.tot-h{color:var(--gold);}
+.ch-table tbody td{padding:5px 4px;text-align:center;border-bottom:1px solid rgba(196,160,78,.035);color:var(--light);}
+.ch-table tbody td.cat-c{text-align:left;padding-left:14px;color:var(--cream);font-size:11px;}
+.ch-table tbody td.tot-c{font-family:var(--serif);font-size:13px;color:var(--gold);font-weight:300;}
+.ch-cell{background:transparent;border:1px solid transparent;color:var(--light);padding:4px 5px;font-family:var(--sans);font-size:11px;outline:none;width:64px;text-align:right;transition:all .2s;font-weight:300;}
+.ch-cell:hover{border-color:rgba(196,160,78,.1);background:rgba(196,160,78,.025);}
+.ch-cell:focus{border-color:rgba(196,160,78,.5);background:rgba(196,160,78,.05);color:var(--gold);}
+.ch-cell.zero{color:var(--muted);opacity:.45;}
+.ch-cell.high{color:var(--warn);}
+.ch-table tbody tr.row-fixe td.cat-c::before{content:'▣ ';color:var(--gold-l);font-size:9px;}
+.ch-table tbody tr.row-variable td.cat-c::before{content:'◬ ';color:var(--purple);font-size:9px;}
+.ch-table tbody tr.row-annuelle td.cat-c::before{content:'◯ ';color:var(--info);font-size:9px;}
+.ch-table tbody tr.row-exceptionnelle td.cat-c::before{content:'✦ ';color:var(--err);font-size:9px;}
+.ch-table tbody tr:hover{background:rgba(196,160,78,.02);}
+.ch-cat-name{background:transparent;border:none;color:var(--cream);font-family:var(--sans);font-size:11px;outline:none;width:100%;padding:3px 0;}
+.ch-cat-name:focus{color:var(--gold);}
+.ch-row-act{display:inline-flex;gap:4px;margin-left:8px;}
+.ch-row-act button{background:none;border:1px solid rgba(196,160,78,.1);color:var(--muted);width:20px;height:20px;font-size:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .2s;}
+.ch-row-act button:hover{border-color:var(--err);color:var(--err);}
+.ch-table tfoot td{font-family:var(--serif);font-size:13px;color:var(--gold);padding:10px 4px;text-align:center;border-top:1px solid rgba(196,160,78,.18);background:rgba(196,160,78,.04);}
+.ch-table tfoot td.cat-c{text-align:left;padding-left:14px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-family:var(--sans);}
+.ch-table tfoot tr.tot-budget td{color:var(--info);background:rgba(91,155,213,.04);font-size:11px;border-top:none;}
+.ch-table tfoot tr.tot-ecart td{font-size:11px;background:rgba(196,160,78,.025);border-top:none;}
+.ch-cat-type-tag{display:inline-block;font-size:6.5px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 6px;margin-left:8px;border-radius:2px;background:rgba(196,160,78,.1);color:var(--gold);border:1px solid rgba(196,160,78,.18);font-family:var(--sans);vertical-align:1px;}
+.ch-cat-type-tag.fixe{background:rgba(196,160,78,.1);color:var(--gold);border-color:rgba(196,160,78,.18);}
+.ch-cat-type-tag.variable{background:rgba(156,127,213,.1);color:var(--purple);border-color:rgba(156,127,213,.2);}
+.ch-cat-type-tag.annuelle{background:rgba(91,155,213,.08);color:var(--info);border-color:rgba(91,155,213,.18);}
+.ch-cat-type-tag.exceptionnelle{background:rgba(224,80,80,.08);color:var(--err);border-color:rgba(224,80,80,.18);}
+
+.ch-cmp-row{display:grid;grid-template-columns:90px 1fr 110px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(196,160,78,.04);}
+.ch-cmp-row:last-child{border-bottom:none;}
+.ch-cmp-mois{font-size:10px;color:var(--light);letter-spacing:1px;}
+.ch-cmp-track{display:flex;height:16px;background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.05);position:relative;overflow:hidden;}
+.ch-cmp-fn{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold));}
+.ch-cmp-fp{height:100%;background:rgba(184,180,164,.18);border-left:1px dashed rgba(196,160,78,.25);}
+.ch-cmp-val{font-family:var(--serif);font-size:13px;color:var(--gold);text-align:right;}
+.ch-cmp-delta{font-size:9px;letter-spacing:1px;}
+.ch-up{color:var(--err);}
+.ch-down{color:var(--ok);}
+.ch-warn{color:var(--warn);}
+
+.ch-top-row{display:grid;grid-template-columns:140px 1fr 80px 50px;gap:10px;align-items:center;padding:8px 0;}
+.ch-top-name{font-size:10.5px;color:var(--light);letter-spacing:.5px;}
+.ch-top-track{height:6px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden;}
+.ch-top-fill{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold) 70%,var(--gold-l));border-radius:3px;transition:width .5s var(--ease);}
+.ch-top-val{font-family:var(--serif);font-size:13px;color:var(--gold);text-align:right;}
+.ch-top-pct{font-size:9px;color:var(--muted);text-align:right;letter-spacing:1px;}
+
+.ch-month-bar{display:grid;grid-template-columns:50px 1fr 95px;gap:10px;align-items:center;padding:6px 0;}
+.ch-month-bar-name{font-size:10px;color:var(--light);letter-spacing:1px;text-transform:uppercase;}
+.ch-month-bar-track{height:11px;background:rgba(255,255,255,.04);border:1px solid rgba(196,160,78,.05);position:relative;}
+.ch-month-bar-track::after{content:'';position:absolute;top:0;bottom:0;width:1px;background:rgba(91,155,213,.5);left:var(--budget,100%);}
+.ch-month-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold) 80%,var(--gold-l));transition:width .4s var(--ease);}
+.ch-month-bar-fill.over{background:linear-gradient(90deg,#7a2828,var(--err) 80%,#f08080);}
+.ch-month-bar-val{font-family:var(--serif);font-size:13px;color:var(--gold);text-align:right;}
+.ch-month-bar-val.over{color:var(--err);}
+.ch-legend{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:inline-flex;align-items:center;gap:4px;margin-left:10px;}
+.ch-dot{width:8px;height:2px;border-radius:1px;display:inline-block;}
+@media(max-width:1100px){.ch-params{grid-template-columns:repeat(2,1fr);}.ch-params-out{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:700px){.ch-params,.ch-params-out{grid-template-columns:1fr;}}
+
+.ch-cell.peak{color:var(--warn);font-weight:400;background:rgba(240,160,48,.05);}
+.ch-table tfoot tr.tot-cumul td{color:var(--gold-l);background:rgba(196,160,78,.025);font-size:10px;border-top:none;letter-spacing:.5px;}
+.ch-table tfoot tr.tot-cumul td.cat-c{font-size:9px;color:var(--gold-l);}
+
+/* ══ MATÉRIEL & RÉAPPRO ══ */
+.mat-slider-card{background:linear-gradient(180deg,rgba(196,160,78,.04),rgba(196,160,78,.01));}
+.mat-slider-wrap{padding:6px 4px 4px;}
+.mat-slider-vals{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:14px;}
+.mat-slider-display{flex-shrink:0;}
+.mat-slider-num{font-family:var(--serif);font-size:54px;color:var(--gold);font-weight:300;line-height:1;letter-spacing:1px;}
+.mat-slider-unit{display:block;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+.mat-slider-side{display:flex;gap:10px;flex-wrap:wrap;flex:1;justify-content:flex-end;}
+.mat-mini{background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.08);padding:9px 13px;min-width:130px;}
+.mat-mini-lbl{font-size:7px;letter-spacing:2.2px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.mat-mini-val{font-family:var(--serif);font-size:17px;color:var(--cream);}
+.mat-mini-val b{color:var(--gold);}
+
+.mat-slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;background:linear-gradient(90deg,var(--gold-d),var(--gold) 50%,var(--gold-l));border-radius:3px;outline:none;margin:8px 0 14px;cursor:pointer;}
+.mat-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--cream);border:2px solid var(--gold);cursor:grab;box-shadow:0 0 0 4px rgba(196,160,78,.18),0 4px 10px rgba(0,0,0,.4);transition:transform .15s;}
+.mat-slider::-webkit-slider-thumb:active{transform:scale(1.15);cursor:grabbing;}
+.mat-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--cream);border:2px solid var(--gold);cursor:grab;box-shadow:0 0 0 4px rgba(196,160,78,.18),0 4px 10px rgba(0,0,0,.4);}
+
+.mat-presets{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;}
+.mat-presets .fb{font-size:9px;padding:5px 14px;font-family:var(--serif);font-style:italic;font-size:13px;letter-spacing:1px;}
+
+.mat-extra{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 14px;padding-top:12px;border-top:1px solid rgba(196,160,78,.06);}
+.mat-p{display:flex;flex-direction:column;gap:4px;}
+.mat-p label{font-size:7.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);}
+.mat-input{background:rgba(255,255,255,.035);border:1px solid rgba(196,160,78,.12);color:var(--cream);padding:7px 10px;font-family:var(--sans);font-size:12px;outline:none;transition:border-color .25s;font-weight:300;}
+.mat-input:focus{border-color:rgba(196,160,78,.5);}
+.mat-input.tiny{padding:5px 7px;font-size:11px;}
+
+/* Cartes article */
+.mat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-bottom:24px;}
+.mat-card{background:var(--dark2);border:1px solid rgba(196,160,78,.08);padding:18px;display:flex;flex-direction:column;gap:11px;position:relative;transition:border-color .25s;overflow:hidden;}
+.mat-card:hover{border-color:rgba(196,160,78,.28);}
+.mat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold);opacity:.45;}
+.mat-card.alert::before{background:var(--err);opacity:.8;}
+.mat-card.warn::before{background:var(--warn);opacity:.85;}
+.mat-card.ok::before{background:var(--ok);opacity:.4;}
+.mat-card-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid rgba(196,160,78,.05);}
+.mat-card-name{display:flex;flex-direction:column;gap:3px;flex:1;}
+.mat-card-nameinp{background:transparent;border:none;color:var(--cream);font-family:var(--serif);font-size:17px;font-weight:300;outline:none;width:100%;padding:1px 0;}
+.mat-card-nameinp:focus{color:var(--gold);}
+.mat-card-cat{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-l);}
+.mat-card-status{display:inline-flex;align-items:center;gap:5px;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;padding:4px 9px;border-radius:2px;flex-shrink:0;}
+.mat-card-status .badge-dot{width:5px;height:5px;border-radius:50%;}
+.mat-card-status.ok{background:rgba(76,175,80,.08);color:var(--ok);border:1px solid rgba(76,175,80,.2);}
+.mat-card-status.warn{background:rgba(240,160,48,.08);color:var(--warn);border:1px solid rgba(240,160,48,.2);}
+.mat-card-status.alert{background:rgba(224,80,80,.08);color:var(--err);border:1px solid rgba(224,80,80,.22);}
+.mat-card-row{display:grid;grid-template-columns:1.2fr 1fr;gap:5px 10px;align-items:center;}
+.mat-card-row label{font-size:7.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);}
+.mat-card-row .with-unit{display:flex;align-items:center;gap:5px;}
+.mat-card-row .unit{font-size:9px;color:var(--muted);letter-spacing:.5px;flex-shrink:0;}
+.mat-card-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding-top:10px;border-top:1px solid rgba(196,160,78,.05);}
+.mat-stat{background:rgba(196,160,78,.04);border:1px solid rgba(196,160,78,.06);padding:7px 9px;}
+.mat-stat-lbl{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.mat-stat-val{font-family:var(--serif);font-size:14px;color:var(--cream);margin-top:3px;}
+.mat-stat-val b{color:var(--gold);}
+.mat-stat.ok{background:rgba(76,175,80,.06);border-color:rgba(76,175,80,.18);}
+.mat-stat.warn{background:rgba(240,160,48,.06);border-color:rgba(240,160,48,.18);}
+.mat-stat.alert{background:rgba(224,80,80,.06);border-color:rgba(224,80,80,.18);}
+.mat-stat.ok b,.mat-stat.ok .mat-stat-val{color:var(--ok);}
+.mat-stat.warn b,.mat-stat.warn .mat-stat-val{color:var(--warn);}
+.mat-stat.alert b,.mat-stat.alert .mat-stat-val{color:var(--err);}
+.mat-cov-bar{height:5px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden;margin-top:6px;}
+.mat-cov-fill{height:100%;border-radius:3px;background:var(--gold);transition:width .4s var(--ease),background-color .25s;}
+.mat-cov-fill.warn{background:var(--warn);}
+.mat-cov-fill.alert{background:var(--err);}
+.mat-cov-fill.ok{background:var(--ok);}
+.mat-card-foot{display:flex;justify-content:space-between;gap:8px;align-items:center;padding-top:8px;border-top:1px solid rgba(196,160,78,.05);}
+.mat-card-foot .mat-supp-link{font-size:9.5px;color:var(--info);text-decoration:none;letter-spacing:.5px;}
+.mat-card-foot .mat-supp-link:hover{text-decoration:underline;}
+.mat-card-acts{display:flex;gap:5px;}
+.mat-card-acts button{background:none;border:1px solid rgba(196,160,78,.12);color:var(--muted);width:24px;height:24px;font-size:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .2s;}
+.mat-card-acts button:hover{border-color:var(--gold);color:var(--gold);}
+.mat-card-acts button.del:hover{border-color:var(--err);color:var(--err);}
+.mat-card-comment{background:rgba(255,255,255,.02);border:1px dashed rgba(196,160,78,.1);color:var(--light);padding:6px 9px;font-family:var(--sans);font-size:10px;outline:none;width:100%;resize:vertical;min-height:34px;font-weight:300;letter-spacing:.3px;}
+.mat-card-comment::placeholder{color:rgba(184,180,164,.35);font-style:italic;}
+.mat-card-comment:focus{border-color:rgba(196,160,78,.4);}
+.mat-card-cat-tag{display:inline-block;font-size:6.5px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 6px;border-radius:2px;}
+.mat-card-cat-tag.linge{background:rgba(91,155,213,.1);color:var(--info);border:1px solid rgba(91,155,213,.18);}
+.mat-card-cat-tag.hygiene{background:rgba(76,175,80,.1);color:var(--ok);border:1px solid rgba(76,175,80,.18);}
+.mat-card-cat-tag.soin{background:rgba(156,127,213,.1);color:var(--purple);border:1px solid rgba(156,127,213,.18);}
+.mat-card-cat-tag.equipement{background:rgba(196,160,78,.1);color:var(--gold);border:1px solid rgba(196,160,78,.18);}
+/* Fallback for simplified categories when not separately defined */
+.mat-card-cat-tag:not([class*=" "]).mat-card-cat-tag{background:rgba(196,160,78,.08);color:var(--muted);border:1px solid rgba(196,160,78,.14);}
+
+
+
+/* Ajustements stock boissons — onglets + champs quantité premium */
+.stock-cat-tabs{
+  display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px;
+  background:var(--dark2);border:1px solid rgba(196,160,78,.08);padding:8px;
+}
+.stock-cat-tab{
+  background:transparent;border:1px solid rgba(196,160,78,.12);color:var(--muted);
+  font-family:var(--sans);font-size:8px;letter-spacing:2.4px;text-transform:uppercase;
+  padding:8px 14px;cursor:pointer;transition:all .22s;min-height:32px;
+}
+.stock-cat-tab:hover{border-color:rgba(196,160,78,.35);color:var(--light);background:rgba(196,160,78,.035);}
+.stock-cat-tab.on{border-color:var(--gold);color:var(--gold);background:rgba(196,160,78,.07);}
+.stock-list-grid{grid-template-columns:1fr!important;}
+.stock-list-grid .card{max-width:none;}
+.stock-qty-input{
+  width:72px;height:26px;background:rgba(255,255,255,.025)!important;
+  border:1px solid rgba(196,160,78,.18)!important;color:var(--gold)!important;
+  font-family:var(--serif);font-size:15px;text-align:center;outline:none;
+  padding:2px 7px;box-shadow:none!important;border-radius:0;
+}
+.stock-qty-input:focus{border-color:var(--gold)!important;background:rgba(196,160,78,.06)!important;}
+.stock-cat-select{
+  background:rgba(255,255,255,.025);border:1px solid rgba(196,160,78,.14);color:var(--gold);
+  font-family:var(--sans);font-size:9px;letter-spacing:1px;padding:5px 8px;outline:none;
+}
+.stock-cat-select option{background:var(--dark2);color:var(--cream);}
+.si .stock-qty-input{margin-left:auto;}
+@media(max-width:1100px){.stock-list-grid{grid-template-columns:1fr!important;}.stock-cat-tab{flex:1 1 160px;}}
+
+/* Tableau récap */
+.mat-table{width:100%;border-collapse:collapse;font-size:11px;min-width:1100px;}
+.mat-table thead th{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:9px 7px;text-align:left;font-weight:400;background:rgba(196,160,78,.025);border-bottom:1px solid rgba(196,160,78,.07);white-space:nowrap;}
+.mat-table tbody td{padding:8px 7px;border-bottom:1px solid rgba(196,160,78,.035);color:var(--light);font-size:11px;vertical-align:middle;}
+.mat-table tbody tr.row-alert{background:rgba(224,80,80,.035);}
+.mat-table tbody tr.row-warn{background:rgba(240,160,48,.025);}
+.mat-table tbody tr:hover{background:rgba(196,160,78,.02);}
+.mat-table .mat-cell{background:transparent;border:1px solid transparent;color:var(--light);padding:3px 5px;font-family:var(--sans);font-size:11px;outline:none;text-align:right;width:62px;font-weight:300;}
+.mat-table .mat-cell:hover{border-color:rgba(196,160,78,.12);background:rgba(196,160,78,.025);}
+.mat-table .mat-cell:focus{border-color:rgba(196,160,78,.5);background:rgba(196,160,78,.05);color:var(--gold);}
+.mat-table .mat-cell.wide{width:100px;}
+.mat-table .mat-cell.text{text-align:left;width:120px;font-size:10px;}
+.mat-table tfoot td{font-family:var(--serif);font-size:13px;color:var(--gold);padding:11px 7px;background:rgba(196,160,78,.04);border-top:1px solid rgba(196,160,78,.18);}
+.mat-table tfoot td.lbl{font-family:var(--sans);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);}
+
+.mat-status-tag{display:inline-flex;align-items:center;gap:4px;font-size:7px;letter-spacing:1.4px;text-transform:uppercase;padding:3px 7px;border-radius:2px;white-space:nowrap;}
+.mat-status-tag.ok{background:rgba(76,175,80,.08);color:var(--ok);border:1px solid rgba(76,175,80,.18);}
+.mat-status-tag.warn{background:rgba(240,160,48,.08);color:var(--warn);border:1px solid rgba(240,160,48,.18);}
+.mat-status-tag.alert{background:rgba(224,80,80,.1);color:var(--err);border:1px solid rgba(224,80,80,.22);}
+
+/* Drawer commande */
+.mat-order-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:200;display:flex;justify-content:flex-end;}
+.mat-order-drawer{width:680px;max-width:96vw;height:100vh;background:var(--dark2);border-left:1px solid rgba(196,160,78,.18);overflow-y:auto;padding:28px 28px 100px;animation:matSlide .3s var(--ease);}
+@keyframes matSlide{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+.mat-order-h{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid rgba(196,160,78,.08);}
+.mat-order-foot{position:sticky;bottom:0;background:var(--dark2);border-top:1px solid rgba(196,160,78,.08);padding:14px 0 0;display:flex;gap:10px;justify-content:flex-end;margin-top:18px;}
+.mat-order-supplier{margin-top:18px;}
+.mat-order-supplier h4{font-family:var(--serif);font-size:15px;color:var(--gold-l);font-weight:300;font-style:italic;margin-bottom:8px;letter-spacing:.5px;}
+.mat-order-line{display:grid;grid-template-columns:1fr 70px 80px 80px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(196,160,78,.04);font-size:11px;}
+.mat-order-line .nm{color:var(--cream);}
+.mat-order-line .nm small{display:block;color:var(--muted);font-size:9px;margin-top:2px;}
+.mat-order-line .qty{font-family:var(--serif);font-size:14px;color:var(--gold);text-align:right;}
+.mat-order-line .pr{font-size:10px;color:var(--muted);text-align:right;}
+.mat-order-line .tt{font-family:var(--serif);font-size:14px;color:var(--gold-l);text-align:right;}
+.mat-order-empty{padding:60px 20px;text-align:center;color:var(--muted);font-size:11px;}
+.mat-order-total{display:flex;justify-content:space-between;padding:14px 0;margin-top:14px;border-top:1px solid rgba(196,160,78,.18);font-family:var(--serif);font-size:18px;color:var(--gold);}
+
+@media(max-width:1100px){.mat-extra{grid-template-columns:repeat(2,1fr);}.mat-slider-side{justify-content:flex-start;}}
+@media(max-width:700px){.mat-extra{grid-template-columns:1fr;}.mat-slider-num{font-size:42px;}}
+
+
+
+/* Stock matériel simplifié — style identique stock boissons */
+#page-materiel .mat-qty-input{
+  width:100%;background:rgba(255,255,255,.035);border:1px solid rgba(196,160,78,.14);
+  color:var(--cream);padding:6px 8px;font-family:var(--serif);font-size:15px;outline:none;
+  transition:border-color .25s,background .25s;font-weight:300;box-sizing:border-box;
+}
+#page-materiel .mat-qty-input:focus{border-color:rgba(196,160,78,.55);background:rgba(196,160,78,.055);color:var(--gold-l);}
+#page-materiel .mat-line{display:grid;grid-template-columns:1.5fr 120px 100px 100px 70px 90px;gap:8px;align-items:center;padding:10px 4px;border-bottom:1px solid rgba(196,160,78,.045);}
+#page-materiel .mat-line:last-child{border-bottom:none;}
+#page-materiel .mat-line > div{min-width:0;overflow:hidden;}
+#page-materiel .mat-line-name{font-size:12px;color:var(--cream);line-height:1.45;}
+#page-materiel .mat-line-name small{display:block;font-size:8px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;}
+#page-materiel .mat-mini-select{background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.12);color:var(--cream);padding:6px 8px;font-family:var(--sans);font-size:10px;outline:none;}
+#page-materiel .mat-mini-select option{background:var(--dark2);color:var(--cream);}
+#page-materiel .mat-cat-tabs .fb{min-width:130px;}
+
+/* ══ COULEURS PAR CATÉGORIE — TAGS + BOUTONS FILTRES ══ */
+/* Matériel */
+.mat-card-cat-tag.materiel{background:rgba(196,160,78,.12);color:var(--gold);border:1px solid rgba(196,160,78,.28);}
+.fb[data-cat="materiel"].on,.fb.cat-materiel.on{border-color:#c4a04e;color:#c4a04e;background:rgba(196,160,78,.07);}
+/* Informatique */
+.mat-card-cat-tag.informatique{background:rgba(91,155,213,.12);color:#5b9bd5;border:1px solid rgba(91,155,213,.28);}
+.fb[data-cat="informatique"].on,.fb.cat-informatique.on{border-color:#5b9bd5;color:#5b9bd5;background:rgba(91,155,213,.07);}
+/* Sanitaire / Linges */
+.mat-card-cat-tag.sanitaire_linges{background:rgba(32,188,168,.12);color:#20bca8;border:1px solid rgba(32,188,168,.28);}
+.fb[data-cat="sanitaire_linges"].on,.fb.cat-sanitaire_linges.on{border-color:#20bca8;color:#20bca8;background:rgba(32,188,168,.07);}
+/* Senteur / Odeur */
+.mat-card-cat-tag.senteur_odeur{background:rgba(187,107,217,.12);color:#bb6bd9;border:1px solid rgba(187,107,217,.28);}
+.fb[data-cat="senteur_odeur"].on,.fb.cat-senteur_odeur.on{border-color:#bb6bd9;color:#bb6bd9;background:rgba(187,107,217,.07);}
+/* Extérieur */
+.mat-card-cat-tag.exterieur{background:rgba(76,175,80,.12);color:#4caf50;border:1px solid rgba(76,175,80,.28);}
+.fb[data-cat="exterieur"].on,.fb.cat-exterieur.on{border-color:#4caf50;color:#4caf50;background:rgba(76,175,80,.07);}
+/* Accessoires */
+.mat-card-cat-tag.accessoires{background:rgba(240,130,48,.12);color:#f08230;border:1px solid rgba(240,130,48,.28);}
+.fb[data-cat="accessoires"].on,.fb.cat-accessoires.on{border-color:#f08230;color:#f08230;background:rgba(240,130,48,.07);}
+
+/* Accent couleur catégorie sur la liste active */
+#page-materiel .mat-cat-filter-bar .fb.on{transition:all .22s;}
+/* Dot couleur à gauche de chaque ligne de la liste */
+#page-materiel .mat-line{border-left:3px solid transparent;}
+#page-materiel .mat-line.cat-materiel{border-left-color:rgba(196,160,78,.45);}
+#page-materiel .mat-line.cat-informatique{border-left-color:rgba(91,155,213,.45);}
+#page-materiel .mat-line.cat-sanitaire_linges{border-left-color:rgba(32,188,168,.45);}
+#page-materiel .mat-line.cat-senteur_odeur{border-left-color:rgba(187,107,217,.45);}
+#page-materiel .mat-line.cat-exterieur{border-left-color:rgba(76,175,80,.45);}
+#page-materiel .mat-line.cat-accessoires{border-left-color:rgba(240,130,48,.45);}
+
+/* ══ TABLEAU COMPLET — CODE COULEUR PAR CATÉGORIE ══ */
+.mat-table tbody tr.cat-materiel        td:first-child{border-left:3px solid rgba(196,160,78,.55);}
+.mat-table tbody tr.cat-informatique    td:first-child{border-left:3px solid rgba(91,155,213,.55);}
+.mat-table tbody tr.cat-sanitaire_linges td:first-child{border-left:3px solid rgba(32,188,168,.55);}
+.mat-table tbody tr.cat-senteur_odeur   td:first-child{border-left:3px solid rgba(187,107,217,.55);}
+.mat-table tbody tr.cat-exterieur       td:first-child{border-left:3px solid rgba(76,175,80,.55);}
+.mat-table tbody tr.cat-accessoires     td:first-child{border-left:3px solid rgba(240,130,48,.55);}
+
+/* Lignes de groupe par catégorie */
+.mat-table tr.cat-group-hdr td{
+  padding:7px 16px 6px;font-size:7.5px;letter-spacing:3px;text-transform:uppercase;
+  font-weight:400;border-bottom:none;font-family:var(--sans);
+  background:rgba(255,255,255,.022);
+}
+.mat-table tr.cat-group-hdr.g-materiel         td{color:#c4a04e;border-left:3px solid rgba(196,160,78,.7);}
+.mat-table tr.cat-group-hdr.g-informatique      td{color:#5b9bd5;border-left:3px solid rgba(91,155,213,.7);}
+.mat-table tr.cat-group-hdr.g-sanitaire_linges  td{color:#20bca8;border-left:3px solid rgba(32,188,168,.7);}
+.mat-table tr.cat-group-hdr.g-senteur_odeur     td{color:#bb6bd9;border-left:3px solid rgba(187,107,217,.7);}
+.mat-table tr.cat-group-hdr.g-exterieur         td{color:#4caf50;border-left:3px solid rgba(76,175,80,.7);}
+.mat-table tr.cat-group-hdr.g-accessoires       td{color:#f08230;border-left:3px solid rgba(240,130,48,.7);}
+
+/* Barre de stock mini dans cellule */
+.mat-mini-bar{height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-top:4px;}
+.mat-mini-bar-fill{height:100%;border-radius:2px;transition:width .4s;}
+
+/* Footer par catégorie */
+.mat-table tfoot tr.cat-subtot td{
+  font-size:9px;letter-spacing:1px;padding:5px 7px;
+  border-top:1px solid rgba(196,160,78,.05);
+  font-family:var(--serif);
+}
+.mat-table tfoot tr.cat-subtot.g-materiel         td{color:rgba(196,160,78,.8);}
+.mat-table tfoot tr.cat-subtot.g-informatique      td{color:rgba(91,155,213,.8);}
+.mat-table tfoot tr.cat-subtot.g-sanitaire_linges  td{color:rgba(32,188,168,.8);}
+.mat-table tfoot tr.cat-subtot.g-senteur_odeur     td{color:rgba(187,107,217,.8);}
+.mat-table tfoot tr.cat-subtot.g-exterieur         td{color:rgba(76,175,80,.8);}
+.mat-table tfoot tr.cat-subtot.g-accessoires       td{color:rgba(240,130,48,.8);}
+
+/* Commentaire dans tableau */
+.mat-cell.comm{width:140px;font-style:italic;font-size:10px;color:var(--muted);}
+.mat-cell.comm:focus{font-style:normal;color:var(--cream);}
+
+/* Boutons de filtre catégorie au-dessus du tableau complet */
+#mat-table-cat-bar{display:flex;gap:5px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid rgba(196,160,78,.05);}
+#mat-table-cat-bar .fb{font-size:7.5px;padding:4px 11px;min-width:0;}
+#mat-table-cat-bar .fb.on{font-weight:400;}
+/* Teintes actives par catégorie dans la barre du tableau */
+#mat-table-cat-bar .fb[data-cat="all"].on{border-color:var(--gold);color:var(--gold);background:rgba(196,160,78,.06);}
+#mat-table-cat-bar .fb[data-cat="materiel"].on{border-color:#c4a04e;color:#c4a04e;background:rgba(196,160,78,.06);}
+#mat-table-cat-bar .fb[data-cat="informatique"].on{border-color:#5b9bd5;color:#5b9bd5;background:rgba(91,155,213,.06);}
+#mat-table-cat-bar .fb[data-cat="sanitaire_linges"].on{border-color:#20bca8;color:#20bca8;background:rgba(32,188,168,.06);}
+#mat-table-cat-bar .fb[data-cat="senteur_odeur"].on{border-color:#bb6bd9;color:#bb6bd9;background:rgba(187,107,217,.06);}
+#mat-table-cat-bar .fb[data-cat="exterieur"].on{border-color:#4caf50;color:#4caf50;background:rgba(76,175,80,.06);}
+#mat-table-cat-bar .fb[data-cat="accessoires"].on{border-color:#f08230;color:#f08230;background:rgba(240,130,48,.06);}
+#mat-table-cat-bar .fb[data-cat="alert"].on{border-color:var(--err);color:var(--err);background:rgba(224,80,80,.06);}
+
+/* ══ ÉQUIPEMENT & ÉNERGIE ══ */
+.eq-table{width:100%;border-collapse:collapse;font-size:11px;}
+.eq-table thead th{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:9px 8px;text-align:left;font-weight:400;background:rgba(196,160,78,.025);border-bottom:1px solid rgba(196,160,78,.07);white-space:nowrap;}
+.eq-table tbody td{padding:8px 8px;border-bottom:1px solid rgba(196,160,78,.032);color:var(--light);font-size:11px;vertical-align:middle;}
+.eq-table tbody tr:hover{background:rgba(196,160,78,.02);}
+.eq-table tr.eq-amenagement  td:first-child{border-left:3px solid rgba(196,160,78,.5);}
+.eq-table tr.eq-accessoire   td:first-child{border-left:3px solid rgba(240,130,48,.5);}
+.eq-table tr.eq-bar          td:first-child{border-left:3px solid rgba(187,107,217,.5);}
+.eq-table tr.eq-exterieur    td:first-child{border-left:3px solid rgba(76,175,80,.5);}
+.eq-table tr.eq-stockage     td:first-child{border-left:3px solid rgba(91,155,213,.5);}
+.eq-table tr.eq-boutique     td:first-child{border-left:3px solid rgba(32,188,168,.5);}
+.eq-table tr.eq-sanitaire    td:first-child{border-left:3px solid rgba(20,184,216,.5);}
+.eq-cat-badge{display:inline-block;font-size:6.5px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 6px;border-radius:2px;}
+.eq-cat-badge.amenagement {background:rgba(196,160,78,.12);color:#c4a04e;border:1px solid rgba(196,160,78,.28);}
+.eq-cat-badge.accessoire  {background:rgba(240,130,48,.12);color:#f08230;border:1px solid rgba(240,130,48,.28);}
+.eq-cat-badge.bar         {background:rgba(187,107,217,.12);color:#bb6bd9;border:1px solid rgba(187,107,217,.28);}
+.eq-cat-badge.exterieur   {background:rgba(76,175,80,.12); color:#4caf50;border:1px solid rgba(76,175,80,.28);}
+.eq-cat-badge.stockage    {background:rgba(91,155,213,.12);color:#5b9bd5;border:1px solid rgba(91,155,213,.28);}
+.eq-cat-badge.boutique    {background:rgba(32,188,168,.12);color:#20bca8;border:1px solid rgba(32,188,168,.28);}
+.eq-cat-badge.sanitaire   {background:rgba(20,184,216,.12);color:#14b8d8;border:1px solid rgba(20,184,216,.28);}
+.eq-conso-w{font-size:10px;color:var(--warn);font-family:var(--serif);}
+.eq-conso-w.solar{color:var(--ok);}
+.eq-conso-l{font-size:10px;color:var(--info);font-family:var(--serif);}
+.eq-cost-cell{font-family:var(--serif);font-size:12px;}
+.eq-group-hdr td{padding:6px 8px;font-size:7.5px;letter-spacing:3px;text-transform:uppercase;font-family:var(--sans);background:rgba(255,255,255,.018);border-bottom:none;}
+.eq-group-hdr.g-amenagement td{color:#c4a04e;border-left:3px solid rgba(196,160,78,.7);}
+.eq-group-hdr.g-accessoire td{color:#f08230;border-left:3px solid rgba(240,130,48,.7);}
+.eq-group-hdr.g-bar td{color:#bb6bd9;border-left:3px solid rgba(187,107,217,.7);}
+.eq-group-hdr.g-exterieur td{color:#4caf50;border-left:3px solid rgba(76,175,80,.7);}
+.eq-group-hdr.g-stockage td{color:#5b9bd5;border-left:3px solid rgba(91,155,213,.7);}
+.eq-group-hdr.g-boutique td{color:#20bca8;border-left:3px solid rgba(32,188,168,.7);}
+.eq-group-hdr.g-sanitaire td{color:#14b8d8;border-left:3px solid rgba(20,184,216,.7);}
+/* Simulation widget */
+.eq-sim{background:var(--dark2);border:1px solid rgba(196,160,78,.1);padding:24px;margin-bottom:20px;}
+.eq-sim-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.eq-sim-field{display:flex;flex-direction:column;gap:5px;}
+.eq-sim-field label{font-size:7.5px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.eq-sim-input{background:rgba(255,255,255,.04);border:1px solid rgba(196,160,78,.14);color:var(--cream);padding:7px 10px;font-family:var(--serif);font-size:13px;outline:none;transition:border .2s;width:100%;}
+.eq-sim-input:focus{border-color:rgba(196,160,78,.5);color:var(--gold);}
+.eq-sim-results{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding-top:16px;border-top:1px solid rgba(196,160,78,.07);}
+.eq-res{background:rgba(255,255,255,.015);border:1px solid rgba(196,160,78,.07);padding:14px;}
+.eq-res-lbl{font-size:7px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.eq-res-val{font-family:var(--serif);font-size:22px;}
+.eq-res-val b{font-weight:300;}
+.eq-res-sub{font-size:8.5px;color:var(--muted);margin-top:4px;}
+.eq-breakdown{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.eq-bk-item{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(196,160,78,.04);}
+.eq-bk-item:last-child{border-bottom:none;}
+.eq-bk-name{font-size:10px;color:var(--light);}
+.eq-bk-val{font-family:var(--serif);font-size:12px;color:var(--gold);white-space:nowrap;}
+.eq-bk-bar-wrap{grid-column:1/-1;height:2px;background:rgba(255,255,255,.04);border-radius:1px;}
+.eq-bk-bar-fill{height:100%;border-radius:1px;transition:width .5s;}
+.eq-filter-bar{display:flex;gap:5px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid rgba(196,160,78,.05);}
+.eq-filter-bar .fb{font-size:7.5px;padding:4px 12px;}
+.eq-filter-bar .fb.on.f-all{border-color:var(--gold);color:var(--gold);background:rgba(196,160,78,.06);}
+.eq-filter-bar .fb.on.f-amenagement{border-color:#c4a04e;color:#c4a04e;background:rgba(196,160,78,.06);}
+.eq-filter-bar .fb.on.f-accessoire{border-color:#f08230;color:#f08230;background:rgba(240,130,48,.06);}
+.eq-filter-bar .fb.on.f-senteur{border-color:#d98cc8;color:#d98cc8;background:rgba(217,140,200,.06);}
+.eq-filter-bar .fb.on.f-bar{border-color:#bb6bd9;color:#bb6bd9;background:rgba(187,107,217,.06);}
+.eq-filter-bar .fb.on.f-exterieur{border-color:#4caf50;color:#4caf50;background:rgba(76,175,80,.06);}
+.eq-filter-bar .fb.on.f-stockage{border-color:#5b9bd5;color:#5b9bd5;background:rgba(91,155,213,.06);}
+.eq-filter-bar .fb.on.f-boutique{border-color:#20bca8;color:#20bca8;background:rgba(32,188,168,.06);}
+.eq-filter-bar .fb.on.f-marketing{border-color:#ff6b6b;color:#ff6b6b;background:rgba(255,107,107,.06);}
+.eq-filter-bar .fb.on.f-sanitaire{border-color:#14b8d8;color:#14b8d8;background:rgba(20,184,216,.06);}
+.eq-filter-bar .fb.on.f-energie{border-color:var(--warn);color:var(--warn);background:rgba(240,160,48,.06);}
+@media(max-width:900px){.eq-sim-grid{grid-template-columns:repeat(2,1fr);}.eq-sim-results{grid-template-columns:1fr 1fr;}.eq-breakdown{grid-template-columns:1fr;}}
+/* ══ ONGLETS PAGE MATÉRIEL ══ */
+.mat-page-tabs{display:flex;gap:0;border-bottom:1px solid rgba(196,160,78,.1);margin-bottom:22px;flex-wrap:wrap;}
+.mat-page-tab{padding:13px 26px;font-size:8px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;border:none;background:none;color:rgba(122,122,104,.6);border-bottom:2px solid transparent;transition:all .22s;font-family:var(--sans);}
+.mat-page-tab:hover{color:var(--light);background:rgba(196,160,78,.03);}
+.mat-page-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(196,160,78,.04);}
+.mat-page-tab .tab-sub{font-size:6.5px;letter-spacing:1.5px;color:var(--muted);display:block;margin-top:2px;}
+/* Cellules éditables tableau équipement */
+.eq-cell{background:transparent;border:1px solid transparent;color:var(--light);padding:3px 6px;font-family:var(--sans);font-size:10px;outline:none;width:100%;box-sizing:border-box;font-weight:300;}
+.eq-cell:hover{border-color:rgba(196,160,78,.14);background:rgba(196,160,78,.03);}
+.eq-cell:focus{border-color:rgba(196,160,78,.5);background:rgba(196,160,78,.06);color:var(--gold);}
+.eq-cell.num{text-align:right;width:70px;}
+.eq-cell.wide{width:150px;}
+.eq-cell-select{background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.1);color:var(--cream);padding:3px 6px;font-family:var(--sans);font-size:10px;outline:none;cursor:pointer;}
+.eq-cell-select option{background:var(--dark2);}
+.eq-cell-select:focus{border-color:rgba(196,160,78,.4);}
+
+/* ══ ÉQUIPEMENT TABLE TFOOT ══ */
+.eq-table tfoot tr:first-child td{background:rgba(196,160,78,.025);border-top:2px solid rgba(196,160,78,.18);}
+.eq-table tfoot tr td{color:var(--cream);}
+.mat-cell{background:transparent;border:1px solid transparent;color:var(--cream);padding:3px 6px;font-family:var(--sans);font-size:10px;outline:none;width:60px;box-sizing:border-box;font-weight:300;}
+.mat-cell:hover{border-color:rgba(196,160,78,.18);background:rgba(196,160,78,.03);}
+.mat-cell:focus{border-color:rgba(196,160,78,.5);background:rgba(196,160,78,.06);color:var(--gold);}
+.mat-cell.text{width:130px;}
+.mat-status-tag{display:inline-block;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;border-radius:2px;white-space:nowrap;color:var(--light);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);}
+.mat-status-tag.ok{background:rgba(76,175,80,.09);color:var(--ok);border-color:rgba(76,175,80,.22);}
+.mat-status-tag.warn{background:rgba(240,160,48,.09);color:var(--warn);border-color:rgba(240,160,48,.22);}
+.mat-status-tag.alert{background:rgba(224,80,80,.09);color:var(--err);border-color:rgba(224,80,80,.22);}
+
+/* ══ BADGES PAIEMENT ÉQUIPEMENT ══ */
+.eq-paie-comptant{background:rgba(76,175,80,.08);color:var(--ok);border:1px solid rgba(76,175,80,.2);}
+.eq-paie-acompte{background:rgba(156,127,213,.1);color:var(--purple);border:1px solid rgba(156,127,213,.2);}
+.eq-paie-echeances{background:rgba(91,155,213,.09);color:var(--info);border:1px solid rgba(91,155,213,.2);}
+.eq-paie-comptant:hover,.eq-paie-acompte:hover,.eq-paie-echeances:hover{opacity:.75;}
+
+/* ══ ÉQUIPEMENT TABLE ══ */
+.eq-table-wrap{
+  overflow-x: auto;
+  overflow-y: visible;
+  max-width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.eq-table-wrap::-webkit-scrollbar{ display: none; }
+
+/* En-tête : pas de sticky — incompatible avec overflow-x sur le parent */
+.eq-table thead th{
+  background: var(--dark2);
+  border-bottom: 2px solid rgba(196,160,78,.22);
+  white-space: nowrap;
+  padding: 9px 10px;
+  font-size: 7px;
+  letter-spacing: 2.5px;
+}
+
+/* Largeur min pour forcer le scroll */
+.eq-table{ min-width: 1500px; }
+.eq-table-wrap.eq-compact .eq-table{ min-width: 950px; }
+
+/* ── Mode compact ── */
+.eq-compact-btn{
+  font-size:8px; letter-spacing:1.5px; text-transform:uppercase;
+  border:1px solid rgba(196,160,78,.2); color:var(--muted);
+  padding:6px 12px; cursor:pointer; background:none; font-family:var(--sans);
+  transition:all .2s; display:flex; align-items:center; gap:5px;
+}
+.eq-compact-btn:hover{ border-color:var(--gold); color:var(--gold); }
+.eq-compact-btn.on{ border-color:var(--gold); color:var(--gold); background:rgba(196,160,78,.06); }
+.eq-table-wrap.eq-compact .eq-table thead th{ padding:5px 4px; font-size:6.5px; letter-spacing:1.2px; }
+.eq-table-wrap.eq-compact .eq-table tbody td{ padding:4px 3px; }
+.eq-table-wrap.eq-compact .eq-cell{ font-size:9px; padding:2px 3px; }
+.eq-table-wrap.eq-compact .eq-cell.num{ width:48px; }
+.eq-table-wrap.eq-compact .eq-cell.wide{ width:100px; }
+.eq-table-wrap.eq-compact .eq-cell-select{ font-size:9px; padding:2px 3px; }
+.eq-table-wrap.eq-compact .eq-amort{ font-size:9px; }
+.eq-table-wrap.eq-compact .eq-paie-comptant,
+.eq-table-wrap.eq-compact .eq-paie-acompte,
+.eq-table-wrap.eq-compact .eq-paie-echeances{ font-size:6px; padding:1px 5px; }
+
+/* Barre de noms de colonnes (statique, au-dessus du tableau) */
+.eq-col-guide{
+  display:flex; align-items:center; gap:4px;
+  padding:5px 12px;
+  background:rgba(196,160,78,.025);
+  border-bottom:1px solid rgba(196,160,78,.06);
+  overflow:hidden;
+  font-size:7px; letter-spacing:1.5px; text-transform:uppercase;
+  color:rgba(122,122,104,.5);
+  white-space:nowrap;
+}
+
+/* ══ SLIDER DE DÉFILEMENT HORIZONTAL ══ */
+.tbl-slider-wrap{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 8px;
+  background: rgba(196,160,78,.02);
+  border-top: 1px solid rgba(196,160,78,.08);
+}
+.tbl-slider-wrap label{
+  font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold-d); white-space: nowrap; flex-shrink: 0; opacity:.7;
+}
+.tbl-slider{
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: rgba(255,255,255,.08);
+  outline: none;
+  border-radius: 2px;
+  cursor: ew-resize;
+}
+.tbl-slider::-webkit-slider-thumb{
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: ew-resize;
+  box-shadow: 0 0 0 4px rgba(196,160,78,.18);
+  transition: box-shadow .15s;
+}
+.tbl-slider::-webkit-slider-thumb:hover{ box-shadow: 0 0 0 8px rgba(196,160,78,.22); }
+.tbl-slider::-moz-range-thumb{
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--gold); cursor: ew-resize;
+  border: none; box-shadow: 0 0 0 4px rgba(196,160,78,.18);
+}
+.tbl-slider-pct{
+  font-size: 9px; font-family: var(--serif);
+  color: var(--gold); min-width: 32px; text-align: right; flex-shrink: 0; opacity:.8;
+}
+.eq-etat{display:inline-block;font-size:6.5px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:2px;white-space:nowrap;}
+.eq-etat.neuf   {background:rgba(76,175,80,.1);color:#4caf50;border:1px solid rgba(76,175,80,.22);}
+.eq-etat.bon    {background:rgba(91,155,213,.1);color:#5b9bd5;border:1px solid rgba(91,155,213,.22);}
+.eq-etat.reviser{background:rgba(240,160,48,.1);color:var(--warn);border:1px solid rgba(240,160,48,.22);}
+.eq-etat.hs     {background:rgba(224,80,80,.1);color:var(--err);border:1px solid rgba(224,80,80,.22);}
+.eq-amort{font-family:var(--serif);font-size:11px;color:rgba(156,127,213,.8);}
+.eq-table tr.eq-warn-row td{background:rgba(240,160,48,.022);}
+.eq-table tr.eq-err-row  td{background:rgba(224,80,80,.022);}
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   EDEN — MODULE ADMIN FIDÉLITÉ EXPÉRIENCE / PASSAGES
+   Ajout : sélection client, barre XP, historique, passage rapide
+═══════════════════════════════════════════════════════════════ */
+#page-fidelite .fid-workspace{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:18px;margin-top:20px;}
+#page-fidelite .fid-panel{background:var(--dark2);border:1px solid rgba(196,160,78,.08);overflow:hidden;}
+#page-fidelite .fid-panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;border-bottom:1px solid rgba(196,160,78,.07);}
+#page-fidelite .fid-panel-title{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
+#page-fidelite .fid-panel-sub{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.5;}
+#page-fidelite .fid-panel-body{padding:18px;}
+#page-fidelite .fid-table-wrap{overflow-x:auto;max-width:100%;}
+#page-fidelite .fid-table{min-width:980px;}
+#page-fidelite .fid-table tbody tr{cursor:pointer;}
+#page-fidelite .fid-table tbody tr.selected{background:rgba(196,160,78,.055);}
+#page-fidelite .fid-mini-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+#page-fidelite .fid-search-wide{width:260px;max-width:100%;}
+#page-fidelite .fid-status-pill{display:inline-flex;align-items:center;gap:5px;font-size:7px;letter-spacing:1.6px;text-transform:uppercase;padding:4px 9px;border-radius:2px;white-space:nowrap;}
+#page-fidelite .fid-status-pill.bronze{background:rgba(205,127,50,.1);color:#cd7f32;border:1px solid rgba(205,127,50,.22);}
+#page-fidelite .fid-status-pill.argent{background:rgba(192,192,192,.09);color:#c0c0c0;border:1px solid rgba(192,192,192,.22);}
+#page-fidelite .fid-status-pill.or{background:rgba(196,160,78,.11);color:var(--gold);border:1px solid rgba(196,160,78,.28);}
+#page-fidelite .fid-client-hero{position:relative;min-height:260px;border:1px solid rgba(196,160,78,.12);background:radial-gradient(circle at top right,rgba(196,160,78,.09),transparent 34%),linear-gradient(145deg,rgba(17,22,8,.98),rgba(6,9,8,.98));padding:24px;overflow:hidden;}
+#page-fidelite .fid-client-hero::before{content:"";position:absolute;right:-80px;bottom:-80px;width:230px;height:230px;border:1px solid rgba(196,160,78,.05);border-radius:50%;}
+#page-fidelite .fid-client-top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;position:relative;z-index:1;}
+#page-fidelite .fid-client-name{font-family:var(--serif);font-size:30px;font-weight:300;color:var(--cream);line-height:1.1;}
+#page-fidelite .fid-client-meta{font-size:11px;color:var(--muted);line-height:1.8;margin-top:8px;}
+#page-fidelite .fid-level-badge{border:1px solid rgba(196,160,78,.25);background:rgba(196,160,78,.055);padding:9px 14px;font-size:8px;letter-spacing:2.8px;text-transform:uppercase;white-space:nowrap;}
+#page-fidelite .fid-level-badge.bronze{color:#cd7f32;border-color:rgba(205,127,50,.35);background:rgba(205,127,50,.08);}
+#page-fidelite .fid-level-badge.argent{color:#c0c0c0;border-color:rgba(192,192,192,.35);background:rgba(192,192,192,.08);}
+#page-fidelite .fid-level-badge.or{color:var(--gold);border-color:rgba(196,160,78,.45);background:rgba(196,160,78,.10);}
+#page-fidelite .fid-xp-zone{position:relative;z-index:1;margin-top:30px;}
+#page-fidelite .fid-xp-top{display:flex;justify-content:space-between;align-items:center;gap:14px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+#page-fidelite .fid-xp-bar{height:10px;background:rgba(255,255,255,.05);overflow:hidden;border:1px solid rgba(196,160,78,.07);}
+#page-fidelite .fid-xp-fill{height:100%;width:0;background:linear-gradient(90deg,#cd7f32,#c0c0c0,var(--gold));transition:width .7s var(--ease);box-shadow:0 0 18px rgba(196,160,78,.18);}
+#page-fidelite .fid-milestones{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+#page-fidelite .fid-ms{border:1px solid rgba(196,160,78,.08);padding:10px;background:rgba(255,255,255,.012);}
+#page-fidelite .fid-ms strong{display:block;font-family:var(--serif);font-size:16px;font-weight:300;margin-bottom:4px;}
+#page-fidelite .fid-ms span{font-size:8px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);}
+#page-fidelite .fid-ms.active{background:rgba(196,160,78,.05);border-color:rgba(196,160,78,.24);}
+#page-fidelite .fid-pass-form{display:grid;gap:12px;margin-top:16px;}
+#page-fidelite .fid-pass-form label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
+#page-fidelite .fid-pass-form input,#page-fidelite .fid-pass-form select{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(196,160,78,.12);color:var(--cream);padding:11px 13px;font-family:var(--sans);font-size:11px;outline:none;}
+#page-fidelite .fid-pass-form input:focus,#page-fidelite .fid-pass-form select:focus{border-color:rgba(196,160,78,.45);}
+#page-fidelite .fid-pass-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+#page-fidelite .fid-add-main{width:100%;border:none;background:var(--gold);color:var(--dark);padding:14px 18px;font-family:var(--sans);font-size:9px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .22s;}
+#page-fidelite .fid-add-main:hover{background:var(--gold-l);}
+#page-fidelite .fid-help-box{font-size:11px;color:var(--muted);line-height:1.9;border:1px solid rgba(196,160,78,.08);background:rgba(196,160,78,.025);padding:14px;margin-top:14px;}
+#page-fidelite .fid-history-list{display:flex;flex-direction:column;gap:10px;max-height:460px;overflow-y:auto;padding-right:4px;}
+#page-fidelite .fid-history-empty{font-size:11px;color:var(--muted);line-height:1.8;padding:18px;border:1px solid rgba(196,160,78,.06);background:rgba(255,255,255,.012);}
+#page-fidelite .fid-history-item{border:1px solid rgba(196,160,78,.08);background:rgba(255,255,255,.015);padding:13px 14px;}
+#page-fidelite .fid-history-item strong{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--cream);font-size:12px;font-weight:300;margin-bottom:5px;}
+#page-fidelite .fid-history-item span{display:block;font-size:10px;color:var(--muted);line-height:1.6;}
+#page-fidelite .fid-history-note{margin-top:6px;color:var(--light)!important;}
+#page-fidelite .fid-statline{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:18px;background:rgba(196,160,78,.08);position:relative;z-index:1;}
+#page-fidelite .fid-statline div{background:rgba(6,9,8,.55);padding:12px;}
+#page-fidelite .fid-statline span{display:block;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+#page-fidelite .fid-statline b{font-family:var(--serif);font-size:17px;color:var(--gold);font-weight:300;word-break:break-word;}
+#page-fidelite .fid-muted{color:var(--muted);}
+#page-fidelite .fid-ok{color:var(--ok)!important;}
+#page-fidelite .fid-err{color:var(--err)!important;}
+#page-fidelite .fid-sql-note{margin-top:16px;padding:14px;border:1px solid rgba(240,160,48,.18);background:rgba(240,160,48,.045);font-size:10px;color:var(--muted);line-height:1.8;}
+@media(max-width:1150px){#page-fidelite .fid-workspace{grid-template-columns:1fr;}#page-fidelite .fid-search-wide{width:100%;}}
+@media(max-width:700px){#page-fidelite .fid-client-top,#page-fidelite .fid-xp-top{flex-direction:column;align-items:flex-start;}#page-fidelite .fid-milestones,#page-fidelite .fid-statline,#page-fidelite .fid-pass-grid{grid-template-columns:1fr;}}
+
+
+/* ── Surcharges standalone ── */
+html,body{background:var(--dark);}
+body{margin:0;padding:24px 28px 60px;color:var(--cream);font-family:var(--sans);}
+#page-schema{display:block!important;max-width:1500px;margin:0 auto;}
+.sh{margin-top:4px;}
+</style>
+</head>
+<body class="">
+<section class="page" id="page-schema">
+      <div class="sh">
+        <div class="sh-left">
+          <p class="ey">Schéma directeur · 48 mois</p>
+          <h2>Domaine <em>EDEN</em> — Plan complet</h2>
+          <p style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1px">Chaque espace simulé individuellement · rentabilité · investissement · feuille de route · autonomie.</p>
+        </div>
+        <div class="sch-scen-bar">
+          <span class="sch-scen-lbl">Scénario</span>
+          <button class="btn-s sch-scen-btn" data-scen="pessimiste" onclick="schSetActive('pessimiste')">Pessimiste</button>
+          <button class="btn-s sch-scen-btn active" data-scen="realiste" onclick="schSetActive('realiste')">Réaliste</button>
+          <button class="btn-s sch-scen-btn" data-scen="optimiste" onclick="schSetActive('optimiste')">Optimiste</button>
+          <button class="btn-s sch-scen-btn" data-scen="exceptionnel" onclick="schSetActive('exceptionnel')">Exceptionnel</button>
+          <button class="btn-s danger" onclick="schReset()">↺ Réinitialiser</button>
+        </div>
+      </div>
+
+      <div class="mat-page-tabs">
+        <button class="mat-page-tab active" onclick="schTab('synthese',this)">◈ Synthèse<span class="tab-sub">vue d'ensemble</span></button>
+        <button class="mat-page-tab" onclick="schTab('simulateurs',this)">◉ Simulateurs<span class="tab-sub">chaque pôle</span></button>
+        <button class="mat-page-tab" onclick="schTab('classements',this)">▲ Classements<span class="tab-sub">rentabilité · priorité</span></button>
+        <button class="mat-page-tab" onclick="schTab('roadmap',this)">⬡ Feuille de route<span class="tab-sub">48 mois</span></button>
+        <button class="mat-page-tab" onclick="schTab('autonomie',this)">⚡ Autonomie<span class="tab-sub">énergie · eau · production</span></button>
+      </div>
+
+      <!-- ─── SYNTHÈSE ─── -->
+      <div id="sch-tab-synthese" class="sch-tab">
+        <div class="kpi-grid">
+          <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">Investissement total</p><div class="kpi-val"><b id="sch-k-invest">–</b> €</div><p class="kpi-sub">capex tous pôles</p><span class="kpi-ico">◬</span></div>
+          <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">CA annuel (plein régime)</p><div class="kpi-val"><b id="sch-k-caan">–</b> €</div><p class="kpi-sub">pôles de revenu</p><span class="kpi-ico">◈</span></div>
+          <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Marge nette annuelle</p><div class="kpi-val"><b id="sch-k-mnan">–</b> €</div><p class="kpi-sub">avant charges communes</p><span class="kpi-ico">◆</span></div>
+          <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Économies annuelles</p><div class="kpi-val"><b id="sch-k-ecoan">–</b> €</div><p class="kpi-sub">autonomie & production</p><span class="kpi-ico">⚡</span></div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi" style="--accent:var(--purple)"><p class="kpi-label">Scénario actif</p><div class="kpi-val" style="font-size:24px"><b id="sch-k-scen">Réaliste</b></div><p class="kpi-sub">modifiable ci-dessus</p><span class="kpi-ico">◉</span></div>
+          <div class="kpi" style="--accent:var(--gold-l)"><p class="kpi-label">Charges communes / mois</p><div class="kpi-val"><b id="sch-k-fees">–</b> €</div><p class="kpi-sub">mutualisées</p><span class="kpi-ico">▣</span></div>
+          <div class="kpi sim-positive" id="sch-res-wrap" style="--accent:var(--ok)"><p class="kpi-label">Résultat net / mois</p><div class="kpi-val"><b id="sch-k-resmois">–</b> €</div><p class="kpi-sub">après charges communes</p><span class="kpi-ico">◆</span></div>
+          <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Résultat net / an</p><div class="kpi-val"><b id="sch-k-resan">–</b> €</div><p class="kpi-sub" id="sch-k-nbsub"><b id="sch-k-nbtot">0</b> pôles · <b id="sch-k-nbrev">0</b> revenus · <b id="sch-k-nbeco">0</b> autonomie</p><span class="kpi-ico">◬</span></div>
+        </div>
+
+        <div class="g2" style="margin-bottom:20px">
+          <div class="card">
+            <div class="card-h"><span class="card-t">Gain annuel par groupe (net + économies)</span></div>
+            <div class="sim-bars" id="sch-group-bars"></div>
+          </div>
+          <div class="card">
+            <div class="card-h"><span class="card-t">Charges fixes communes / mois</span></div>
+            <div class="sim-fees" id="sch-fees" style="grid-template-columns:1fr"></div>
+            <div class="card-h" style="margin-top:16px"><span class="card-t">Facteurs de remplissage par scénario</span></div>
+            <div class="sim-fees" id="sch-scen-factors" style="grid-template-columns:1fr 1fr"></div>
+          </div>
+        </div>
+        <div class="alert info">Astuce — passez à l'onglet <b>Simulateurs</b> pour ajuster chaque pôle (prix, places, créneaux, remplissage, coûts, investissement). Les 4 scénarios et tous les calculs se recalculent automatiquement.</div>
+      </div>
+
+      <!-- ─── SIMULATEURS ─── -->
+      <div id="sch-tab-simulateurs" class="sch-tab" style="display:none">
+        <div id="sch-sim-groups"></div>
+      </div>
+
+      <!-- ─── CLASSEMENTS ─── -->
+      <div id="sch-tab-classements" class="sch-tab" style="display:none">
+        <div class="g2">
+          <div class="card">
+            <div class="card-h"><span class="card-t">▲ Rentabilité</span><span style="font-size:9px;color:var(--muted)">gain net annuel</span></div>
+            <div class="sch-rank" id="sch-rank-rentab"></div>
+          </div>
+          <div class="card">
+            <div class="card-h"><span class="card-t">◷ Priorité de lancement</span><span style="font-size:9px;color:var(--muted)">score · ROI</span></div>
+            <div class="sch-rank" id="sch-rank-prio"></div>
+          </div>
+          <div class="card">
+            <div class="card-h"><span class="card-t">★ Impact image premium</span><span style="font-size:9px;color:var(--muted)">score 1–5</span></div>
+            <div class="sch-rank" id="sch-rank-premium"></div>
+          </div>
+          <div class="card">
+            <div class="card-h"><span class="card-t">⚡ Impact autonomie</span><span style="font-size:9px;color:var(--muted)">score · économies</span></div>
+            <div class="sch-rank" id="sch-rank-auto"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── FEUILLE DE ROUTE ─── -->
+      <div id="sch-tab-roadmap" class="sch-tab" style="display:none">
+        <div class="kpi-grid">
+          <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">Investissement cumulé 48 mois</p><div class="kpi-val"><b id="sch-rm-invest">–</b> €</div><span class="kpi-ico">◬</span></div>
+          <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Gain / mois (plein déploiement)</p><div class="kpi-val"><b id="sch-rm-gainmois">–</b> €</div><span class="kpi-ico">◆</span></div>
+          <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Rentabilité globale atteinte</p><div class="kpi-val" style="font-size:22px"><b id="sch-rm-payback">–</b></div><p class="kpi-sub">trésorerie cumulée &gt; 0</p><span class="kpi-ico">◷</span></div>
+        </div>
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-h"><span class="card-t">Trésorerie cumulée — 48 mois</span><span style="font-size:9px;color:var(--muted)">or = positive · rouge = en investissement</span></div>
+          <div class="sch-cash" id="sch-cash"></div>
+          <div style="display:flex;justify-content:space-between;font-size:8px;letter-spacing:1.5px;color:var(--muted);margin-top:4px"><span>M1</span><span>Année 1</span><span>Année 2</span><span>Année 3</span><span>Année 4 · M48</span></div>
+        </div>
+        <div class="sch-road-phases" id="sch-road-phases"></div>
+      </div>
+
+      <!-- ─── AUTONOMIE ─── -->
+      <div id="sch-tab-autonomie" class="sch-tab" style="display:none">
+        <div class="kpi-grid">
+          <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Économies / mois</p><div class="kpi-val"><b id="sch-auto-ecomois">–</b> €</div><p class="kpi-sub">énergie · eau · bois · production</p><span class="kpi-ico">⚡</span></div>
+          <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Économies / an</p><div class="kpi-val"><b id="sch-auto-ecoan">–</b> €</div><span class="kpi-ico">◆</span></div>
+          <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">Investissement autonomie</p><div class="kpi-val"><b id="sch-auto-invest">–</b> €</div><span class="kpi-ico">◬</span></div>
+          <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Retour sur investissement</p><div class="kpi-val" style="font-size:22px"><b id="sch-auto-roi">–</b></div><p class="kpi-sub">global autonomie</p><span class="kpi-ico">◷</span></div>
+        </div>
+        <div class="tw">
+          <div class="tw-head"><span class="tw-title">Pôles d'autonomie & d'économie</span><span style="font-size:9px;color:var(--muted)">production solaire · eau · bois · semences · verger · logistique</span></div>
+          <table>
+            <thead><tr><th>Pôle</th><th>Groupe</th><th>Économie / mois</th><th>Économie / an</th><th>Investissement</th><th>Retour</th><th>Autonomie</th></tr></thead>
+            <tbody id="sch-auto-list"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+<script>
+
+function fmtSim(n){ if(!isFinite(n)) n=0; return Math.round(n).toLocaleString('fr-FR'); }
+function fmtSim1(n){ if(!isFinite(n)) n=0; return n.toLocaleString('fr-FR',{maximumFractionDigits:1}); }
+function clampSim(n,min,max){ n=Number(n)||0; if(n<min) n=min; if(max!=null&&n>max) n=max; return n; }
+function pctClass(p){ if(p>=80) return 'ok'; if(p>=50) return ''; if(p>=30) return 'warn'; return 'err'; }
+function pctTag(p){ if(p>=80) return 'ok'; if(p>=50) return ''; if(p>=30) return 'warn'; return 'err'; }
+function toast(icon,msg){ var t=document.getElementById('mini-toast'); if(!t){ t=document.createElement('div'); t.id='mini-toast'; t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--dark);padding:12px 24px;font-family:var(--sans);font-size:11px;letter-spacing:2px;text-transform:uppercase;z-index:9999;transition:opacity .3s'; document.body.appendChild(t);} t.textContent=(icon?icon+'  ':'')+msg; t.style.opacity='1'; clearTimeout(t._h); t._h=setTimeout(function(){t.style.opacity='0';},2200); }
+
+const SCH_GROUPES = [
+  {key:'batiment',  nom:'Bâtiment principal EDEN', icon:'⌂', color:'var(--gold)'},
+  {key:'bienetre',  nom:'Centre bien-être',        icon:'❀', color:'var(--gold)'},
+  {key:'fitness',   nom:'Fitness & Performance',   icon:'⬡', color:'var(--info)'},
+  {key:'fuelbar',   nom:'Fuel Bar',                icon:'☕', color:'var(--gold-l)'},
+  {key:'boutique',  nom:'Boutique & Magasin EDEN', icon:'▣', color:'var(--purple)'},
+  {key:'atelier',   nom:'Atelier Infusions & Thés',icon:'⚗', color:'var(--gold)'},
+  {key:'miel',      nom:'Pôle Miel',               icon:'❋', color:'var(--warn)'},
+  {key:'coworking', nom:'Coworking',               icon:'⌘', color:'var(--info)'},
+  {key:'media',     nom:'Podcast & Médias',        icon:'◉', color:'var(--purple)'},
+  {key:'minigolf',  nom:'Mini-Golf Premium',       icon:'⛳', color:'var(--ok)'},
+  {key:'event',     nom:'Séminaires & Événementiel',icon:'✦', color:'var(--gold)'},
+  {key:'vip',       nom:'Espace VIP',              icon:'♔', color:'var(--gold-l)'},
+  {key:'herbo',     nom:'Herboristerie',           icon:'❦', color:'var(--ok)'},
+  {key:'serres',    nom:'Serres & Verger',         icon:'✿', color:'var(--ok)'},
+  {key:'jardins',   nom:'Jardins & Extérieurs',    icon:'❀', color:'var(--gold)'},
+  {key:'energie',   nom:'Autonomie énergétique',   icon:'⚡', color:'var(--warn)'},
+  {key:'eau',       nom:'Pôle Eau',                icon:'◇', color:'var(--info)'},
+  {key:'semences',  nom:'Pôle Semences',           icon:'❂', color:'var(--ok)'},
+  {key:'bois',      nom:'Stockage Bois',           icon:'▤', color:'var(--gold-d)'},
+  {key:'support',   nom:'Logistique & Stockage',   icon:'⊟', color:'var(--muted)'}
+];
+function schGroupe(k){ return SCH_GROUPES.find(g=>g.key===k) || {nom:k,icon:'•',color:'var(--gold)'}; }
+
+// Facteurs de remplissage par scénario (modifiables)
+const SCH_SCEN_DEFAULT = { pessimiste:0.55, realiste:1, optimiste:1.35, exceptionnel:1.75 };
+const SCH_SCEN_LBL = { pessimiste:'Pessimiste', realiste:'Réaliste', optimiste:'Optimiste', exceptionnel:'Exceptionnel' };
+
+// Charges fixes communes (mutualisées, hors pôle)
+const SCH_FEES_DEFAULT = [
+  {key:'salaires',  nom:'Masse salariale socle', val:45000},
+  {key:'energie',   nom:'Énergie & fluides (résiduel)', val:3000},
+  {key:'logiciels', nom:'Logiciels & abonnements', val:600},
+  {key:'assurance', nom:'Assurances',           val:900},
+  {key:'compta',    nom:'Comptable / gestion',  val:700},
+  {key:'marketing', nom:'Marketing & communication', val:2500},
+  {key:'nettoyage', nom:'Entretien & nettoyage',val:2000},
+  {key:'banque',    nom:'Banque / TPE / frais', val:600},
+  {key:'divers',    nom:'Divers / imprévus',    val:1500}
+];
+
+/* Modèle de chaque pôle :
+   t  = type : 'revenu' | 'eco' (économie/autonomie) | 'support'
+   m  = mode : 'jour' (par créneau / volume) | 'mois' (abonnement récurrent)
+   prix, panier, places, creneaux, joursMois, rempl(%), coutVar, coutPerso, coutFixe,
+   invest, ecoMois (économie mensuelle), prem/auto/prio (scores 1-5), mois (lancement 1-48) */
+const SCH_POLES_DEFAULT = [
+  // ── BÂTIMENT PRINCIPAL (accueil, réception, vestiaires, sanitaires, VIP, réserves) ──
+  {key:'batiment_principal', nom:'Bâtiment principal (accueil, réception, vestiaires, sanitaires)', icon:'⌂', g:'batiment', t:'support', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:600,invest:180000,ecoMois:0,prem:5,auto:1,prio:5,mois:1, desc:'Socle du domaine : accueil, réception, vestiaires, sanitaires, espaces communs.'},
+
+  // ── CENTRE BIEN-ÊTRE ──
+  {key:'sauna',        nom:'Sauna',           icon:'☼', g:'bienetre', t:'revenu', m:'jour', prix:28,panier:4,places:5,creneaux:4,joursMois:26,rempl:40,coutVar:9,coutPerso:0,coutFixe:200,invest:18000,ecoMois:0,prem:5,auto:1,prio:5,mois:2, desc:'Sauna finlandais — séances réservables.'},
+  {key:'hammam',       nom:'Hammam',          icon:'♨', g:'bienetre', t:'revenu', m:'jour', prix:28,panier:4,places:5,creneaux:4,joursMois:26,rempl:38,coutVar:9,coutPerso:0,coutFixe:180,invest:16000,ecoMois:0,prem:5,auto:1,prio:5,mois:2, desc:'Hammam traditionnel.'},
+  {key:'bain_froid',   nom:'Bain froid',      icon:'❄', g:'bienetre', t:'revenu', m:'jour', prix:18,panier:3,places:4,creneaux:5,joursMois:26,rempl:40,coutVar:5,coutPerso:0,coutFixe:150,invest:9000,ecoMois:0,prem:4,auto:1,prio:5,mois:2, desc:'Bains froids / cryo-immersion.'},
+  {key:'bain_nordique',nom:'Bains nordiques', icon:'♨', g:'bienetre', t:'revenu', m:'jour', prix:40,panier:6,places:5,creneaux:4,joursMois:26,rempl:38,coutVar:12,coutPerso:0,coutFixe:200,invest:22000,ecoMois:0,prem:5,auto:3,prio:4,mois:6, desc:'Bains nordiques chauffés au bois (autonomie).'},
+  {key:'cryotherapie', nom:'Cryothérapie',    icon:'❅', g:'bienetre', t:'revenu', m:'jour', prix:45,panier:4,places:1,creneaux:8,joursMois:26,rempl:38,coutVar:9,coutPerso:0,coutFixe:250,invest:55000,ecoMois:0,prem:5,auto:1,prio:3,mois:14, desc:'Cryothérapie corps entier.'},
+  {key:'pressotherapie',nom:'Pressothérapie', icon:'◉', g:'bienetre', t:'revenu', m:'jour', prix:25,panier:3,places:2,creneaux:6,joursMois:26,rempl:42,coutVar:5,coutPerso:0,coutFixe:120,invest:7000,ecoMois:0,prem:3,auto:1,prio:4,mois:3, desc:'Drainage / récupération.'},
+  {key:'massage',      nom:'Massages',        icon:'✦', g:'bienetre', t:'revenu', m:'jour', prix:70,panier:8,places:1,creneaux:6,joursMois:26,rempl:45,coutVar:35,coutPerso:0,coutFixe:150,invest:6000,ecoMois:0,prem:5,auto:1,prio:4,mois:2, desc:'Massages & soins (part praticien en coût variable).'},
+  {key:'detente',      nom:'Espaces détente', icon:'☾', g:'bienetre', t:'revenu', m:'jour', prix:12,panier:5,places:14,creneaux:3,joursMois:26,rempl:32,coutVar:3,coutPerso:0,coutFixe:120,invest:12000,ecoMois:0,prem:4,auto:2,prio:3,mois:4, desc:'Accès espaces détente / relaxation.'},
+
+  // ── FITNESS & PERFORMANCE ──
+  {key:'abonnements',  nom:'Abonnements (muscu / cardio)', icon:'⬡', g:'fitness', t:'revenu', m:'mois', prix:49,panier:5,places:400,creneaux:1,joursMois:30,rempl:60,coutVar:3,coutPerso:2200,coutFixe:800,invest:120000,ecoMois:0,prem:4,auto:1,prio:5,mois:1, desc:'Abonnements salle (récurrent mensuel).'},
+  {key:'coaching',     nom:'Coaching',        icon:'◆', g:'fitness', t:'revenu', m:'jour', prix:50,panier:3,places:1,creneaux:6,joursMois:26,rempl:45,coutVar:32,coutPerso:0,coutFixe:100,invest:3000,ecoMois:0,prem:4,auto:1,prio:4,mois:2, desc:'Coaching individuel (part coach en coût variable).'},
+  {key:'cours_coll',   nom:'Cours collectifs',icon:'❖', g:'fitness', t:'revenu', m:'jour', prix:15,panier:3,places:10,creneaux:3,joursMois:26,rempl:45,coutVar:7,coutPerso:0,coutFixe:150,invest:8000,ecoMois:0,prem:3,auto:1,prio:4,mois:3, desc:'Cours collectifs encadrés.'},
+  {key:'hyrox',        nom:'HYROX',           icon:'⊕', g:'fitness', t:'revenu', m:'jour', prix:20,panier:4,places:10,creneaux:3,joursMois:26,rempl:40,coutVar:6,coutPerso:0,coutFixe:200,invest:25000,ecoMois:0,prem:5,auto:1,prio:4,mois:8, desc:'Zone HYROX & compétitions.'},
+  {key:'strongman',    nom:'Strongman',       icon:'⊗', g:'fitness', t:'revenu', m:'jour', prix:20,panier:4,places:6,creneaux:2,joursMois:26,rempl:38,coutVar:6,coutPerso:0,coutFixe:150,invest:18000,ecoMois:0,prem:4,auto:1,prio:3,mois:10, desc:'Zone Strongman.'},
+
+  // ── FUEL BAR ──
+  {key:'smoothies',    nom:'Smoothies',       icon:'🥤', g:'fuelbar', t:'revenu', m:'jour', prix:7,panier:1,places:60,creneaux:1,joursMois:30,rempl:45,coutVar:3,coutPerso:1400,coutFixe:150,invest:6000,ecoMois:0,prem:3,auto:2,prio:5,mois:1, desc:'Smoothies & jus (équipe bar mutualisée).'},
+  {key:'cafes',        nom:'Cafés',           icon:'☕', g:'fuelbar', t:'revenu', m:'jour', prix:3.5,panier:1,places:120,creneaux:1,joursMois:30,rempl:40,coutVar:1,coutPerso:0,coutFixe:80,invest:4000,ecoMois:0,prem:3,auto:1,prio:5,mois:1, desc:'Cafés & boissons chaudes.'},
+  {key:'thes_bar',     nom:'Thés & Infusions (bar)', icon:'🍵', g:'fuelbar', t:'revenu', m:'jour', prix:4,panier:1,places:50,creneaux:1,joursMois:30,rempl:35,coutVar:1.2,coutPerso:0,coutFixe:60,invest:1500,ecoMois:0,prem:3,auto:3,prio:4,mois:1, desc:'Thés & infusions maison (approvisionnés par l’atelier).'},
+  {key:'snacks',       nom:'Snacks',          icon:'🍪', g:'fuelbar', t:'revenu', m:'jour', prix:6,panier:2,places:50,creneaux:1,joursMois:30,rempl:35,coutVar:2.5,coutPerso:0,coutFixe:80,invest:2000,ecoMois:0,prem:2,auto:1,prio:4,mois:1, desc:'Snacks sains & en-cas.'},
+
+  // ── BOUTIQUE & MAGASIN EDEN (≈ 50 m²) ──
+  {key:'b_infusions',  nom:'Infusions',       icon:'🌿', g:'boutique', t:'revenu', m:'jour', prix:9,panier:4,places:25,creneaux:1,joursMois:30,rempl:40,coutVar:3.5,coutPerso:0,coutFixe:60,invest:1500,ecoMois:0,prem:4,auto:3,prio:4,mois:2, desc:'Vente boutique d’infusions EDEN.'},
+  {key:'b_miel',       nom:'Miel',            icon:'❋', g:'boutique', t:'revenu', m:'jour', prix:12,panier:5,places:15,creneaux:1,joursMois:30,rempl:40,coutVar:4,coutPerso:0,coutFixe:40,invest:1000,ecoMois:0,prem:4,auto:4,prio:4,mois:2, desc:'Miel du domaine en boutique.'},
+  {key:'b_bougies',    nom:'Bougies',         icon:'✸', g:'boutique', t:'revenu', m:'jour', prix:18,panier:6,places:12,creneaux:1,joursMois:30,rempl:35,coutVar:6,coutPerso:0,coutFixe:40,invest:1500,ecoMois:0,prem:4,auto:3,prio:3,mois:3, desc:'Bougies cire d’abeille.'},
+  {key:'b_derives',    nom:'Produits dérivés',icon:'◈', g:'boutique', t:'revenu', m:'jour', prix:15,panier:5,places:15,creneaux:1,joursMois:30,rempl:35,coutVar:6,coutPerso:0,coutFixe:40,invest:2000,ecoMois:0,prem:4,auto:2,prio:3,mois:3, desc:'Produits bien-être dérivés.'},
+  {key:'b_coffrets',   nom:'Coffrets',        icon:'🎁', g:'boutique', t:'revenu', m:'jour', prix:39,panier:8,places:6,creneaux:1,joursMois:30,rempl:35,coutVar:15,coutPerso:0,coutFixe:40,invest:1500,ecoMois:0,prem:5,auto:2,prio:3,mois:4, desc:'Coffrets cadeaux premium.'},
+  {key:'b_accessoires',nom:'Accessoires',     icon:'✧', g:'boutique', t:'revenu', m:'jour', prix:12,panier:3,places:15,creneaux:1,joursMois:30,rempl:35,coutVar:6,coutPerso:0,coutFixe:30,invest:2000,ecoMois:0,prem:3,auto:1,prio:3,mois:3, desc:'Accessoires bien-être & sport.'},
+  {key:'b_vetements',  nom:'Vêtements',       icon:'⊿', g:'boutique', t:'revenu', m:'jour', prix:35,panier:0,places:8,creneaux:1,joursMois:30,rempl:30,coutVar:18,coutPerso:0,coutFixe:40,invest:4000,ecoMois:0,prem:4,auto:1,prio:3,mois:5, desc:'Textile signature EDEN.'},
+  {key:'b_gourdes',    nom:'Gourdes',         icon:'⌃', g:'boutique', t:'revenu', m:'jour', prix:25,panier:0,places:10,creneaux:1,joursMois:30,rempl:30,coutVar:12,coutPerso:0,coutFixe:20,invest:1500,ecoMois:0,prem:3,auto:1,prio:3,mois:4, desc:'Gourdes & contenants réutilisables.'},
+
+  // ── ATELIER INFUSIONS & THÉS (mélange, conditionnement, création) ──
+  {key:'a_directe',    nom:'Vente directe',   icon:'⚗', g:'atelier', t:'revenu', m:'jour', prix:9,panier:3,places:30,creneaux:1,joursMois:30,rempl:35,coutVar:2.5,coutPerso:0,coutFixe:120,invest:12000,ecoMois:0,prem:4,auto:4,prio:4,mois:13, desc:'Infusions maison vendues sur place (production atelier).'},
+  {key:'a_ligne',      nom:'Vente en ligne',  icon:'☍', g:'atelier', t:'revenu', m:'jour', prix:11,panier:4,places:20,creneaux:1,joursMois:30,rempl:30,coutVar:4,coutPerso:0,coutFixe:200,invest:4000,ecoMois:0,prem:4,auto:3,prio:4,mois:15, desc:'E-commerce infusions & thés EDEN.'},
+  {key:'a_coffrets',   nom:'Coffrets atelier',icon:'🎁', g:'atelier', t:'revenu', m:'jour', prix:29,panier:8,places:8,creneaux:1,joursMois:30,rempl:30,coutVar:10,coutPerso:0,coutFixe:60,invest:2000,ecoMois:0,prem:5,auto:3,prio:3,mois:16, desc:'Coffrets infusions composés à l’atelier.'},
+
+  // ── PÔLE MIEL (jardin mellifère, ruches) ──
+  {key:'m_miel',       nom:'Miel (production)',icon:'❋', g:'miel', t:'revenu', m:'jour', prix:12,panier:4,places:20,creneaux:1,joursMois:30,rempl:40,coutVar:3,coutPerso:0,coutFixe:120,invest:8000,ecoMois:0,prem:4,auto:5,prio:4,mois:13, desc:'Production & vente directe de miel (ruches + jardin mellifère).'},
+  {key:'m_bougies',    nom:'Bougies (cire)',  icon:'✸', g:'miel', t:'revenu', m:'jour', prix:18,panier:5,places:10,creneaux:1,joursMois:30,rempl:35,coutVar:6,coutPerso:0,coutFixe:40,invest:2000,ecoMois:0,prem:4,auto:4,prio:3,mois:15, desc:'Bougies issues de la cire des ruches.'},
+  {key:'m_derives',    nom:'Produits dérivés',icon:'◈', g:'miel', t:'revenu', m:'jour', prix:14,panier:5,places:10,creneaux:1,joursMois:30,rempl:30,coutVar:5,coutPerso:0,coutFixe:40,invest:3000,ecoMois:0,prem:4,auto:4,prio:3,mois:18, desc:'Pollen, propolis, hydromel, savons.'},
+
+  // ── COWORKING ──
+  {key:'cw_poste',     nom:'Poste journée',   icon:'⌘', g:'coworking', t:'revenu', m:'jour', prix:22,panier:4,places:12,creneaux:1,joursMois:26,rempl:45,coutVar:2,coutPerso:0,coutFixe:120,invest:9000,ecoMois:0,prem:3,auto:1,prio:4,mois:3, desc:'Postes coworking à la journée.'},
+  {key:'cw_bureau',    nom:'Bureau privé',    icon:'⊞', g:'coworking', t:'revenu', m:'mois', prix:350,panier:0,places:4,creneaux:1,joursMois:30,rempl:70,coutVar:15,coutPerso:0,coutFixe:80,invest:12000,ecoMois:0,prem:3,auto:1,prio:3,mois:4, desc:'Bureaux privatifs (abonnement mensuel).'},
+  {key:'cw_reunion',   nom:'Salle réunion',   icon:'▦', g:'coworking', t:'revenu', m:'jour', prix:40,panier:6,places:1,creneaux:6,joursMois:26,rempl:35,coutVar:4,coutPerso:0,coutFixe:60,invest:6000,ecoMois:0,prem:3,auto:1,prio:3,mois:4, desc:'Location salle de réunion (blocs horaires).'},
+
+  // ── PODCAST & MÉDIAS ──
+  {key:'pod_studio',   nom:'Studio podcast',  icon:'◉', g:'media', t:'revenu', m:'jour', prix:60,panier:5,places:1,creneaux:6,joursMois:22,rempl:35,coutVar:5,coutPerso:0,coutFixe:150,invest:15000,ecoMois:0,prem:5,auto:1,prio:3,mois:12, desc:'Location studio podcast.'},
+  {key:'pod_video',    nom:'Studio vidéo',    icon:'▶', g:'media', t:'revenu', m:'jour', prix:120,panier:10,places:1,creneaux:3,joursMois:18,rempl:35,coutVar:15,coutPerso:0,coutFixe:200,invest:25000,ecoMois:0,prem:5,auto:1,prio:3,mois:20, desc:'Studio vidéo & création de contenu (impact marketing fort).'},
+
+  // ── MINI-GOLF PREMIUM ──
+  {key:'mg_entrees',   nom:'Entrées',         icon:'⛳', g:'minigolf', t:'revenu', m:'jour', prix:12,panier:5,places:40,creneaux:1,joursMois:26,rempl:45,coutVar:2,coutPerso:0,coutFixe:200,invest:60000,ecoMois:0,prem:5,auto:1,prio:3,mois:18, desc:'Entrées mini-golf paysager premium.'},
+  {key:'mg_events',    nom:'Événements / privatisations', icon:'✦', g:'minigolf', t:'revenu', m:'jour', prix:350,panier:50,places:1,creneaux:1,joursMois:6,rempl:60,coutVar:60,coutPerso:0,coutFixe:0,invest:0,ecoMois:0,prem:5,auto:1,prio:3,mois:20, desc:'Privatisations & événements sur le mini-golf.'},
+
+  // ── SÉMINAIRES & ÉVÉNEMENTIEL ──
+  {key:'ev_salle',     nom:'Location salle',  icon:'▣', g:'event', t:'revenu', m:'jour', prix:600,panier:150,places:1,creneaux:1,joursMois:8,rempl:50,coutVar:120,coutPerso:0,coutFixe:200,invest:20000,ecoMois:0,prem:5,auto:1,prio:3,mois:14, desc:'Location salle séminaire (journée).'},
+  {key:'ev_privat',    nom:'Privatisation domaine', icon:'♚', g:'event', t:'revenu', m:'jour', prix:2500,panier:400,places:1,creneaux:1,joursMois:2,rempl:50,coutVar:500,coutPerso:0,coutFixe:0,invest:0,ecoMois:0,prem:5,auto:1,prio:3,mois:24, desc:'Privatisation complète du domaine.'},
+
+  // ── ESPACE VIP ──
+  {key:'vip_acces',    nom:'Accès VIP',       icon:'♔', g:'vip', t:'revenu', m:'mois', prix:150,panier:20,places:60,creneaux:1,joursMois:30,rempl:50,coutVar:20,coutPerso:0,coutFixe:150,invest:30000,ecoMois:0,prem:5,auto:1,prio:3,mois:25, desc:'Abonnement accès zone VIP.'},
+  {key:'vip_privat',   nom:'Privatisation VIP',icon:'♛', g:'vip', t:'revenu', m:'jour', prix:800,panier:120,places:1,creneaux:2,joursMois:8,rempl:45,coutVar:100,coutPerso:0,coutFixe:100,invest:0,ecoMois:0,prem:5,auto:1,prio:3,mois:26, desc:'Privatisation espace VIP.'},
+  {key:'vip_suites',   nom:'Suites privées',  icon:'⌑', g:'vip', t:'revenu', m:'jour', prix:280,panier:60,places:3,creneaux:1,joursMois:26,rempl:45,coutVar:50,coutPerso:0,coutFixe:200,invest:120000,ecoMois:0,prem:5,auto:1,prio:3,mois:30, desc:'Suites privées (nuitées).'},
+
+  // ── HERBORISTERIE ──
+  {key:'h_pavillon',   nom:'Pavillon herboristerie', icon:'❦', g:'herbo', t:'revenu', m:'jour', prix:18,panier:10,places:12,creneaux:3,joursMois:20,rempl:35,coutVar:4,coutPerso:0,coutFixe:150,invest:30000,ecoMois:0,prem:5,auto:4,prio:3,mois:16, desc:'Découverte plantes, dégustations, ateliers.'},
+  {key:'h_sechage',    nom:'Salle de séchage',icon:'❧', g:'herbo', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:60,invest:8000,ecoMois:180,prem:2,auto:4,prio:2,mois:14, desc:'Séchage plantes aromatiques — intrants gratuits pour l’atelier (économie).'},
+
+  // ── SERRES & VERGER ──
+  {key:'s_production', nom:'Serre de production', icon:'✿', g:'serres', t:'revenu', m:'jour', prix:6,panier:0,places:25,creneaux:1,joursMois:26,rempl:35,coutVar:2,coutPerso:0,coutFixe:120,invest:35000,ecoMois:250,prem:4,auto:5,prio:3,mois:13, desc:'Plantes aromatiques & plants — vente + approvisionnement interne.'},
+  {key:'s_technique',  nom:'Serre technique / démo', icon:'❀', g:'serres', t:'revenu', m:'jour', prix:8,panier:0,places:12,creneaux:2,joursMois:12,rempl:30,coutVar:2,coutPerso:0,coutFixe:100,invest:25000,ecoMois:120,prem:4,auto:5,prio:2,mois:18, desc:'Démonstration & ateliers + recherche variétale.'},
+  {key:'verger',       nom:'Verger (pommiers, poiriers, cerisiers)', icon:'🍎', g:'serres', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:80,invest:12000,ecoMois:300,prem:4,auto:5,prio:2,mois:26, desc:'Production fruitière valorisée (Fuel Bar, jus, ateliers) — économie d’intrants.'},
+
+  // ── JARDINS & EXTÉRIEURS ──
+  {key:'j_terrasses',  nom:'Braséro premium & terrasses', icon:'♨', g:'jardins', t:'revenu', m:'jour', prix:12,panier:6,places:24,creneaux:1,joursMois:20,rempl:35,coutVar:5,coutPerso:0,coutFixe:120,invest:25000,ecoMois:0,prem:5,auto:2,prio:3,mois:8, desc:'Terrasses & braséro — consommations extérieures premium.'},
+  {key:'j_pollinisateurs',nom:'Jardin des pollinisateurs & parcours', icon:'❀', g:'jardins', t:'support', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:80,invest:15000,ecoMois:0,prem:4,auto:4,prio:2,mois:37, desc:'Jardin pollinisateurs & parcours paysagers — image premium & biodiversité.'},
+
+  // ── AUTONOMIE ÉNERGÉTIQUE ──
+  {key:'e_solaire',    nom:'Centrale solaire (photovoltaïque)', icon:'⚡', g:'energie', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:80,invest:80000,ecoMois:1800,prem:4,auto:5,prio:4,mois:13, desc:'Panneaux PV — autoconsommation + revente surplus.'},
+  {key:'e_parking',    nom:'Parking solaire (ombrières + bornes)', icon:'⊠', g:'energie', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:60,invest:60000,ecoMois:700,prem:4,auto:5,prio:3,mois:30, desc:'Ombrières PV + bornes de recharge (économie + revenu bornes).'},
+  {key:'e_batteries',  nom:'Local batteries (stockage)', icon:'▮', g:'energie', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:40,invest:40000,ecoMois:400,prem:3,auto:5,prio:3,mois:24, desc:'Stockage d’énergie — optimisation de l’autoconsommation.'},
+
+  // ── PÔLE EAU ──
+  {key:'eau_cuves',    nom:'Cuves récupération + filtration', icon:'◇', g:'eau', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:50,invest:25000,ecoMois:350,prem:3,auto:5,prio:3,mois:20, desc:'Récupération & filtration — arrosage, nettoyage, sanitaires.'},
+
+  // ── PÔLE SEMENCES ──
+  {key:'semences',     nom:'Banque de graines / conservation', icon:'❂', g:'semences', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:30,invest:9000,ecoMois:150,prem:3,auto:4,prio:2,mois:24, desc:'Conservation des semences — intrants serres/jardins + potentiel de développement.'},
+
+  // ── STOCKAGE BOIS ──
+  {key:'bois',         nom:'Stockage bois (combustible)', icon:'▤', g:'bois', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:40,invest:6000,ecoMois:300,prem:3,auto:4,prio:3,mois:6, desc:'Bois pour bains nordiques, braséro, chauffage extérieur — économie vs gaz/élec.'},
+
+  // ── LOGISTIQUE & STOCKAGE ──
+  {key:'garage',       nom:'Garage EDEN (matériel roulant, véhicule élec.)', icon:'⊟', g:'support', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:120,invest:18000,ecoMois:200,prem:2,auto:3,prio:2,mois:4, desc:'Stockage matériel roulant, véhicule électrique, remorque — économie vs prestataires.'},
+  {key:'local_entretien',nom:'Local entretien (espaces verts)', icon:'⊡', g:'support', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:80,invest:9000,ecoMois:250,prem:2,auto:3,prio:2,mois:3, desc:'Tondeuses, taille-haies, souffleurs — entretien interne vs paysagiste.'},
+  {key:'entrepot',     nom:'Entrepôt / stockage central', icon:'▥', g:'support', t:'support', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:150,invest:30000,ecoMois:0,prem:2,auto:2,prio:3,mois:2, desc:'Stockage général, consommables, matériel, produits boutique & bien-être.'}
+];
+
+let SCH_DATA   = JSON.parse(JSON.stringify(SCH_POLES_DEFAULT));
+let SCH_FEES   = JSON.parse(JSON.stringify(SCH_FEES_DEFAULT));
+let SCH_SCEN   = Object.assign({}, SCH_SCEN_DEFAULT);
+let SCH_ACTIVE = 'realiste';
+
+function schLoad(){
+  try{
+    const raw = localStorage.getItem('eden_schema_directeur');
+    if(!raw) return;
+    const obj = JSON.parse(raw);
+    if(obj && Array.isArray(obj.data)){
+      SCH_DATA = SCH_POLES_DEFAULT.map(d=>{
+        const found = obj.data.find(x=>x.key===d.key);
+        return found ? Object.assign({}, d, found) : d;
+      });
+    }
+    if(obj && Array.isArray(obj.fees)){
+      SCH_FEES = SCH_FEES_DEFAULT.map(f=>{
+        const found = obj.fees.find(x=>x.key===f.key);
+        return found ? Object.assign({}, f, found) : f;
+      });
+    }
+    if(obj && obj.scen) SCH_SCEN = Object.assign({}, SCH_SCEN_DEFAULT, obj.scen);
+    if(obj && obj.active && SCH_SCEN_LBL[obj.active]) SCH_ACTIVE = obj.active;
+  }catch(e){ console.warn('sch load err',e); }
+}
+function schSave(){
+  try{ localStorage.setItem('eden_schema_directeur', JSON.stringify({data:SCH_DATA, fees:SCH_FEES, scen:SCH_SCEN, active:SCH_ACTIVE, _t:Date.now()})); }catch(e){}
+}
+
+// ── Moteur de calcul d'un pôle pour un facteur de scénario donné ──
+function schCompute(p, f){
+  f = (f==null) ? 1 : f;
+  const rempl  = Math.min(1, (Number(p.rempl)||0)/100 * f);
+  const ticket = (Number(p.prix)||0) + (Number(p.panier)||0);
+  let capJour, clients, caMois, coutVarMois;
+  if(p.m === 'mois'){
+    const actifs = (Number(p.places)||0) * rempl;
+    capJour     = Number(p.places)||0;
+    clients     = actifs;
+    caMois      = actifs * ticket;
+    coutVarMois = actifs * (Number(p.coutVar)||0);
+  } else {
+    capJour     = (Number(p.places)||0) * (Number(p.creneaux)||0);
+    clients     = capJour * rempl;
+    caMois      = clients * ticket * (Number(p.joursMois)||0);
+    coutVarMois = clients * (Number(p.coutVar)||0) * (Number(p.joursMois)||0);
+  }
+  const caJour  = (p.m==='mois') ? caMois/(Number(p.joursMois)||30) : clients*ticket;
+  const caSem   = caMois/4.33;
+  const caAn    = caMois*12;
+  const charges = (Number(p.coutPerso)||0) + (Number(p.coutFixe)||0);
+  const margeBrute = caMois - coutVarMois;
+  const margeNette = margeBrute - charges;
+  const margeNetteAn = margeNette*12;
+  const margePct = caMois>0 ? (margeNette/caMois)*100 : 0;
+  const ecoMois  = Number(p.ecoMois)||0;
+  const ecoAn    = ecoMois*12;
+  const gainMois = margeNette + ecoMois;        // contribution mensuelle (revenu net + économie)
+  const gainAn   = gainMois*12;
+  // Point mort & seuil
+  const margeUnit = ticket - (Number(p.coutVar)||0);
+  let pointMort=0, seuilPct=0;
+  if(p.m === 'mois'){
+    pointMort = margeUnit>0 ? charges/margeUnit : 0;
+    seuilPct  = (Number(p.places)||0)>0 ? (pointMort/p.places)*100 : 0;
+  } else {
+    const denom = margeUnit*(Number(p.joursMois)||0);
+    pointMort = denom>0 ? charges/denom : 0;
+    seuilPct  = capJour>0 ? (pointMort/capJour)*100 : 0;
+  }
+  const invest  = Number(p.invest)||0;
+  const roiMois = gainMois>0 ? invest/gainMois : Infinity;
+  return {rempl:rempl*100, ticket, capJour, clients, caJour, caSem, caMois, caAn,
+          coutVarMois, charges, margeBrute, margeNette, margeNetteAn, margePct,
+          ecoMois, ecoAn, gainMois, gainAn, pointMort, seuilPct, invest, roiMois};
+}
+
+function schFmtRoi(m){
+  if(!isFinite(m) || m<=0) return '—';
+  if(m>120) return '> 10 ans';
+  if(m<12)  return Math.round(m)+' mois';
+  return (m/12).toLocaleString('fr-FR',{maximumFractionDigits:1})+' ans';
+}
+function schSetText(id,v){ const el=document.getElementById(id); if(el) el.textContent=v; }
+function schScenFactor(){ return SCH_SCEN[SCH_ACTIVE] || 1; }
+
+/* ── Mutations ── */
+function schSet(key, field, value){
+  const p = SCH_DATA.find(x=>x.key===key); if(!p) return;
+  let v = Number(value); if(!isFinite(v)) v=0; if(v<0) v=0;
+  if(['prem','auto','prio'].indexOf(field)>=0) v = clampSim(Math.round(v),1,5);
+  if(field==='mois') v = clampSim(Math.round(v),1,48);
+  if(field==='rempl') v = clampSim(v,0,100);
+  p[field] = v;
+  schSave();
+  schUpdate();
+}
+function schSetFee(key, value){
+  const f = SCH_FEES.find(x=>x.key===key); if(!f) return;
+  let v=Number(value); if(!isFinite(v)||v<0) v=0; f.val=v; schSave(); schUpdate();
+}
+function schSetScen(name, value){
+  let v=Number(value); if(!isFinite(v)||v<0) v=0; SCH_SCEN[name]=v; schSave(); schUpdate();
+}
+function schSetActive(name){
+  if(!SCH_SCEN_LBL[name]) return;
+  SCH_ACTIVE = name; schSave();
+  document.querySelectorAll('.sch-scen-btn').forEach(b=>b.classList.toggle('active', b.getAttribute('data-scen')===name));
+  schUpdate();
+}
+function schReset(){
+  SCH_DATA = JSON.parse(JSON.stringify(SCH_POLES_DEFAULT));
+  SCH_FEES = JSON.parse(JSON.stringify(SCH_FEES_DEFAULT));
+  SCH_SCEN = Object.assign({}, SCH_SCEN_DEFAULT);
+  SCH_ACTIVE = 'realiste';
+  try{ localStorage.removeItem('eden_schema_directeur'); }catch(e){}
+  renderSchemaDirecteur();
+  if(typeof toast==='function') toast('↺','Schéma directeur réinitialisé');
+}
+
+function schTab(name, btn){
+  ['synthese','simulateurs','classements','roadmap','autonomie'].forEach(t=>{
+    const el=document.getElementById('sch-tab-'+t);
+    if(el) el.style.display = (t===name)?'block':'none';
+  });
+  document.querySelectorAll('#page-schema .mat-page-tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
+/* ── Construction des cartes simulateurs (inputs, une seule fois) ── */
+function schParamInputs(p){
+  const inp=(field,label,step)=>`<label>${label}</label><input type="number" class="sim-input tiny" min="0" step="${step||'1'}" value="${p[field]!=null?p[field]:0}" oninput="schSet('${p.key}','${field}',this.value)">`;
+  if(p.t==='eco' || p.t==='support'){
+    return `<div class="sim-row">
+        ${inp('ecoMois','Économie / mois (€)','10')}
+        ${inp('coutFixe','Fonctionnement / mois (€)','10')}
+      </div>
+      <div class="sim-row" style="margin-top:4px">
+        ${inp('coutPerso','Personnel / mois (€)','10')}
+        ${inp('invest','Investissement (€)','100')}
+      </div>`;
+  }
+  if(p.m==='mois'){
+    return `<div class="sim-row">
+        ${inp('prix','Abonnement / mois (€)','1')}
+        ${inp('panier','Extra moyen / mois (€)','1')}
+        ${inp('places','Abonnés / contrats max','1')}
+      </div>
+      <div class="sim-row" style="margin-top:4px">
+        ${inp('rempl','Taux remplissage (%)','1')}
+        ${inp('coutVar','Coût var. / abonné (€)','0.5')}
+        ${inp('joursMois','Jours / mois','1')}
+      </div>
+      <div class="sim-row" style="margin-top:4px">
+        ${inp('coutPerso','Personnel / mois (€)','10')}
+        ${inp('coutFixe','Fonctionnement / mois (€)','10')}
+        ${inp('invest','Investissement (€)','100')}
+      </div>`;
+  }
+  return `<div class="sim-row">
+      ${inp('prix','Prix prestation (€)','0.5')}
+      ${inp('panier','Panier complément. (€)','0.5')}
+      ${inp('coutVar','Coût var. / client (€)','0.5')}
+    </div>
+    <div class="sim-row" style="margin-top:4px">
+      ${inp('places','Places / créneau','1')}
+      ${inp('creneaux','Créneaux / jour','1')}
+      ${inp('joursMois','Jours ouverts / mois','1')}
+    </div>
+    <div class="sim-row" style="margin-top:4px">
+      ${inp('rempl','Taux remplissage (%)','1')}
+      ${inp('coutPerso','Personnel / mois (€)','10')}
+      ${inp('coutFixe','Fonctionnement / mois (€)','10')}
+    </div>
+    <div class="sim-row" style="margin-top:4px">
+      ${inp('invest','Investissement (€)','100')}
+    </div>`;
+}
+function schStatsBlock(p){
+  if(p.t==='eco' || p.t==='support'){
+    return `<div class="sim-stats">
+        <div class="sim-stat"><p class="sim-stat-lbl">Économie / mois</p><p class="sim-stat-val"><b id="sch-ecomois-${p.key}">–</b> €</p></div>
+        <div class="sim-stat"><p class="sim-stat-lbl">Économie / an</p><p class="sim-stat-val"><b id="sch-ecoan-${p.key}">–</b> €</p></div>
+        <div class="sim-stat"><p class="sim-stat-lbl">Coûts / mois</p><p class="sim-stat-val"><b id="sch-cout-${p.key}">–</b> €</p></div>
+        <div class="sim-stat"><p class="sim-stat-lbl">Retour invest.</p><p class="sim-stat-val"><b id="sch-roi-${p.key}">–</b></p></div>
+      </div>`;
+  }
+  const unitLbl = p.m==='mois' ? 'Abonnés actifs' : 'Clients / jour';
+  return `<div class="sim-stats">
+      <div class="sim-stat"><p class="sim-stat-lbl">${unitLbl}</p><p class="sim-stat-val"><b id="sch-clients-${p.key}">–</b></p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">CA / jour</p><p class="sim-stat-val"><b id="sch-caj-${p.key}">–</b> €</p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">CA / semaine</p><p class="sim-stat-val"><b id="sch-casem-${p.key}">–</b> €</p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">CA / mois</p><p class="sim-stat-val"><b id="sch-camois-${p.key}">–</b> €</p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">CA / an</p><p class="sim-stat-val"><b id="sch-caan-${p.key}">–</b> €</p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">Marge brute / mois</p><p class="sim-stat-val"><b id="sch-mb-${p.key}">–</b> €</p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">Marge nette / mois</p><p class="sim-stat-val"><b id="sch-mn-${p.key}">–</b> €</p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">Marge %</p><p class="sim-stat-val"><b id="sch-mpct-${p.key}">–</b></p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">Point mort</p><p class="sim-stat-val"><b id="sch-pm-${p.key}">–</b></p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">Seuil rentab.</p><p class="sim-stat-val"><b id="sch-seuil-${p.key}">–</b></p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">Retour invest.</p><p class="sim-stat-val"><b id="sch-roi-${p.key}">–</b></p></div>
+    </div>`;
+}
+function schScenariosBlock(p){
+  if(p.t==='eco' || p.t==='support') return '';
+  return `<div>
+      <p style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:6px 0 2px">Scénarios — CA & marge nette / an</p>
+      <table class="sch-scn-tbl">
+        <thead><tr><th>Scénario</th><th>CA / an</th><th>Marge nette / an</th></tr></thead>
+        <tbody>
+          <tr><td>Pessimiste</td><td id="sch-scca-pessimiste-${p.key}">–</td><td id="sch-scmn-pessimiste-${p.key}">–</td></tr>
+          <tr><td>Réaliste</td><td id="sch-scca-realiste-${p.key}">–</td><td id="sch-scmn-realiste-${p.key}">–</td></tr>
+          <tr><td>Optimiste</td><td id="sch-scca-optimiste-${p.key}">–</td><td id="sch-scmn-optimiste-${p.key}">–</td></tr>
+          <tr><td>Exceptionnel</td><td id="sch-scca-exceptionnel-${p.key}">–</td><td id="sch-scmn-exceptionnel-${p.key}">–</td></tr>
+        </tbody>
+      </table>
+    </div>`;
+}
+function schCard(p){
+  const g = schGroupe(p.g);
+  const typeLbl = p.t==='revenu'?'Revenu':(p.t==='eco'?'Économie':'Support');
+  const fillBlock = (p.t==='revenu') ? `<div>
+      <p style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Remplissage (scénario actif) <span id="sch-fillpct-${p.key}" style="float:right;color:var(--gold)">–%</span></p>
+      <div class="sim-bar"><div class="sim-bar-fill" id="sch-fill-${p.key}" style="width:0%"></div></div>
+    </div>` : '';
+  return `<div class="sim-card" id="sch-card-${p.key}">
+      <div class="sim-card-head">
+        <div class="sim-card-name"><span class="sim-card-icon">${p.icon}</span> ${p.nom}</div>
+        <span class="sch-type ${p.t}">${typeLbl}</span>
+      </div>
+      <p style="font-size:9px;color:var(--muted);letter-spacing:.3px;margin:-4px 0 2px;line-height:1.4">${p.desc||''}</p>
+      ${schParamInputs(p)}
+      ${schStatsBlock(p)}
+      ${schScenariosBlock(p)}
+      ${fillBlock}
+      <div class="sch-cls">
+        <div><label>Premium</label><input type="number" min="1" max="5" value="${p.prem}" oninput="schSet('${p.key}','prem',this.value)"></div>
+        <div><label>Autonomie</label><input type="number" min="1" max="5" value="${p.auto}" oninput="schSet('${p.key}','auto',this.value)"></div>
+        <div><label>Priorité</label><input type="number" min="1" max="5" value="${p.prio}" oninput="schSet('${p.key}','prio',this.value)"></div>
+        <div><label>Mois lanc.</label><input type="number" min="1" max="48" value="${p.mois}" oninput="schSet('${p.key}','mois',this.value)"></div>
+      </div>
+    </div>`;
+}
+function schRenderSimulateurs(){
+  const host = document.getElementById('sch-sim-groups');
+  if(!host) return;
+  host.innerHTML = SCH_GROUPES.map(g=>{
+    const poles = SCH_DATA.filter(p=>p.g===g.key);
+    if(!poles.length) return '';
+    return `<div class="sch-group">
+      <div class="sch-group-head"><span class="gh-icon" style="color:${g.color}">${g.icon}</span><span class="gh-name">${g.nom}</span><span class="gh-meta">${poles.length} pôle(s)</span></div>
+      <div class="sim-grid">${poles.map(schCard).join('')}</div>
+    </div>`;
+  }).join('');
+  // Charges fixes communes
+  const fh = document.getElementById('sch-fees');
+  if(fh){
+    fh.innerHTML = SCH_FEES.map(f=>`<div class="sim-fee-row"><label>${f.nom}</label><input type="number" class="sim-input tiny" min="0" step="10" value="${f.val}" oninput="schSetFee('${f.key}',this.value)"></div>`).join('');
+  }
+  // Facteurs de scénario
+  const sf = document.getElementById('sch-scen-factors');
+  if(sf){
+    sf.innerHTML = ['pessimiste','realiste','optimiste','exceptionnel'].map(s=>`<div class="sim-fee-row"><label>${SCH_SCEN_LBL[s]} (×)</label><input type="number" class="sim-input tiny" min="0" step="0.05" value="${SCH_SCEN[s]}" oninput="schSetScen('${s}',this.value)"></div>`).join('');
+  }
+}
+
+/* ═══════════ MISE À JOUR GLOBALE (calculs + tous les onglets) ═══════════ */
+function schUpdate(){
+  const f = schScenFactor();
+  let totInvest=0, totCAan=0, totMNan=0, totEcoAn=0, totGainMois=0, nbRev=0, nbEco=0;
+  const groupGain = {};
+
+  SCH_DATA.forEach(p=>{
+    const c = schCompute(p, f);
+    totInvest += c.invest;
+    totGainMois += c.gainMois;
+    if(p.t==='revenu'){ totCAan += c.caAn; totMNan += c.margeNetteAn; nbRev++; }
+    if(p.t==='eco'){ nbEco++; }
+    totEcoAn += c.ecoAn;
+    groupGain[p.g] = (groupGain[p.g]||0) + c.gainAn;
+
+    // Cartes — stats
+    if(p.t==='eco' || p.t==='support'){
+      schSetText(`sch-ecomois-${p.key}`, fmtSim(c.ecoMois));
+      schSetText(`sch-ecoan-${p.key}`,   fmtSim(c.ecoAn));
+      schSetText(`sch-cout-${p.key}`,    fmtSim(c.charges));
+      schSetText(`sch-roi-${p.key}`,     schFmtRoi(c.roiMois));
+    } else {
+      schSetText(`sch-clients-${p.key}`, fmtSim1(c.clients));
+      schSetText(`sch-caj-${p.key}`,     fmtSim(c.caJour));
+      schSetText(`sch-casem-${p.key}`,   fmtSim(c.caSem));
+      schSetText(`sch-camois-${p.key}`,  fmtSim(c.caMois));
+      schSetText(`sch-caan-${p.key}`,    fmtSim(c.caAn));
+      schSetText(`sch-mb-${p.key}`,      fmtSim(c.margeBrute));
+      schSetText(`sch-mn-${p.key}`,      fmtSim(c.margeNette));
+      schSetText(`sch-mpct-${p.key}`,    fmtSim1(c.margePct)+'%');
+      schSetText(`sch-pm-${p.key}`,      (p.m==='mois'? fmtSim1(c.pointMort)+' ab.' : fmtSim1(c.pointMort)+'/j'));
+      schSetText(`sch-seuil-${p.key}`,   fmtSim1(c.seuilPct)+'%');
+      schSetText(`sch-roi-${p.key}`,     schFmtRoi(c.roiMois));
+      const fill=document.getElementById(`sch-fill-${p.key}`);
+      if(fill){ fill.style.width=Math.min(100,c.rempl)+'%'; fill.className='sim-bar-fill '+pctClass(c.rempl); }
+      schSetText(`sch-fillpct-${p.key}`, fmtSim1(c.rempl)+'%');
+      // Scénarios
+      ['pessimiste','realiste','optimiste','exceptionnel'].forEach(s=>{
+        const cs = schCompute(p, SCH_SCEN[s]||1);
+        schSetText(`sch-scca-${s}-${p.key}`, fmtSim(cs.caAn)+' €');
+        schSetText(`sch-scmn-${s}-${p.key}`, fmtSim(cs.margeNetteAn)+' €');
+      });
+    }
+  });
+
+  const totFeesMois = SCH_FEES.reduce((s,f)=>s+(Number(f.val)||0),0);
+  const resultatNetMois = totGainMois - totFeesMois;
+  const resultatNetAn   = resultatNetMois*12;
+
+  // ── Synthèse KPIs ──
+  schSetText('sch-k-invest', fmtSim(totInvest));
+  schSetText('sch-k-caan',   fmtSim(totCAan));
+  schSetText('sch-k-mnan',   fmtSim(totMNan));
+  schSetText('sch-k-ecoan',  fmtSim(totEcoAn));
+  schSetText('sch-k-resmois',fmtSim(resultatNetMois));
+  schSetText('sch-k-resan',  fmtSim(resultatNetAn));
+  schSetText('sch-k-fees',   fmtSim(totFeesMois));
+  schSetText('sch-k-nbrev',  nbRev);
+  schSetText('sch-k-nbeco',  nbEco);
+  schSetText('sch-k-nbtot',  SCH_DATA.length);
+  schSetText('sch-k-scen',   SCH_SCEN_LBL[SCH_ACTIVE]);
+  const rw=document.getElementById('sch-res-wrap');
+  if(rw){ rw.classList.remove('sim-positive','sim-negative','sim-warning');
+    rw.classList.add(resultatNetMois>totFeesMois*0.05?'sim-positive':(resultatNetMois<0?'sim-negative':'sim-warning')); }
+
+  // ── Bars : gain annuel par groupe ──
+  const gb=document.getElementById('sch-group-bars');
+  if(gb){
+    const arr = SCH_GROUPES.map(g=>({g:g, v:groupGain[g.key]||0})).filter(x=>x.v!==0).sort((a,b)=>b.v-a.v);
+    const max = Math.max(1, ...arr.map(x=>Math.abs(x.v)));
+    gb.innerHTML = arr.map(x=>`<div class="sim-bars-row">
+        <div class="sim-bars-name">${x.g.icon} ${x.g.nom}</div>
+        <div class="sim-bars-track"><div class="sim-bars-fill" style="width:${(Math.abs(x.v)/max)*100}%;background:${x.v<0?'var(--err)':''}"></div></div>
+        <div class="sim-bars-val">${fmtSim(x.v)} €</div>
+      </div>`).join('');
+  }
+
+  // ── Classements ──
+  schRenderClassements(f);
+  // ── Feuille de route ──
+  schBuildRoadmap(f);
+  // ── Autonomie ──
+  schRenderAutonomie(f);
+}
+
+function schRankList(host, rows){
+  const el=document.getElementById(host); if(!el) return;
+  el.innerHTML = rows.map((r,i)=>`<div class="sch-rank-row">
+      <div class="rk-num">${i+1}</div>
+      <div><div class="rk-name">${r.icon} ${r.nom}</div><div class="rk-grp">${r.grp}${r.sub?' · '+r.sub:''}</div></div>
+      <div class="rk-val">${r.val}</div>
+    </div>`).join('') || '<p style="font-size:11px;color:var(--muted)">Aucune donnée</p>';
+}
+function schRenderClassements(f){
+  f = (f==null)?schScenFactor():f;
+  const enr = SCH_DATA.map(p=>({p:p, c:schCompute(p,f), g:schGroupe(p.g)}));
+  // Rentabilité : par gain annuel (marge nette + économies)
+  schRankList('sch-rank-rentab', enr.slice().sort((a,b)=>b.c.gainAn-a.c.gainAn).slice(0,12).map(x=>({
+    icon:x.p.icon, nom:x.p.nom, grp:x.g.nom, sub:'marge '+fmtSim1(x.c.margePct)+'%', val:fmtSim(x.c.gainAn)+' € /an'})));
+  // Priorité : score priorité puis ROI rapide
+  schRankList('sch-rank-prio', enr.slice().sort((a,b)=> (b.p.prio-a.p.prio) || (a.c.roiMois-b.c.roiMois)).slice(0,12).map(x=>({
+    icon:x.p.icon, nom:x.p.nom, grp:x.g.nom, sub:'ROI '+schFmtRoi(x.c.roiMois), val:'P'+x.p.prio})));
+  // Premium
+  schRankList('sch-rank-premium', enr.slice().sort((a,b)=> (b.p.prem-a.p.prem) || (b.c.gainAn-a.c.gainAn)).slice(0,12).map(x=>({
+    icon:x.p.icon, nom:x.p.nom, grp:x.g.nom, sub:fmtSim(x.c.gainAn)+' € /an', val:'★ '+x.p.prem})));
+  // Autonomie
+  schRankList('sch-rank-auto', enr.slice().sort((a,b)=> (b.p.auto-a.p.auto) || (b.c.ecoAn-a.c.ecoAn)).slice(0,12).map(x=>({
+    icon:x.p.icon, nom:x.p.nom, grp:x.g.nom, sub:(x.c.ecoAn>0?fmtSim(x.c.ecoAn)+' € éco/an':'—'), val:'⚡ '+x.p.auto})));
+}
+
+/* ── Feuille de route 48 mois ── */
+function schBuildRoadmap(f){
+  f = (f==null)?schScenFactor():f;
+  const comp = {};
+  SCH_DATA.forEach(p=>{ comp[p.key]=schCompute(p,f); });
+  const feesMois = SCH_FEES.reduce((s,x)=>s+(Number(x.val)||0),0);
+  let cumInvest=0, cumNet=0, payback=0, started=false;
+  const months=[];
+  for(let m=1;m<=48;m++){
+    let invM=0, activeContrib=0;
+    SCH_DATA.forEach(p=>{
+      if((Number(p.mois)||1)===m) invM += comp[p.key].invest;
+      if((Number(p.mois)||1) < m)  activeContrib += comp[p.key].gainMois;
+    });
+    if(activeContrib>0) started=true;
+    const netMois = activeContrib - (started ? feesMois : 0);
+    cumInvest += invM; cumNet += netMois;
+    const cash = cumNet - cumInvest;
+    if(payback===0 && cash>=0 && m>1) payback=m;
+    months.push({m, invM, activeContrib, netMois, cumInvest, cumNet, cash});
+  }
+  const fullContrib = SCH_DATA.reduce((s,p)=>s+comp[p.key].gainMois,0);
+  // KPIs roadmap
+  schSetText('sch-rm-invest', fmtSim(cumInvest));
+  schSetText('sch-rm-gainmois', fmtSim(fullContrib - feesMois));
+  schSetText('sch-rm-payback', payback? ('Mois '+payback+(payback>=12?' (~'+(payback/12).toLocaleString('fr-FR',{maximumFractionDigits:1})+' ans)':'')) : '> 48 mois');
+  // Chart cashflow cumulé
+  const ch=document.getElementById('sch-cash');
+  if(ch){
+    const maxAbs=Math.max(1, ...months.map(x=>Math.abs(x.cash)));
+    ch.innerHTML = months.map(x=>{
+      const h=(Math.abs(x.cash)/maxAbs)*100;
+      const pos=x.cash>=0;
+      const phaseEdge = (x.m%12===0);
+      return `<div class="sch-cash-bar" title="Mois ${x.m} · trésorerie cumulée ${fmtSim(x.cash)} €${phaseEdge?' · fin de phase':''}">
+        <div class="cb-mid"><div class="cb-fill" style="height:${pos?h:0}%;background:var(--gold)"></div></div>
+        <div class="cb-mid down"><div class="cb-fill" style="height:${pos?0:h}%;background:var(--err)"></div></div>
+      </div>`;
+    }).join('');
+  }
+  // Phases
+  const phases=[[1,12,'Année 1','Fondations & moteur de revenus'],[13,24,'Année 2','Production, autonomie & médias'],[25,36,'Année 3','Premium, VIP & événementiel'],[37,48,'Année 4','Expansion & rayonnement']];
+  const ph=document.getElementById('sch-road-phases');
+  if(ph){
+    ph.innerHTML = phases.map(ps=>{
+      const list = SCH_DATA.filter(p=>{const mm=Number(p.mois)||1; return mm>=ps[0]&&mm<=ps[1];}).sort((a,b)=>(Number(a.mois)||1)-(Number(b.mois)||1));
+      const inv = list.reduce((s,p)=>s+comp[p.key].invest,0);
+      const runRate = (SCH_DATA.filter(p=>(Number(p.mois)||1)<=ps[1]).reduce((s,p)=>s+comp[p.key].gainMois,0) - feesMois)*12;
+      return `<div class="sch-road-phase">
+        <h4>${ps[2]}</h4>
+        <p class="rp-sub">Mois ${ps[0]}–${ps[1]} · ${ps[3]}</p>
+        <div class="sch-road-item" style="border-bottom:1px solid rgba(196,160,78,.14);font-weight:600">
+          <span style="color:var(--gold)">Investissement phase</span><span class="ri-inv">${fmtSim(inv)} €</span></div>
+        <div class="sch-road-item" style="border-bottom:1px solid rgba(196,160,78,.14)">
+          <span style="color:var(--ok)">Résultat net annuel atteint</span><span style="color:${runRate<0?'var(--err)':'var(--ok)'}">${fmtSim(runRate)} €</span></div>
+        ${list.map(p=>`<div class="sch-road-item"><span>${p.icon} ${p.nom}</span><span class="ri-inv">${comp[p.key].invest>0?'M'+(Number(p.mois)||1)+' · '+fmtSim(comp[p.key].invest)+' €':'M'+(Number(p.mois)||1)}</span></div>`).join('')}
+      </div>`;
+    }).join('');
+  }
+}
+
+/* ── Onglet Autonomie & économies ── */
+function schRenderAutonomie(f){
+  f=(f==null)?schScenFactor():f;
+  const ecoPoles = SCH_DATA.filter(p=>p.t==='eco' || (p.t==='support'&&(Number(p.ecoMois)||0)>0) || (Number(p.ecoMois)||0)>0);
+  let totEcoMois=0, totInvest=0;
+  const host=document.getElementById('sch-auto-list');
+  if(host){
+    host.innerHTML = ecoPoles.map(p=>{
+      const c=schCompute(p,f); totEcoMois+=c.ecoMois; totInvest+=c.invest;
+      const g=schGroupe(p.g);
+      return `<tr>
+        <td class="name">${p.icon} ${p.nom}</td>
+        <td>${g.nom}</td>
+        <td class="gold">${fmtSim(c.ecoMois)} €</td>
+        <td class="gold">${fmtSim(c.ecoAn)} €</td>
+        <td>${fmtSim(c.invest)} €</td>
+        <td>${schFmtRoi(c.roiMois)}</td>
+        <td><span class="sim-tag ${c.invest>0&&c.ecoMois>0?'ok':''}">⚡ ${p.auto}/5</span></td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="7" style="color:var(--muted)">Aucun pôle d’économie</td></tr>';
+  }
+  schSetText('sch-auto-ecomois', fmtSim(totEcoMois));
+  schSetText('sch-auto-ecoan',  fmtSim(totEcoMois*12));
+  schSetText('sch-auto-invest', fmtSim(totInvest));
+  schSetText('sch-auto-roi',    schFmtRoi(totEcoMois>0? totInvest/totEcoMois : Infinity));
+}
+
+function renderSchemaDirecteur(){
+  schLoad();
+  document.querySelectorAll('.sch-scen-btn').forEach(b=>b.classList.toggle('active', b.getAttribute('data-scen')===SCH_ACTIVE));
+  schRenderSimulateurs();
+  schUpdate();
+}
+
+// Chargement silencieux au démarrage
+try{ schLoad(); }catch(e){}
+
+
+
+try{ renderSchemaDirecteur(); }catch(e){ console.error(e); }
+</script>
+</body>
+</html>
