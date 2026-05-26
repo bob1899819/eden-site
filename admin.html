@@ -408,6 +408,49 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
 .sim-tag.warn{background:rgba(240,160,48,.1);color:var(--warn);border-color:rgba(240,160,48,.2);}
 .sim-tag.err{background:rgba(224,80,80,.1);color:var(--err);border-color:rgba(224,80,80,.2);}
 @media(max-width:900px){.sim-fees{grid-template-columns:1fr;}.sim-mini-grid{grid-template-columns:1fr;}.sim-fees-foot{grid-template-columns:1fr;}}
+/* ══ SCHÉMA DIRECTEUR EDEN ══ */
+.sch-scen-bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.sch-scen-lbl{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-right:2px;}
+.sch-scen-btn.active{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+.sch-group{margin-bottom:26px;}
+.sch-group-head{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid rgba(196,160,78,.1);}
+.sch-group-head .gh-icon{font-size:16px;}
+.sch-group-head .gh-name{font-family:var(--serif);font-size:20px;color:var(--cream);font-weight:300;}
+.sch-group-head .gh-meta{margin-left:auto;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.sch-type{font-size:7px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:2px;flex-shrink:0;}
+.sch-type.revenu{background:rgba(196,160,78,.12);color:var(--gold);border:1px solid rgba(196,160,78,.2);}
+.sch-type.eco{background:rgba(76,175,80,.12);color:var(--ok);border:1px solid rgba(76,175,80,.2);}
+.sch-type.support{background:rgba(122,122,104,.15);color:var(--light);border:1px solid rgba(122,122,104,.25);}
+.sch-scn-tbl{width:100%;border-collapse:collapse;margin-top:2px;}
+.sch-scn-tbl td,.sch-scn-tbl th{font-size:9.5px;padding:3px 5px;text-align:right;border-bottom:1px solid rgba(196,160,78,.05);}
+.sch-scn-tbl th{color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:400;}
+.sch-scn-tbl td:first-child,.sch-scn-tbl th:first-child{text-align:left;color:var(--light);}
+.sch-scn-tbl td{color:var(--gold);font-family:var(--serif);font-size:11px;}
+.sch-cls{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding-top:10px;border-top:1px solid rgba(196,160,78,.06);}
+.sch-cls label{font-size:7px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px;text-align:center;}
+.sch-cls input{width:100%;background:rgba(255,255,255,.035);border:1px solid rgba(196,160,78,.12);color:var(--gold);padding:4px;font-size:12px;text-align:center;font-family:var(--serif);outline:none;}
+.sch-cls input:focus{border-color:rgba(196,160,78,.5);}
+.sch-rank{display:flex;flex-direction:column;gap:6px;}
+.sch-rank-row{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:8px 10px;background:rgba(196,160,78,.03);border:1px solid rgba(196,160,78,.06);transition:border-color .2s;}
+.sch-rank-row:hover{border-color:rgba(196,160,78,.2);}
+.sch-rank-row .rk-num{font-family:var(--serif);font-size:16px;color:var(--gold);text-align:center;}
+.sch-rank-row .rk-name{font-size:11px;color:var(--cream);}
+.sch-rank-row .rk-grp{font-size:8px;color:var(--muted);letter-spacing:.5px;margin-top:1px;}
+.sch-rank-row .rk-val{font-family:var(--serif);font-size:14px;color:var(--gold);text-align:right;white-space:nowrap;}
+.sch-road-phases{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.sch-road-phase{background:rgba(255,255,255,.015);border:1px solid rgba(196,160,78,.1);padding:14px 16px;}
+.sch-road-phase h4{font-family:var(--serif);font-size:17px;color:var(--gold);font-weight:300;margin:0 0 2px;}
+.sch-road-phase .rp-sub{font-size:7.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;line-height:1.5;}
+.sch-road-item{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--light);padding:4px 0;border-bottom:1px solid rgba(196,160,78,.04);}
+.sch-road-item .ri-inv{color:var(--warn);white-space:nowrap;font-size:9px;}
+.sch-cash{display:flex;align-items:stretch;gap:1px;height:160px;padding:6px 0;}
+.sch-cash-bar{flex:1;min-width:0;display:flex;flex-direction:column;height:100%;}
+.sch-cash-bar .cb-mid{flex:1;display:flex;align-items:flex-end;overflow:hidden;}
+.sch-cash-bar .cb-mid.down{align-items:flex-start;}
+.sch-cash-bar .cb-fill{width:100%;transition:height .4s var(--ease);}
+.sch-cash-bar:hover .cb-fill{opacity:.7;}
+@media(max-width:1100px){.sch-road-phases{grid-template-columns:1fr 1fr;}}
+@media(max-width:760px){.sch-road-phases{grid-template-columns:1fr;}.sch-cls{grid-template-columns:1fr 1fr;}}
 
 /* ══ SUIVI DES CHARGES ══ */
 .ch-select{background:var(--dark2);border:1px solid rgba(196,160,78,.14);color:var(--cream);padding:8px 14px;font-family:var(--sans);font-size:9px;letter-spacing:2px;outline:none;text-transform:uppercase;cursor:pointer;}
@@ -1096,6 +1139,7 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
       <div class="sbi" onclick="nav('charges')"><span class="sbi-icon">▣</span>Suivi des charges</div>
       <div class="sbi" onclick="nav('applications')"><span class="sbi-icon">⌘</span>Applications &amp; abonnements</div>
       <div class="sbi" onclick="nav('simulation')"><span class="sbi-icon">◉</span>Simulation remplissage</div>
+      <div class="sbi" onclick="nav('schema')"><span class="sbi-icon">⬡</span>Schéma directeur EDEN</div>
       <div class="sbi" onclick="nav('finances')"><span class="sbi-icon">◆</span>Revenus &amp; Stats</div>
 
       <p class="sb-sec">Admin</p>
@@ -4592,6 +4636,123 @@ pre{font-size:9px;color:var(--light);background:var(--dark3);padding:18px;overfl
         </div>
       </div>
     </section>
+
+    <!-- ════ SCHÉMA DIRECTEUR EDEN ════ -->
+    <section class="page" id="page-schema">
+      <div class="sh">
+        <div class="sh-left">
+          <p class="ey">Schéma directeur · 48 mois</p>
+          <h2>Domaine <em>EDEN</em> — Plan complet</h2>
+          <p style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1px">Chaque espace simulé individuellement · rentabilité · investissement · feuille de route · autonomie.</p>
+        </div>
+        <div class="sch-scen-bar">
+          <span class="sch-scen-lbl">Scénario</span>
+          <button class="btn-s sch-scen-btn" data-scen="pessimiste" onclick="schSetActive('pessimiste')">Pessimiste</button>
+          <button class="btn-s sch-scen-btn active" data-scen="realiste" onclick="schSetActive('realiste')">Réaliste</button>
+          <button class="btn-s sch-scen-btn" data-scen="optimiste" onclick="schSetActive('optimiste')">Optimiste</button>
+          <button class="btn-s sch-scen-btn" data-scen="exceptionnel" onclick="schSetActive('exceptionnel')">Exceptionnel</button>
+          <button class="btn-s danger" onclick="schReset()">↺ Réinitialiser</button>
+        </div>
+      </div>
+
+      <div class="mat-page-tabs">
+        <button class="mat-page-tab active" onclick="schTab('synthese',this)">◈ Synthèse<span class="tab-sub">vue d'ensemble</span></button>
+        <button class="mat-page-tab" onclick="schTab('simulateurs',this)">◉ Simulateurs<span class="tab-sub">chaque pôle</span></button>
+        <button class="mat-page-tab" onclick="schTab('classements',this)">▲ Classements<span class="tab-sub">rentabilité · priorité</span></button>
+        <button class="mat-page-tab" onclick="schTab('roadmap',this)">⬡ Feuille de route<span class="tab-sub">48 mois</span></button>
+        <button class="mat-page-tab" onclick="schTab('autonomie',this)">⚡ Autonomie<span class="tab-sub">énergie · eau · production</span></button>
+      </div>
+
+      <!-- ─── SYNTHÈSE ─── -->
+      <div id="sch-tab-synthese" class="sch-tab">
+        <div class="kpi-grid">
+          <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">Investissement total</p><div class="kpi-val"><b id="sch-k-invest">–</b> €</div><p class="kpi-sub">capex tous pôles</p><span class="kpi-ico">◬</span></div>
+          <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">CA annuel (plein régime)</p><div class="kpi-val"><b id="sch-k-caan">–</b> €</div><p class="kpi-sub">pôles de revenu</p><span class="kpi-ico">◈</span></div>
+          <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Marge nette annuelle</p><div class="kpi-val"><b id="sch-k-mnan">–</b> €</div><p class="kpi-sub">avant charges communes</p><span class="kpi-ico">◆</span></div>
+          <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Économies annuelles</p><div class="kpi-val"><b id="sch-k-ecoan">–</b> €</div><p class="kpi-sub">autonomie & production</p><span class="kpi-ico">⚡</span></div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi" style="--accent:var(--purple)"><p class="kpi-label">Scénario actif</p><div class="kpi-val" style="font-size:24px"><b id="sch-k-scen">Réaliste</b></div><p class="kpi-sub">modifiable ci-dessus</p><span class="kpi-ico">◉</span></div>
+          <div class="kpi" style="--accent:var(--gold-l)"><p class="kpi-label">Charges communes / mois</p><div class="kpi-val"><b id="sch-k-fees">–</b> €</div><p class="kpi-sub">mutualisées</p><span class="kpi-ico">▣</span></div>
+          <div class="kpi sim-positive" id="sch-res-wrap" style="--accent:var(--ok)"><p class="kpi-label">Résultat net / mois</p><div class="kpi-val"><b id="sch-k-resmois">–</b> €</div><p class="kpi-sub">après charges communes</p><span class="kpi-ico">◆</span></div>
+          <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Résultat net / an</p><div class="kpi-val"><b id="sch-k-resan">–</b> €</div><p class="kpi-sub" id="sch-k-nbsub"><b id="sch-k-nbtot">0</b> pôles · <b id="sch-k-nbrev">0</b> revenus · <b id="sch-k-nbeco">0</b> autonomie</p><span class="kpi-ico">◬</span></div>
+        </div>
+
+        <div class="g2" style="margin-bottom:20px">
+          <div class="card">
+            <div class="card-h"><span class="card-t">Gain annuel par groupe (net + économies)</span></div>
+            <div class="sim-bars" id="sch-group-bars"></div>
+          </div>
+          <div class="card">
+            <div class="card-h"><span class="card-t">Charges fixes communes / mois</span></div>
+            <div class="sim-fees" id="sch-fees" style="grid-template-columns:1fr"></div>
+            <div class="card-h" style="margin-top:16px"><span class="card-t">Facteurs de remplissage par scénario</span></div>
+            <div class="sim-fees" id="sch-scen-factors" style="grid-template-columns:1fr 1fr"></div>
+          </div>
+        </div>
+        <div class="alert info">Astuce — passez à l'onglet <b>Simulateurs</b> pour ajuster chaque pôle (prix, places, créneaux, remplissage, coûts, investissement). Les 4 scénarios et tous les calculs se recalculent automatiquement.</div>
+      </div>
+
+      <!-- ─── SIMULATEURS ─── -->
+      <div id="sch-tab-simulateurs" class="sch-tab" style="display:none">
+        <div id="sch-sim-groups"></div>
+      </div>
+
+      <!-- ─── CLASSEMENTS ─── -->
+      <div id="sch-tab-classements" class="sch-tab" style="display:none">
+        <div class="g2">
+          <div class="card">
+            <div class="card-h"><span class="card-t">▲ Rentabilité</span><span style="font-size:9px;color:var(--muted)">gain net annuel</span></div>
+            <div class="sch-rank" id="sch-rank-rentab"></div>
+          </div>
+          <div class="card">
+            <div class="card-h"><span class="card-t">◷ Priorité de lancement</span><span style="font-size:9px;color:var(--muted)">score · ROI</span></div>
+            <div class="sch-rank" id="sch-rank-prio"></div>
+          </div>
+          <div class="card">
+            <div class="card-h"><span class="card-t">★ Impact image premium</span><span style="font-size:9px;color:var(--muted)">score 1–5</span></div>
+            <div class="sch-rank" id="sch-rank-premium"></div>
+          </div>
+          <div class="card">
+            <div class="card-h"><span class="card-t">⚡ Impact autonomie</span><span style="font-size:9px;color:var(--muted)">score · économies</span></div>
+            <div class="sch-rank" id="sch-rank-auto"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── FEUILLE DE ROUTE ─── -->
+      <div id="sch-tab-roadmap" class="sch-tab" style="display:none">
+        <div class="kpi-grid">
+          <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">Investissement cumulé 48 mois</p><div class="kpi-val"><b id="sch-rm-invest">–</b> €</div><span class="kpi-ico">◬</span></div>
+          <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Gain / mois (plein déploiement)</p><div class="kpi-val"><b id="sch-rm-gainmois">–</b> €</div><span class="kpi-ico">◆</span></div>
+          <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Rentabilité globale atteinte</p><div class="kpi-val" style="font-size:22px"><b id="sch-rm-payback">–</b></div><p class="kpi-sub">trésorerie cumulée &gt; 0</p><span class="kpi-ico">◷</span></div>
+        </div>
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-h"><span class="card-t">Trésorerie cumulée — 48 mois</span><span style="font-size:9px;color:var(--muted)">or = positive · rouge = en investissement</span></div>
+          <div class="sch-cash" id="sch-cash"></div>
+          <div style="display:flex;justify-content:space-between;font-size:8px;letter-spacing:1.5px;color:var(--muted);margin-top:4px"><span>M1</span><span>Année 1</span><span>Année 2</span><span>Année 3</span><span>Année 4 · M48</span></div>
+        </div>
+        <div class="sch-road-phases" id="sch-road-phases"></div>
+      </div>
+
+      <!-- ─── AUTONOMIE ─── -->
+      <div id="sch-tab-autonomie" class="sch-tab" style="display:none">
+        <div class="kpi-grid">
+          <div class="kpi" style="--accent:var(--info)"><p class="kpi-label">Économies / mois</p><div class="kpi-val"><b id="sch-auto-ecomois">–</b> €</div><p class="kpi-sub">énergie · eau · bois · production</p><span class="kpi-ico">⚡</span></div>
+          <div class="kpi" style="--accent:var(--ok)"><p class="kpi-label">Économies / an</p><div class="kpi-val"><b id="sch-auto-ecoan">–</b> €</div><span class="kpi-ico">◆</span></div>
+          <div class="kpi" style="--accent:var(--warn)"><p class="kpi-label">Investissement autonomie</p><div class="kpi-val"><b id="sch-auto-invest">–</b> €</div><span class="kpi-ico">◬</span></div>
+          <div class="kpi" style="--accent:var(--gold)"><p class="kpi-label">Retour sur investissement</p><div class="kpi-val" style="font-size:22px"><b id="sch-auto-roi">–</b></div><p class="kpi-sub">global autonomie</p><span class="kpi-ico">◷</span></div>
+        </div>
+        <div class="tw">
+          <div class="tw-head"><span class="tw-title">Pôles d'autonomie & d'économie</span><span style="font-size:9px;color:var(--muted)">production solaire · eau · bois · semences · verger · logistique</span></div>
+          <table>
+            <thead><tr><th>Pôle</th><th>Groupe</th><th>Économie / mois</th><th>Économie / an</th><th>Investissement</th><th>Retour</th><th>Autonomie</th></tr></thead>
+            <tbody id="sch-auto-list"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <!-- ════ FINANCES ════ -->
     <section class="page" id="page-finances">
       <div class="sh">
@@ -5432,6 +5593,7 @@ var PAGE_TITLES={
   fidelite:'Cartes <em>fidélité</em>',
   finances:'Revenus & <em>Statistiques</em>', parametres:'Paramè<em>tres</em>',
   simulation:'Simulation de <em>remplissage</em>',
+  schema:'Schéma <em>directeur</em> EDEN',
   charges:'Suivi des <em>charges</em>',
   applications:'Applications & <em>abonnements</em>',
   materiel:'Matériel & <em>Équipement</em>'
@@ -5472,6 +5634,7 @@ function renderPage(p){
   finances:renderFinances,
   parametres:renderParams,
   simulation:renderSimulation,
+  schema:renderSchemaDirecteur,
   charges:renderCharges,
   materiel:function(){ if(typeof renderMateriel==='function') renderMateriel(); setMatTab('equipement'); }
 };
@@ -8849,6 +9012,635 @@ function drawSimulationCharts(){
 
 // Charger les données dès le démarrage (silencieusement)
 try{ loadSimulation(); }catch(e){}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SCHÉMA DIRECTEUR EDEN — simulateur financier complet par pôle
+   Chaque espace du domaine : revenu, économie ou support.
+   ═══════════════════════════════════════════════════════════════ */
+
+// Groupes (sections) avec icône + couleur d'accent
+const SCH_GROUPES = [
+  {key:'batiment',  nom:'Bâtiment principal EDEN', icon:'⌂', color:'var(--gold)'},
+  {key:'bienetre',  nom:'Centre bien-être',        icon:'❀', color:'var(--gold)'},
+  {key:'fitness',   nom:'Fitness & Performance',   icon:'⬡', color:'var(--info)'},
+  {key:'fuelbar',   nom:'Fuel Bar',                icon:'☕', color:'var(--gold-l)'},
+  {key:'boutique',  nom:'Boutique & Magasin EDEN', icon:'▣', color:'var(--purple)'},
+  {key:'atelier',   nom:'Atelier Infusions & Thés',icon:'⚗', color:'var(--gold)'},
+  {key:'miel',      nom:'Pôle Miel',               icon:'❋', color:'var(--warn)'},
+  {key:'coworking', nom:'Coworking',               icon:'⌘', color:'var(--info)'},
+  {key:'media',     nom:'Podcast & Médias',        icon:'◉', color:'var(--purple)'},
+  {key:'minigolf',  nom:'Mini-Golf Premium',       icon:'⛳', color:'var(--ok)'},
+  {key:'event',     nom:'Séminaires & Événementiel',icon:'✦', color:'var(--gold)'},
+  {key:'vip',       nom:'Espace VIP',              icon:'♔', color:'var(--gold-l)'},
+  {key:'herbo',     nom:'Herboristerie',           icon:'❦', color:'var(--ok)'},
+  {key:'serres',    nom:'Serres & Verger',         icon:'✿', color:'var(--ok)'},
+  {key:'jardins',   nom:'Jardins & Extérieurs',    icon:'❀', color:'var(--gold)'},
+  {key:'energie',   nom:'Autonomie énergétique',   icon:'⚡', color:'var(--warn)'},
+  {key:'eau',       nom:'Pôle Eau',                icon:'◇', color:'var(--info)'},
+  {key:'semences',  nom:'Pôle Semences',           icon:'❂', color:'var(--ok)'},
+  {key:'bois',      nom:'Stockage Bois',           icon:'▤', color:'var(--gold-d)'},
+  {key:'support',   nom:'Logistique & Stockage',   icon:'⊟', color:'var(--muted)'}
+];
+function schGroupe(k){ return SCH_GROUPES.find(g=>g.key===k) || {nom:k,icon:'•',color:'var(--gold)'}; }
+
+// Facteurs de remplissage par scénario (modifiables)
+const SCH_SCEN_DEFAULT = { pessimiste:0.55, realiste:1, optimiste:1.35, exceptionnel:1.75 };
+const SCH_SCEN_LBL = { pessimiste:'Pessimiste', realiste:'Réaliste', optimiste:'Optimiste', exceptionnel:'Exceptionnel' };
+
+// Charges fixes communes (mutualisées, hors pôle)
+const SCH_FEES_DEFAULT = [
+  {key:'salaires',  nom:'Masse salariale socle', val:45000},
+  {key:'energie',   nom:'Énergie & fluides (résiduel)', val:3000},
+  {key:'logiciels', nom:'Logiciels & abonnements', val:600},
+  {key:'assurance', nom:'Assurances',           val:900},
+  {key:'compta',    nom:'Comptable / gestion',  val:700},
+  {key:'marketing', nom:'Marketing & communication', val:2500},
+  {key:'nettoyage', nom:'Entretien & nettoyage',val:2000},
+  {key:'banque',    nom:'Banque / TPE / frais', val:600},
+  {key:'divers',    nom:'Divers / imprévus',    val:1500}
+];
+
+/* Modèle de chaque pôle :
+   t  = type : 'revenu' | 'eco' (économie/autonomie) | 'support'
+   m  = mode : 'jour' (par créneau / volume) | 'mois' (abonnement récurrent)
+   prix, panier, places, creneaux, joursMois, rempl(%), coutVar, coutPerso, coutFixe,
+   invest, ecoMois (économie mensuelle), prem/auto/prio (scores 1-5), mois (lancement 1-48) */
+const SCH_POLES_DEFAULT = [
+  // ── BÂTIMENT PRINCIPAL (accueil, réception, vestiaires, sanitaires, VIP, réserves) ──
+  {key:'batiment_principal', nom:'Bâtiment principal (accueil, réception, vestiaires, sanitaires)', icon:'⌂', g:'batiment', t:'support', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:600,invest:180000,ecoMois:0,prem:5,auto:1,prio:5,mois:1, desc:'Socle du domaine : accueil, réception, vestiaires, sanitaires, espaces communs.'},
+
+  // ── CENTRE BIEN-ÊTRE ──
+  {key:'sauna',        nom:'Sauna',           icon:'☼', g:'bienetre', t:'revenu', m:'jour', prix:28,panier:4,places:5,creneaux:4,joursMois:26,rempl:40,coutVar:9,coutPerso:0,coutFixe:200,invest:18000,ecoMois:0,prem:5,auto:1,prio:5,mois:2, desc:'Sauna finlandais — séances réservables.'},
+  {key:'hammam',       nom:'Hammam',          icon:'♨', g:'bienetre', t:'revenu', m:'jour', prix:28,panier:4,places:5,creneaux:4,joursMois:26,rempl:38,coutVar:9,coutPerso:0,coutFixe:180,invest:16000,ecoMois:0,prem:5,auto:1,prio:5,mois:2, desc:'Hammam traditionnel.'},
+  {key:'bain_froid',   nom:'Bain froid',      icon:'❄', g:'bienetre', t:'revenu', m:'jour', prix:18,panier:3,places:4,creneaux:5,joursMois:26,rempl:40,coutVar:5,coutPerso:0,coutFixe:150,invest:9000,ecoMois:0,prem:4,auto:1,prio:5,mois:2, desc:'Bains froids / cryo-immersion.'},
+  {key:'bain_nordique',nom:'Bains nordiques', icon:'♨', g:'bienetre', t:'revenu', m:'jour', prix:40,panier:6,places:5,creneaux:4,joursMois:26,rempl:38,coutVar:12,coutPerso:0,coutFixe:200,invest:22000,ecoMois:0,prem:5,auto:3,prio:4,mois:6, desc:'Bains nordiques chauffés au bois (autonomie).'},
+  {key:'cryotherapie', nom:'Cryothérapie',    icon:'❅', g:'bienetre', t:'revenu', m:'jour', prix:45,panier:4,places:1,creneaux:8,joursMois:26,rempl:38,coutVar:9,coutPerso:0,coutFixe:250,invest:55000,ecoMois:0,prem:5,auto:1,prio:3,mois:14, desc:'Cryothérapie corps entier.'},
+  {key:'pressotherapie',nom:'Pressothérapie', icon:'◉', g:'bienetre', t:'revenu', m:'jour', prix:25,panier:3,places:2,creneaux:6,joursMois:26,rempl:42,coutVar:5,coutPerso:0,coutFixe:120,invest:7000,ecoMois:0,prem:3,auto:1,prio:4,mois:3, desc:'Drainage / récupération.'},
+  {key:'massage',      nom:'Massages',        icon:'✦', g:'bienetre', t:'revenu', m:'jour', prix:70,panier:8,places:1,creneaux:6,joursMois:26,rempl:45,coutVar:35,coutPerso:0,coutFixe:150,invest:6000,ecoMois:0,prem:5,auto:1,prio:4,mois:2, desc:'Massages & soins (part praticien en coût variable).'},
+  {key:'detente',      nom:'Espaces détente', icon:'☾', g:'bienetre', t:'revenu', m:'jour', prix:12,panier:5,places:14,creneaux:3,joursMois:26,rempl:32,coutVar:3,coutPerso:0,coutFixe:120,invest:12000,ecoMois:0,prem:4,auto:2,prio:3,mois:4, desc:'Accès espaces détente / relaxation.'},
+
+  // ── FITNESS & PERFORMANCE ──
+  {key:'abonnements',  nom:'Abonnements (muscu / cardio)', icon:'⬡', g:'fitness', t:'revenu', m:'mois', prix:49,panier:5,places:400,creneaux:1,joursMois:30,rempl:60,coutVar:3,coutPerso:2200,coutFixe:800,invest:120000,ecoMois:0,prem:4,auto:1,prio:5,mois:1, desc:'Abonnements salle (récurrent mensuel).'},
+  {key:'coaching',     nom:'Coaching',        icon:'◆', g:'fitness', t:'revenu', m:'jour', prix:50,panier:3,places:1,creneaux:6,joursMois:26,rempl:45,coutVar:32,coutPerso:0,coutFixe:100,invest:3000,ecoMois:0,prem:4,auto:1,prio:4,mois:2, desc:'Coaching individuel (part coach en coût variable).'},
+  {key:'cours_coll',   nom:'Cours collectifs',icon:'❖', g:'fitness', t:'revenu', m:'jour', prix:15,panier:3,places:10,creneaux:3,joursMois:26,rempl:45,coutVar:7,coutPerso:0,coutFixe:150,invest:8000,ecoMois:0,prem:3,auto:1,prio:4,mois:3, desc:'Cours collectifs encadrés.'},
+  {key:'hyrox',        nom:'HYROX',           icon:'⊕', g:'fitness', t:'revenu', m:'jour', prix:20,panier:4,places:10,creneaux:3,joursMois:26,rempl:40,coutVar:6,coutPerso:0,coutFixe:200,invest:25000,ecoMois:0,prem:5,auto:1,prio:4,mois:8, desc:'Zone HYROX & compétitions.'},
+  {key:'strongman',    nom:'Strongman',       icon:'⊗', g:'fitness', t:'revenu', m:'jour', prix:20,panier:4,places:6,creneaux:2,joursMois:26,rempl:38,coutVar:6,coutPerso:0,coutFixe:150,invest:18000,ecoMois:0,prem:4,auto:1,prio:3,mois:10, desc:'Zone Strongman.'},
+
+  // ── FUEL BAR ──
+  {key:'smoothies',    nom:'Smoothies',       icon:'🥤', g:'fuelbar', t:'revenu', m:'jour', prix:7,panier:1,places:60,creneaux:1,joursMois:30,rempl:45,coutVar:3,coutPerso:1400,coutFixe:150,invest:6000,ecoMois:0,prem:3,auto:2,prio:5,mois:1, desc:'Smoothies & jus (équipe bar mutualisée).'},
+  {key:'cafes',        nom:'Cafés',           icon:'☕', g:'fuelbar', t:'revenu', m:'jour', prix:3.5,panier:1,places:120,creneaux:1,joursMois:30,rempl:40,coutVar:1,coutPerso:0,coutFixe:80,invest:4000,ecoMois:0,prem:3,auto:1,prio:5,mois:1, desc:'Cafés & boissons chaudes.'},
+  {key:'thes_bar',     nom:'Thés & Infusions (bar)', icon:'🍵', g:'fuelbar', t:'revenu', m:'jour', prix:4,panier:1,places:50,creneaux:1,joursMois:30,rempl:35,coutVar:1.2,coutPerso:0,coutFixe:60,invest:1500,ecoMois:0,prem:3,auto:3,prio:4,mois:1, desc:'Thés & infusions maison (approvisionnés par l’atelier).'},
+  {key:'snacks',       nom:'Snacks',          icon:'🍪', g:'fuelbar', t:'revenu', m:'jour', prix:6,panier:2,places:50,creneaux:1,joursMois:30,rempl:35,coutVar:2.5,coutPerso:0,coutFixe:80,invest:2000,ecoMois:0,prem:2,auto:1,prio:4,mois:1, desc:'Snacks sains & en-cas.'},
+
+  // ── BOUTIQUE & MAGASIN EDEN (≈ 50 m²) ──
+  {key:'b_infusions',  nom:'Infusions',       icon:'🌿', g:'boutique', t:'revenu', m:'jour', prix:9,panier:4,places:25,creneaux:1,joursMois:30,rempl:40,coutVar:3.5,coutPerso:0,coutFixe:60,invest:1500,ecoMois:0,prem:4,auto:3,prio:4,mois:2, desc:'Vente boutique d’infusions EDEN.'},
+  {key:'b_miel',       nom:'Miel',            icon:'❋', g:'boutique', t:'revenu', m:'jour', prix:12,panier:5,places:15,creneaux:1,joursMois:30,rempl:40,coutVar:4,coutPerso:0,coutFixe:40,invest:1000,ecoMois:0,prem:4,auto:4,prio:4,mois:2, desc:'Miel du domaine en boutique.'},
+  {key:'b_bougies',    nom:'Bougies',         icon:'✸', g:'boutique', t:'revenu', m:'jour', prix:18,panier:6,places:12,creneaux:1,joursMois:30,rempl:35,coutVar:6,coutPerso:0,coutFixe:40,invest:1500,ecoMois:0,prem:4,auto:3,prio:3,mois:3, desc:'Bougies cire d’abeille.'},
+  {key:'b_derives',    nom:'Produits dérivés',icon:'◈', g:'boutique', t:'revenu', m:'jour', prix:15,panier:5,places:15,creneaux:1,joursMois:30,rempl:35,coutVar:6,coutPerso:0,coutFixe:40,invest:2000,ecoMois:0,prem:4,auto:2,prio:3,mois:3, desc:'Produits bien-être dérivés.'},
+  {key:'b_coffrets',   nom:'Coffrets',        icon:'🎁', g:'boutique', t:'revenu', m:'jour', prix:39,panier:8,places:6,creneaux:1,joursMois:30,rempl:35,coutVar:15,coutPerso:0,coutFixe:40,invest:1500,ecoMois:0,prem:5,auto:2,prio:3,mois:4, desc:'Coffrets cadeaux premium.'},
+  {key:'b_accessoires',nom:'Accessoires',     icon:'✧', g:'boutique', t:'revenu', m:'jour', prix:12,panier:3,places:15,creneaux:1,joursMois:30,rempl:35,coutVar:6,coutPerso:0,coutFixe:30,invest:2000,ecoMois:0,prem:3,auto:1,prio:3,mois:3, desc:'Accessoires bien-être & sport.'},
+  {key:'b_vetements',  nom:'Vêtements',       icon:'⊿', g:'boutique', t:'revenu', m:'jour', prix:35,panier:0,places:8,creneaux:1,joursMois:30,rempl:30,coutVar:18,coutPerso:0,coutFixe:40,invest:4000,ecoMois:0,prem:4,auto:1,prio:3,mois:5, desc:'Textile signature EDEN.'},
+  {key:'b_gourdes',    nom:'Gourdes',         icon:'⌃', g:'boutique', t:'revenu', m:'jour', prix:25,panier:0,places:10,creneaux:1,joursMois:30,rempl:30,coutVar:12,coutPerso:0,coutFixe:20,invest:1500,ecoMois:0,prem:3,auto:1,prio:3,mois:4, desc:'Gourdes & contenants réutilisables.'},
+
+  // ── ATELIER INFUSIONS & THÉS (mélange, conditionnement, création) ──
+  {key:'a_directe',    nom:'Vente directe',   icon:'⚗', g:'atelier', t:'revenu', m:'jour', prix:9,panier:3,places:30,creneaux:1,joursMois:30,rempl:35,coutVar:2.5,coutPerso:0,coutFixe:120,invest:12000,ecoMois:0,prem:4,auto:4,prio:4,mois:13, desc:'Infusions maison vendues sur place (production atelier).'},
+  {key:'a_ligne',      nom:'Vente en ligne',  icon:'☍', g:'atelier', t:'revenu', m:'jour', prix:11,panier:4,places:20,creneaux:1,joursMois:30,rempl:30,coutVar:4,coutPerso:0,coutFixe:200,invest:4000,ecoMois:0,prem:4,auto:3,prio:4,mois:15, desc:'E-commerce infusions & thés EDEN.'},
+  {key:'a_coffrets',   nom:'Coffrets atelier',icon:'🎁', g:'atelier', t:'revenu', m:'jour', prix:29,panier:8,places:8,creneaux:1,joursMois:30,rempl:30,coutVar:10,coutPerso:0,coutFixe:60,invest:2000,ecoMois:0,prem:5,auto:3,prio:3,mois:16, desc:'Coffrets infusions composés à l’atelier.'},
+
+  // ── PÔLE MIEL (jardin mellifère, ruches) ──
+  {key:'m_miel',       nom:'Miel (production)',icon:'❋', g:'miel', t:'revenu', m:'jour', prix:12,panier:4,places:20,creneaux:1,joursMois:30,rempl:40,coutVar:3,coutPerso:0,coutFixe:120,invest:8000,ecoMois:0,prem:4,auto:5,prio:4,mois:13, desc:'Production & vente directe de miel (ruches + jardin mellifère).'},
+  {key:'m_bougies',    nom:'Bougies (cire)',  icon:'✸', g:'miel', t:'revenu', m:'jour', prix:18,panier:5,places:10,creneaux:1,joursMois:30,rempl:35,coutVar:6,coutPerso:0,coutFixe:40,invest:2000,ecoMois:0,prem:4,auto:4,prio:3,mois:15, desc:'Bougies issues de la cire des ruches.'},
+  {key:'m_derives',    nom:'Produits dérivés',icon:'◈', g:'miel', t:'revenu', m:'jour', prix:14,panier:5,places:10,creneaux:1,joursMois:30,rempl:30,coutVar:5,coutPerso:0,coutFixe:40,invest:3000,ecoMois:0,prem:4,auto:4,prio:3,mois:18, desc:'Pollen, propolis, hydromel, savons.'},
+
+  // ── COWORKING ──
+  {key:'cw_poste',     nom:'Poste journée',   icon:'⌘', g:'coworking', t:'revenu', m:'jour', prix:22,panier:4,places:12,creneaux:1,joursMois:26,rempl:45,coutVar:2,coutPerso:0,coutFixe:120,invest:9000,ecoMois:0,prem:3,auto:1,prio:4,mois:3, desc:'Postes coworking à la journée.'},
+  {key:'cw_bureau',    nom:'Bureau privé',    icon:'⊞', g:'coworking', t:'revenu', m:'mois', prix:350,panier:0,places:4,creneaux:1,joursMois:30,rempl:70,coutVar:15,coutPerso:0,coutFixe:80,invest:12000,ecoMois:0,prem:3,auto:1,prio:3,mois:4, desc:'Bureaux privatifs (abonnement mensuel).'},
+  {key:'cw_reunion',   nom:'Salle réunion',   icon:'▦', g:'coworking', t:'revenu', m:'jour', prix:40,panier:6,places:1,creneaux:6,joursMois:26,rempl:35,coutVar:4,coutPerso:0,coutFixe:60,invest:6000,ecoMois:0,prem:3,auto:1,prio:3,mois:4, desc:'Location salle de réunion (blocs horaires).'},
+
+  // ── PODCAST & MÉDIAS ──
+  {key:'pod_studio',   nom:'Studio podcast',  icon:'◉', g:'media', t:'revenu', m:'jour', prix:60,panier:5,places:1,creneaux:6,joursMois:22,rempl:35,coutVar:5,coutPerso:0,coutFixe:150,invest:15000,ecoMois:0,prem:5,auto:1,prio:3,mois:12, desc:'Location studio podcast.'},
+  {key:'pod_video',    nom:'Studio vidéo',    icon:'▶', g:'media', t:'revenu', m:'jour', prix:120,panier:10,places:1,creneaux:3,joursMois:18,rempl:35,coutVar:15,coutPerso:0,coutFixe:200,invest:25000,ecoMois:0,prem:5,auto:1,prio:3,mois:20, desc:'Studio vidéo & création de contenu (impact marketing fort).'},
+
+  // ── MINI-GOLF PREMIUM ──
+  {key:'mg_entrees',   nom:'Entrées',         icon:'⛳', g:'minigolf', t:'revenu', m:'jour', prix:12,panier:5,places:40,creneaux:1,joursMois:26,rempl:45,coutVar:2,coutPerso:0,coutFixe:200,invest:60000,ecoMois:0,prem:5,auto:1,prio:3,mois:18, desc:'Entrées mini-golf paysager premium.'},
+  {key:'mg_events',    nom:'Événements / privatisations', icon:'✦', g:'minigolf', t:'revenu', m:'jour', prix:350,panier:50,places:1,creneaux:1,joursMois:6,rempl:60,coutVar:60,coutPerso:0,coutFixe:0,invest:0,ecoMois:0,prem:5,auto:1,prio:3,mois:20, desc:'Privatisations & événements sur le mini-golf.'},
+
+  // ── SÉMINAIRES & ÉVÉNEMENTIEL ──
+  {key:'ev_salle',     nom:'Location salle',  icon:'▣', g:'event', t:'revenu', m:'jour', prix:600,panier:150,places:1,creneaux:1,joursMois:8,rempl:50,coutVar:120,coutPerso:0,coutFixe:200,invest:20000,ecoMois:0,prem:5,auto:1,prio:3,mois:14, desc:'Location salle séminaire (journée).'},
+  {key:'ev_privat',    nom:'Privatisation domaine', icon:'♚', g:'event', t:'revenu', m:'jour', prix:2500,panier:400,places:1,creneaux:1,joursMois:2,rempl:50,coutVar:500,coutPerso:0,coutFixe:0,invest:0,ecoMois:0,prem:5,auto:1,prio:3,mois:24, desc:'Privatisation complète du domaine.'},
+
+  // ── ESPACE VIP ──
+  {key:'vip_acces',    nom:'Accès VIP',       icon:'♔', g:'vip', t:'revenu', m:'mois', prix:150,panier:20,places:60,creneaux:1,joursMois:30,rempl:50,coutVar:20,coutPerso:0,coutFixe:150,invest:30000,ecoMois:0,prem:5,auto:1,prio:3,mois:25, desc:'Abonnement accès zone VIP.'},
+  {key:'vip_privat',   nom:'Privatisation VIP',icon:'♛', g:'vip', t:'revenu', m:'jour', prix:800,panier:120,places:1,creneaux:2,joursMois:8,rempl:45,coutVar:100,coutPerso:0,coutFixe:100,invest:0,ecoMois:0,prem:5,auto:1,prio:3,mois:26, desc:'Privatisation espace VIP.'},
+  {key:'vip_suites',   nom:'Suites privées',  icon:'⌑', g:'vip', t:'revenu', m:'jour', prix:280,panier:60,places:3,creneaux:1,joursMois:26,rempl:45,coutVar:50,coutPerso:0,coutFixe:200,invest:120000,ecoMois:0,prem:5,auto:1,prio:3,mois:30, desc:'Suites privées (nuitées).'},
+
+  // ── HERBORISTERIE ──
+  {key:'h_pavillon',   nom:'Pavillon herboristerie', icon:'❦', g:'herbo', t:'revenu', m:'jour', prix:18,panier:10,places:12,creneaux:3,joursMois:20,rempl:35,coutVar:4,coutPerso:0,coutFixe:150,invest:30000,ecoMois:0,prem:5,auto:4,prio:3,mois:16, desc:'Découverte plantes, dégustations, ateliers.'},
+  {key:'h_sechage',    nom:'Salle de séchage',icon:'❧', g:'herbo', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:60,invest:8000,ecoMois:180,prem:2,auto:4,prio:2,mois:14, desc:'Séchage plantes aromatiques — intrants gratuits pour l’atelier (économie).'},
+
+  // ── SERRES & VERGER ──
+  {key:'s_production', nom:'Serre de production', icon:'✿', g:'serres', t:'revenu', m:'jour', prix:6,panier:0,places:25,creneaux:1,joursMois:26,rempl:35,coutVar:2,coutPerso:0,coutFixe:120,invest:35000,ecoMois:250,prem:4,auto:5,prio:3,mois:13, desc:'Plantes aromatiques & plants — vente + approvisionnement interne.'},
+  {key:'s_technique',  nom:'Serre technique / démo', icon:'❀', g:'serres', t:'revenu', m:'jour', prix:8,panier:0,places:12,creneaux:2,joursMois:12,rempl:30,coutVar:2,coutPerso:0,coutFixe:100,invest:25000,ecoMois:120,prem:4,auto:5,prio:2,mois:18, desc:'Démonstration & ateliers + recherche variétale.'},
+  {key:'verger',       nom:'Verger (pommiers, poiriers, cerisiers)', icon:'🍎', g:'serres', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:80,invest:12000,ecoMois:300,prem:4,auto:5,prio:2,mois:26, desc:'Production fruitière valorisée (Fuel Bar, jus, ateliers) — économie d’intrants.'},
+
+  // ── JARDINS & EXTÉRIEURS ──
+  {key:'j_terrasses',  nom:'Braséro premium & terrasses', icon:'♨', g:'jardins', t:'revenu', m:'jour', prix:12,panier:6,places:24,creneaux:1,joursMois:20,rempl:35,coutVar:5,coutPerso:0,coutFixe:120,invest:25000,ecoMois:0,prem:5,auto:2,prio:3,mois:8, desc:'Terrasses & braséro — consommations extérieures premium.'},
+  {key:'j_pollinisateurs',nom:'Jardin des pollinisateurs & parcours', icon:'❀', g:'jardins', t:'support', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:80,invest:15000,ecoMois:0,prem:4,auto:4,prio:2,mois:37, desc:'Jardin pollinisateurs & parcours paysagers — image premium & biodiversité.'},
+
+  // ── AUTONOMIE ÉNERGÉTIQUE ──
+  {key:'e_solaire',    nom:'Centrale solaire (photovoltaïque)', icon:'⚡', g:'energie', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:80,invest:80000,ecoMois:1800,prem:4,auto:5,prio:4,mois:13, desc:'Panneaux PV — autoconsommation + revente surplus.'},
+  {key:'e_parking',    nom:'Parking solaire (ombrières + bornes)', icon:'⊠', g:'energie', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:60,invest:60000,ecoMois:700,prem:4,auto:5,prio:3,mois:30, desc:'Ombrières PV + bornes de recharge (économie + revenu bornes).'},
+  {key:'e_batteries',  nom:'Local batteries (stockage)', icon:'▮', g:'energie', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:40,invest:40000,ecoMois:400,prem:3,auto:5,prio:3,mois:24, desc:'Stockage d’énergie — optimisation de l’autoconsommation.'},
+
+  // ── PÔLE EAU ──
+  {key:'eau_cuves',    nom:'Cuves récupération + filtration', icon:'◇', g:'eau', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:50,invest:25000,ecoMois:350,prem:3,auto:5,prio:3,mois:20, desc:'Récupération & filtration — arrosage, nettoyage, sanitaires.'},
+
+  // ── PÔLE SEMENCES ──
+  {key:'semences',     nom:'Banque de graines / conservation', icon:'❂', g:'semences', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:30,invest:9000,ecoMois:150,prem:3,auto:4,prio:2,mois:24, desc:'Conservation des semences — intrants serres/jardins + potentiel de développement.'},
+
+  // ── STOCKAGE BOIS ──
+  {key:'bois',         nom:'Stockage bois (combustible)', icon:'▤', g:'bois', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:40,invest:6000,ecoMois:300,prem:3,auto:4,prio:3,mois:6, desc:'Bois pour bains nordiques, braséro, chauffage extérieur — économie vs gaz/élec.'},
+
+  // ── LOGISTIQUE & STOCKAGE ──
+  {key:'garage',       nom:'Garage EDEN (matériel roulant, véhicule élec.)', icon:'⊟', g:'support', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:120,invest:18000,ecoMois:200,prem:2,auto:3,prio:2,mois:4, desc:'Stockage matériel roulant, véhicule électrique, remorque — économie vs prestataires.'},
+  {key:'local_entretien',nom:'Local entretien (espaces verts)', icon:'⊡', g:'support', t:'eco', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:80,invest:9000,ecoMois:250,prem:2,auto:3,prio:2,mois:3, desc:'Tondeuses, taille-haies, souffleurs — entretien interne vs paysagiste.'},
+  {key:'entrepot',     nom:'Entrepôt / stockage central', icon:'▥', g:'support', t:'support', m:'jour', prix:0,panier:0,places:0,creneaux:0,joursMois:30,rempl:0,coutVar:0,coutPerso:0,coutFixe:150,invest:30000,ecoMois:0,prem:2,auto:2,prio:3,mois:2, desc:'Stockage général, consommables, matériel, produits boutique & bien-être.'}
+];
+
+let SCH_DATA   = JSON.parse(JSON.stringify(SCH_POLES_DEFAULT));
+let SCH_FEES   = JSON.parse(JSON.stringify(SCH_FEES_DEFAULT));
+let SCH_SCEN   = Object.assign({}, SCH_SCEN_DEFAULT);
+let SCH_ACTIVE = 'realiste';
+
+function schLoad(){
+  try{
+    const raw = localStorage.getItem('eden_schema_directeur');
+    if(!raw) return;
+    const obj = JSON.parse(raw);
+    if(obj && Array.isArray(obj.data)){
+      SCH_DATA = SCH_POLES_DEFAULT.map(d=>{
+        const found = obj.data.find(x=>x.key===d.key);
+        return found ? Object.assign({}, d, found) : d;
+      });
+    }
+    if(obj && Array.isArray(obj.fees)){
+      SCH_FEES = SCH_FEES_DEFAULT.map(f=>{
+        const found = obj.fees.find(x=>x.key===f.key);
+        return found ? Object.assign({}, f, found) : f;
+      });
+    }
+    if(obj && obj.scen) SCH_SCEN = Object.assign({}, SCH_SCEN_DEFAULT, obj.scen);
+    if(obj && obj.active && SCH_SCEN_LBL[obj.active]) SCH_ACTIVE = obj.active;
+  }catch(e){ console.warn('sch load err',e); }
+}
+function schSave(){
+  try{ localStorage.setItem('eden_schema_directeur', JSON.stringify({data:SCH_DATA, fees:SCH_FEES, scen:SCH_SCEN, active:SCH_ACTIVE, _t:Date.now()})); }catch(e){}
+}
+
+// ── Moteur de calcul d'un pôle pour un facteur de scénario donné ──
+function schCompute(p, f){
+  f = (f==null) ? 1 : f;
+  const rempl  = Math.min(1, (Number(p.rempl)||0)/100 * f);
+  const ticket = (Number(p.prix)||0) + (Number(p.panier)||0);
+  let capJour, clients, caMois, coutVarMois;
+  if(p.m === 'mois'){
+    const actifs = (Number(p.places)||0) * rempl;
+    capJour     = Number(p.places)||0;
+    clients     = actifs;
+    caMois      = actifs * ticket;
+    coutVarMois = actifs * (Number(p.coutVar)||0);
+  } else {
+    capJour     = (Number(p.places)||0) * (Number(p.creneaux)||0);
+    clients     = capJour * rempl;
+    caMois      = clients * ticket * (Number(p.joursMois)||0);
+    coutVarMois = clients * (Number(p.coutVar)||0) * (Number(p.joursMois)||0);
+  }
+  const caJour  = (p.m==='mois') ? caMois/(Number(p.joursMois)||30) : clients*ticket;
+  const caSem   = caMois/4.33;
+  const caAn    = caMois*12;
+  const charges = (Number(p.coutPerso)||0) + (Number(p.coutFixe)||0);
+  const margeBrute = caMois - coutVarMois;
+  const margeNette = margeBrute - charges;
+  const margeNetteAn = margeNette*12;
+  const margePct = caMois>0 ? (margeNette/caMois)*100 : 0;
+  const ecoMois  = Number(p.ecoMois)||0;
+  const ecoAn    = ecoMois*12;
+  const gainMois = margeNette + ecoMois;        // contribution mensuelle (revenu net + économie)
+  const gainAn   = gainMois*12;
+  // Point mort & seuil
+  const margeUnit = ticket - (Number(p.coutVar)||0);
+  let pointMort=0, seuilPct=0;
+  if(p.m === 'mois'){
+    pointMort = margeUnit>0 ? charges/margeUnit : 0;
+    seuilPct  = (Number(p.places)||0)>0 ? (pointMort/p.places)*100 : 0;
+  } else {
+    const denom = margeUnit*(Number(p.joursMois)||0);
+    pointMort = denom>0 ? charges/denom : 0;
+    seuilPct  = capJour>0 ? (pointMort/capJour)*100 : 0;
+  }
+  const invest  = Number(p.invest)||0;
+  const roiMois = gainMois>0 ? invest/gainMois : Infinity;
+  return {rempl:rempl*100, ticket, capJour, clients, caJour, caSem, caMois, caAn,
+          coutVarMois, charges, margeBrute, margeNette, margeNetteAn, margePct,
+          ecoMois, ecoAn, gainMois, gainAn, pointMort, seuilPct, invest, roiMois};
+}
+
+function schFmtRoi(m){
+  if(!isFinite(m) || m<=0) return '—';
+  if(m>120) return '> 10 ans';
+  if(m<12)  return Math.round(m)+' mois';
+  return (m/12).toLocaleString('fr-FR',{maximumFractionDigits:1})+' ans';
+}
+function schSetText(id,v){ const el=document.getElementById(id); if(el) el.textContent=v; }
+function schScenFactor(){ return SCH_SCEN[SCH_ACTIVE] || 1; }
+
+/* ── Mutations ── */
+function schSet(key, field, value){
+  const p = SCH_DATA.find(x=>x.key===key); if(!p) return;
+  let v = Number(value); if(!isFinite(v)) v=0; if(v<0) v=0;
+  if(['prem','auto','prio'].indexOf(field)>=0) v = clampSim(Math.round(v),1,5);
+  if(field==='mois') v = clampSim(Math.round(v),1,48);
+  if(field==='rempl') v = clampSim(v,0,100);
+  p[field] = v;
+  schSave();
+  schUpdate();
+}
+function schSetFee(key, value){
+  const f = SCH_FEES.find(x=>x.key===key); if(!f) return;
+  let v=Number(value); if(!isFinite(v)||v<0) v=0; f.val=v; schSave(); schUpdate();
+}
+function schSetScen(name, value){
+  let v=Number(value); if(!isFinite(v)||v<0) v=0; SCH_SCEN[name]=v; schSave(); schUpdate();
+}
+function schSetActive(name){
+  if(!SCH_SCEN_LBL[name]) return;
+  SCH_ACTIVE = name; schSave();
+  document.querySelectorAll('.sch-scen-btn').forEach(b=>b.classList.toggle('active', b.getAttribute('data-scen')===name));
+  schUpdate();
+}
+function schReset(){
+  SCH_DATA = JSON.parse(JSON.stringify(SCH_POLES_DEFAULT));
+  SCH_FEES = JSON.parse(JSON.stringify(SCH_FEES_DEFAULT));
+  SCH_SCEN = Object.assign({}, SCH_SCEN_DEFAULT);
+  SCH_ACTIVE = 'realiste';
+  try{ localStorage.removeItem('eden_schema_directeur'); }catch(e){}
+  renderSchemaDirecteur();
+  if(typeof toast==='function') toast('↺','Schéma directeur réinitialisé');
+}
+
+function schTab(name, btn){
+  ['synthese','simulateurs','classements','roadmap','autonomie'].forEach(t=>{
+    const el=document.getElementById('sch-tab-'+t);
+    if(el) el.style.display = (t===name)?'block':'none';
+  });
+  document.querySelectorAll('#page-schema .mat-page-tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
+/* ── Construction des cartes simulateurs (inputs, une seule fois) ── */
+function schParamInputs(p){
+  const inp=(field,label,step)=>`<label>${label}</label><input type="number" class="sim-input tiny" min="0" step="${step||'1'}" value="${p[field]!=null?p[field]:0}" oninput="schSet('${p.key}','${field}',this.value)">`;
+  if(p.t==='eco' || p.t==='support'){
+    return `<div class="sim-row">
+        ${inp('ecoMois','Économie / mois (€)','10')}
+        ${inp('coutFixe','Fonctionnement / mois (€)','10')}
+      </div>
+      <div class="sim-row" style="margin-top:4px">
+        ${inp('coutPerso','Personnel / mois (€)','10')}
+        ${inp('invest','Investissement (€)','100')}
+      </div>`;
+  }
+  if(p.m==='mois'){
+    return `<div class="sim-row">
+        ${inp('prix','Abonnement / mois (€)','1')}
+        ${inp('panier','Extra moyen / mois (€)','1')}
+        ${inp('places','Abonnés / contrats max','1')}
+      </div>
+      <div class="sim-row" style="margin-top:4px">
+        ${inp('rempl','Taux remplissage (%)','1')}
+        ${inp('coutVar','Coût var. / abonné (€)','0.5')}
+        ${inp('joursMois','Jours / mois','1')}
+      </div>
+      <div class="sim-row" style="margin-top:4px">
+        ${inp('coutPerso','Personnel / mois (€)','10')}
+        ${inp('coutFixe','Fonctionnement / mois (€)','10')}
+        ${inp('invest','Investissement (€)','100')}
+      </div>`;
+  }
+  return `<div class="sim-row">
+      ${inp('prix','Prix prestation (€)','0.5')}
+      ${inp('panier','Panier complément. (€)','0.5')}
+      ${inp('coutVar','Coût var. / client (€)','0.5')}
+    </div>
+    <div class="sim-row" style="margin-top:4px">
+      ${inp('places','Places / créneau','1')}
+      ${inp('creneaux','Créneaux / jour','1')}
+      ${inp('joursMois','Jours ouverts / mois','1')}
+    </div>
+    <div class="sim-row" style="margin-top:4px">
+      ${inp('rempl','Taux remplissage (%)','1')}
+      ${inp('coutPerso','Personnel / mois (€)','10')}
+      ${inp('coutFixe','Fonctionnement / mois (€)','10')}
+    </div>
+    <div class="sim-row" style="margin-top:4px">
+      ${inp('invest','Investissement (€)','100')}
+    </div>`;
+}
+function schStatsBlock(p){
+  if(p.t==='eco' || p.t==='support'){
+    return `<div class="sim-stats">
+        <div class="sim-stat"><p class="sim-stat-lbl">Économie / mois</p><p class="sim-stat-val"><b id="sch-ecomois-${p.key}">–</b> €</p></div>
+        <div class="sim-stat"><p class="sim-stat-lbl">Économie / an</p><p class="sim-stat-val"><b id="sch-ecoan-${p.key}">–</b> €</p></div>
+        <div class="sim-stat"><p class="sim-stat-lbl">Coûts / mois</p><p class="sim-stat-val"><b id="sch-cout-${p.key}">–</b> €</p></div>
+        <div class="sim-stat"><p class="sim-stat-lbl">Retour invest.</p><p class="sim-stat-val"><b id="sch-roi-${p.key}">–</b></p></div>
+      </div>`;
+  }
+  const unitLbl = p.m==='mois' ? 'Abonnés actifs' : 'Clients / jour';
+  return `<div class="sim-stats">
+      <div class="sim-stat"><p class="sim-stat-lbl">${unitLbl}</p><p class="sim-stat-val"><b id="sch-clients-${p.key}">–</b></p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">CA / jour</p><p class="sim-stat-val"><b id="sch-caj-${p.key}">–</b> €</p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">CA / semaine</p><p class="sim-stat-val"><b id="sch-casem-${p.key}">–</b> €</p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">CA / mois</p><p class="sim-stat-val"><b id="sch-camois-${p.key}">–</b> €</p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">CA / an</p><p class="sim-stat-val"><b id="sch-caan-${p.key}">–</b> €</p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">Marge brute / mois</p><p class="sim-stat-val"><b id="sch-mb-${p.key}">–</b> €</p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">Marge nette / mois</p><p class="sim-stat-val"><b id="sch-mn-${p.key}">–</b> €</p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">Marge %</p><p class="sim-stat-val"><b id="sch-mpct-${p.key}">–</b></p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">Point mort</p><p class="sim-stat-val"><b id="sch-pm-${p.key}">–</b></p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">Seuil rentab.</p><p class="sim-stat-val"><b id="sch-seuil-${p.key}">–</b></p></div>
+      <div class="sim-stat"><p class="sim-stat-lbl">Retour invest.</p><p class="sim-stat-val"><b id="sch-roi-${p.key}">–</b></p></div>
+    </div>`;
+}
+function schScenariosBlock(p){
+  if(p.t==='eco' || p.t==='support') return '';
+  return `<div>
+      <p style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:6px 0 2px">Scénarios — CA & marge nette / an</p>
+      <table class="sch-scn-tbl">
+        <thead><tr><th>Scénario</th><th>CA / an</th><th>Marge nette / an</th></tr></thead>
+        <tbody>
+          <tr><td>Pessimiste</td><td id="sch-scca-pessimiste-${p.key}">–</td><td id="sch-scmn-pessimiste-${p.key}">–</td></tr>
+          <tr><td>Réaliste</td><td id="sch-scca-realiste-${p.key}">–</td><td id="sch-scmn-realiste-${p.key}">–</td></tr>
+          <tr><td>Optimiste</td><td id="sch-scca-optimiste-${p.key}">–</td><td id="sch-scmn-optimiste-${p.key}">–</td></tr>
+          <tr><td>Exceptionnel</td><td id="sch-scca-exceptionnel-${p.key}">–</td><td id="sch-scmn-exceptionnel-${p.key}">–</td></tr>
+        </tbody>
+      </table>
+    </div>`;
+}
+function schCard(p){
+  const g = schGroupe(p.g);
+  const typeLbl = p.t==='revenu'?'Revenu':(p.t==='eco'?'Économie':'Support');
+  const fillBlock = (p.t==='revenu') ? `<div>
+      <p style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Remplissage (scénario actif) <span id="sch-fillpct-${p.key}" style="float:right;color:var(--gold)">–%</span></p>
+      <div class="sim-bar"><div class="sim-bar-fill" id="sch-fill-${p.key}" style="width:0%"></div></div>
+    </div>` : '';
+  return `<div class="sim-card" id="sch-card-${p.key}">
+      <div class="sim-card-head">
+        <div class="sim-card-name"><span class="sim-card-icon">${p.icon}</span> ${p.nom}</div>
+        <span class="sch-type ${p.t}">${typeLbl}</span>
+      </div>
+      <p style="font-size:9px;color:var(--muted);letter-spacing:.3px;margin:-4px 0 2px;line-height:1.4">${p.desc||''}</p>
+      ${schParamInputs(p)}
+      ${schStatsBlock(p)}
+      ${schScenariosBlock(p)}
+      ${fillBlock}
+      <div class="sch-cls">
+        <div><label>Premium</label><input type="number" min="1" max="5" value="${p.prem}" oninput="schSet('${p.key}','prem',this.value)"></div>
+        <div><label>Autonomie</label><input type="number" min="1" max="5" value="${p.auto}" oninput="schSet('${p.key}','auto',this.value)"></div>
+        <div><label>Priorité</label><input type="number" min="1" max="5" value="${p.prio}" oninput="schSet('${p.key}','prio',this.value)"></div>
+        <div><label>Mois lanc.</label><input type="number" min="1" max="48" value="${p.mois}" oninput="schSet('${p.key}','mois',this.value)"></div>
+      </div>
+    </div>`;
+}
+function schRenderSimulateurs(){
+  const host = document.getElementById('sch-sim-groups');
+  if(!host) return;
+  host.innerHTML = SCH_GROUPES.map(g=>{
+    const poles = SCH_DATA.filter(p=>p.g===g.key);
+    if(!poles.length) return '';
+    return `<div class="sch-group">
+      <div class="sch-group-head"><span class="gh-icon" style="color:${g.color}">${g.icon}</span><span class="gh-name">${g.nom}</span><span class="gh-meta">${poles.length} pôle(s)</span></div>
+      <div class="sim-grid">${poles.map(schCard).join('')}</div>
+    </div>`;
+  }).join('');
+  // Charges fixes communes
+  const fh = document.getElementById('sch-fees');
+  if(fh){
+    fh.innerHTML = SCH_FEES.map(f=>`<div class="sim-fee-row"><label>${f.nom}</label><input type="number" class="sim-input tiny" min="0" step="10" value="${f.val}" oninput="schSetFee('${f.key}',this.value)"></div>`).join('');
+  }
+  // Facteurs de scénario
+  const sf = document.getElementById('sch-scen-factors');
+  if(sf){
+    sf.innerHTML = ['pessimiste','realiste','optimiste','exceptionnel'].map(s=>`<div class="sim-fee-row"><label>${SCH_SCEN_LBL[s]} (×)</label><input type="number" class="sim-input tiny" min="0" step="0.05" value="${SCH_SCEN[s]}" oninput="schSetScen('${s}',this.value)"></div>`).join('');
+  }
+}
+
+/* ═══════════ MISE À JOUR GLOBALE (calculs + tous les onglets) ═══════════ */
+function schUpdate(){
+  const f = schScenFactor();
+  let totInvest=0, totCAan=0, totMNan=0, totEcoAn=0, totGainMois=0, nbRev=0, nbEco=0;
+  const groupGain = {};
+
+  SCH_DATA.forEach(p=>{
+    const c = schCompute(p, f);
+    totInvest += c.invest;
+    totGainMois += c.gainMois;
+    if(p.t==='revenu'){ totCAan += c.caAn; totMNan += c.margeNetteAn; nbRev++; }
+    if(p.t==='eco'){ nbEco++; }
+    totEcoAn += c.ecoAn;
+    groupGain[p.g] = (groupGain[p.g]||0) + c.gainAn;
+
+    // Cartes — stats
+    if(p.t==='eco' || p.t==='support'){
+      schSetText(`sch-ecomois-${p.key}`, fmtSim(c.ecoMois));
+      schSetText(`sch-ecoan-${p.key}`,   fmtSim(c.ecoAn));
+      schSetText(`sch-cout-${p.key}`,    fmtSim(c.charges));
+      schSetText(`sch-roi-${p.key}`,     schFmtRoi(c.roiMois));
+    } else {
+      schSetText(`sch-clients-${p.key}`, fmtSim1(c.clients));
+      schSetText(`sch-caj-${p.key}`,     fmtSim(c.caJour));
+      schSetText(`sch-casem-${p.key}`,   fmtSim(c.caSem));
+      schSetText(`sch-camois-${p.key}`,  fmtSim(c.caMois));
+      schSetText(`sch-caan-${p.key}`,    fmtSim(c.caAn));
+      schSetText(`sch-mb-${p.key}`,      fmtSim(c.margeBrute));
+      schSetText(`sch-mn-${p.key}`,      fmtSim(c.margeNette));
+      schSetText(`sch-mpct-${p.key}`,    fmtSim1(c.margePct)+'%');
+      schSetText(`sch-pm-${p.key}`,      (p.m==='mois'? fmtSim1(c.pointMort)+' ab.' : fmtSim1(c.pointMort)+'/j'));
+      schSetText(`sch-seuil-${p.key}`,   fmtSim1(c.seuilPct)+'%');
+      schSetText(`sch-roi-${p.key}`,     schFmtRoi(c.roiMois));
+      const fill=document.getElementById(`sch-fill-${p.key}`);
+      if(fill){ fill.style.width=Math.min(100,c.rempl)+'%'; fill.className='sim-bar-fill '+pctClass(c.rempl); }
+      schSetText(`sch-fillpct-${p.key}`, fmtSim1(c.rempl)+'%');
+      // Scénarios
+      ['pessimiste','realiste','optimiste','exceptionnel'].forEach(s=>{
+        const cs = schCompute(p, SCH_SCEN[s]||1);
+        schSetText(`sch-scca-${s}-${p.key}`, fmtSim(cs.caAn)+' €');
+        schSetText(`sch-scmn-${s}-${p.key}`, fmtSim(cs.margeNetteAn)+' €');
+      });
+    }
+  });
+
+  const totFeesMois = SCH_FEES.reduce((s,f)=>s+(Number(f.val)||0),0);
+  const resultatNetMois = totGainMois - totFeesMois;
+  const resultatNetAn   = resultatNetMois*12;
+
+  // ── Synthèse KPIs ──
+  schSetText('sch-k-invest', fmtSim(totInvest));
+  schSetText('sch-k-caan',   fmtSim(totCAan));
+  schSetText('sch-k-mnan',   fmtSim(totMNan));
+  schSetText('sch-k-ecoan',  fmtSim(totEcoAn));
+  schSetText('sch-k-resmois',fmtSim(resultatNetMois));
+  schSetText('sch-k-resan',  fmtSim(resultatNetAn));
+  schSetText('sch-k-fees',   fmtSim(totFeesMois));
+  schSetText('sch-k-nbrev',  nbRev);
+  schSetText('sch-k-nbeco',  nbEco);
+  schSetText('sch-k-nbtot',  SCH_DATA.length);
+  schSetText('sch-k-scen',   SCH_SCEN_LBL[SCH_ACTIVE]);
+  const rw=document.getElementById('sch-res-wrap');
+  if(rw){ rw.classList.remove('sim-positive','sim-negative','sim-warning');
+    rw.classList.add(resultatNetMois>totFeesMois*0.05?'sim-positive':(resultatNetMois<0?'sim-negative':'sim-warning')); }
+
+  // ── Bars : gain annuel par groupe ──
+  const gb=document.getElementById('sch-group-bars');
+  if(gb){
+    const arr = SCH_GROUPES.map(g=>({g:g, v:groupGain[g.key]||0})).filter(x=>x.v!==0).sort((a,b)=>b.v-a.v);
+    const max = Math.max(1, ...arr.map(x=>Math.abs(x.v)));
+    gb.innerHTML = arr.map(x=>`<div class="sim-bars-row">
+        <div class="sim-bars-name">${x.g.icon} ${x.g.nom}</div>
+        <div class="sim-bars-track"><div class="sim-bars-fill" style="width:${(Math.abs(x.v)/max)*100}%;background:${x.v<0?'var(--err)':''}"></div></div>
+        <div class="sim-bars-val">${fmtSim(x.v)} €</div>
+      </div>`).join('');
+  }
+
+  // ── Classements ──
+  schRenderClassements(f);
+  // ── Feuille de route ──
+  schBuildRoadmap(f);
+  // ── Autonomie ──
+  schRenderAutonomie(f);
+}
+
+function schRankList(host, rows){
+  const el=document.getElementById(host); if(!el) return;
+  el.innerHTML = rows.map((r,i)=>`<div class="sch-rank-row">
+      <div class="rk-num">${i+1}</div>
+      <div><div class="rk-name">${r.icon} ${r.nom}</div><div class="rk-grp">${r.grp}${r.sub?' · '+r.sub:''}</div></div>
+      <div class="rk-val">${r.val}</div>
+    </div>`).join('') || '<p style="font-size:11px;color:var(--muted)">Aucune donnée</p>';
+}
+function schRenderClassements(f){
+  f = (f==null)?schScenFactor():f;
+  const enr = SCH_DATA.map(p=>({p:p, c:schCompute(p,f), g:schGroupe(p.g)}));
+  // Rentabilité : par gain annuel (marge nette + économies)
+  schRankList('sch-rank-rentab', enr.slice().sort((a,b)=>b.c.gainAn-a.c.gainAn).slice(0,12).map(x=>({
+    icon:x.p.icon, nom:x.p.nom, grp:x.g.nom, sub:'marge '+fmtSim1(x.c.margePct)+'%', val:fmtSim(x.c.gainAn)+' € /an'})));
+  // Priorité : score priorité puis ROI rapide
+  schRankList('sch-rank-prio', enr.slice().sort((a,b)=> (b.p.prio-a.p.prio) || (a.c.roiMois-b.c.roiMois)).slice(0,12).map(x=>({
+    icon:x.p.icon, nom:x.p.nom, grp:x.g.nom, sub:'ROI '+schFmtRoi(x.c.roiMois), val:'P'+x.p.prio})));
+  // Premium
+  schRankList('sch-rank-premium', enr.slice().sort((a,b)=> (b.p.prem-a.p.prem) || (b.c.gainAn-a.c.gainAn)).slice(0,12).map(x=>({
+    icon:x.p.icon, nom:x.p.nom, grp:x.g.nom, sub:fmtSim(x.c.gainAn)+' € /an', val:'★ '+x.p.prem})));
+  // Autonomie
+  schRankList('sch-rank-auto', enr.slice().sort((a,b)=> (b.p.auto-a.p.auto) || (b.c.ecoAn-a.c.ecoAn)).slice(0,12).map(x=>({
+    icon:x.p.icon, nom:x.p.nom, grp:x.g.nom, sub:(x.c.ecoAn>0?fmtSim(x.c.ecoAn)+' € éco/an':'—'), val:'⚡ '+x.p.auto})));
+}
+
+/* ── Feuille de route 48 mois ── */
+function schBuildRoadmap(f){
+  f = (f==null)?schScenFactor():f;
+  const comp = {};
+  SCH_DATA.forEach(p=>{ comp[p.key]=schCompute(p,f); });
+  const feesMois = SCH_FEES.reduce((s,x)=>s+(Number(x.val)||0),0);
+  let cumInvest=0, cumNet=0, payback=0, started=false;
+  const months=[];
+  for(let m=1;m<=48;m++){
+    let invM=0, activeContrib=0;
+    SCH_DATA.forEach(p=>{
+      if((Number(p.mois)||1)===m) invM += comp[p.key].invest;
+      if((Number(p.mois)||1) < m)  activeContrib += comp[p.key].gainMois;
+    });
+    if(activeContrib>0) started=true;
+    const netMois = activeContrib - (started ? feesMois : 0);
+    cumInvest += invM; cumNet += netMois;
+    const cash = cumNet - cumInvest;
+    if(payback===0 && cash>=0 && m>1) payback=m;
+    months.push({m, invM, activeContrib, netMois, cumInvest, cumNet, cash});
+  }
+  const fullContrib = SCH_DATA.reduce((s,p)=>s+comp[p.key].gainMois,0);
+  // KPIs roadmap
+  schSetText('sch-rm-invest', fmtSim(cumInvest));
+  schSetText('sch-rm-gainmois', fmtSim(fullContrib - feesMois));
+  schSetText('sch-rm-payback', payback? ('Mois '+payback+(payback>=12?' (~'+(payback/12).toLocaleString('fr-FR',{maximumFractionDigits:1})+' ans)':'')) : '> 48 mois');
+  // Chart cashflow cumulé
+  const ch=document.getElementById('sch-cash');
+  if(ch){
+    const maxAbs=Math.max(1, ...months.map(x=>Math.abs(x.cash)));
+    ch.innerHTML = months.map(x=>{
+      const h=(Math.abs(x.cash)/maxAbs)*100;
+      const pos=x.cash>=0;
+      const phaseEdge = (x.m%12===0);
+      return `<div class="sch-cash-bar" title="Mois ${x.m} · trésorerie cumulée ${fmtSim(x.cash)} €${phaseEdge?' · fin de phase':''}">
+        <div class="cb-mid"><div class="cb-fill" style="height:${pos?h:0}%;background:var(--gold)"></div></div>
+        <div class="cb-mid down"><div class="cb-fill" style="height:${pos?0:h}%;background:var(--err)"></div></div>
+      </div>`;
+    }).join('');
+  }
+  // Phases
+  const phases=[[1,12,'Année 1','Fondations & moteur de revenus'],[13,24,'Année 2','Production, autonomie & médias'],[25,36,'Année 3','Premium, VIP & événementiel'],[37,48,'Année 4','Expansion & rayonnement']];
+  const ph=document.getElementById('sch-road-phases');
+  if(ph){
+    ph.innerHTML = phases.map(ps=>{
+      const list = SCH_DATA.filter(p=>{const mm=Number(p.mois)||1; return mm>=ps[0]&&mm<=ps[1];}).sort((a,b)=>(Number(a.mois)||1)-(Number(b.mois)||1));
+      const inv = list.reduce((s,p)=>s+comp[p.key].invest,0);
+      const runRate = (SCH_DATA.filter(p=>(Number(p.mois)||1)<=ps[1]).reduce((s,p)=>s+comp[p.key].gainMois,0) - feesMois)*12;
+      return `<div class="sch-road-phase">
+        <h4>${ps[2]}</h4>
+        <p class="rp-sub">Mois ${ps[0]}–${ps[1]} · ${ps[3]}</p>
+        <div class="sch-road-item" style="border-bottom:1px solid rgba(196,160,78,.14);font-weight:600">
+          <span style="color:var(--gold)">Investissement phase</span><span class="ri-inv">${fmtSim(inv)} €</span></div>
+        <div class="sch-road-item" style="border-bottom:1px solid rgba(196,160,78,.14)">
+          <span style="color:var(--ok)">Résultat net annuel atteint</span><span style="color:${runRate<0?'var(--err)':'var(--ok)'}">${fmtSim(runRate)} €</span></div>
+        ${list.map(p=>`<div class="sch-road-item"><span>${p.icon} ${p.nom}</span><span class="ri-inv">${comp[p.key].invest>0?'M'+(Number(p.mois)||1)+' · '+fmtSim(comp[p.key].invest)+' €':'M'+(Number(p.mois)||1)}</span></div>`).join('')}
+      </div>`;
+    }).join('');
+  }
+}
+
+/* ── Onglet Autonomie & économies ── */
+function schRenderAutonomie(f){
+  f=(f==null)?schScenFactor():f;
+  const ecoPoles = SCH_DATA.filter(p=>p.t==='eco' || (p.t==='support'&&(Number(p.ecoMois)||0)>0) || (Number(p.ecoMois)||0)>0);
+  let totEcoMois=0, totInvest=0;
+  const host=document.getElementById('sch-auto-list');
+  if(host){
+    host.innerHTML = ecoPoles.map(p=>{
+      const c=schCompute(p,f); totEcoMois+=c.ecoMois; totInvest+=c.invest;
+      const g=schGroupe(p.g);
+      return `<tr>
+        <td class="name">${p.icon} ${p.nom}</td>
+        <td>${g.nom}</td>
+        <td class="gold">${fmtSim(c.ecoMois)} €</td>
+        <td class="gold">${fmtSim(c.ecoAn)} €</td>
+        <td>${fmtSim(c.invest)} €</td>
+        <td>${schFmtRoi(c.roiMois)}</td>
+        <td><span class="sim-tag ${c.invest>0&&c.ecoMois>0?'ok':''}">⚡ ${p.auto}/5</span></td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="7" style="color:var(--muted)">Aucun pôle d’économie</td></tr>';
+  }
+  schSetText('sch-auto-ecomois', fmtSim(totEcoMois));
+  schSetText('sch-auto-ecoan',  fmtSim(totEcoMois*12));
+  schSetText('sch-auto-invest', fmtSim(totInvest));
+  schSetText('sch-auto-roi',    schFmtRoi(totEcoMois>0? totInvest/totEcoMois : Infinity));
+}
+
+function renderSchemaDirecteur(){
+  schLoad();
+  document.querySelectorAll('.sch-scen-btn').forEach(b=>b.classList.toggle('active', b.getAttribute('data-scen')===SCH_ACTIVE));
+  schRenderSimulateurs();
+  schUpdate();
+}
+
+// Chargement silencieux au démarrage
+try{ schLoad(); }catch(e){}
 
 
 /* ══ SUIVI DES CHARGES ══ */
